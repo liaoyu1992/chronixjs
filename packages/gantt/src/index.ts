@@ -18,3 +18,12 @@ export type {
 } from './ir/index.js';
 
 export type { BarTable, LinkTable, PendingTransaction, RowDataSource } from './data/index.js';
+
+export type {
+  AnyTransaction,
+  BarDragTransaction,
+  BarResizeTransaction,
+  CalendarRangeSelectTransaction,
+  PointerCaptureConfig,
+  ProgressHandleTransaction,
+} from './interaction/index.js';
