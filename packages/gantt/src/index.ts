@@ -1,1 +1,18 @@
 export const VERSION = '0.0.0';
+
+export type {
+  AxisGranularity,
+  AxisSpec,
+  BarProgress,
+  BarSpec,
+  BarStyleOverrides,
+  ChartIR,
+  CustomLinkMarker,
+  DprIntent,
+  LinkMarker,
+  LinkRouting,
+  LinkSpec,
+  RowSpec,
+  TimeRange,
+  Viewport,
+} from './ir/index.js';
