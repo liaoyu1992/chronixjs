@@ -123,9 +123,7 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
     totalWidth,
     slotCount,
     ticks,
-    headerRows: [
-      { cells: [{ x: 0, width: totalWidth, label: monthFmt.format(start) }] },
-    ],
+    headerRows: [{ cells: [{ x: 0, width: totalWidth, label: monthFmt.format(start) }] }],
   };
 }
 
