@@ -12,9 +12,10 @@
  */
 import { execSync } from 'node:child_process';
 import { readFileSync, statSync } from 'node:fs';
-import { resolve, sep } from 'node:path';
+import { dirname, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(new URL('..', import.meta.url).pathname.replace(/^\//, ''));
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MODE_ALL = process.argv.includes('--all');
 
 const BANNED_FILE = resolve(ROOT, 'audit', 'banned-names.txt');
