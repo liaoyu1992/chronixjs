@@ -49,3 +49,14 @@ export type {
   SelectPayload,
   ViewChangePayload,
 } from './api/index.js';
+
+export type {
+  AxisHeaderCell,
+  AxisHeaderRow,
+  AxisRangePlanInput,
+  AxisRangePlanner,
+  AxisTick,
+  PlannedAxis,
+  ViewId,
+} from './layout/index.js';
+export { defaultAxisRangePlanner } from './layout/index.js';
