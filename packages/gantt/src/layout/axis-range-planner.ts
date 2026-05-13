@@ -26,6 +26,9 @@ const SLOT_WIDTH_BY_VIEW: Record<ViewId, number> = {
   year: 30,
 };
 
+const MS_PER_HOUR = 60 * 60 * 1000;
+const MS_PER_DAY = 24 * MS_PER_HOUR;
+
 function startOfDay(d: Date): Date {
   const x = new Date(d);
   x.setHours(0, 0, 0, 0);
@@ -73,6 +76,7 @@ function planDayView(input: AxisRangePlanInput): PlannedAxis {
   return {
     viewId: 'day',
     slotWidth,
+    slotDurationMs: MS_PER_HOUR,
     totalWidth,
     slotCount,
     ticks,
@@ -126,6 +130,7 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
   return {
     viewId: 'month',
     slotWidth,
+    slotDurationMs: MS_PER_DAY,
     totalWidth,
     slotCount,
     ticks,
@@ -190,6 +195,7 @@ function planMonthBandedAxis(
   return {
     viewId: input.viewId,
     slotWidth,
+    slotDurationMs: MS_PER_DAY,
     totalWidth,
     slotCount,
     ticks,
@@ -233,6 +239,7 @@ function planWeekView(input: AxisRangePlanInput): PlannedAxis {
   return {
     viewId: 'week',
     slotWidth,
+    slotDurationMs: MS_PER_HOUR,
     totalWidth,
     slotCount,
     ticks,

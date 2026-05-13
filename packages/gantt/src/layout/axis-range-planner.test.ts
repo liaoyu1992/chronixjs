@@ -32,6 +32,11 @@ describe('defaultAxisRangePlanner — day view', () => {
     expect(axis.ticks[23]?.x).toBe(axis.slotWidth * 23);
   });
 
+  it('slotDurationMs = 1 hour', () => {
+    const axis = defaultAxisRangePlanner.plan(baseInput);
+    expect(axis.slotDurationMs).toBe(60 * 60 * 1000);
+  });
+
   it('emits one header row spanning the full axis', () => {
     const axis = defaultAxisRangePlanner.plan(baseInput);
 
@@ -72,6 +77,7 @@ describe('defaultAxisRangePlanner — week view', () => {
     expect(axis.slotCount).toBe(168);
     expect(axis.ticks).toHaveLength(168);
     expect(axis.totalWidth).toBe(axis.slotWidth * 168);
+    expect(axis.slotDurationMs).toBe(60 * 60 * 1000);
   });
 
   it('anchors at Monday of the anchorDate week', () => {
@@ -135,6 +141,7 @@ describe('defaultAxisRangePlanner — month view', () => {
     expect(axis.slotCount).toBe(31);
     expect(axis.ticks).toHaveLength(31);
     expect(axis.totalWidth).toBe(axis.slotWidth * 31);
+    expect(axis.slotDurationMs).toBe(24 * 60 * 60 * 1000);
   });
 
   it('produces 30 day-ticks for April 2026 (30-day month)', () => {

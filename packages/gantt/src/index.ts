@@ -56,6 +56,10 @@ export type {
   AxisRangePlanInput,
   AxisRangePlanner,
   AxisTick,
+  BarPlacementPass,
+  BarPlacementPassInput,
+  BarPlacementPassOutput,
+  PlacedBar,
   PlannedAxis,
   RowSwimlaneLayout,
   RowSwimlaneLayoutInput,
@@ -63,4 +67,8 @@ export type {
   SwimlaneStrip,
   ViewId,
 } from './layout/index.js';
-export { defaultAxisRangePlanner, defaultRowSwimlaneLayout } from './layout/index.js';
+export {
+  defaultAxisRangePlanner,
+  defaultBarPlacementPass,
+  defaultRowSwimlaneLayout,
+} from './layout/index.js';
