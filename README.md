@@ -6,11 +6,11 @@ Source: [github.com/liaoyu1992/chronixjs](https://github.com/liaoyu1992/chronixj
 
 ## Packages
 
-| Package | Status |
-| --- | --- |
+| Package                                | Status                                  |
+| -------------------------------------- | --------------------------------------- |
 | [`@chronixjs/gantt`](./packages/gantt) | Scaffolded — implementation in progress |
-| `@chronixjs/table` | Planned |
-| `@chronixjs/input` | Planned |
+| `@chronixjs/table`                     | Planned                                 |
+| `@chronixjs/input`                     | Planned                                 |
 
 ## Development
 

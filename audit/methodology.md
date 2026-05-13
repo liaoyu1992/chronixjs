@@ -20,7 +20,7 @@ Chronix is an **R2 reference rewrite** of k-ui's gantt:
 ## When in doubt
 
 - If a piece of k-ui logic is "weird but necessary" (e.g. `HitDragging.requireInitial = false`),
-  read it, understand *why*, then implement chronix's equivalent under chronix's naming and architecture. **Do not paraphrase line-by-line.**
+  read it, understand _why_, then implement chronix's equivalent under chronix's naming and architecture. **Do not paraphrase line-by-line.**
 - If you find yourself about to copy a function, close the k-ui file and write from your understanding, not from sight.
 - If the same algorithm produces the same code structure naturally (e.g. binary search), that's fine — but variable names must be yours.
 

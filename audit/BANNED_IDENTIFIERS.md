@@ -8,34 +8,35 @@ Each banned name has a chronix-native replacement. Use those instead.
 
 These names are distinctive enough that their presence is strong evidence of copying. CI hard-fails when matched.
 
-| Banned | Chronix replacement | Rationale |
-| --- | --- | --- |
-| `EventInteractionState` | `BarDragTransaction` | k-ui interaction in-flight state |
-| `HitDragging` | `PointerCaptureSession` | k-ui hit-test-coupled drag session |
-| `DependencyLineAlgorithm` | `LinkRouter` | k-ui dependency line module |
-| `DateProfileGenerator` | `AxisRangePlanner` | k-ui/FC date range computation |
-| `ResourceSourceInput` | `RowDataSource` | k-ui/FC resource sourcing |
-| `ResourceTimelineLayout` | `RowSwimlaneLayout` | k-ui resource swimlane |
-| `ContentInjector` | `SlotRenderer` | k-ui content injection |
-| `CustomRenderingStore` | `SlotRegistry` | k-ui custom render registry |
-| `EventDef` | `BarSpec` | k-ui/FC event definition |
-| `EventStore` | `BarTable` | k-ui/FC event collection |
-| `ScrollGridImpl` | `VirtualizedPaneLayout` | k-ui scrollgrid implementation |
-| `requireInitial` (as identifier) | `requireInitialHit` (own concept, distinct semantics) | k-ui HitDragging field |
+| Banned                           | Chronix replacement                                   | Rationale                          |
+| -------------------------------- | ----------------------------------------------------- | ---------------------------------- |
+| `EventInteractionState`          | `BarDragTransaction`                                  | k-ui interaction in-flight state   |
+| `HitDragging`                    | `PointerCaptureSession`                               | k-ui hit-test-coupled drag session |
+| `DependencyLineAlgorithm`        | `LinkRouter`                                          | k-ui dependency line module        |
+| `DateProfileGenerator`           | `AxisRangePlanner`                                    | k-ui/FC date range computation     |
+| `ResourceSourceInput`            | `RowDataSource`                                       | k-ui/FC resource sourcing          |
+| `ResourceTimelineLayout`         | `RowSwimlaneLayout`                                   | k-ui resource swimlane             |
+| `ContentInjector`                | `SlotRenderer`                                        | k-ui content injection             |
+| `CustomRenderingStore`           | `SlotRegistry`                                        | k-ui custom render registry        |
+| `EventDef`                       | `BarSpec`                                             | k-ui/FC event definition           |
+| `EventStore`                     | `BarTable`                                            | k-ui/FC event collection           |
+| `ScrollGridImpl`                 | `VirtualizedPaneLayout`                               | k-ui scrollgrid implementation     |
+| `requireInitial` (as identifier) | `requireInitialHit` (own concept, distinct semantics) | k-ui HitDragging field             |
 
 ## Weak bans (warning only)
 
 CSS class prefixes and other broadly-used tokens. CI warns; the name may be unavoidable in specific contexts.
 
-| Banned | Chronix replacement |
-| --- | --- |
-| `fc-` (CSS prefix) | `cx-` |
-| `gantt-` (CSS prefix in k-ui sources) | `cx-` |
-| `k-` (CSS prefix in k-ui) | `cx-` |
+| Banned                                | Chronix replacement |
+| ------------------------------------- | ------------------- |
+| `fc-` (CSS prefix)                    | `cx-`               |
+| `gantt-` (CSS prefix in k-ui sources) | `cx-`               |
+| `k-` (CSS prefix in k-ui)             | `cx-`               |
 
 ## How CI enforces this
 
 `scripts/check-banned-names.mjs` runs:
+
 - In pre-commit (staged files only) via husky
 - In CI (`--all` mode, full tree)
 
