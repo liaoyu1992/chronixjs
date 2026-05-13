@@ -92,6 +92,9 @@ importers:
       '@chronixjs/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@chronixjs/gantt':
+        specifier: workspace:*
+        version: link:../../packages/gantt
       '@playwright/test':
         specifier: ^1.49.0
         version: 1.60.0
