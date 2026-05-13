@@ -36,3 +36,16 @@ export type {
   SlotRenderer,
   SlotTemplate,
 } from './render/index.js';
+
+export type {
+  BarClickPayload,
+  BarDropPayload,
+  BarResizePayload,
+  BarsSetPayload,
+  GanttEventMap,
+  GanttHandle,
+  GanttOptions,
+  ProgressChangePayload,
+  SelectPayload,
+  ViewChangePayload,
+} from './api/index.js';
