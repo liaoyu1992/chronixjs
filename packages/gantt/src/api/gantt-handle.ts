@@ -1,6 +1,5 @@
-import type { BarTable, LinkTable, RowDataSource } from '../data/index.js';
-
 import type { GanttEventMap } from './gantt-options.js';
+import type { BarTable, LinkTable, RowDataSource } from '../data/index.js';
 
 /**
  * Imperative facade returned by the core mount. Adapters expose it to

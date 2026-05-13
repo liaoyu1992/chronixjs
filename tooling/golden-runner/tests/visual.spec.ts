@@ -1,8 +1,9 @@
-import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
 import { CHART_SELECTOR, FROZEN_TIME_ISO } from '../src/config.js';
 import { VISUAL_SCENARIOS } from '../src/scenarios.js';
+
+import type { Page } from '@playwright/test';
 
 const settle = (page: Page) =>
   page.evaluate(
