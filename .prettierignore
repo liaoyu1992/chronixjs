@@ -1,0 +1,13 @@
+node_modules
+dist
+build
+coverage
+.turbo
+.changeset
+pnpm-lock.yaml
+*.min.js
+*.min.css
+CHANGELOG.md
+goldens
+playwright-report
+test-results

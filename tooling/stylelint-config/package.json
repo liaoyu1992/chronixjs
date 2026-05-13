@@ -1,0 +1,22 @@
+{
+  "name": "@chronixjs/stylelint-config",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared Stylelint config for chronix packages",
+  "license": "MIT",
+  "main": "./index.cjs",
+  "exports": {
+    ".": "./index.cjs"
+  },
+  "files": [
+    "index.cjs"
+  ],
+  "dependencies": {
+    "stylelint-config-recommended": "^14.0.1",
+    "stylelint-config-recommended-scss": "^14.1.0",
+    "stylelint-order": "^6.0.4"
+  },
+  "peerDependencies": {
+    "stylelint": "^16.0.0"
+  }
+}
