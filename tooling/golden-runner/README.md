@@ -56,12 +56,25 @@ that would generate noisy diffs on doc edits.
 
 ## Scenarios
 
-Currently 1 scenario (`week-default`) to prove the pipeline. The full
-~30-scenario suite covers: 6 timeline scales × default state, weekends
-off, today-line variants, line-style/marker permutations, progress states,
-drag/resize/select-create/click-delete recordings (interaction JSON, Phase 0.5).
+Two complementary suites run under the same `verify` / `capture` scripts.
 
-Add new scenarios to `src/scenarios.ts`.
+### Visual goldens (`tests/visual.spec.ts` → `goldens/<id>.png`)
+
+Strict pixel-diff baselines (`maxDiffPixelRatio 0.001`). Captured: 6/30+
+(all six timeline scales: `week-default`, `view-day`, `view-month`,
+`view-season`, `view-half-year`, `view-year`). Known gap: half-year /
+year load with x-scroll at range-start so today-anchored events sit
+off-screen — those PNGs are mostly empty grid until a scroll-to-today
+helper is added. Add new scenarios to `src/scenarios.ts`.
+
+### Interaction recordings (`tests/interaction.spec.ts` → `recordings/<id>/`)
+
+Each scenario writes `before.png`, `after.png`, and `log.json` (with
+pointer/wheel event sequence + frozen-time metadata). The parity
+assertion for chronix is the `log.json` state mutations, not the PNG
+diff — pixel-comparing mid-interaction frames is too noisy. Currently
+1 proof scenario (`wheel-scroll-right`). Add new recordings to
+`src/recordings.ts` (declarative shell + imperative `perform(ctx)`).
 
 ## CSS class names from the reference demo
 
