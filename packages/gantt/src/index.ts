@@ -57,6 +57,10 @@ export type {
   AxisRangePlanner,
   AxisTick,
   PlannedAxis,
+  RowSwimlaneLayout,
+  RowSwimlaneLayoutInput,
+  RowSwimlaneLayoutOutput,
+  SwimlaneStrip,
   ViewId,
 } from './layout/index.js';
-export { defaultAxisRangePlanner } from './layout/index.js';
+export { defaultAxisRangePlanner, defaultRowSwimlaneLayout } from './layout/index.js';

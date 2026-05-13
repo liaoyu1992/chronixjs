@@ -1,3 +1,5 @@
+import type { RowSpec } from '../ir/index.js';
+
 /** One tick on the axis. `x` is the logical position from the axis start. */
 export interface AxisTick {
   readonly x: number;
@@ -51,4 +53,30 @@ export interface AxisRangePlanInput {
   readonly locale: string;
   /** When false, Saturday + Sunday slots are omitted from week-and-wider views. */
   readonly weekendsVisible: boolean;
+}
+
+/**
+ * One row's vertical placement in the timeline body. Output of
+ * `RowSwimlaneLayout.layout`. Bars on this row are positioned within this
+ * strip's Y bounds by `BarPlacementPass`.
+ */
+export interface SwimlaneStrip {
+  readonly rowId: string;
+  /** Y-offset of the strip's top edge from the timeline body origin. */
+  readonly y: number;
+  readonly height: number;
+}
+
+export interface RowSwimlaneLayoutInput {
+  /** Row specs in display order. Tree relationships in `parentId` are ignored by v0. */
+  readonly rows: readonly RowSpec[];
+  /** Used when a row has no `heightHint`. */
+  readonly defaultRowHeight: number;
+}
+
+export interface RowSwimlaneLayoutOutput {
+  /** One strip per input row, in input order. */
+  readonly strips: readonly SwimlaneStrip[];
+  /** Sum of all strip heights. Used as the timeline body's vertical extent. */
+  readonly totalHeight: number;
 }
