@@ -16,3 +16,5 @@ export type {
   TimeRange,
   Viewport,
 } from './ir/index.js';
+
+export type { BarTable, LinkTable, PendingTransaction, RowDataSource } from './data/index.js';
