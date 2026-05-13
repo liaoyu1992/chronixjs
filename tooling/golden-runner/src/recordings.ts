@@ -80,7 +80,9 @@ export const INTERACTION_RECORDINGS: InteractionRecording[] = [
         break;
       }
       if (!found || !bboxBefore) {
-        throw new Error(`no in-viewport progress triangle with drag headroom (${total} total in DOM)`);
+        throw new Error(
+          `no in-viewport progress triangle with drag headroom (${total} total in DOM)`,
+        );
       }
 
       const instanceId = await triangle.getAttribute('data-instance-id');

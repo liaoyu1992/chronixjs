@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import type { Page } from '@playwright/test';
 import { test } from '@playwright/test';
 
 import { CHART_SELECTOR, FROZEN_TIME_ISO } from '../src/config.js';
@@ -10,7 +11,7 @@ import { INTERACTION_RECORDINGS } from '../src/recordings.js';
 const PKG_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const RECORDINGS_ROOT = join(PKG_ROOT, 'recordings');
 
-const settle = (page: import('@playwright/test').Page) =>
+const settle = (page: Page) =>
   page.evaluate(
     () => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
   );

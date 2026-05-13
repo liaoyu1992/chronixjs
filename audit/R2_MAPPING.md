@@ -10,23 +10,23 @@ mentioning them.
 The chronix-side names themselves are defined in
 [`../packages/gantt/MODULE_TAXONOMY.md`](../packages/gantt/MODULE_TAXONOMY.md).
 
-| chronix name | reference analog | notes |
-| --- | --- | --- |
-| `BarSpec` | `EventDef` | event definition |
-| `BarTable` | `EventStore` | event collection |
-| `RowDataSource` | `ResourceSourceInput` | resource sourcing |
-| `RowSwimlaneLayout` | `ResourceTimelineLayout` | resource Y-positioning |
-| `AxisRangePlanner` | `DateProfileGenerator` | date range + tick computation |
-| `LinkRouter` | `DependencyLineAlgorithm` | dependency path computation |
-| `VirtualizedPaneLayout` | `ScrollGridImpl` | scroll-region geometry |
-| `SlotRenderer` | `ContentInjector` | template invocation |
-| `SlotRegistry` | `CustomRenderingStore` | template registry |
-| `PointerCaptureSession` | `HitDragging` | pointer-capture lifecycle |
-| `BarDragTransaction` (subset) | `EventInteractionState` | in-flight drag state |
-| `BarResizeTransaction` | `EventInteractionState` (resize mode) | distinct transaction, not a mode |
-| `ProgressHandleTransaction` | `EventInteractionState` (progress mode) | distinct transaction; reference excludes triangle from event-drag (EventDragging.ts:125-126) |
-| `PointerOverlayGroup` | `<g class="gantt-progress-triangles" pointerEvents:auto>` (CSS-level idiom) | promoted to IR primitive |
-| `requireInitialHit` | `requireInitial` (boolean on `HitDragging`) | semantic name + first-class config |
+| chronix name                  | reference analog                                                            | notes                                                                                        |
+| ----------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `BarSpec`                     | `EventDef`                                                                  | event definition                                                                             |
+| `BarTable`                    | `EventStore`                                                                | event collection                                                                             |
+| `RowDataSource`               | `ResourceSourceInput`                                                       | resource sourcing                                                                            |
+| `RowSwimlaneLayout`           | `ResourceTimelineLayout`                                                    | resource Y-positioning                                                                       |
+| `AxisRangePlanner`            | `DateProfileGenerator`                                                      | date range + tick computation                                                                |
+| `LinkRouter`                  | `DependencyLineAlgorithm`                                                   | dependency path computation                                                                  |
+| `VirtualizedPaneLayout`       | `ScrollGridImpl`                                                            | scroll-region geometry                                                                       |
+| `SlotRenderer`                | `ContentInjector`                                                           | template invocation                                                                          |
+| `SlotRegistry`                | `CustomRenderingStore`                                                      | template registry                                                                            |
+| `PointerCaptureSession`       | `HitDragging`                                                               | pointer-capture lifecycle                                                                    |
+| `BarDragTransaction` (subset) | `EventInteractionState`                                                     | in-flight drag state                                                                         |
+| `BarResizeTransaction`        | `EventInteractionState` (resize mode)                                       | distinct transaction, not a mode                                                             |
+| `ProgressHandleTransaction`   | `EventInteractionState` (progress mode)                                     | distinct transaction; reference excludes triangle from event-drag (EventDragging.ts:125-126) |
+| `PointerOverlayGroup`         | `<g class="gantt-progress-triangles" pointerEvents:auto>` (CSS-level idiom) | promoted to IR primitive                                                                     |
+| `requireInitialHit`           | `requireInitial` (boolean on `HitDragging`)                                 | semantic name + first-class config                                                           |
 
 ## How to extend
 

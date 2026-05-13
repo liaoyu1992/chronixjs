@@ -11,7 +11,8 @@ export interface VisualScenario {
 export const VISUAL_SCENARIOS: VisualScenario[] = [
   {
     id: 'week-default',
-    description: 'Default load: zh-CN locale, week scale, weekends visible, full event set with dependency lines',
+    description:
+      'Default load: zh-CN locale, week scale, weekends visible, full event set with dependency lines',
   },
   {
     id: 'view-day',

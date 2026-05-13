@@ -1,7 +1,6 @@
 import type { PendingTransaction } from './transaction.js';
 import type { BarSpec, TimeRange } from '../ir/index.js';
 
-
 /**
  * Mutable runtime collection of `BarSpec`s with transaction-overlay support.
  *
