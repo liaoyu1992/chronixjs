@@ -1,4 +1,4 @@
-import type { BarSpec, RowSpec } from '../ir/index.js';
+import type { BarSpec, LinkSpec, RowSpec } from '../ir/index.js';
 
 /** One tick on the axis. `x` is the logical position from the axis start. */
 export interface AxisTick {
@@ -115,4 +115,41 @@ export interface BarPlacementPassOutput {
   readonly placedBars: readonly PlacedBar[];
   /** IDs of bars whose `rowId` didn't match any strip. */
   readonly orphanBarIds: readonly string[];
+}
+
+/**
+ * Position + orientation of the marker at a link's destination. LinkRouter
+ * does NOT carry the marker shape — that stays on `LinkSpec.marker` and
+ * the render layer combines the two at draw time. This keeps routing
+ * free of marker-rendering concerns.
+ */
+export interface RoutedLinkMarker {
+  readonly x: number;
+  readonly y: number;
+  /** Rotation in degrees; 0 = pointing right (positive x axis). */
+  readonly angleDeg: number;
+}
+
+/** One link with its computed SVG path + destination marker placement. */
+export interface RoutedLink {
+  readonly linkId: string;
+  /** SVG path `d` attribute. v0 emits 3-segment square paths. */
+  readonly pathD: string;
+  readonly marker: RoutedLinkMarker;
+  /** From `LinkSpec.colorOverride` if set; otherwise omitted. */
+  readonly color?: string;
+}
+
+export interface LinkRouterInput {
+  readonly links: readonly LinkSpec[];
+  readonly placedBars: readonly PlacedBar[];
+  /** Pixels of horizontal extension from a bar before turning. Default 12. */
+  readonly elbowNubPx?: number;
+}
+
+export interface LinkRouterOutput {
+  /** Routed links in input order. Links with unresolved endpoints are excluded. */
+  readonly routedLinks: readonly RoutedLink[];
+  /** IDs of links whose `fromBarId` or `toBarId` didn't match any placedBar. */
+  readonly orphanLinkIds: readonly string[];
 }

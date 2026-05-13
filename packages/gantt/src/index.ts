@@ -59,8 +59,13 @@ export type {
   BarPlacementPass,
   BarPlacementPassInput,
   BarPlacementPassOutput,
+  LinkRouter,
+  LinkRouterInput,
+  LinkRouterOutput,
   PlacedBar,
   PlannedAxis,
+  RoutedLink,
+  RoutedLinkMarker,
   RowSwimlaneLayout,
   RowSwimlaneLayoutInput,
   RowSwimlaneLayoutOutput,
@@ -70,5 +75,6 @@ export type {
 export {
   defaultAxisRangePlanner,
   defaultBarPlacementPass,
+  defaultLinkRouter,
   defaultRowSwimlaneLayout,
 } from './layout/index.js';
