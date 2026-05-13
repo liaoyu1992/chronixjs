@@ -27,3 +27,12 @@ export type {
   PointerCaptureConfig,
   ProgressHandleTransaction,
 } from './interaction/index.js';
+
+export type {
+  IRCanvas,
+  PointerOverlayGroup,
+  SlotContext,
+  SlotRegistry,
+  SlotRenderer,
+  SlotTemplate,
+} from './render/index.js';
