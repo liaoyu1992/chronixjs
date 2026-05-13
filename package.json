@@ -33,6 +33,7 @@
     "release": "turbo run build --filter=./packages/* && changeset publish",
     "clean": "turbo run clean && rimraf node_modules",
     "audit:names": "node scripts/check-banned-names.mjs --all",
+    "ci-check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm audit:names",
     "prepare": "husky"
   },
   "devDependencies": {
