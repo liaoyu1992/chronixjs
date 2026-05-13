@@ -80,6 +80,113 @@ function planDayView(input: AxisRangePlanInput): PlannedAxis {
   };
 }
 
+function startOfMonth(d: Date): Date {
+  const x = startOfDay(d);
+  x.setDate(1);
+  return x;
+}
+
+function planMonthView(input: AxisRangePlanInput): PlannedAxis {
+  const start = startOfMonth(input.anchorDate);
+  const slotWidth = SLOT_WIDTH_BY_VIEW.month;
+  const monthIndex = start.getMonth();
+
+  const dayFmt = new Intl.DateTimeFormat(input.locale, {
+    day: 'numeric',
+    weekday: 'short',
+  });
+  const monthFmt = new Intl.DateTimeFormat(input.locale, {
+    year: 'numeric',
+    month: 'long',
+  });
+
+  // Iterate via setDate until the month rolls over — robust to month length
+  // and to any DST transition that might shorten or lengthen a single day.
+  const ticks: AxisTick[] = [];
+  const cursor = new Date(start);
+  let i = 0;
+  while (cursor.getMonth() === monthIndex) {
+    ticks.push({
+      x: i * slotWidth,
+      time: new Date(cursor),
+      label: dayFmt.format(cursor),
+    });
+    i += 1;
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  const slotCount = i;
+  const totalWidth = slotWidth * slotCount;
+
+  return {
+    viewId: 'month',
+    slotWidth,
+    totalWidth,
+    slotCount,
+    ticks,
+    headerRows: [
+      { cells: [{ x: 0, width: totalWidth, label: monthFmt.format(start) }] },
+    ],
+  };
+}
+
+/**
+ * Generic N-month axis with day-resolution ticks and a single month-cell
+ * header row. Used by season (3 months) and halfYear (6 months). Both
+ * views anchor at start-of-anchor-month (rolling, not calendar-quarter
+ * aligned) to match the demo's `duration: { months: N }` semantics.
+ */
+function planMultiMonthView(input: AxisRangePlanInput, monthCount: number): PlannedAxis {
+  const start = startOfMonth(input.anchorDate);
+  const slotWidth = SLOT_WIDTH_BY_VIEW[input.viewId];
+
+  const dayFmt = new Intl.DateTimeFormat(input.locale, {
+    day: 'numeric',
+    weekday: 'short',
+  });
+  const monthFmt = new Intl.DateTimeFormat(input.locale, {
+    year: 'numeric',
+    month: 'long',
+  });
+
+  const ticks: AxisTick[] = [];
+  const monthCells: AxisHeaderCell[] = [];
+
+  const cursor = new Date(start);
+  for (let m = 0; m < monthCount; m += 1) {
+    const monthStart = new Date(cursor);
+    const monthIndex = cursor.getMonth();
+    const firstSlotIdx = ticks.length;
+
+    while (cursor.getMonth() === monthIndex) {
+      ticks.push({
+        x: ticks.length * slotWidth,
+        time: new Date(cursor),
+        label: dayFmt.format(cursor),
+      });
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    const daysInMonth = ticks.length - firstSlotIdx;
+    monthCells.push({
+      x: firstSlotIdx * slotWidth,
+      width: daysInMonth * slotWidth,
+      label: monthFmt.format(monthStart),
+    });
+  }
+
+  const slotCount = ticks.length;
+  const totalWidth = slotCount * slotWidth;
+
+  return {
+    viewId: input.viewId,
+    slotWidth,
+    totalWidth,
+    slotCount,
+    ticks,
+    headerRows: [{ cells: monthCells }],
+  };
+}
+
 function planWeekView(input: AxisRangePlanInput): PlannedAxis {
   const monday = startOfWeekMonday(input.anchorDate);
   const slotWidth = SLOT_WIDTH_BY_VIEW.week;
@@ -124,14 +231,18 @@ function planWeekView(input: AxisRangePlanInput): PlannedAxis {
 }
 
 /**
- * Default planner. Day + week views are implemented; the other four throw
- * with a clear "not yet implemented" message so callers can wire the
- * contract now and fill in views as they come online.
+ * Default planner. Day, week, month, season, halfYear views are
+ * implemented; only year throws "not yet implemented" (it anchors at
+ * year-boundary rather than month-boundary, so it lives in its own
+ * branch — landing in a follow-up).
  */
 export const defaultAxisRangePlanner: AxisRangePlanner = {
   plan(input) {
     if (input.viewId === 'day') return planDayView(input);
     if (input.viewId === 'week') return planWeekView(input);
+    if (input.viewId === 'month') return planMonthView(input);
+    if (input.viewId === 'season') return planMultiMonthView(input, 3);
+    if (input.viewId === 'halfYear') return planMultiMonthView(input, 6);
     throw new Error(`AxisRangePlanner: view '${input.viewId}' not yet implemented`);
   },
 };

@@ -122,8 +122,176 @@ describe('defaultAxisRangePlanner — week view', () => {
   });
 });
 
+describe('defaultAxisRangePlanner — month view', () => {
+  it('produces 31 day-ticks for May 2026 (31-day month)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'month',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.viewId).toBe('month');
+    expect(axis.slotCount).toBe(31);
+    expect(axis.ticks).toHaveLength(31);
+    expect(axis.totalWidth).toBe(axis.slotWidth * 31);
+  });
+
+  it('produces 30 day-ticks for April 2026 (30-day month)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'month',
+      anchorDate: new Date('2026-04-15T08:00:00'),
+    });
+
+    expect(axis.slotCount).toBe(30);
+  });
+
+  it('produces 29 day-ticks for February 2024 (leap year)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'month',
+      anchorDate: new Date('2024-02-15T08:00:00'),
+    });
+
+    expect(axis.slotCount).toBe(29);
+  });
+
+  it('produces 28 day-ticks for February 2025 (non-leap year)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'month',
+      anchorDate: new Date('2025-02-15T08:00:00'),
+    });
+
+    expect(axis.slotCount).toBe(28);
+  });
+
+  it('anchors at day 1 of the anchorDate month', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'month',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.ticks[0]?.time.getDate()).toBe(1);
+    expect(axis.ticks[0]?.time.getMonth()).toBe(4); // May
+    expect(axis.ticks[0]?.time.getHours()).toBe(0);
+  });
+
+  it('ticks span exactly one month — last tick is the last day', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'month',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+    const last = axis.ticks[axis.ticks.length - 1]?.time;
+
+    expect(last?.getMonth()).toBe(4); // still May
+    expect(last?.getDate()).toBe(31);
+  });
+
+  it('emits one full-width header row labelling the month', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'month',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.headerRows).toHaveLength(1);
+    expect(axis.headerRows[0]?.cells).toHaveLength(1);
+    expect(axis.headerRows[0]?.cells[0]?.width).toBe(axis.totalWidth);
+  });
+});
+
+describe('defaultAxisRangePlanner — season view (3-month span)', () => {
+  it('produces day-ticks for May+Jun+Jul 2026 (31+30+31 = 92 days)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'season',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.viewId).toBe('season');
+    expect(axis.slotCount).toBe(31 + 30 + 31);
+    expect(axis.totalWidth).toBe(axis.slotWidth * 92);
+  });
+
+  it('handles short-month anchor — Feb 2024 (leap year) gives 29+31+30 = 90', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'season',
+      anchorDate: new Date('2024-02-15T08:00:00'),
+    });
+
+    expect(axis.slotCount).toBe(29 + 31 + 30);
+  });
+
+  it('emits one header row with 3 month-cells, each width = (days in that month) × slotWidth', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'season',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+    const cells = axis.headerRows[0]?.cells ?? [];
+
+    expect(axis.headerRows).toHaveLength(1);
+    expect(cells).toHaveLength(3);
+    expect(cells[0]?.width).toBe(axis.slotWidth * 31); // May: 31 days
+    expect(cells[1]?.width).toBe(axis.slotWidth * 30); // Jun: 30 days
+    expect(cells[2]?.width).toBe(axis.slotWidth * 31); // Jul: 31 days
+  });
+
+  it('month-cells tile the axis with no gaps and sum to totalWidth', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'season',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+    const cells = axis.headerRows[0]?.cells ?? [];
+    const summed = cells.reduce((acc, c) => acc + c.width, 0);
+
+    expect(summed).toBe(axis.totalWidth);
+    for (let i = 1; i < cells.length; i += 1) {
+      expect(cells[i]?.x).toBe((cells[i - 1]?.x ?? 0) + (cells[i - 1]?.width ?? 0));
+    }
+  });
+});
+
+describe('defaultAxisRangePlanner — halfYear view (6-month span)', () => {
+  it('produces day-ticks for May..Oct 2026 (31+30+31+31+30+31 = 184 days)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'halfYear',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.viewId).toBe('halfYear');
+    expect(axis.slotCount).toBe(31 + 30 + 31 + 31 + 30 + 31);
+  });
+
+  it('emits 6 month-cells', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'halfYear',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.headerRows[0]?.cells).toHaveLength(6);
+  });
+
+  it('uses a narrower slotWidth than month/season (30 vs 60)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'halfYear',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.slotWidth).toBe(30);
+  });
+});
+
 describe('defaultAxisRangePlanner — unimplemented views', () => {
-  for (const viewId of ['month', 'season', 'halfYear', 'year'] as const) {
+  for (const viewId of ['year'] as const) {
     it(`throws "not yet implemented" for ${viewId}`, () => {
       expect(() => defaultAxisRangePlanner.plan({ ...baseInput, viewId })).toThrow(
         /not yet implemented/,
