@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { defaultAxisRangePlanner } from './axis-range-planner.js';
+
 import type { AxisRangePlanInput } from './types.js';
 
 const baseInput: AxisRangePlanInput = {
@@ -290,12 +291,74 @@ describe('defaultAxisRangePlanner — halfYear view (6-month span)', () => {
   });
 });
 
-describe('defaultAxisRangePlanner — unimplemented views', () => {
-  for (const viewId of ['year'] as const) {
-    it(`throws "not yet implemented" for ${viewId}`, () => {
-      expect(() => defaultAxisRangePlanner.plan({ ...baseInput, viewId })).toThrow(
-        /not yet implemented/,
-      );
+describe('defaultAxisRangePlanner — year view (12-month span, year-boundary anchored)', () => {
+  it('produces 365 day-ticks for 2026 (non-leap year)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'year',
+      anchorDate: new Date('2026-05-13T08:00:00'),
     });
-  }
+
+    expect(axis.viewId).toBe('year');
+    expect(axis.slotCount).toBe(365);
+    expect(axis.totalWidth).toBe(axis.slotWidth * 365);
+  });
+
+  it('produces 366 day-ticks for 2024 (leap year)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'year',
+      anchorDate: new Date('2024-05-13T08:00:00'),
+    });
+
+    expect(axis.slotCount).toBe(366);
+  });
+
+  it('anchors at January 1 regardless of anchorDate month', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'year',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+    const first = axis.ticks[0]?.time;
+
+    expect(first?.getMonth()).toBe(0); // January
+    expect(first?.getDate()).toBe(1);
+    expect(first?.getFullYear()).toBe(2026);
+  });
+
+  it('emits 12 month-cells in the header row', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'year',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.headerRows).toHaveLength(1);
+    expect(axis.headerRows[0]?.cells).toHaveLength(12);
+  });
+
+  it('uses the narrower 30px slotWidth (year scale is too wide for 60px/day)', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'year',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    expect(axis.slotWidth).toBe(30);
+  });
+
+  it('month-cells tile the axis with no gaps', () => {
+    const axis = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'year',
+      anchorDate: new Date('2024-05-13T08:00:00'), // leap year — Feb cell width matters
+    });
+    const cells = axis.headerRows[0]?.cells ?? [];
+    const summed = cells.reduce((acc, c) => acc + c.width, 0);
+
+    expect(summed).toBe(axis.totalWidth);
+    // Feb 2024 is leap — its cell is 29 × slotWidth, not 28.
+    expect(cells[1]?.width).toBe(axis.slotWidth * 29);
+  });
 });

@@ -86,6 +86,12 @@ function startOfMonth(d: Date): Date {
   return x;
 }
 
+function startOfYear(d: Date): Date {
+  const x = startOfMonth(d);
+  x.setMonth(0); // January
+  return x;
+}
+
 function planMonthView(input: AxisRangePlanInput): PlannedAxis {
   const start = startOfMonth(input.anchorDate);
   const slotWidth = SLOT_WIDTH_BY_VIEW.month;
@@ -129,12 +135,18 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
 
 /**
  * Generic N-month axis with day-resolution ticks and a single month-cell
- * header row. Used by season (3 months) and halfYear (6 months). Both
- * views anchor at start-of-anchor-month (rolling, not calendar-quarter
- * aligned) to match the demo's `duration: { months: N }` semantics.
+ * header row. Used by:
+ * - season (3 months, anchored to start-of-anchor-month)
+ * - halfYear (6 months, anchored to start-of-anchor-month)
+ * - year (12 months, anchored to start-of-anchor-year)
+ *
+ * Caller decides where the axis starts; this function does the iteration.
  */
-function planMultiMonthView(input: AxisRangePlanInput, monthCount: number): PlannedAxis {
-  const start = startOfMonth(input.anchorDate);
+function planMonthBandedAxis(
+  input: AxisRangePlanInput,
+  start: Date,
+  monthCount: number,
+): PlannedAxis {
   const slotWidth = SLOT_WIDTH_BY_VIEW[input.viewId];
 
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
@@ -229,18 +241,29 @@ function planWeekView(input: AxisRangePlanInput): PlannedAxis {
 }
 
 /**
- * Default planner. Day, week, month, season, halfYear views are
- * implemented; only year throws "not yet implemented" (it anchors at
- * year-boundary rather than month-boundary, so it lives in its own
- * branch — landing in a follow-up).
+ * Default planner. All six views implemented. day + week have hourly
+ * ticks; month / season / halfYear / year have day-resolution ticks
+ * banded by month. The last three differ only in anchor (month-start
+ * vs year-start) and span (3 / 6 / 12 months).
  */
 export const defaultAxisRangePlanner: AxisRangePlanner = {
   plan(input) {
     if (input.viewId === 'day') return planDayView(input);
     if (input.viewId === 'week') return planWeekView(input);
     if (input.viewId === 'month') return planMonthView(input);
-    if (input.viewId === 'season') return planMultiMonthView(input, 3);
-    if (input.viewId === 'halfYear') return planMultiMonthView(input, 6);
-    throw new Error(`AxisRangePlanner: view '${input.viewId}' not yet implemented`);
+    if (input.viewId === 'season') {
+      return planMonthBandedAxis(input, startOfMonth(input.anchorDate), 3);
+    }
+    if (input.viewId === 'halfYear') {
+      return planMonthBandedAxis(input, startOfMonth(input.anchorDate), 6);
+    }
+    if (input.viewId === 'year') {
+      return planMonthBandedAxis(input, startOfYear(input.anchorDate), 12);
+    }
+    // Exhaustive against `ViewId`. If a new view is added to the union
+    // without a branch above, the never-cast below becomes a compile error
+    // — strictly better than a runtime "not implemented" fallback.
+    const _exhaustive: never = input.viewId;
+    throw new Error(`AxisRangePlanner: unhandled view '${String(_exhaustive)}'`);
   },
 };
