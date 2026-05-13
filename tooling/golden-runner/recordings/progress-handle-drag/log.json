@@ -1,0 +1,65 @@
+{
+  "id": "progress-handle-drag",
+  "description": "Drag the first visible progress triangle right by +60px on day view. Exercises the separate-SVG-layer hit-test path; chronix parity here is the bbox delta + the resulting in-bar progress text mutation.",
+  "viewToggleLabel": "日",
+  "frozenTime": "2026-05-13T00:00:00.000Z",
+  "entries": [
+    {
+      "kind": "snapshot",
+      "keyframeId": "before"
+    },
+    {
+      "kind": "state",
+      "when": "before",
+      "instanceId": "17",
+      "triangleBbox": {
+        "x": 1235.796875,
+        "y": 731.6875,
+        "width": 12,
+        "height": 12
+      },
+      "eventText": "A33-液压系统检修 - 50% 进行中"
+    },
+    {
+      "kind": "pointer-move",
+      "x": 1241.796875,
+      "y": 737.6875
+    },
+    {
+      "kind": "pointer-down",
+      "x": 1241.796875,
+      "y": 737.6875
+    },
+    {
+      "kind": "pointer-move",
+      "x": 1301.796875,
+      "y": 737.6875,
+      "steps": 10
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "mid"
+    },
+    {
+      "kind": "pointer-up",
+      "x": 1301.796875,
+      "y": 737.6875
+    },
+    {
+      "kind": "state",
+      "when": "after",
+      "instanceId": "17",
+      "triangleBbox": {
+        "x": 1277.796875,
+        "y": 731.6875,
+        "width": 12,
+        "height": 12
+      },
+      "eventText": "A33-液压系统检修 - 51% 进行中"
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "after"
+    }
+  ]
+}
