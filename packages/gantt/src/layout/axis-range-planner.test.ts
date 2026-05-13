@@ -287,14 +287,16 @@ describe('defaultAxisRangePlanner — halfYear view (6-month span)', () => {
     expect(axis.headerRows[0]?.cells).toHaveLength(6);
   });
 
-  it('uses a narrower slotWidth than month/season (30 vs 60)', () => {
+  it('slotWidth bottoms out at the date-scale label floor (65px) for narrow viewports', () => {
+    // 184 days × <floor> would otherwise produce sub-pixel slots; the floor
+    // forces 65px each and the axis becomes scroll-wider than the viewport.
     const axis = defaultAxisRangePlanner.plan({
       ...baseInput,
       viewId: 'halfYear',
       anchorDate: new Date('2026-05-13T08:00:00'),
     });
 
-    expect(axis.slotWidth).toBe(30);
+    expect(axis.slotWidth).toBe(65);
   });
 });
 
@@ -345,14 +347,15 @@ describe('defaultAxisRangePlanner — year view (12-month span, year-boundary an
     expect(axis.headerRows[0]?.cells).toHaveLength(12);
   });
 
-  it('uses the narrower 30px slotWidth (year scale is too wide for 60px/day)', () => {
+  it('slotWidth bottoms out at the date-scale label floor (65px) — year scale is too wide to stretch', () => {
+    // 365 days × any stretched width would underflow the 65px label floor.
     const axis = defaultAxisRangePlanner.plan({
       ...baseInput,
       viewId: 'year',
       anchorDate: new Date('2026-05-13T08:00:00'),
     });
 
-    expect(axis.slotWidth).toBe(30);
+    expect(axis.slotWidth).toBe(65);
   });
 
   it('month-cells tile the axis with no gaps', () => {

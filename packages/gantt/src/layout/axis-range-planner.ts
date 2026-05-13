@@ -16,15 +16,44 @@ export interface AxisRangePlanner {
   plan(input: AxisRangePlanInput): PlannedAxis;
 }
 
-/** Default per-view slot widths in logical pixels. Tuned to match demo screenshots. */
-const SLOT_WIDTH_BY_VIEW: Record<ViewId, number> = {
-  day: 60,
-  week: 60,
-  month: 60,
-  season: 60,
-  halfYear: 30,
-  year: 30,
+/**
+ * Whether each view's bottom-row label is a clock time ("0时", "13时") vs.
+ * a calendar date ("13日三"). Time labels are shorter (max ~3 Han chars), so
+ * the min-cell-width floor is smaller than for date labels.
+ */
+const IS_TIME_SCALE: Record<ViewId, boolean> = {
+  day: true,
+  week: true,
+  month: false,
+  season: false,
+  halfYear: false,
+  year: false,
 };
+
+/**
+ * Slot width derivation, matched to the k-ui demo's rendered geometry.
+ * See `audit/journal/2026-05-13.md` (Phase 2 / slot-width parity) for the
+ * empirical reverse-engineering of this formula.
+ *
+ * The floor is `minChars × fontSize` from k-ui
+ * `calculateActualSlotWidths`:
+ *   - fontSize=13, minChars=4 → 52px for time-scale views (day/week)
+ *   - fontSize=13, minChars=5 → 65px for date-scale views (month/.../year)
+ *
+ * If the viewport is wide enough that one slot fits more than the floor,
+ * slots stretch to fill (`viewportWidth / slotCount`); otherwise the floor
+ * holds and the axis becomes wider than the viewport (horizontal scroll).
+ */
+const LABEL_FONT_PX = 13;
+const MIN_CHARS_TIME_SCALE = 4;
+const MIN_CHARS_DATE_SCALE = 5;
+
+function deriveSlotWidth(viewportWidth: number, slotCount: number, isTimeScale: boolean): number {
+  const minChars = isTimeScale ? MIN_CHARS_TIME_SCALE : MIN_CHARS_DATE_SCALE;
+  const floor = minChars * LABEL_FONT_PX;
+  const stretched = viewportWidth / slotCount;
+  return Math.max(stretched, floor);
+}
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
@@ -52,7 +81,7 @@ function startOfWeekMonday(d: Date): Date {
 function planDayView(input: AxisRangePlanInput): PlannedAxis {
   const start = startOfDay(input.anchorDate);
   const slotCount = 24;
-  const slotWidth = SLOT_WIDTH_BY_VIEW.day;
+  const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE.day);
   const totalWidth = slotWidth * slotCount;
 
   const hourFmt = new Intl.DateTimeFormat(input.locale, { hour: 'numeric', hour12: false });
@@ -96,10 +125,29 @@ function startOfYear(d: Date): Date {
   return x;
 }
 
+/**
+ * Counts how many days fall in the `monthCount` months starting at `start`.
+ * Used to derive slot width up-front (the per-month iteration in
+ * `planMonthBandedAxis` would otherwise need a two-pass structure).
+ */
+function countDaysAcrossMonths(start: Date, monthCount: number): number {
+  let total = 0;
+  const cursor = new Date(start);
+  for (let m = 0; m < monthCount; m += 1) {
+    const monthIndex = cursor.getMonth();
+    while (cursor.getMonth() === monthIndex) {
+      total += 1;
+      cursor.setDate(cursor.getDate() + 1);
+    }
+  }
+  return total;
+}
+
 function planMonthView(input: AxisRangePlanInput): PlannedAxis {
   const start = startOfMonth(input.anchorDate);
-  const slotWidth = SLOT_WIDTH_BY_VIEW.month;
   const monthIndex = start.getMonth();
+  const slotCount = countDaysAcrossMonths(start, 1);
+  const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE.month);
 
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
     day: 'numeric',
@@ -110,11 +158,11 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
     month: 'long',
   });
 
-  // Iterate via setDate until the month rolls over — robust to month length
-  // and to any DST transition that might shorten or lengthen a single day.
   const ticks: AxisTick[] = [];
   const cursor = new Date(start);
   let i = 0;
+  // Iterate via setDate until the month rolls over — robust to month length
+  // and to any DST transition that might shorten or lengthen a single day.
   while (cursor.getMonth() === monthIndex) {
     ticks.push({
       x: i * slotWidth,
@@ -124,7 +172,6 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
     i += 1;
     cursor.setDate(cursor.getDate() + 1);
   }
-  const slotCount = i;
   const totalWidth = slotWidth * slotCount;
 
   return {
@@ -152,7 +199,8 @@ function planMonthBandedAxis(
   start: Date,
   monthCount: number,
 ): PlannedAxis {
-  const slotWidth = SLOT_WIDTH_BY_VIEW[input.viewId];
+  const slotCount = countDaysAcrossMonths(start, monthCount);
+  const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE[input.viewId]);
 
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
     day: 'numeric',
@@ -189,7 +237,6 @@ function planMonthBandedAxis(
     });
   }
 
-  const slotCount = ticks.length;
   const totalWidth = slotCount * slotWidth;
 
   return {
@@ -205,10 +252,10 @@ function planMonthBandedAxis(
 
 function planWeekView(input: AxisRangePlanInput): PlannedAxis {
   const monday = startOfWeekMonday(input.anchorDate);
-  const slotWidth = SLOT_WIDTH_BY_VIEW.week;
   const hoursPerDay = 24;
   const days = 7;
   const slotCount = hoursPerDay * days;
+  const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE.week);
   const totalWidth = slotWidth * slotCount;
 
   const hourFmt = new Intl.DateTimeFormat(input.locale, { hour: 'numeric', hour12: false });

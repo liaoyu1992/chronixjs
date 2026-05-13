@@ -3,23 +3,76 @@ import { expect, test } from '@playwright/test';
 
 import { CHART_SELECTOR, FROZEN_TIME_ISO, VIEWPORT } from '../src/config.js';
 
-import type { Page } from '@playwright/test';
+import type { ViewId } from '@chronixjs/gantt';
+import type { Locator, Page } from '@playwright/test';
 
 const settle = (page: Page) =>
   page.evaluate(
     () => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
   );
 
-async function loadDayView(page: Page) {
+async function loadView(page: Page, viewToggleLabel: string) {
   await page.clock.install({ time: new Date(FROZEN_TIME_ISO) });
   await page.goto('/');
   const chart = page.locator(CHART_SELECTOR);
   await chart.waitFor({ state: 'visible' });
   await page.waitForLoadState('networkidle');
   await settle(page);
-  await chart.getByRole('button', { name: '日', exact: true }).click();
+  await chart.getByRole('button', { name: viewToggleLabel, exact: true }).click();
   await settle(page);
   return chart;
+}
+
+const loadDayView = (page: Page) => loadView(page, '日');
+
+/**
+ * Pull rendered tick rects from k-ui's chart DOM. Matches leaves whose text
+ * passes `labelRegex`, then walks up to the first ancestor with non-zero
+ * rendered width — k-ui wraps each label as `<text><title>N时</title></text>`
+ * and the `<title>` is a 0×0 SVG tooltip element, not the visible label.
+ *
+ * Deduplicates by `(rounded-left, label)` so views like "week" (where the
+ * label "0时" appears once per day across 7 days) yield distinct positions
+ * rather than collapsing on label text.
+ */
+async function extractRenderedTickRects(chart: Locator, labelRegex: RegExp) {
+  return chart.evaluate((root, regexSource) => {
+    const regex = new RegExp(regexSource);
+    const seen = new Set<string>();
+    const ticks: { label: string; left: number; width: number }[] = [];
+    root.querySelectorAll('*').forEach((node) => {
+      if (node.children.length > 0) return;
+      const txt = node.textContent?.trim() ?? '';
+      if (!regex.test(txt)) return;
+      let candidate: Element | null = node;
+      while (candidate) {
+        const r = candidate.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) {
+          const key = `${Math.round(r.left)}|${txt}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            ticks.push({ label: txt, left: r.left, width: r.width });
+          }
+          return;
+        }
+        candidate = candidate.parentElement;
+      }
+    });
+    ticks.sort((a, b) => a.left - b.left);
+    return ticks;
+  }, labelRegex.source);
+}
+
+function deltasBetweenCenters(ticks: readonly { left: number; width: number }[]): number[] {
+  const centers = ticks.map((t) => t.left + t.width / 2);
+  const out: number[] = [];
+  for (let i = 1; i < centers.length; i += 1) {
+    const a = centers[i - 1];
+    const b = centers[i];
+    if (a === undefined || b === undefined) continue;
+    out.push(b - a);
+  }
+  return out;
 }
 
 /**
@@ -71,64 +124,101 @@ test.describe('parity: chronix vs k-ui demo', () => {
       weekendsVisible: true,
     });
     const chart = await loadDayView(page);
-
-    // Extract each /\d+时/ tick's hour + viewport-x of its rendered label.
-    // k-ui wraps each label in <text><title>N时</title></text>: matching
-    // textContent of leaves catches the <title> (a 0×0 SVG tooltip element),
-    // so we walk up to the first ancestor with non-zero rendered width —
-    // the visible <text>. Keep the widest rect per hour to dedupe any
-    // accessibility duplicates.
-    const kUiTicks = await chart.evaluate((root) => {
-      const byHour = new Map<number, { hour: number; left: number; width: number }>();
-      root.querySelectorAll('*').forEach((node) => {
-        if (node.children.length > 0) return;
-        const txt = node.textContent?.trim() ?? '';
-        const m = /^(\d+)时$/.exec(txt);
-        if (!m) return;
-        let candidate: Element | null = node;
-        while (candidate) {
-          const r = candidate.getBoundingClientRect();
-          if (r.width > 0 && r.height > 0) {
-            const hour = Number(m[1]);
-            const existing = byHour.get(hour);
-            if (!existing || r.width > existing.width) {
-              byHour.set(hour, { hour, left: r.left, width: r.width });
-            }
-            return;
-          }
-          candidate = candidate.parentElement;
-        }
-      });
-      return [...byHour.values()].sort((a, b) => a.hour - b.hour);
-    });
-
-    expect(kUiTicks).toHaveLength(24);
+    const ticks = await extractRenderedTickRects(chart, /^\d+时$/);
+    expect(ticks).toHaveLength(24);
 
     // Labels are CENTERED within their slot, so left-to-left deltas are
     // contaminated by label-width variance ("0时" is narrower than "10时").
     // Center-to-center distance cancels the label-width term and equals
     // the slot width directly.
-    const centers = kUiTicks.map((t) => t.left + t.width / 2);
-    const deltas: number[] = [];
-    for (let i = 1; i < centers.length; i += 1) {
-      const a = centers[i - 1];
-      const b = centers[i];
-      if (a === undefined || b === undefined) continue;
-      deltas.push(b - a);
-    }
+    const deltas = deltasBetweenCenters(ticks);
     const avgDelta = deltas.reduce((acc, d) => acc + d, 0) / deltas.length;
     const minDelta = Math.min(...deltas);
     const maxDelta = Math.max(...deltas);
 
-    console.warn('chronix slotWidth:', axis.slotWidth);
-    console.warn('k-ui   slot width (avg, center-to-center):', avgDelta);
-    console.warn('k-ui   slot width (min..max):', `${minDelta}..${maxDelta}`);
+    console.warn('chronix day slotWidth:', axis.slotWidth);
+    console.warn('k-ui   day slot width (avg, center-to-center):', avgDelta);
+    console.warn('k-ui   day slot width (min..max):', `${minDelta}..${maxDelta}`);
 
     // Uniformity check: ≤ 1px variance from sub-pixel rendering rounding.
     expect(maxDelta - minDelta).toBeLessThanOrEqual(1);
 
-    // The real parity assertion. If this fails, chronix's hardcoded
-    // SLOT_WIDTH_BY_VIEW.day is wrong relative to the reference.
+    // The real parity assertion. If this fails, chronix's slot-width
+    // derivation in AxisRangePlanner is drifting from the reference.
     expect(Math.abs(avgDelta - axis.slotWidth)).toBeLessThanOrEqual(1);
   });
+
+  /**
+   * Slot-width parity for the five non-day views. Each row drives the same
+   * pattern as the day-view geometry test:
+   *   1. Run chronix's AxisRangePlanner in-process.
+   *   2. Switch the k-ui demo to the matching view.
+   *   3. Pull rendered tick rects by the view's leaf-label regex.
+   *   4. Assert center-to-center spacing is uniform AND matches chronix's
+   *      derived slotWidth within 1px.
+   *
+   * Failures should NOT be silenced by tweaking chronix's derivation — log
+   * the discrepancy and bring it to the user. The rendered DOM is the
+   * oracle; a mismatch is the parity gap itself.
+   *
+   * Label regex notes:
+   * - week:  hour ticks "0时".."23时" repeat once per day across 7 days
+   *   (168 positions); same regex as day-view, dedupe-by-position handles
+   *   the repetition.
+   * - month / season / halfYear / year: day ticks "DD日<wd>" where <wd> is
+   *   one of 一/二/三/四/五/六/日. Day-of-month repeats across months but
+   *   each tick has a distinct rounded-left, so dedupe-by-position holds.
+   */
+  const HOUR_LABEL_RE = /^\d+时$/;
+  const DAY_LABEL_RE = /^\d+日[一二三四五六日]$/u;
+
+  const NON_DAY_VIEWS: readonly {
+    viewId: ViewId;
+    toggleLabel: string;
+    labelRegex: RegExp;
+  }[] = [
+    { viewId: 'week', toggleLabel: '周', labelRegex: HOUR_LABEL_RE },
+    { viewId: 'month', toggleLabel: '月', labelRegex: DAY_LABEL_RE },
+    { viewId: 'season', toggleLabel: '季', labelRegex: DAY_LABEL_RE },
+    { viewId: 'halfYear', toggleLabel: '半年', labelRegex: DAY_LABEL_RE },
+    { viewId: 'year', toggleLabel: '年', labelRegex: DAY_LABEL_RE },
+  ];
+
+  for (const { viewId, toggleLabel, labelRegex } of NON_DAY_VIEWS) {
+    test(`${viewId}-view slot width (chronix slotWidth vs k-ui rendered spacing)`, async ({
+      page,
+    }) => {
+      const axis = defaultAxisRangePlanner.plan({
+        viewId,
+        anchorDate: new Date(FROZEN_TIME_ISO),
+        viewportWidth: VIEWPORT.width,
+        locale: 'zh-CN',
+        weekendsVisible: true,
+      });
+      const chart = await loadView(page, toggleLabel);
+      const ticks = await extractRenderedTickRects(chart, labelRegex);
+
+      // Sanity: chronix plans `axis.slotCount` ticks; k-ui should render
+      // at least 2 so we can compute one delta. Most views render all of
+      // them — half-year/year may scroll some off-screen but SVG <text>
+      // bounding rects are reported even when outside the visible chart.
+      expect(ticks.length).toBeGreaterThanOrEqual(2);
+
+      const deltas = deltasBetweenCenters(ticks);
+      const avgDelta = deltas.reduce((acc, d) => acc + d, 0) / deltas.length;
+      const minDelta = Math.min(...deltas);
+      const maxDelta = Math.max(...deltas);
+
+      console.warn(`chronix ${viewId} slotWidth:`, axis.slotWidth, `(slotCount=${axis.slotCount})`);
+      console.warn(
+        `k-ui   ${viewId} slot width (avg, center-to-center):`,
+        avgDelta,
+        `(n=${ticks.length})`,
+      );
+      console.warn(`k-ui   ${viewId} slot width (min..max):`, `${minDelta}..${maxDelta}`);
+
+      expect(maxDelta - minDelta).toBeLessThanOrEqual(1);
+      expect(Math.abs(avgDelta - axis.slotWidth)).toBeLessThanOrEqual(1);
+    });
+  }
 });

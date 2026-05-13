@@ -44,25 +44,25 @@ describe('defaultBarPlacementPass — happy path (day view)', () => {
     expect(placedBars[0]?.x).toBe(0);
   });
 
-  it('width equals duration × slotWidth (1 hour = 60px on day view)', () => {
+  it('width equals duration × slotWidth (1 hour slot on day view)', () => {
     const { placedBars } = defaultBarPlacementPass.place({
       bars: [bar('b1', 'r1', '2026-05-13T00:00:00', '2026-05-13T01:00:00')],
       axis: dayAxis,
       strips: stripsLayout.strips,
     });
 
-    expect(placedBars[0]?.width).toBe(60);
+    expect(placedBars[0]?.width).toBe(dayAxis.slotWidth);
   });
 
-  it('x at 8:00 = 8 hours × 60px = 480', () => {
+  it('x at 8:00 = 8 hours × slotWidth', () => {
     const { placedBars } = defaultBarPlacementPass.place({
       bars: [bar('b1', 'r1', '2026-05-13T08:00:00', '2026-05-13T10:30:00')],
       axis: dayAxis,
       strips: stripsLayout.strips,
     });
 
-    expect(placedBars[0]?.x).toBe(8 * 60);
-    expect(placedBars[0]?.width).toBe(2.5 * 60); // 2h30m
+    expect(placedBars[0]?.x).toBe(8 * dayAxis.slotWidth);
+    expect(placedBars[0]?.width).toBe(2.5 * dayAxis.slotWidth); // 2h30m
   });
 
   it('y comes from the matching strip with default padding 2', () => {
@@ -142,8 +142,8 @@ describe('defaultBarPlacementPass — edge cases', () => {
       strips: stripsLayout.strips,
     });
 
-    expect(placedBars[0]?.x).toBe(-2 * 60); // started 2h before axis
-    expect(placedBars[0]?.width).toBe(4 * 60); // 4h duration
+    expect(placedBars[0]?.x).toBe(-2 * dayAxis.slotWidth); // started 2h before axis
+    expect(placedBars[0]?.width).toBe(4 * dayAxis.slotWidth); // 4h duration
   });
 
   it('returns empty output when input has no bars', () => {
@@ -168,8 +168,8 @@ describe('defaultBarPlacementPass — week view (slot still = 1 hour)', () => {
     });
 
     // Mon 5/11 00:00 + 24h (Tue 5/12 00:00) + 9h (Tue 09:00) = 33h offset
-    expect(placedBars[0]?.x).toBe(33 * 60);
-    expect(placedBars[0]?.width).toBe(2 * 60);
+    expect(placedBars[0]?.x).toBe(33 * weekAxis.slotWidth);
+    expect(placedBars[0]?.width).toBe(2 * weekAxis.slotWidth);
   });
 });
 
@@ -182,7 +182,7 @@ describe('defaultBarPlacementPass — month view (slot = 1 day)', () => {
       strips: stripsLayout.strips,
     });
 
-    expect(placedBars[0]?.x).toBe(14 * 60); // 14 days × 60px/day
-    expect(placedBars[0]?.width).toBe(2 * 60); // 2-day duration
+    expect(placedBars[0]?.x).toBe(14 * monthAxis.slotWidth); // 14 days × slotWidth
+    expect(placedBars[0]?.width).toBe(2 * monthAxis.slotWidth); // 2-day duration
   });
 });
