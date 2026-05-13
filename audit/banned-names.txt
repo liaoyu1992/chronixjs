@@ -1,0 +1,12 @@
+# One identifier per line. Blank lines and #-prefixed comments ignored.
+# Update audit/BANNED_IDENTIFIERS.md when changing this file.
+
+EventInteractionState
+HitDragging
+DependencyLineAlgorithm
+DateProfileGenerator
+ResourceSourceInput
+ResourceTimelineLayout
+ContentInjector
+CustomRenderingStore
+ScrollGridImpl

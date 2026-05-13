@@ -1,0 +1,40 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      eslint:
+        patterns:
+          - eslint*
+          - '@typescript-eslint/*'
+          - 'typescript-eslint'
+      stylelint:
+        patterns:
+          - stylelint*
+      typescript:
+        patterns:
+          - typescript
+          - '@types/*'
+      vitest:
+        patterns:
+          - vitest
+          - '@vitest/*'
+      build-tools:
+        patterns:
+          - tsup
+          - turbo
+          - rimraf
+      changesets:
+        patterns:
+          - '@changesets/*'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3

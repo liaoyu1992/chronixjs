@@ -1,0 +1,1 @@
+node scripts/check-banned-names.mjs
