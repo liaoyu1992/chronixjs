@@ -1,8 +1,12 @@
 export type {
   AdvanceBarDragInput,
+  AdvanceProgressHandleInput,
   BeginBarDragInput,
+  BeginProgressHandleInput,
   CommitBarDragInput,
   CommitBarDragOutput,
+  CommitProgressHandleInput,
+  CommitProgressHandleOutput,
   PointerCaptureConfig,
   PointerCaptureSession,
   PointerPx,

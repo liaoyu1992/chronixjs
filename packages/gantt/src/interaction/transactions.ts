@@ -32,17 +32,23 @@ export interface BarResizeTransaction extends PendingTransaction {
  * Drag the progress triangle of a bar. Distinct transaction from
  * `BarDragTransaction` because the hit subject is a separate render-overlay
  * group (`PointerOverlayGroup`) and the effect targets `BarSpec.progress`
- * rather than `BarSpec.range`. The reference codebase explicitly excludes
- * progress-triangle hits from event-drag (see EventDragging.ts:125-126);
- * the two-transaction split here is the chronix-native expression of that
- * exclusion.
+ * rather than `BarSpec.range`. The upstream-reference codebase explicitly
+ * excludes progress-triangle hits from event-drag; the two-transaction
+ * split here is the chronix-native expression of that exclusion.
  */
 export interface ProgressHandleTransaction extends PendingTransaction {
   readonly kind: 'progress-handle';
   readonly barId: string;
+  /** Pointer position at `pointerdown`, in viewport pixels. Pinned at begin. */
+  readonly originPx: { readonly x: number; readonly y: number };
+  /** Bar's `progress.value` at `pointerdown` (0..100). Pinned at begin. */
+  readonly initialProgress: number;
+  /** Bar's rendered width in pixels at `pointerdown`. Pinned at begin. */
+  readonly barWidth: number;
   /**
-   * Projected progress value in 0..100 given the current pointer position.
-   * May fall outside the range mid-drag; clamped at commit.
+   * Projected progress value given the current pointer position. Computed
+   * as `initialProgress + (currentX - originX) / barWidth * 100`. May fall
+   * outside `[0, 100]` mid-drag; clamped to `[0, 100]` at commit.
    */
   readonly projectedProgress: number;
 }

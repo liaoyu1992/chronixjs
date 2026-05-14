@@ -1,6 +1,6 @@
 import type { TimeRange } from '../ir/index.js';
 
-import type { BarDragTransaction } from './transactions.js';
+import type { BarDragTransaction, ProgressHandleTransaction } from './transactions.js';
 
 /**
  * Configuration for a `PointerCaptureSession`. Captured once at the
@@ -72,6 +72,36 @@ export interface CommitBarDragOutput {
   readonly timeDeltaMs: number;
 }
 
+export interface BeginProgressHandleInput {
+  readonly barId: string;
+  /** Pointer position at `pointerdown`. */
+  readonly originPx: PointerPx;
+  readonly config: PointerCaptureConfig;
+  readonly initialHit: boolean;
+  /** Bar's `progress.value` at `pointerdown` (0..100). */
+  readonly initialProgress: number;
+  /** Bar's rendered width in pixels — the divisor for pixel→percent conversion. */
+  readonly barWidth: number;
+  /** `performance.now()` snapshot at pointerdown. Defaults to the call-site `performance.now()`. */
+  readonly startedAt?: number;
+}
+
+export interface AdvanceProgressHandleInput {
+  readonly currentPx: PointerPx;
+}
+
+export interface CommitProgressHandleInput {
+  readonly txn: ProgressHandleTransaction;
+}
+
+export interface CommitProgressHandleOutput {
+  /**
+   * Final progress percentage, clamped to `[0, 100]`. Caller writes this
+   * to `BarSpec.progress.value`.
+   */
+  readonly resolvedProgress: number;
+}
+
 /**
  * Runtime for pointer-capture transactions. Pure functional — each
  * method returns a new transaction value or a resolved output; the
@@ -102,6 +132,26 @@ export interface PointerCaptureSession {
    * without calling commit.
    */
   commitBarDrag(input: CommitBarDragInput): CommitBarDragOutput;
+
+  /**
+   * Start a progress-handle drag. Same null-on-reject contract as
+   * `beginBarDrag`. Progress-handle subjects typically use
+   * `config.requireInitialHit = false` because the triangle renders in a
+   * separate SVG overlay layer that the chart's primary hit-test pass
+   * doesn't index.
+   */
+  beginProgressHandle(input: BeginProgressHandleInput): ProgressHandleTransaction | null;
+  /**
+   * Recompute `projectedProgress` from the original pointerdown and the
+   * current pointer. Unclamped — values may fall outside `[0, 100]`
+   * mid-drag; clamping happens at commit.
+   */
+  advanceProgressHandle(
+    txn: ProgressHandleTransaction,
+    input: AdvanceProgressHandleInput,
+  ): ProgressHandleTransaction;
+  /** Clamp `projectedProgress` to `[0, 100]` and return the resolved value. */
+  commitProgressHandle(input: CommitProgressHandleInput): CommitProgressHandleOutput;
 }
 
 export const defaultPointerCaptureSession: PointerCaptureSession = {
@@ -139,5 +189,32 @@ export const defaultPointerCaptureSession: PointerCaptureSession = {
       },
       timeDeltaMs,
     };
+  },
+
+  beginProgressHandle(input) {
+    if (input.config.requireInitialHit && !input.initialHit) return null;
+    return {
+      kind: 'progress-handle',
+      barId: input.barId,
+      originPx: { x: input.originPx.x, y: input.originPx.y },
+      initialProgress: input.initialProgress,
+      barWidth: input.barWidth,
+      projectedProgress: input.initialProgress,
+      startedAt: input.startedAt ?? performance.now(),
+    };
+  },
+
+  advanceProgressHandle(txn, input) {
+    // barWidth == 0 would divide-by-zero; clamp to initialProgress (no-op drag).
+    if (txn.barWidth <= 0) return { ...txn, projectedProgress: txn.initialProgress };
+    const deltaX = input.currentPx.x - txn.originPx.x;
+    const progressDelta = (deltaX / txn.barWidth) * 100;
+    return { ...txn, projectedProgress: txn.initialProgress + progressDelta };
+  },
+
+  commitProgressHandle(input) {
+    const raw = input.txn.projectedProgress;
+    const resolvedProgress = Math.max(0, Math.min(100, raw));
+    return { resolvedProgress };
   },
 };

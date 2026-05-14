@@ -21,13 +21,17 @@ export type { BarTable, LinkTable, PendingTransaction, RowDataSource } from './d
 
 export type {
   AdvanceBarDragInput,
+  AdvanceProgressHandleInput,
   AnyTransaction,
   BarDragTransaction,
   BarResizeTransaction,
   BeginBarDragInput,
+  BeginProgressHandleInput,
   CalendarRangeSelectTransaction,
   CommitBarDragInput,
   CommitBarDragOutput,
+  CommitProgressHandleInput,
+  CommitProgressHandleOutput,
   PointerCaptureConfig,
   PointerCaptureSession,
   PointerPx,

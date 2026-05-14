@@ -275,3 +275,170 @@ describe('defaultPointerCaptureSession — full lifecycle', () => {
     // begin step is the only gate.
   });
 });
+
+describe('defaultPointerCaptureSession.beginProgressHandle', () => {
+  it('returns a transaction with origin / initial-progress / bar-width pinned', () => {
+    const txn = defaultPointerCaptureSession.beginProgressHandle({
+      barId: 'b1',
+      originPx: { x: 750, y: 8 },
+      config: ALLOW_MISS, // progress-handle canonical config
+      initialHit: false,
+      initialProgress: 50,
+      barWidth: 6060,
+      startedAt: 1000,
+    });
+    expect(txn).not.toBeNull();
+    expect(txn?.kind).toBe('progress-handle');
+    expect(txn?.barId).toBe('b1');
+    expect(txn?.originPx).toEqual({ x: 750, y: 8 });
+    expect(txn?.initialProgress).toBe(50);
+    expect(txn?.barWidth).toBe(6060);
+    expect(txn?.projectedProgress).toBe(50); // starts at initialProgress
+    expect(txn?.startedAt).toBe(1000);
+  });
+
+  it('honors requireInitialHit when set true', () => {
+    const accepted = defaultPointerCaptureSession.beginProgressHandle({
+      barId: 'b1',
+      originPx: { x: 0, y: 0 },
+      config: REQUIRE_HIT,
+      initialHit: true,
+      initialProgress: 50,
+      barWidth: 6060,
+    });
+    expect(accepted).not.toBeNull();
+
+    const rejected = defaultPointerCaptureSession.beginProgressHandle({
+      barId: 'b1',
+      originPx: { x: 0, y: 0 },
+      config: REQUIRE_HIT,
+      initialHit: false,
+      initialProgress: 50,
+      barWidth: 6060,
+    });
+    expect(rejected).toBeNull();
+  });
+});
+
+describe('defaultPointerCaptureSession.advanceProgressHandle', () => {
+  function startTxn(initialProgress = 50, barWidth = 6060) {
+    return defaultPointerCaptureSession.beginProgressHandle({
+      barId: 'b1',
+      originPx: { x: 750, y: 8 },
+      config: ALLOW_MISS,
+      initialHit: false,
+      initialProgress,
+      barWidth,
+      startedAt: 1000,
+    })!;
+  }
+
+  it('right-drag adds (deltaX / barWidth × 100) to initialProgress', () => {
+    const txn = startTxn();
+    // 60.6px drag at barWidth 6060 → exactly +1%
+    const advanced = defaultPointerCaptureSession.advanceProgressHandle(txn, {
+      currentPx: { x: 750 + 60.6, y: 8 },
+    });
+    expect(advanced.projectedProgress).toBeCloseTo(51, 6);
+  });
+
+  it('left-drag subtracts (deltaX / barWidth × 100)', () => {
+    const txn = startTxn();
+    const advanced = defaultPointerCaptureSession.advanceProgressHandle(txn, {
+      currentPx: { x: 750 - 60.6, y: 8 },
+    });
+    expect(advanced.projectedProgress).toBeCloseTo(49, 6);
+  });
+
+  it('projected value may fall outside [0, 100] mid-drag (clamping is at commit)', () => {
+    const txn = startTxn(/* initialProgress */ 5, /* barWidth */ 100);
+    // Drag −10px on a 100px bar → −10%. From initial 5 → projected −5.
+    const advanced = defaultPointerCaptureSession.advanceProgressHandle(txn, {
+      currentPx: { x: 740, y: 8 },
+    });
+    expect(advanced.projectedProgress).toBeCloseTo(-5, 6);
+  });
+
+  it('cumulative-from-origin (idempotent over a pointer-move trace)', () => {
+    const txn = startTxn();
+    const a = defaultPointerCaptureSession.advanceProgressHandle(txn, {
+      currentPx: { x: 780, y: 8 },
+    });
+    const b = defaultPointerCaptureSession.advanceProgressHandle(a, {
+      currentPx: { x: 810, y: 8 },
+    });
+    // Cumulative from origin 750: deltaX = 60, progressDelta = 60/6060*100 ≈ 0.99.
+    expect(b.projectedProgress).toBeCloseTo(50 + (60 / 6060) * 100, 6);
+  });
+
+  it('zero barWidth holds projectedProgress at initialProgress (no divide-by-zero)', () => {
+    const txn = startTxn(/* initialProgress */ 50, /* barWidth */ 0);
+    const advanced = defaultPointerCaptureSession.advanceProgressHandle(txn, {
+      currentPx: { x: 9999, y: 8 },
+    });
+    expect(advanced.projectedProgress).toBe(50);
+  });
+});
+
+describe('defaultPointerCaptureSession.commitProgressHandle', () => {
+  function dragged(initialProgress: number, barWidth: number, deltaX: number) {
+    const txn = defaultPointerCaptureSession.beginProgressHandle({
+      barId: 'b1',
+      originPx: { x: 750, y: 8 },
+      config: ALLOW_MISS,
+      initialHit: false,
+      initialProgress,
+      barWidth,
+      startedAt: 1000,
+    })!;
+    return defaultPointerCaptureSession.advanceProgressHandle(txn, {
+      currentPx: { x: 750 + deltaX, y: 8 },
+    });
+  }
+
+  it('clamps low values to 0', () => {
+    const txn = dragged(5, 100, -10); // projected −5
+    const { resolvedProgress } = defaultPointerCaptureSession.commitProgressHandle({ txn });
+    expect(resolvedProgress).toBe(0);
+  });
+
+  it('clamps high values to 100', () => {
+    const txn = dragged(95, 100, 10); // projected 105
+    const { resolvedProgress } = defaultPointerCaptureSession.commitProgressHandle({ txn });
+    expect(resolvedProgress).toBe(100);
+  });
+
+  it('passes through in-range values unchanged', () => {
+    const txn = dragged(50, 100, 25); // projected 75
+    const { resolvedProgress } = defaultPointerCaptureSession.commitProgressHandle({ txn });
+    expect(resolvedProgress).toBeCloseTo(75, 6);
+  });
+});
+
+describe('defaultPointerCaptureSession — progress-handle full lifecycle', () => {
+  it('reproduces the recorded progress-handle drag math: 60px/6060 + initial 50 → 50.99 (rounds to 51)', () => {
+    // Numbers lifted from recordings/progress-handle-drag/log.json:
+    //   pointer-down at viewport x=1241.796875
+    //   pointer-up   at viewport x=1301.796875
+    //   delta = 60. Bar (event-4, instance 17) width = 6060 px.
+    //   Initial progress = 50 (from event source data).
+    const txn0 = defaultPointerCaptureSession.beginProgressHandle({
+      barId: 'event-4',
+      originPx: { x: 1241.796875, y: 737.6875 },
+      config: ALLOW_MISS,
+      initialHit: false,
+      initialProgress: 50,
+      barWidth: 6060,
+      startedAt: 1000,
+    });
+    expect(txn0).not.toBeNull();
+
+    const txn = defaultPointerCaptureSession.advanceProgressHandle(txn0!, {
+      currentPx: { x: 1301.796875, y: 737.6875 },
+    });
+    const { resolvedProgress } = defaultPointerCaptureSession.commitProgressHandle({ txn });
+
+    expect(resolvedProgress).toBeCloseTo(50 + (60 / 6060) * 100, 6);
+    expect(Math.round(resolvedProgress)).toBe(51); // matches recorded display text
+  });
+});
