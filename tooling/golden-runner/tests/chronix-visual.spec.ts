@@ -9,13 +9,13 @@ import type { Page } from '@playwright/test';
  * chronix-side visual baselines, captured against the chronix example
  * demo at port 8702 (separate from the parity reference at 8701).
  *
- * The screenshot target is the `<svg class="cx-gantt">` element
- * directly — NOT a chart-pane wrapper. The reference's pane has
- * `overflow: hidden` so wider-than-viewport content gets clipped at
- * the right edge; capturing the SVG itself lets the screenshot
- * include the full content (e.g. week view's 8736-px-wide axis or
- * year view's ~24000-px width). The browser still rasterizes the
- * element at its natural bounding-box size regardless of viewport.
+ * Capture target is `<div class="cx-gantt-wrapper">` — the new root
+ * after the Phase 4.5 sticky-header refactor. The wrapper hosts a
+ * header SVG and a body SVG; capturing the wrapper bundles both into
+ * a single PNG. The wrapper is sized to its natural content (via
+ * `width: max-content` injected below) so a wider-than-viewport view
+ * (e.g. week's 8736-px axis or year's ~24000-px width) rasterizes in
+ * full — `locator.screenshot()` honors the element's natural bbox.
  *
  * URL override: defaults to `http://localhost:8702/` but respects a
  * `CHRONIX_DEMO_URL` env var if set (e.g. when capturing against a
@@ -23,7 +23,8 @@ import type { Page } from '@playwright/test';
  */
 
 const CHRONIX_DEMO_URL = process.env['CHRONIX_DEMO_URL'] ?? 'http://localhost:8702/';
-const CHRONIX_SVG_SELECTOR = 'svg.cx-gantt';
+const CHRONIX_WRAPPER_SELECTOR = 'div.cx-gantt-wrapper';
+const CHRONIX_BODY_SELECTOR = 'svg.cx-gantt-body';
 
 const settle = (page: Page) =>
   page.evaluate(
@@ -43,8 +44,10 @@ test.describe('chronix gantt visual goldens (chronix demo at 8702)', () => {
 
       await page.goto(CHRONIX_DEMO_URL);
 
-      const svg = page.locator(CHRONIX_SVG_SELECTOR);
-      await svg.waitFor({ state: 'visible' });
+      // Wait on the body SVG (the one that always paints bars) — the
+      // wrapper exists immediately but the body SVG appearing is the
+      // signal that layout has run at least once.
+      await page.locator(CHRONIX_BODY_SELECTOR).waitFor({ state: 'visible' });
       await page.waitForLoadState('networkidle');
       await settle(page);
 
@@ -53,31 +56,29 @@ test.describe('chronix gantt visual goldens (chronix demo at 8702)', () => {
       await page.getByRole('button', { name: toggleLabel, exact: true }).click();
       await settle(page);
 
-      // Isolate the SVG for capture. Playwright's `locator.screenshot()`
-      // captures pixels at the element's bounding-box position on the
-      // page — for a wide-view SVG (5980 px on season, 23725 on year)
-      // the bbox overlaps the events sidebar's page position, so the
-      // sidebar's text would otherwise bleed into the PNG. We:
-      //   1. Hide the sidebar + header + page-frame padding.
-      //   2. Strip the SVG wrapper's `overflow: auto` + `max-height`
-      //      so the SVG can render at its natural dimensions without
-      //      being clipped by its frame.
-      //   3. Anchor body backgrounds to white so transparent areas
-      //      capture cleanly.
-      // After capture, no need to reset — the test ends and the page
-      // is disposed.
+      // Hide the demo's page chrome, then resize the wrapper div so its
+      // bounding box hugs the gantt's natural content width. Without the
+      // `width: max-content` override the wrapper is a block div whose
+      // bbox clamps to viewport width — `locator.screenshot()` would
+      // then capture only the leftmost slice of a wider-than-viewport
+      // chart (week ~8736 px, year ~23725 px). The other overrides
+      // strip `max-height: 70vh` and the `overflow: auto` scrollport so
+      // the entire chart paints in flow and isn't clipped vertically.
+      // No need to reset; the page is disposed after capture.
       await page.addStyleTag({
         content: `
           body { background: #ffffff !important; margin: 0 !important; }
           .cx-demo-side, .cx-demo-header { display: none !important; }
           .cx-demo-app { display: block !important; width: auto !important; }
           .cx-demo-main { padding: 0 !important; overflow: visible !important; }
-          .cx-demo-svg-frame { border: 0 !important; max-height: none !important; overflow: visible !important; }
+          .cx-demo-svg-frame { border: 0 !important; max-height: none !important; overflow: visible !important; width: max-content !important; }
+          .cx-gantt-wrapper { max-height: none !important; overflow: visible !important; width: max-content !important; }
         `,
       });
       await settle(page);
 
-      await expect(svg).toHaveScreenshot(`chronix/${scenario.id}.png`);
+      const wrapper = page.locator(CHRONIX_WRAPPER_SELECTOR);
+      await expect(wrapper).toHaveScreenshot(`chronix/${scenario.id}.png`);
     });
   }
 });
