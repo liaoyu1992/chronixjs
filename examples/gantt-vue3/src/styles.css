@@ -23,6 +23,12 @@ body {
   display: grid;
   grid-template-columns: 1fr 320px;
   min-height: 100vh;
+  /* Without `100vw`, the grid container could otherwise expand to fit
+     its widest descendant (the wide-view SVG inside .cx-demo-svg-frame
+     can be ~24000 px on year view). Capping at the viewport width keeps
+     horizontal page scroll suppressed; the SVG's own overflow:auto
+     wrapper handles its scroll internally. */
+  width: 100vw;
   gap: 1px;
   background: #d1d5db;
 }
@@ -31,6 +37,15 @@ body {
   background: #ffffff;
   padding: 16px 24px;
   overflow: auto;
+  /* The chart frame inside .cx-demo-main is overflow:auto with a
+     fixed max-height + an SVG that's far wider than the viewport. By
+     default a CSS grid track has `min-width: auto` which resolves to
+     the intrinsic content width — that would force the `1fr` track to
+     expand past the viewport. `min-width: 0` lets the grid track
+     shrink to its assigned share of the viewport, so the SVG's
+     overflow scroll fires INSIDE its frame rather than pushing the
+     whole page sideways. */
+  min-width: 0;
 }
 
 .cx-demo-side {
