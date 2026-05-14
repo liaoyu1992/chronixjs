@@ -329,6 +329,7 @@ export const ChronixGantt = defineComponent({
               // persisted path.
               const sourceProgress = barProgressById.value.get(bar.barId);
               const overlayId = overlayIdByBarId.value.get(bar.barId);
+              const sourceBar = props.bars.find((b) => b.id === bar.barId);
               if (sourceProgress !== undefined && overlayId !== undefined) {
                 const activeTxn = pointer.activeTransaction.value;
                 const displayedProgress =
@@ -371,6 +372,35 @@ export const ChronixGantt = defineComponent({
                     'pointer-events': 'none',
                   }),
                 );
+
+                // Progress text label: `BarProgress.textFormat` template
+                // with `{value}` substituted by the rounded displayed
+                // progress. Suppressed when `BarProgress.showText === false`.
+                // Live-updates because `displayedProgress` already does.
+                const progressMeta = sourceBar?.progress;
+                if (progressMeta?.showText !== false) {
+                  const rounded = Math.round(clamped);
+                  const template = progressMeta?.textFormat ?? '{value}%';
+                  const labelText = template.replace('{value}', String(rounded));
+                  nodes.push(
+                    h(
+                      'text',
+                      {
+                        key: `${bar.barId}-progress-label`,
+                        'data-progress-bar-id': bar.barId,
+                        class: 'cx-gantt-progress-label',
+                        x: bar.x + bar.width / 2,
+                        y: bar.y + bar.height / 2 + 4,
+                        'text-anchor': 'middle',
+                        fill: '#064e3b',
+                        'font-size': 11,
+                        'font-weight': 600,
+                        'pointer-events': 'none',
+                      },
+                      labelText,
+                    ),
+                  );
+                }
               }
               return nodes;
             }),

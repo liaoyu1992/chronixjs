@@ -647,3 +647,72 @@ describe('<ChronixGantt> progress overlay — live update during drag', () => {
     expect(wrapper.emitted('bar-progress')).toHaveLength(1);
   });
 });
+
+describe('<ChronixGantt> progress overlay — text label', () => {
+  it('renders the default "{value}%" label centered on the bar', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+      },
+    });
+    const label = wrapper.find('.cx-gantt-progress-label');
+    expect(label.exists()).toBe(true);
+    expect(label.text()).toBe('50%');
+    // Bar at x ∈ [480, 720] → center x = 600. y-mid = 23 (+4 for baseline).
+    expect(Number(label.attributes('x'))).toBe(600);
+    expect(Number(label.attributes('y'))).toBe(27);
+  });
+
+  it('honors a custom textFormat with the {value} token', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [
+          {
+            ...progressBar('b1', 'r1', 8, 12, 75),
+            progress: { value: 75, textFormat: '- {value}% 完成' },
+          },
+        ],
+        rows,
+        axisInput,
+      },
+    });
+    expect(wrapper.find('.cx-gantt-progress-label').text()).toBe('- 75% 完成');
+  });
+
+  it('suppresses the label when BarProgress.showText is explicitly false', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [
+          {
+            ...progressBar('b1', 'r1', 8, 12, 50),
+            progress: { value: 50, showText: false },
+          },
+        ],
+        rows,
+        axisInput,
+      },
+    });
+    expect(wrapper.find('.cx-gantt-progress-label').exists()).toBe(false);
+    // Fill + handle still render — only the text is suppressed.
+    expect(wrapper.find('.cx-gantt-progress-fill').exists()).toBe(true);
+    expect(wrapper.find('.cx-gantt-progress-handle').exists()).toBe(true);
+  });
+
+  it('label text live-updates during a progress-handle drag (50% → 60%)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    // +24 px → projected 60% on the 240-px-wide bar.
+    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
+    expect(wrapper.find('.cx-gantt-progress-label').text()).toBe('60%');
+  });
+});
