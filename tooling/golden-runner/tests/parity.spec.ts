@@ -7,6 +7,7 @@ import {
 import { expect, test } from '@playwright/test';
 
 import { CHART_SELECTOR, FROZEN_TIME_ISO, VIEWPORT } from '../src/config.js';
+import { REF_ATTR_NAMES, RESOURCE_ROW, TIMELINE_BODY_WRAPPER } from '../src/reference-dom-map.js';
 
 import type { BarSpec, RowSpec, ViewId } from '@chronixjs/gantt';
 import type { Locator, Page } from '@playwright/test';
@@ -328,29 +329,34 @@ test.describe('parity: chronix vs reference demo', () => {
     // reads the order off the DOM and feeds it to chronix verbatim.
     // (Heights are NO LONGER probed here — `BarStackHeightPass`
     // computes them from the same bar set, closing the cheat.)
-    const renderedRowOrder = await chart.evaluate(() => {
-      const wrapper = document.querySelector('.gantt-timeline-body-wrapper');
-      const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0;
-      const trs = Array.from(
-        document.querySelectorAll<HTMLTableRowElement>('tr[data-resource-id]'),
-      );
-      const seen = new Set<string>();
-      const ordered: { resourceId: string; y: number }[] = [];
-      for (const tr of trs) {
-        const id = tr.getAttribute('data-resource-id') ?? '';
-        if (seen.has(id)) continue;
-        seen.add(id);
-        ordered.push({
-          resourceId: id,
-          y: Math.round((tr.getBoundingClientRect().top - wrapperTop) * 100) / 100,
-        });
-      }
-      ordered.sort((a, b) => a.y - b.y);
-      return {
-        wrapperOffsetY: ordered[0]?.y ?? 0,
-        resourceIds: ordered.map((r) => r.resourceId),
-      };
-    });
+    const renderedRowOrder = await chart.evaluate(
+      (_root, { wrapperSel, rowSel, resourceIdAttr }) => {
+        const wrapper = document.querySelector(wrapperSel);
+        const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0;
+        const trs = Array.from(document.querySelectorAll<HTMLTableRowElement>(rowSel));
+        const seen = new Set<string>();
+        const ordered: { resourceId: string; y: number }[] = [];
+        for (const tr of trs) {
+          const id = tr.getAttribute(resourceIdAttr) ?? '';
+          if (seen.has(id)) continue;
+          seen.add(id);
+          ordered.push({
+            resourceId: id,
+            y: Math.round((tr.getBoundingClientRect().top - wrapperTop) * 100) / 100,
+          });
+        }
+        ordered.sort((a, b) => a.y - b.y);
+        return {
+          wrapperOffsetY: ordered[0]?.y ?? 0,
+          resourceIds: ordered.map((r) => r.resourceId),
+        };
+      },
+      {
+        wrapperSel: TIMELINE_BODY_WRAPPER,
+        rowSel: RESOURCE_ROW,
+        resourceIdAttr: REF_ATTR_NAMES.resourceId,
+      },
+    );
     const wrapperRowOffsetY = renderedRowOrder.wrapperOffsetY;
 
     // Body-layout constants — match the demo's options exactly so chronix
@@ -416,32 +422,35 @@ test.describe('parity: chronix vs reference demo', () => {
 
     // Step 4: extract every bar's (x, y, width) from the DOM relative to
     // the timeline-body-wrapper origin.
-    const domBars = await chart.evaluate(() => {
-      const wrapper = document.querySelector('.gantt-timeline-body-wrapper');
-      const wrapperLeft = wrapper ? wrapper.getBoundingClientRect().left : 0;
-      const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0;
-      const out: { eventId: string; x: number; y: number; width: number; height: number }[] = [];
-      document.querySelectorAll<SVGElement>('[data-event-id]').forEach((el) => {
-        const eventId = el.getAttribute('data-event-id') ?? '';
-        const r = el.getBoundingClientRect();
-        // Skip thin overlay handles (progress triangle is ~8px tall).
-        if (r.height < 4) return;
-        out.push({
-          eventId,
-          x: Math.round((r.left - wrapperLeft) * 100) / 100,
-          y: Math.round((r.top - wrapperTop) * 100) / 100,
-          width: Math.round(r.width * 100) / 100,
-          height: Math.round(r.height * 100) / 100,
+    const domBars = await chart.evaluate(
+      (_root, { wrapperSel, eventIdAttr }) => {
+        const wrapper = document.querySelector(wrapperSel);
+        const wrapperLeft = wrapper ? wrapper.getBoundingClientRect().left : 0;
+        const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0;
+        const out: { eventId: string; x: number; y: number; width: number; height: number }[] = [];
+        document.querySelectorAll<SVGElement>(`[${eventIdAttr}]`).forEach((el) => {
+          const eventId = el.getAttribute(eventIdAttr) ?? '';
+          const r = el.getBoundingClientRect();
+          // Skip thin overlay handles (progress triangle is ~8px tall).
+          if (r.height < 4) return;
+          out.push({
+            eventId,
+            x: Math.round((r.left - wrapperLeft) * 100) / 100,
+            y: Math.round((r.top - wrapperTop) * 100) / 100,
+            width: Math.round(r.width * 100) / 100,
+            height: Math.round(r.height * 100) / 100,
+          });
         });
-      });
-      // Dedupe by eventId, widest wins (filters any non-handle overlays).
-      const widest = new Map<string, (typeof out)[number]>();
-      for (const b of out) {
-        const prev = widest.get(b.eventId);
-        if (!prev || b.width > prev.width) widest.set(b.eventId, b);
-      }
-      return [...widest.values()];
-    });
+        // Dedupe by eventId, widest wins (filters any non-handle overlays).
+        const widest = new Map<string, (typeof out)[number]>();
+        for (const b of out) {
+          const prev = widest.get(b.eventId);
+          if (!prev || b.width > prev.width) widest.set(b.eventId, b);
+        }
+        return [...widest.values()];
+      },
+      { wrapperSel: TIMELINE_BODY_WRAPPER, eventIdAttr: REF_ATTR_NAMES.eventId },
+    );
 
     // Step 5: per-id parity assertion. Skip ids that exist on only one
     // side — chronix produces a placement for every input event; the
