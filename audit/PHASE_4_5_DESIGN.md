@@ -1,6 +1,6 @@
 # Phase 4.5 — Sticky-header scroll wrapper design note
 
-**Status**: **Z approved (2026-05-14)**. Implementation pending; will land as 3 commits with browser-verify pauses between each (see "Decision" section at the bottom).
+**Status**: **DONE (2026-05-14)**. Landed as 3 commits: `01f2cfe` (structural refactor) → `070841c` (sticky positioning) → `65be661` (VRT rebaseline). Implementation matches the "Decision" section verbatim; browser-verified end-to-end via Playwright. See `audit/journal/2026-05-13.md` "Phase 4.5" section for the mechanisms / open-parked write-up.
 
 ## Problem
 
