@@ -1,0 +1,131 @@
+#!/usr/bin/env node
+/**
+ * PreToolUse hook: reject Edit/Write/MultiEdit calls that introduce
+ * external-repo identifiers into chronix source. Reads the hook payload
+ * from stdin per the Claude Code hooks API.
+ *
+ * Rules:
+ *   - Always-banned (case-insensitive substring): "k-ui", "k_ui", "kui",
+ *     "@k-ui".
+ *   - Comment-line-only banned: "fullcalendar", "preact". Lines that look
+ *     like code comments (contain // or /* or end with *​/, or have *
+ *     at indent) are scrutinized for these; other lines pass.
+ *   - Allow-list (paths whose substring matches): the R2 audit trail
+ *     must keep upstream identifiers — `audit/journal/`,
+ *     `audit/R2_MAPPING.md`, `audit/BANNED_IDENTIFIERS.md`.
+ *
+ * On a hit, emit `{"decision":"block","reason":"..."}` on stdout and exit
+ * 0 (Claude Code reads the JSON to decide). On no hit, exit 0 silently.
+ * On internal error (unreadable stdin, bad JSON), exit 0 with no output
+ * — fail-open so a misconfigured hook never bricks the session.
+ */
+
+import { readFileSync } from 'node:fs';
+
+const ALWAYS_BANNED = [
+  { pattern: /k[-_]ui/i, label: 'k-ui / k_ui' },
+  { pattern: /@k-ui/i, label: '@k-ui scope' },
+  { pattern: /\bkui\b/i, label: 'kui' },
+];
+
+const COMMENT_ONLY_BANNED = [
+  { pattern: /fullcalendar/i, label: 'fullcalendar' },
+  { pattern: /preact/i, label: 'preact' },
+];
+
+const AUDIT_ALLOWLIST = [
+  // `(^|[/\\])` so the segment matches both at path-root (relative paths
+  // like "audit/journal/foo.md") AND after a separator (absolute paths
+  // like "/repo/audit/journal/foo.md" or "D:\\repo\\audit\\journal\\foo.md").
+  /(^|[/\\])audit[/\\]journal[/\\]/i,
+  /(^|[/\\])audit[/\\]R2_MAPPING\.md$/i,
+  /(^|[/\\])audit[/\\]BANNED_IDENTIFIERS\.md$/i,
+  // This hook script itself must contain the banned tokens it detects —
+  // analogous to BANNED_IDENTIFIERS.md, the rule's enforcer needs to
+  // name what it's enforcing against.
+  /(^|[/\\])scripts[/\\]check-no-external-repo-refs\.mjs$/i,
+];
+
+function isCommentLine(line) {
+  // Heuristic: anything that looks like a comment in TS/JS/CSS/Vue/Md.
+  // Markdown lines starting with '#' are not code comments; skip them.
+  const trimmed = line.trim();
+  if (trimmed.startsWith('//')) return true;
+  if (trimmed.startsWith('/*')) return true;
+  if (trimmed.startsWith('*')) return true;
+  if (trimmed.endsWith('*/')) return true;
+  return false;
+}
+
+function collectCandidateText(toolName, toolInput) {
+  if (!toolInput || typeof toolInput !== 'object') return '';
+  if (toolName === 'Write') return String(toolInput.content ?? '');
+  if (toolName === 'Edit') return String(toolInput.new_string ?? '');
+  if (toolName === 'MultiEdit') {
+    const edits = Array.isArray(toolInput.edits) ? toolInput.edits : [];
+    return edits.map((e) => String(e?.new_string ?? '')).join('\n');
+  }
+  return '';
+}
+
+function findViolations(text) {
+  const hits = [];
+  for (const { pattern, label } of ALWAYS_BANNED) {
+    if (pattern.test(text)) hits.push(label);
+  }
+  // Comment-line-only patterns: split and inspect.
+  const lines = text.split(/\r?\n/);
+  for (const { pattern, label } of COMMENT_ONLY_BANNED) {
+    for (const line of lines) {
+      if (!isCommentLine(line)) continue;
+      if (pattern.test(line)) {
+        hits.push(`${label} (in code comment)`);
+        break;
+      }
+    }
+  }
+  return hits;
+}
+
+function main() {
+  let raw = '';
+  try {
+    raw = readFileSync(0, 'utf8');
+  } catch {
+    return; // fail-open
+  }
+  let payload;
+  try {
+    payload = JSON.parse(raw);
+  } catch {
+    return; // fail-open
+  }
+  const toolName = payload?.tool_name;
+  const toolInput = payload?.tool_input;
+  if (!toolName || !toolInput) return;
+
+  const filePath = String(toolInput.file_path ?? '');
+  for (const allow of AUDIT_ALLOWLIST) {
+    if (allow.test(filePath)) return; // audit trail bypass
+  }
+
+  const text = collectCandidateText(toolName, toolInput);
+  if (!text) return;
+
+  const hits = findViolations(text);
+  if (hits.length === 0) return;
+
+  const reason =
+    `Refusing to write external-repo identifier(s) into chronix source: ${hits.join(', ')}. ` +
+    `Rephrase as "reference" / "parity reference" / "upstream reference" instead. ` +
+    `If this edit is part of the R2 audit trail, place it under audit/journal/ or update audit/R2_MAPPING.md.`;
+
+  process.stdout.write(
+    JSON.stringify({
+      decision: 'block',
+      reason,
+    }) + '\n',
+  );
+}
+
+main();

@@ -30,10 +30,11 @@ async function loadView(page: Page, viewToggleLabel: string) {
 const loadDayView = (page: Page) => loadView(page, '日');
 
 /**
- * Pull rendered tick rects from k-ui's chart DOM. Matches leaves whose text
- * passes `labelRegex`, then walks up to the first ancestor with non-zero
- * rendered width — k-ui wraps each label as `<text><title>N时</title></text>`
- * and the `<title>` is a 0×0 SVG tooltip element, not the visible label.
+ * Pull rendered tick rects from the reference chart DOM. Matches leaves
+ * whose text passes `labelRegex`, then walks up to the first ancestor with
+ * non-zero rendered width — the reference wraps each label as
+ * `<text><title>N时</title></text>` and the `<title>` is a 0×0 SVG tooltip
+ * element, not the visible label.
  *
  * Deduplicates by `(rounded-left, label)` so views like "week" (where the
  * label "0时" appears once per day across 7 days) yield distinct positions
@@ -80,12 +81,12 @@ function deltasBetweenCenters(ticks: readonly { left: number; width: number }[])
 }
 
 /**
- * chronix-vs-k-ui parity assertions. Each test compares one observable
- * chronix output (a layout pass result) against what k-ui actually
- * renders into the DOM. Failures are interesting, not noise — the diff
- * IS the parity gap.
+ * chronix-vs-reference parity assertions. Each test compares one observable
+ * chronix output (a layout pass result) against what the reference demo
+ * actually renders into the DOM. Failures are interesting, not noise — the
+ * diff IS the parity gap.
  */
-test.describe('parity: chronix vs k-ui demo', () => {
+test.describe('parity: chronix vs reference demo', () => {
   test('day-view tick labels (set equality)', async ({ page }) => {
     const axis = defaultAxisRangePlanner.plan({
       viewId: 'day',
@@ -97,7 +98,7 @@ test.describe('parity: chronix vs k-ui demo', () => {
     const chronixLabels = axis.ticks.map((t) => t.label);
     const chart = await loadDayView(page);
 
-    const kUiLabels = await chart.evaluate((root) => {
+    const refLabels = await chart.evaluate((root) => {
       const result: string[] = [];
       const seen = new Set<string>();
       root.querySelectorAll('*').forEach((node) => {
@@ -111,15 +112,17 @@ test.describe('parity: chronix vs k-ui demo', () => {
       return result;
     });
 
-    console.warn('chronix day-view labels:', chronixLabels);
-    console.warn('k-ui   day-view labels:', kUiLabels);
+    console.warn('chronix   day-view labels:', chronixLabels);
+    console.warn('reference day-view labels:', refLabels);
 
     expect(chronixLabels).toHaveLength(24);
-    expect(kUiLabels.length).toBeGreaterThan(0);
-    expect(new Set(kUiLabels)).toEqual(new Set(chronixLabels));
+    expect(refLabels.length).toBeGreaterThan(0);
+    expect(new Set(refLabels)).toEqual(new Set(chronixLabels));
   });
 
-  test('day-view slot width (chronix slotWidth vs k-ui rendered spacing)', async ({ page }) => {
+  test('day-view slot width (chronix slotWidth vs reference rendered spacing)', async ({
+    page,
+  }) => {
     const axis = defaultAxisRangePlanner.plan({
       viewId: 'day',
       anchorDate: new Date(FROZEN_TIME_ISO),
@@ -140,9 +143,9 @@ test.describe('parity: chronix vs k-ui demo', () => {
     const minDelta = Math.min(...deltas);
     const maxDelta = Math.max(...deltas);
 
-    console.warn('chronix day slotWidth:', axis.slotWidth);
-    console.warn('k-ui   day slot width (avg, center-to-center):', avgDelta);
-    console.warn('k-ui   day slot width (min..max):', `${minDelta}..${maxDelta}`);
+    console.warn('chronix   day slotWidth:', axis.slotWidth);
+    console.warn('reference day slot width (avg, center-to-center):', avgDelta);
+    console.warn('reference day slot width (min..max):', `${minDelta}..${maxDelta}`);
 
     // Uniformity check: ≤ 1px variance from sub-pixel rendering rounding.
     expect(maxDelta - minDelta).toBeLessThanOrEqual(1);
@@ -156,7 +159,7 @@ test.describe('parity: chronix vs k-ui demo', () => {
    * Slot-width parity for the five non-day views. Each row drives the same
    * pattern as the day-view geometry test:
    *   1. Run chronix's AxisRangePlanner in-process.
-   *   2. Switch the k-ui demo to the matching view.
+   *   2. Switch the reference demo to the matching view.
    *   3. Pull rendered tick rects by the view's leaf-label regex.
    *   4. Assert center-to-center spacing is uniform AND matches chronix's
    *      derived slotWidth within 1px.
@@ -189,7 +192,7 @@ test.describe('parity: chronix vs k-ui demo', () => {
   ];
 
   for (const { viewId, toggleLabel, labelRegex } of NON_DAY_VIEWS) {
-    test(`${viewId}-view slot width (chronix slotWidth vs k-ui rendered spacing)`, async ({
+    test(`${viewId}-view slot width (chronix slotWidth vs reference rendered spacing)`, async ({
       page,
     }) => {
       const axis = defaultAxisRangePlanner.plan({
@@ -202,10 +205,11 @@ test.describe('parity: chronix vs k-ui demo', () => {
       const chart = await loadView(page, toggleLabel);
       const ticks = await extractRenderedTickRects(chart, labelRegex);
 
-      // Sanity: chronix plans `axis.slotCount` ticks; k-ui should render
-      // at least 2 so we can compute one delta. Most views render all of
-      // them — half-year/year may scroll some off-screen but SVG <text>
-      // bounding rects are reported even when outside the visible chart.
+      // Sanity: chronix plans `axis.slotCount` ticks; the reference should
+      // render at least 2 so we can compute one delta. Most views render
+      // all of them — half-year/year may scroll some off-screen but SVG
+      // <text> bounding rects are reported even when outside the visible
+      // chart.
       expect(ticks.length).toBeGreaterThanOrEqual(2);
 
       const deltas = deltasBetweenCenters(ticks);
@@ -213,13 +217,17 @@ test.describe('parity: chronix vs k-ui demo', () => {
       const minDelta = Math.min(...deltas);
       const maxDelta = Math.max(...deltas);
 
-      console.warn(`chronix ${viewId} slotWidth:`, axis.slotWidth, `(slotCount=${axis.slotCount})`);
       console.warn(
-        `k-ui   ${viewId} slot width (avg, center-to-center):`,
+        `chronix   ${viewId} slotWidth:`,
+        axis.slotWidth,
+        `(slotCount=${axis.slotCount})`,
+      );
+      console.warn(
+        `reference ${viewId} slot width (avg, center-to-center):`,
         avgDelta,
         `(n=${ticks.length})`,
       );
-      console.warn(`k-ui   ${viewId} slot width (min..max):`, `${minDelta}..${maxDelta}`);
+      console.warn(`reference ${viewId} slot width (min..max):`, `${minDelta}..${maxDelta}`);
 
       expect(maxDelta - minDelta).toBeLessThanOrEqual(1);
       expect(Math.abs(avgDelta - axis.slotWidth)).toBeLessThanOrEqual(1);
@@ -311,13 +319,14 @@ test.describe('parity: chronix vs k-ui demo', () => {
 
     const chart = await loadDayView(page);
 
-    // Step 2: probe k-ui's rendered row layout. The body has one strip per
-    // leaf resource, contiguous, with heights driven by k-ui's event-stack
-    // math (`eventMinHeight + stacking-adjusted padding`). Chronix v0
-    // doesn't model the stacking, but RowSwimlaneLayout accepts an
-    // explicit `heightHint` per row, so passing the probed heights forward
-    // pins the swimlane to k-ui's geometry. The first row's top relative
-    // to the body wrapper is also captured — k-ui's body has ~0.5px of
+    // Step 2: probe the reference rendered row layout. The body has one
+    // strip per leaf resource, contiguous, with heights driven by the
+    // reference's event-stack math (`eventMinHeight + stacking-adjusted
+    // padding`). Chronix v0 doesn't model the stacking, but
+    // RowSwimlaneLayout accepts an explicit `heightHint` per row, so
+    // passing the probed heights forward pins the swimlane to the
+    // reference geometry. The first row's top relative to the body
+    // wrapper is also captured — the reference body has ~0.5px of
     // internal border / wrapper padding before the first lane.
     const domRows = await chart.evaluate(() => {
       const wrapper = document.querySelector('.gantt-timeline-body-wrapper');
@@ -350,17 +359,16 @@ test.describe('parity: chronix vs k-ui demo', () => {
     // and the body has a ~0.5px wrapper offset before the lanes start.
     const wrapperRowOffsetY = domRows[0]?.y ?? 0;
 
-    // k-ui empirical body-layout constants. Source:
-    // `packages/gantt/src/resource-timeline/GanttView.tsx:1979-2022`
-    // (calculateActualSlotWidths) defines per-slot widths but not Y math;
-    // Y is driven by `eventMinHeight` + `firstEventTopPadding` callback
-    // (demo sets eventMinHeight=30; the top padding empirically resolves
-    // to 8px for un-stacked rows).
+    // Reference empirical body-layout constants. The reference timeline
+    // view uses a per-slot-width pass (the slot-width parity tests above
+    // already lock that in); Y is driven by an `eventMinHeight` + first-
+    // event-top-padding config pair (the demo sets eventMinHeight=30 and
+    // the top padding empirically resolves to 8px for un-stacked rows).
     const BAR_HEIGHT = 30;
     const BAR_TOP_PADDING = 8;
 
     // Step 3: chronix pipeline using probed row heights so the swimlane
-    // matches k-ui's stacked geometry.
+    // matches the reference's stacked geometry.
     const axis = defaultAxisRangePlanner.plan({
       viewId: 'day',
       anchorDate: new Date(FROZEN_TIME_ISO),
@@ -419,9 +427,9 @@ test.describe('parity: chronix vs k-ui demo', () => {
     });
 
     // Step 5: per-id parity assertion. Skip ids that exist on only one
-    // side — chronix produces a placement for every input event; k-ui
-    // may omit some that fall entirely outside the visible chart. Only
-    // assert on the intersection.
+    // side — chronix produces a placement for every input event; the
+    // reference may omit some that fall entirely outside the visible
+    // chart. Only assert on the intersection.
     let comparedCount = 0;
     const failures: string[] = [];
     for (const dom of domBars) {

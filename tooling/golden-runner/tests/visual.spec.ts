@@ -10,7 +10,7 @@ const settle = (page: Page) =>
     () => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
   );
 
-test.describe('chronix gantt parity goldens (k-ui demo)', () => {
+test.describe('chronix gantt parity goldens (reference demo)', () => {
   for (const scenario of VISUAL_SCENARIOS) {
     test(scenario.id, async ({ page }) => {
       await page.clock.install({ time: new Date(FROZEN_TIME_ISO) });

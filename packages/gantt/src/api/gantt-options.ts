@@ -64,8 +64,8 @@ export interface GanttEventMap {
 
 /**
  * External configuration surface. Users supply this once at mount; adapters
- * forward it into the core. Shape is intentionally similar to the
- * FullCalendar/k-ui demo conventions so existing call sites can migrate
+ * forward it into the core. Shape is intentionally similar to common
+ * scheduler-library option conventions so existing call sites can migrate
  * with renaming-only changes.
  *
  * v0 surface is minimal. Demo-specific options (`themeOverrides`,

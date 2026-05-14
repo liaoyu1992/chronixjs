@@ -108,7 +108,7 @@ describe('defaultBarPlacementPass — happy path (day view)', () => {
   });
 
   it('explicit barHeight overrides strip-derived height; padding still drives y', () => {
-    // k-ui mode: fixed bar height (eventMinHeight=30) + top padding 8.
+    // Reference mode: fixed bar height (eventMinHeight=30) + top padding 8.
     // Bar should be at strip.y + 8 with height 30, regardless of strip.height.
     const tallerStrips = defaultRowSwimlaneLayout.layout({
       rows: [{ id: 'r1', columns: {}, heightHint: 43 }],

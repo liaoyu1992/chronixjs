@@ -80,6 +80,13 @@ export interface RowSwimlaneLayoutInput {
   readonly rows: readonly RowSpec[];
   /** Used when a row has no `heightHint`. */
   readonly defaultRowHeight: number;
+  /**
+   * Pixels of inter-row spacing added between consecutive strips. Models
+   * the CSS row-divider border (the parity reference's `<tr>` row-bottom
+   * border occupies 1px between visually adjacent rows). When 0 (default),
+   * strips are tile-packed with no gap.
+   */
+  readonly rowSpacing?: number;
 }
 
 export interface RowSwimlaneLayoutOutput {
@@ -119,11 +126,11 @@ export interface BarPlacementPassInput {
    * the v0 behavior, kept for callers that don't care about a separate
    * height knob (e.g. uniform-strip demos).
    *
-   * The k-ui reference uses `eventMinHeight` (default 30) here and stacks
-   * strips taller than that to fit multiple bars per row. Chronix v1
-   * exposes the same knob; the bar-row stacking that derives strip
-   * heights from event collisions is a separate concern, owned by the
-   * caller until a Phase 2.x pass lands.
+   * The parity reference uses an `eventMinHeight` config (default 30) here
+   * and stacks strips taller than that to fit multiple bars per row.
+   * Chronix v1 exposes the same knob; the bar-row stacking that derives
+   * strip heights from event collisions is a separate concern, owned by
+   * the caller until a Phase 2.x pass lands.
    */
   readonly barHeight?: number;
 }

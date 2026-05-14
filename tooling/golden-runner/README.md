@@ -2,17 +2,20 @@
 
 Playwright-driven golden capture for `@chronixjs/gantt` parity (Phase 0).
 
-The k-ui demo at `d:/work/k-ui/examples/gantt/vue3` is the **parity oracle**:
-once captured, every chronix implementation change must reproduce the same
-DOM render output pixel-for-pixel against the same scenarios.
+A locally-hosted reference demo is the **parity oracle**: once captured,
+every chronix implementation change must reproduce the same DOM render
+output pixel-for-pixel against the same scenarios.
 
 ## Prereqs
 
-1. k-ui demo running locally:
+1. The parity-reference demo running locally on
+   `http://localhost:8701/` (configurable via `CHRONIX_DEMO_URL`). The
+   exact source is your decision — typically an upstream scheduler-demo
+   checkout served from its own dev tooling:
 
    ```sh
-   cd d:/work/k-ui/examples/gantt/vue3
-   pnpm dev      # vite, http://localhost:8701/
+   cd <path-to-reference-vue3-demo>
+   pnpm dev                       # serves on http://localhost:8701/
    ```
 
 2. Playwright browsers installed (one-time, ~200 MB):
@@ -78,6 +81,7 @@ diff — pixel-comparing mid-interaction frames is too noisy. Currently
 
 ## CSS class names from the reference demo
 
-Selectors like `.demo-app-main` reference k-ui's demo DOM. They are
-**queries against the oracle**, not chronix-owned class names. Chronix's
-own CSS uses the `cx-` prefix (see `audit/BANNED_IDENTIFIERS.md`).
+Selectors like `.demo-app-main` reference the parity-oracle demo's DOM.
+They are **queries against the oracle**, not chronix-owned class names.
+Chronix's own CSS uses the `cx-` prefix (see
+`audit/BANNED_IDENTIFIERS.md`).

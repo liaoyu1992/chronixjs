@@ -17,7 +17,7 @@ const settle = (page: Page) =>
     () => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))),
   );
 
-test.describe('chronix gantt parity recordings (k-ui demo)', () => {
+test.describe('chronix gantt parity recordings (reference demo)', () => {
   for (const recording of INTERACTION_RECORDINGS) {
     test(recording.id, async ({ page }) => {
       const outDir = join(RECORDINGS_ROOT, recording.id);

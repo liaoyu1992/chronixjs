@@ -31,12 +31,11 @@ const IS_TIME_SCALE: Record<ViewId, boolean> = {
 };
 
 /**
- * Slot width derivation, matched to the k-ui demo's rendered geometry.
+ * Slot width derivation matched to the parity reference's rendered geometry.
  * See `audit/journal/2026-05-13.md` (Phase 2 / slot-width parity) for the
  * empirical reverse-engineering of this formula.
  *
- * The floor is `minChars × fontSize` from k-ui
- * `calculateActualSlotWidths`:
+ * The floor is `minChars × fontSize`:
  *   - fontSize=13, minChars=4 → 52px for time-scale views (day/week)
  *   - fontSize=13, minChars=5 → 65px for date-scale views (month/.../year)
  *
