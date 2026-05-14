@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { AxisRangePlanInput, BarSpec } from '@chronixjs/gantt';
 import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { BarDropPayload, BarResizePayload, SelectPayload } from '@chronixjs/gantt-vue3';
+import type {
+  BarDropPayload,
+  BarProgressPayload,
+  BarResizePayload,
+  SelectPayload,
+} from '@chronixjs/gantt-vue3';
 import { computed, ref } from 'vue';
 
 import { sampleBars, sampleRows, todayLocalMidnight } from './sample-data';
@@ -27,7 +32,7 @@ const viewId = ref<ViewId>('day');
 
 interface DemoEvent {
   readonly id: number;
-  readonly kind: 'bar-drop' | 'bar-resize' | 'select';
+  readonly kind: 'bar-drop' | 'bar-resize' | 'select' | 'bar-progress';
   readonly detail: string;
 }
 const events = ref<DemoEvent[]>([]);
@@ -84,6 +89,23 @@ function onSelect(p: SelectPayload): void {
   pushEvent('select', `${p.rowId}: ${fmtRange(p.range)}`);
 }
 
+function onBarProgress(p: BarProgressPayload): void {
+  const idx = bars.value.findIndex((b) => b.id === p.barId);
+  if (idx >= 0) {
+    const existing = bars.value[idx]!;
+    const rounded = Math.round(p.newProgress);
+    bars.value = [
+      ...bars.value.slice(0, idx),
+      { ...existing, progress: { ...(existing.progress ?? { value: 0 }), value: rounded } },
+      ...bars.value.slice(idx + 1),
+    ];
+  }
+  pushEvent(
+    'bar-progress',
+    `${p.barId}: ${Math.round(p.oldProgress)}% → ${Math.round(p.newProgress)}%`,
+  );
+}
+
 function resetBars(): void {
   bars.value = sampleBars.map((b) => ({ ...b }));
   events.value = [];
@@ -130,6 +152,7 @@ function resetBars(): void {
           @bar-drop="onBarDrop"
           @bar-resize="onBarResize"
           @select="onSelect"
+          @bar-progress="onBarProgress"
         />
       </div>
     </main>

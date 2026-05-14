@@ -161,6 +161,10 @@ body {
   border-left-color: #6366f1;
 }
 
+.cx-demo-event.kind-bar-progress {
+  border-left-color: #059669;
+}
+
 .cx-demo-event-kind {
   font-weight: 600;
   color: #1f2937;
