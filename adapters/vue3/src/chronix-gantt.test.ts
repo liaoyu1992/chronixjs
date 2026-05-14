@@ -109,10 +109,11 @@ describe('<ChronixGantt>', () => {
   });
 });
 
-// Default headerHeight is 24 px; bars are translated down by this amount,
-// so SVG-space clientY for content-y N is `N + 24` under happy-dom's
-// zero-origin getBoundingClientRect.
-const DEFAULT_HEADER_HEIGHT = 24;
+// Default header-band height: `axis.headerRows.length × 20` (one row in
+// day view) + `headerHeight` (24) = 44 px. Bars are translated down by
+// this amount, so SVG-space clientY for content-y N is `N + 44` under
+// happy-dom's zero-origin getBoundingClientRect.
+const DEFAULT_HEADER_BAND_HEIGHT = 44;
 
 describe('<ChronixGantt> interactions', () => {
   it('editable: pointerdown on bar body → pointermove → pointerup emits `bar-drop` with shifted range', async () => {
@@ -127,8 +128,8 @@ describe('<ChronixGantt> interactions', () => {
     // Bar 'b1' content bounds: x ∈ [480, 720], y ∈ [8, 38] (day view, hour 8–12).
     // Happy-dom returns {0,0,…} for getBoundingClientRect on un-laid-out SVG,
     // so clientX equals contentX in the test environment; clientY is offset
-    // by `headerHeight` to clear the axis-tick band.
-    const cy = 20 + DEFAULT_HEADER_HEIGHT;
+    // by the full header band (headerRows + tick row) to clear it.
+    const cy = 20 + DEFAULT_HEADER_BAND_HEIGHT;
     const svg = wrapper.find('svg');
     await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
@@ -157,7 +158,7 @@ describe('<ChronixGantt> interactions', () => {
     });
     const svg = wrapper.find('svg');
     // Bar end edge at x=720; default 8-px end zone is [712, 720]. Click 715, drag +60.
-    const cy = 20 + DEFAULT_HEADER_HEIGHT;
+    const cy = 20 + DEFAULT_HEADER_BAND_HEIGHT;
     await svg.trigger('pointerdown', { clientX: 715, clientY: cy, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 775, clientY: cy, pointerId: 1 });
     await svg.trigger('pointerup', { clientX: 775, clientY: cy, pointerId: 1 });
@@ -185,7 +186,7 @@ describe('<ChronixGantt> interactions', () => {
     });
     const svg = wrapper.find('svg');
     // Hour 2 → hour 5 on row r1.
-    const cy = 20 + DEFAULT_HEADER_HEIGHT;
+    const cy = 20 + DEFAULT_HEADER_BAND_HEIGHT;
     await svg.trigger('pointerdown', { clientX: 120, clientY: cy, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 300, clientY: cy, pointerId: 1 });
     await svg.trigger('pointerup', { clientX: 300, clientY: cy, pointerId: 1 });
@@ -207,7 +208,7 @@ describe('<ChronixGantt> interactions', () => {
       },
     });
     const svg = wrapper.find('svg');
-    const cy = 20 + DEFAULT_HEADER_HEIGHT;
+    const cy = 20 + DEFAULT_HEADER_BAND_HEIGHT;
     await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
     await svg.trigger('pointerup', { clientX: 660, clientY: cy, pointerId: 1 });
@@ -217,7 +218,7 @@ describe('<ChronixGantt> interactions', () => {
     expect(wrapper.emitted('select')).toBeFalsy();
   });
 
-  it('editable: clientY inside the axis-tick band (y < headerHeight) does not start a transaction', async () => {
+  it('editable: clientY inside the header band (y < headerBandHeight) does not start a transaction', async () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [bar('b1', 'r1', 8, 12)],
@@ -228,7 +229,7 @@ describe('<ChronixGantt> interactions', () => {
       },
     });
     const svg = wrapper.find('svg');
-    // clientY=10 → contentY = 10 - 24 = -14, inside the axis band.
+    // clientY=10 → contentY = 10 - 44 = -34, inside the header band.
     await svg.trigger('pointerdown', { clientX: 600, clientY: 10, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 660, clientY: 10, pointerId: 1 });
     await svg.trigger('pointerup', { clientX: 660, clientY: 10, pointerId: 1 });
@@ -236,6 +237,25 @@ describe('<ChronixGantt> interactions', () => {
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
     expect(wrapper.emitted('bar-resize')).toBeFalsy();
     expect(wrapper.emitted('select')).toBeFalsy();
+  });
+
+  it('editable: clientY between header-rows and tick row is still blocked (within band)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    // clientY=30 lands in the tick row (axis.headerRows.length × 20 = 20,
+    // tick row spans [20, 44]). contentY = 30 - 44 = -14, still inside band.
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 30, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 30, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: 30, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
   });
 });
 
@@ -270,45 +290,137 @@ describe('<ChronixGantt> axis ticks', () => {
     }
   });
 
-  it('SVG height equals contentSize.height + default headerHeight (24)', () => {
+  it('SVG height equals contentSize.height + default header band (44 = 1 × 20 + 24)', () => {
     // Two rows, defaultRowHeight 38, rowSpacing 1 → contentSize.height = 38 + 1 + 38 = 77.
+    // Day view has 1 headerRow; band = 1×20 + 24 = 44.
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
     });
     const svg = wrapper.find('svg');
-    expect(Number(svg.attributes('height'))).toBe(77 + 24);
+    expect(Number(svg.attributes('height'))).toBe(77 + 44);
   });
 
-  it('custom headerHeight: bar group is shifted by that amount and SVG height grows accordingly', () => {
+  it('custom headerHeight + headerRowHeight: bar group is shifted by their sum', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [bar('b1', 'r1', 8, 12)],
         rows,
         axisInput,
         headerHeight: 40,
+        headerRowHeight: 30,
       },
     });
-    // With one bar on r1, BarStackHeightPass pads to firstBarTopPadding +
-    // barHeight + lastBarBottomPadding = 8 + 30 + 4 = 42 (r1); r2 stays at
-    // the 38-px default. Total content height: 42 + 1 (rowSpacing) + 38 = 81.
+    // One bar on r1 → r1 height = 8 + 30 + 4 = 42. r2 stays at 38.
+    // Content height: 42 + 1 + 38 = 81. Header band: 1×30 + 40 = 70.
     const svg = wrapper.find('svg');
-    expect(Number(svg.attributes('height'))).toBe(81 + 40);
+    expect(Number(svg.attributes('height'))).toBe(81 + 70);
     const barsGroup = wrapper.find('.cx-gantt-bars');
-    expect(barsGroup.attributes('transform')).toBe('translate(0, 40)');
-    // Rect's own y is unchanged (layout y=8) — the visual shift is via the parent <g>.
+    expect(barsGroup.attributes('transform')).toBe('translate(0, 70)');
+    // Rect's own y is unchanged (layout y=8); visual shift is via parent <g>.
     const rect = wrapper.find('[data-bar-id="b1"]');
     expect(Number(rect.attributes('y'))).toBe(8);
   });
 
-  it('headerHeight=0: bar group transform is "translate(0, 0)" and SVG height equals contentSize.height', () => {
+  it('headerHeight=0 + headerRowHeight=0: no axis-divider, no header cells, SVG height equals contentSize.height', () => {
     const wrapper = mount(ChronixGantt, {
-      props: { bars: [], rows, axisInput, headerHeight: 0 },
+      props: { bars: [], rows, axisInput, headerHeight: 0, headerRowHeight: 0 },
     });
     const svg = wrapper.find('svg');
     expect(Number(svg.attributes('height'))).toBe(77);
-    // Tick lines + labels still render (we don't gate them on headerHeight),
-    // but the divider line is suppressed when headerHeight is 0.
     expect(wrapper.find('.cx-gantt-axis-divider').exists()).toBe(false);
+    expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(0);
+    // Tick lines + labels still render (we don't gate them on headerHeight).
     expect(wrapper.findAll('.cx-gantt-tick-label')).toHaveLength(24);
+  });
+
+  it('axis-row group transform offsets by headerRows height (1 × 20 = 20)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput },
+    });
+    const axisGroup = wrapper.find('.cx-gantt-axis');
+    expect(axisGroup.attributes('transform')).toBe('translate(0, 20)');
+  });
+});
+
+describe('<ChronixGantt> header rows', () => {
+  it('day view: renders one header cell spanning the full axis width with the day label', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput },
+    });
+    const cells = wrapper.findAll('.cx-gantt-header-cell');
+    expect(cells).toHaveLength(1);
+    const cell = cells[0]!;
+    expect(Number(cell.attributes('x'))).toBe(0);
+    expect(Number(cell.attributes('width'))).toBe(1440);
+    expect(Number(cell.attributes('y'))).toBe(0);
+    expect(Number(cell.attributes('height'))).toBe(20);
+    // Day-view header label is zh-CN long-date ("2026年5月13日"); just
+    // confirm the label is non-empty and the text node exists.
+    const labels = wrapper.findAll('.cx-gantt-header-cell-label');
+    expect(labels).toHaveLength(1);
+    expect(labels[0]!.text().length).toBeGreaterThan(0);
+  });
+
+  it('week view: renders 7 header cells (one per day) and 24×7 = 168 hour ticks', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput: { ...axisInput, viewId: 'week' },
+      },
+    });
+    expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(7);
+    expect(wrapper.findAll('.cx-gantt-tick-line')).toHaveLength(168);
+    // Each day's cell width should be uniform: 7 cells, day-view-equivalent
+    // slot width × 24 hours. Week-view floor: 4 × 13 = 52 → totalWidth = 52 × 168 = 8736.
+    const cells = wrapper.findAll('.cx-gantt-header-cell');
+    const widths = cells.map((c) => Number(c.attributes('width')));
+    const min = Math.min(...widths);
+    const max = Math.max(...widths);
+    expect(max - min).toBe(0);
+    expect(min).toBe(52 * 24);
+  });
+
+  it('month view: renders one month header cell + per-day tick labels in zh-CN', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput: { ...axisInput, viewId: 'month' },
+      },
+    });
+    expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(1);
+    // Day-resolution ticks: between 28 and 31 depending on month. zh-CN
+    // day labels emitted by chronix's `weekday: 'short'` formatter look
+    // like "1日周X" (where X is a weekday letter). The reference DOM
+    // renders these as "1日X" (no `周` prefix) — that divergence is
+    // tracked in the planner's open items; this regex follows what
+    // chronix actually produces.
+    const tickLabels = wrapper.findAll('.cx-gantt-tick-label');
+    expect(tickLabels.length).toBeGreaterThanOrEqual(28);
+    expect(tickLabels.length).toBeLessThanOrEqual(31);
+    expect(tickLabels[0]!.text()).toMatch(/^1日周?[一二三四五六日]$/u);
+  });
+
+  it('year view: 12 outer header cells (one per month) covering the year', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput: { ...axisInput, viewId: 'year' },
+      },
+    });
+    expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(12);
+  });
+
+  it('headerRowHeight=0 hides cells but keeps tick row visible', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerRowHeight: 0 },
+    });
+    expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(0);
+    expect(wrapper.findAll('.cx-gantt-tick-label')).toHaveLength(24);
+    // Axis group sits flush at y=0 with no headerRows above it.
+    const axisGroup = wrapper.find('.cx-gantt-axis');
+    expect(axisGroup.attributes('transform')).toBe('translate(0, 0)');
   });
 });

@@ -13,12 +13,15 @@ import type { AxisRangePlanInput, BarSpec, RowSpec, TimeRange } from '@chronixjs
 /**
  * Minimum-viable SVG renderer over `useGanttLayout` + `useGanttPointer`.
  *
- * Renders a top axis-tick header band followed by one
- * `<rect class="cx-gantt-bar" data-bar-id>` per placed bar inside a
- * single `<svg class="cx-gantt">` root. When `editable=true` the bar's
- * body becomes drag-able and its 8-px edges resize-able; when
- * `selectable=true` empty-row pointer drags emit a `select` event.
- * Commit results surface through the three component events.
+ * Renders, in this order: zero or more `headerRows` (each row's cells
+ * span their `cell.x .. cell.x + cell.width` range, e.g. month names
+ * for season/halfYear/year views); the tick row (one line + label per
+ * `axis.ticks` entry); and the bar area (`<rect class="cx-gantt-bar"
+ * data-bar-id>` per placed bar). Bars are translated down by the total
+ * header-band height so their layout y matches `BarPlacementPass`
+ * output. When `editable=true` the bar's body becomes drag-able and its
+ * 8-px edges resize-able; when `selectable=true` empty-row pointer
+ * drags emit a `select` event.
  *
  * The component is intentionally a `defineComponent` with a render
  * function (no `.vue` SFC) so the package builds with just `tsup`, no
@@ -45,12 +48,18 @@ export const ChronixGantt = defineComponent({
     rowSpacing: { type: Number, default: 1 },
     defaultRowHeight: { type: Number, default: 38 },
     /**
-     * Height of the axis-tick header band at the top of the SVG, in
-     * logical pixels. Bars are translated down by this amount; the SVG
-     * itself grows by this amount so the bar area's content space is
-     * unchanged. 0 hides the band entirely.
+     * Height of the axis-tick row (the inner band carrying labels like
+     * `'0时'`, `'1日一'`, etc.) in logical pixels. 0 hides the tick row.
      */
     headerHeight: { type: Number, default: 24 },
+    /**
+     * Height of each `axis.headerRows` row (the outer bands carrying
+     * cells like month names) in logical pixels. The total header band
+     * height is `axis.headerRows.length × headerRowHeight + headerHeight`;
+     * bars are translated down by that. 0 hides every header row (useful
+     * for views where only the tick row matters).
+     */
+    headerRowHeight: { type: Number, default: 20 },
     /** Enable bar drag + edge resize. */
     editable: { type: Boolean, default: false },
     /** Enable calendar range-select on empty rows. */
@@ -96,17 +105,23 @@ export const ChronixGantt = defineComponent({
 
     const svgRef = ref<SVGSVGElement | null>(null);
 
-    // Bars are rendered inside a `<g transform="translate(0, headerHeight)">`,
-    // so SVG-y `headerHeight` corresponds to content-y `0`. Pointer math
-    // subtracts `headerHeight` to keep the hit-tester operating in the
-    // bar group's content space, unchanged from before the axis band.
+    // Total header-band height: outer header rows (e.g. month bands)
+    // stacked on top of the inner tick row. Bars are rendered inside a
+    // `<g transform="translate(0, headerBandHeight)">`, so SVG-y
+    // `headerBandHeight` corresponds to content-y `0`. Pointer math
+    // subtracts the same amount to keep the hit-tester operating in the
+    // bar group's coordinate space, unchanged from before the band.
+    const headerBandHeight = computed(
+      () => axis.value.headerRows.length * props.headerRowHeight + props.headerHeight,
+    );
+
     function toContentXY(e: PointerEvent): { x: number; y: number } | null {
       const svg = svgRef.value;
       if (!svg) return null;
       const rect = svg.getBoundingClientRect();
       return {
         x: e.clientX - rect.left,
-        y: e.clientY - rect.top - props.headerHeight,
+        y: e.clientY - rect.top - headerBandHeight.value,
       };
     }
 
@@ -143,9 +158,56 @@ export const ChronixGantt = defineComponent({
     return () => {
       const a = axis.value;
       const hh = props.headerHeight;
-      const axisChildren = [];
+      const hrh = props.headerRowHeight;
+      const headerRowsHeight = a.headerRows.length * hrh;
+      const totalHeaderBandHeight = headerRowsHeight + hh;
+
+      // Outer header rows (e.g. month bands above day ticks). One <rect>
+      // per cell as the band background + a centered <text> for the label.
+      // Rendered first so the tick row + bars draw on top of cell strokes
+      // at shared edges.
+      const headerRowChildren = [];
+      if (hrh > 0) {
+        for (let rowIdx = 0; rowIdx < a.headerRows.length; rowIdx += 1) {
+          const row = a.headerRows[rowIdx]!;
+          const rowY = rowIdx * hrh;
+          for (let cellIdx = 0; cellIdx < row.cells.length; cellIdx += 1) {
+            const cell = row.cells[cellIdx]!;
+            headerRowChildren.push(
+              h('rect', {
+                key: `header-cell-${rowIdx}-${cellIdx}`,
+                class: 'cx-gantt-header-cell',
+                x: cell.x,
+                y: rowY,
+                width: cell.width,
+                height: hrh,
+                fill: '#f9fafb',
+                stroke: '#d1d5db',
+              }),
+              h(
+                'text',
+                {
+                  key: `header-cell-label-${rowIdx}-${cellIdx}`,
+                  class: 'cx-gantt-header-cell-label',
+                  x: cell.x + cell.width / 2,
+                  y: rowY + hrh / 2 + 4,
+                  'text-anchor': 'middle',
+                  fill: '#374151',
+                  'font-size': 11,
+                },
+                cell.label,
+              ),
+            );
+          }
+        }
+      }
+
+      // Tick row: one <line> + <text> per axis.ticks entry. Group is
+      // translated down past the outer header rows so the tick group's
+      // own coordinate space matches what it was before headerRows landed.
+      const tickChildren = [];
       for (const tick of a.ticks) {
-        axisChildren.push(
+        tickChildren.push(
           h('line', {
             key: `tick-line-${tick.x}`,
             class: 'cx-gantt-tick-line',
@@ -170,7 +232,7 @@ export const ChronixGantt = defineComponent({
         );
       }
       if (hh > 0) {
-        axisChildren.push(
+        tickChildren.push(
           h('line', {
             key: 'axis-divider',
             class: 'cx-gantt-axis-divider',
@@ -189,19 +251,27 @@ export const ChronixGantt = defineComponent({
           ref: svgRef,
           class: 'cx-gantt',
           width: contentSize.value.width,
-          height: contentSize.value.height + hh,
+          height: contentSize.value.height + totalHeaderBandHeight,
           'data-axis-view': a.viewId,
           onPointerdown,
           onPointermove,
           onPointerup,
         },
         [
-          h('g', { class: 'cx-gantt-axis' }, axisChildren),
+          h('g', { class: 'cx-gantt-header-rows' }, headerRowChildren),
+          h(
+            'g',
+            {
+              class: 'cx-gantt-axis',
+              transform: `translate(0, ${headerRowsHeight})`,
+            },
+            tickChildren,
+          ),
           h(
             'g',
             {
               class: 'cx-gantt-bars',
-              transform: `translate(0, ${hh})`,
+              transform: `translate(0, ${totalHeaderBandHeight})`,
             },
             placedBars.value.map((bar) =>
               h('rect', {
