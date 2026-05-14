@@ -1,6 +1,6 @@
 # Phase 5 — ResourceArea sidebar design note
 
-**Status**: **A approved (2026-05-14)**. Default answers to all four open questions confirmed (per-column `width` summed for sidebar track; tree-grouping parked for v1; `border-bottom: 1px solid #e5e7eb` between rows). Implementation pending; will land as 3 commits with browser-verify pauses between each.
+**Status**: **DONE (2026-05-15)**. Landed as 4 commits: `8d14377` (k-ui behavior catalog), `d378b3d` (structural), `8d9648a` (sticky-left + z-index ladder), `45403f3` (demo wiring + VRT rebaseline). Browser-verified end-to-end. See `audit/journal/2026-05-13.md` "Phase 5" section for the post-mortem write-up.
 
 ## Problem
 
