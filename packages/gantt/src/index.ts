@@ -42,10 +42,13 @@ export type {
   CommitProgressHandleOutput,
   PointerCaptureConfig,
   PointerCaptureSession,
+  PointerHitResult,
+  PointerHitTestInput,
+  PointerHitTester,
   PointerPx,
   ProgressHandleTransaction,
 } from './interaction/index.js';
-export { defaultPointerCaptureSession } from './interaction/index.js';
+export { defaultPointerCaptureSession, defaultPointerHitTester } from './interaction/index.js';
 
 export type {
   IRCanvas,

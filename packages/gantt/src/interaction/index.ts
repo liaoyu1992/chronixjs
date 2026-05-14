@@ -21,6 +21,12 @@ export type {
 } from './pointer-capture-session.js';
 export { defaultPointerCaptureSession } from './pointer-capture-session.js';
 export type {
+  PointerHitResult,
+  PointerHitTestInput,
+  PointerHitTester,
+} from './pointer-hit-test.js';
+export { defaultPointerHitTester } from './pointer-hit-test.js';
+export type {
   AnyTransaction,
   BarDragTransaction,
   BarResizeTransaction,
