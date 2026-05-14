@@ -12,16 +12,37 @@ import {
 import type { AxisRangePlanInput, BarSpec, RowSpec, TimeRange } from '@chronixjs/gantt';
 
 /**
+ * One sidebar column in the resource panel. The `key` indexes into
+ * `RowSpec.columns` to read each row's cell value; `label` paints the
+ * column header in the top-left pane; `width` is in CSS pixels and
+ * contributes additively to the sidebar's total track width.
+ */
+export interface ColumnSpec {
+  readonly key: string;
+  readonly label: string;
+  readonly width: number;
+}
+
+/**
  * Minimum-viable renderer over `useGanttLayout` + `useGanttPointer`.
  *
- * The root is a `<div class="cx-gantt-wrapper">` hosting two SVG
- * children: a `<svg class="cx-gantt-header">` carrying the header-row
- * cells (e.g. month bands) stacked on top of the tick row, and a
- * `<svg class="cx-gantt-body">` carrying the bar area. Pointer handlers
- * live on the body SVG only — header clicks have no handler, so they
- * silently no-op. The split surfaces let the wrapper become a single
- * `overflow:auto` scroll container with the header pinned via
- * `position: sticky` (landed in the follow-up commit).
+ * Without a `columns` prop the root is a `<div class="cx-gantt-wrapper">`
+ * hosting two SVG children: a `<svg class="cx-gantt-header">` carrying
+ * the header-row cells (e.g. month bands) stacked on top of the tick
+ * row, and a `<svg class="cx-gantt-body">` carrying the bar area.
+ * Pointer handlers live on the body SVG only — header clicks have no
+ * handler, so they silently no-op. The wrapper is a single
+ * `overflow: auto` scroll container with the header pinned via
+ * `position: sticky` for vertical-scroll lock.
+ *
+ * With a `columns` prop the wrapper switches to a 2×2 CSS grid with
+ * two additional panes on the left: `<div class="cx-gantt-sidebar-header">`
+ * (top-left) carrying the column labels and `<div class="cx-gantt-sidebar-body">`
+ * (bottom-left) carrying one row per swimlane strip with each row's
+ * cells reading from `RowSpec.columns[colSpec.key]`. Sticky-left
+ * positioning lands in the follow-up commit; this commit places the
+ * sidebar in normal flow so the structural shape is reviewable
+ * independently from the scroll-pinning behavior.
  *
  * When `editable=true` the bar's body becomes drag-able and its 8-px
  * edges resize-able; when `selectable=true` empty-row pointer drags
@@ -76,6 +97,17 @@ export const ChronixGantt = defineComponent({
      * the progress-x and vertically on the bar. Default 12.
      */
     progressHandleSize: { type: Number, default: 12 },
+    /**
+     * Resource-panel column descriptors. When set and non-empty, the
+     * wrapper becomes a 2×2 CSS grid with a sidebar on the left
+     * (sidebar-header + sidebar-body panes); when omitted or empty, the
+     * component renders without a sidebar (back to the Phase 4.5
+     * two-pane shape).
+     */
+    columns: {
+      type: Array as PropType<readonly ColumnSpec[]>,
+      default: () => [] as readonly ColumnSpec[],
+    },
   },
   emits: {
     'bar-drop': (_payload: BarDropPayload) => true,
@@ -458,18 +490,144 @@ export const ChronixGantt = defineComponent({
         [h('g', { class: 'cx-gantt-bars' }, barChildren)],
       );
 
-      // The wrapper is the scroll container that anchors the sticky
-      // header. Consumers constrain its height (e.g. `max-height: 70vh`
-      // via class CSS) to actually engage the scroll; with no height
-      // cap the wrapper grows to fit the body and no scroll engages.
+      // Sidebar (top-left + bottom-left panes) — only when `columns` is
+      // populated. Track widths are summed into `sidebarWidth` for the
+      // grid's first column; cells inside each pane sub-grid by the
+      // same per-column widths so headers align with body rows.
+      const cols = props.columns;
+      const hasSidebar = cols.length > 0;
+      let sidebarHeader: ReturnType<typeof h> | null = null;
+      let sidebarBody: ReturnType<typeof h> | null = null;
+      let sidebarWidth = 0;
+      if (hasSidebar) {
+        sidebarWidth = cols.reduce((sum, c) => sum + c.width, 0);
+        const colTemplate = cols.map((c) => `${c.width}px`).join(' ');
+
+        sidebarHeader = h(
+          'div',
+          {
+            class: 'cx-gantt-sidebar-header',
+            style: {
+              display: 'grid',
+              gridTemplateColumns: colTemplate,
+              height: `${totalHeaderBandHeight}px`,
+              boxSizing: 'border-box',
+              borderBottom: '1px solid #9ca3af',
+              background: '#ffffff',
+            },
+          },
+          cols.map((col) =>
+            h(
+              'div',
+              {
+                key: `cx-sidebar-col-${col.key}`,
+                class: 'cx-gantt-sidebar-header-cell',
+                'data-column-key': col.key,
+                style: {
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 8px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: '#374151',
+                  borderRight: '1px solid #d1d5db',
+                  boxSizing: 'border-box',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                },
+              },
+              col.label,
+            ),
+          ),
+        );
+
+        // One row per swimlane strip. Heights match strip heights;
+        // `gap: rowSpacing` between rows matches the body's strip-to-strip
+        // spacing so sidebar cells line up vertically with their bar rows.
+        const rowsById = new Map(props.rows.map((r) => [r.id, r]));
+        sidebarBody = h(
+          'div',
+          {
+            class: 'cx-gantt-sidebar-body',
+            style: {
+              display: 'flex',
+              flexDirection: 'column',
+              gap: `${props.rowSpacing}px`,
+              background: '#ffffff',
+            },
+          },
+          strips.value.map((strip) => {
+            const row = rowsById.get(strip.rowId);
+            return h(
+              'div',
+              {
+                key: `cx-sidebar-row-${strip.rowId}`,
+                class: 'cx-gantt-sidebar-row',
+                'data-row-id': strip.rowId,
+                style: {
+                  display: 'grid',
+                  gridTemplateColumns: colTemplate,
+                  height: `${strip.height}px`,
+                  boxSizing: 'border-box',
+                  borderBottom: '1px solid #e5e7eb',
+                },
+              },
+              cols.map((col) => {
+                const value = row?.columns[col.key];
+                return h(
+                  'div',
+                  {
+                    key: `cx-sidebar-cell-${strip.rowId}-${col.key}`,
+                    class: 'cx-gantt-sidebar-cell',
+                    'data-row-id': strip.rowId,
+                    'data-column-key': col.key,
+                    style: {
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '0 8px',
+                      fontSize: '12px',
+                      color: '#1f2937',
+                      borderRight: '1px solid #e5e7eb',
+                      boxSizing: 'border-box',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    },
+                  },
+                  value === undefined ? '' : String(value),
+                );
+              }),
+            );
+          }),
+        );
+      }
+
+      // Wrapper geometry depends on whether the sidebar is rendered.
+      // Without a sidebar: a block div with one child column (header + body
+      // stacked) — same as Phase 4.5. With a sidebar: a 2×2 CSS grid
+      // (sidebar-header | chart-header / sidebar-body | chart-body). The
+      // right column track is `auto` (NOT `1fr`) so the grid's intrinsic
+      // width = sidebarWidth + max(content) — the wrapper's `overflow: auto`
+      // then sees the chart's natural width and engages horizontal scroll
+      // exactly as it did pre-sidebar. Consumers cap the wrapper's height
+      // (e.g. `max-height: 70vh`) to engage the vertical scroll for sticky.
+      const wrapperStyle: Record<string, string> = hasSidebar
+        ? {
+            overflow: 'auto',
+            display: 'grid',
+            gridTemplateColumns: `${sidebarWidth}px auto`,
+          }
+        : { overflow: 'auto' };
       return h(
         'div',
         {
           class: 'cx-gantt-wrapper',
           'data-axis-view': a.viewId,
-          style: { overflow: 'auto' },
+          style: wrapperStyle,
         },
-        [headerSvg, bodySvg],
+        hasSidebar ? [sidebarHeader, headerSvg, sidebarBody, bodySvg] : [headerSvg, bodySvg],
       );
     };
   },

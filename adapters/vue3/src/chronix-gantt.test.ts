@@ -948,3 +948,172 @@ describe('<ChronixGantt> pointercancel', () => {
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
   });
 });
+
+describe('<ChronixGantt> resource-panel sidebar', () => {
+  const rowsWithNames: readonly RowSpec[] = [
+    { id: 'r1', columns: { region: '海口', vehicle: '车间 A' } },
+    { id: 'r2', columns: { region: '海口', vehicle: '车间 B' } },
+  ];
+
+  it('with no `columns` prop the sidebar renders no DOM (back to the Phase 4.5 two-pane shape)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: rowsWithNames, axisInput },
+    });
+    expect(wrapper.find('.cx-gantt-sidebar-header').exists()).toBe(false);
+    expect(wrapper.find('.cx-gantt-sidebar-body').exists()).toBe(false);
+  });
+
+  it('with an empty `columns: []` the sidebar is omitted (no-op shape)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: rowsWithNames, axisInput, columns: [] },
+    });
+    expect(wrapper.find('.cx-gantt-sidebar-header').exists()).toBe(false);
+    expect(wrapper.find('.cx-gantt-sidebar-body').exists()).toBe(false);
+  });
+
+  it('with columns set, renders one sidebar-header-cell per column carrying the column label', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'vehicle', label: '车间', width: 120 },
+        ],
+      },
+    });
+    const cells = wrapper.findAll('.cx-gantt-sidebar-header-cell');
+    expect(cells).toHaveLength(2);
+    expect(cells[0]!.text()).toBe('地区');
+    expect(cells[0]!.attributes('data-column-key')).toBe('region');
+    expect(cells[1]!.text()).toBe('车间');
+    expect(cells[1]!.attributes('data-column-key')).toBe('vehicle');
+  });
+
+  it('with columns set, renders one sidebar-row per swimlane strip with `data-row-id` attribution', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [{ key: 'region', label: '地区', width: 80 }],
+      },
+    });
+    const sidebarRows = wrapper.findAll('.cx-gantt-sidebar-row');
+    expect(sidebarRows).toHaveLength(2);
+    expect(sidebarRows[0]!.attributes('data-row-id')).toBe('r1');
+    expect(sidebarRows[1]!.attributes('data-row-id')).toBe('r2');
+  });
+
+  it('each sidebar row reads `RowSpec.columns[col.key]` for its cell text', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'vehicle', label: '车间', width: 120 },
+        ],
+      },
+    });
+    const r1Cells = wrapper.findAll('[data-row-id="r1"].cx-gantt-sidebar-cell');
+    expect(r1Cells).toHaveLength(2);
+    expect(r1Cells[0]!.text()).toBe('海口');
+    expect(r1Cells[1]!.text()).toBe('车间 A');
+    const r2Cells = wrapper.findAll('[data-row-id="r2"].cx-gantt-sidebar-cell');
+    expect(r2Cells[1]!.text()).toBe('车间 B');
+  });
+
+  it('missing `RowSpec.columns[key]` resolves to an empty cell rather than `undefined`', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        // r1 has no `notes` field — the cell should fall back to empty.
+        rows: [{ id: 'r1', columns: { region: '海口' } }] as readonly RowSpec[],
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'notes', label: '备注', width: 120 },
+        ],
+      },
+    });
+    const cells = wrapper.findAll('[data-row-id="r1"].cx-gantt-sidebar-cell');
+    expect(cells[1]!.text()).toBe('');
+  });
+
+  it('sidebar row heights match swimlane strip heights (defaultRowHeight=38)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [{ key: 'region', label: '地区', width: 80 }],
+      },
+    });
+    const sidebarRows = wrapper.findAll('.cx-gantt-sidebar-row');
+    for (const row of sidebarRows) {
+      const el = row.element as HTMLElement;
+      expect(el.style.height).toBe('38px');
+    }
+  });
+
+  it('sidebar header height matches the chart header band height (44 = 1 × 20 + 24)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [{ key: 'region', label: '地区', width: 80 }],
+      },
+    });
+    const header = wrapper.find('.cx-gantt-sidebar-header').element as HTMLElement;
+    expect(header.style.height).toBe('44px');
+  });
+
+  it('wrapper switches to `display: grid` with a two-column track template when sidebar is rendered', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'vehicle', label: '车间', width: 120 },
+        ],
+      },
+    });
+    const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
+    expect(root.style.display).toBe('grid');
+    // sidebarWidth = 80 + 120 = 200; right track is `auto` so the grid's
+    // intrinsic width grows with the chart and overflow:auto on the
+    // wrapper engages horizontal scroll.
+    expect(root.style.gridTemplateColumns).toBe('200px auto');
+  });
+
+  it('wrapper stays as a non-grid block when `columns` is omitted', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: rowsWithNames, axisInput },
+    });
+    const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
+    expect(root.style.display).toBe('');
+    expect(root.style.gridTemplateColumns).toBe('');
+  });
+
+  it('with columns set, the header SVG and body SVG still render at the same width (the chart pane is unchanged)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [{ key: 'region', label: '地区', width: 80 }],
+      },
+    });
+    expect(wrapper.find('svg.cx-gantt-header').exists()).toBe(true);
+    expect(wrapper.find('svg.cx-gantt-body').exists()).toBe(true);
+    expect(wrapper.find('svg.cx-gantt-header').attributes('width')).toBe(
+      wrapper.find('svg.cx-gantt-body').attributes('width'),
+    );
+  });
+});
