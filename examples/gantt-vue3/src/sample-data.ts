@@ -1,11 +1,11 @@
-import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
+import type { BarSpec, RowSpec } from '@chronixjs/gantt';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 
 // Local midnight today. The axis planner normalizes anchorDate to local
 // midnight, so bar epochs anchored at the same reference produce
 // `x = startHour × pxPerHour` exactly in any timezone.
-function todayLocalMidnight(): Date {
+export function todayLocalMidnight(): Date {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
   return d;
@@ -48,13 +48,3 @@ export const sampleBars: readonly BarSpec[] = [
   barAt('bar-7', 'workshop-c', 16, 20, '验证测试'),
   barAt('bar-8', 'workshop-d', 4, 11, '综合检修'),
 ];
-
-export function defaultAxisInput(): AxisRangePlanInput {
-  return {
-    viewId: 'day',
-    anchorDate: todayLocalMidnight(),
-    viewportWidth: 1440,
-    locale: 'zh-CN',
-    weekendsVisible: true,
-  };
-}

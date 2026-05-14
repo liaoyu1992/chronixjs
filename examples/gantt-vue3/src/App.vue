@@ -1,10 +1,21 @@
 <script setup lang="ts">
-import type { BarSpec } from '@chronixjs/gantt';
+import type { AxisRangePlanInput, BarSpec } from '@chronixjs/gantt';
 import { ChronixGantt } from '@chronixjs/gantt-vue3';
 import type { BarDropPayload, BarResizePayload, SelectPayload } from '@chronixjs/gantt-vue3';
 import { computed, ref } from 'vue';
 
-import { defaultAxisInput, sampleBars, sampleRows } from './sample-data';
+import { sampleBars, sampleRows, todayLocalMidnight } from './sample-data';
+
+type ViewId = AxisRangePlanInput['viewId'];
+
+const VIEW_TOGGLE: readonly { readonly id: ViewId; readonly label: string }[] = [
+  { id: 'day', label: '日' },
+  { id: 'week', label: '周' },
+  { id: 'month', label: '月' },
+  { id: 'season', label: '季' },
+  { id: 'halfYear', label: '半年' },
+  { id: 'year', label: '年' },
+];
 
 // Reactive copy of the bar set — drag / resize results mutate this in
 // place so the demo shows a real end-to-end round-trip (commit →
@@ -12,6 +23,7 @@ import { defaultAxisInput, sampleBars, sampleRows } from './sample-data';
 const bars = ref<BarSpec[]>(sampleBars.map((b) => ({ ...b })));
 const editable = ref(true);
 const selectable = ref(true);
+const viewId = ref<ViewId>('day');
 
 interface DemoEvent {
   readonly id: number;
@@ -21,7 +33,13 @@ interface DemoEvent {
 const events = ref<DemoEvent[]>([]);
 let nextEventId = 0;
 
-const axisInput = computed(() => defaultAxisInput());
+const axisInput = computed<AxisRangePlanInput>(() => ({
+  viewId: viewId.value,
+  anchorDate: todayLocalMidnight(),
+  viewportWidth: 1440,
+  locale: 'zh-CN',
+  weekendsVisible: true,
+}));
 
 function pushEvent(kind: DemoEvent['kind'], detail: string): void {
   events.value = [...events.value, { id: nextEventId++, kind, detail }].slice(-20);
@@ -77,8 +95,20 @@ function resetBars(): void {
   <div class="cx-demo-app">
     <main class="cx-demo-main">
       <header class="cx-demo-header">
-        <h1>@chronixjs/gantt-vue3 demo · day view</h1>
+        <h1>@chronixjs/gantt-vue3 demo</h1>
         <div class="cx-demo-config">
+          <div class="cx-demo-view-toggle" role="group" aria-label="timeline scale">
+            <button
+              v-for="view in VIEW_TOGGLE"
+              :key="view.id"
+              type="button"
+              class="cx-demo-view-toggle-button"
+              :class="{ active: viewId === view.id }"
+              @click="viewId = view.id"
+            >
+              {{ view.label }}
+            </button>
+          </div>
           <label>
             <input v-model="editable" type="checkbox" />
             editable
