@@ -64,13 +64,15 @@ describe('<ChronixGantt>', () => {
     expect(rects[1]!.attributes('data-bar-id')).toBe('b2');
   });
 
-  it('renders the root svg with chronix-native cx-gantt class and the active view id', () => {
+  it('renders a div.cx-gantt-wrapper root carrying the active view id, with a header SVG + body SVG inside', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
     });
-    const svg = wrapper.find('svg');
-    expect(svg.classes()).toContain('cx-gantt');
-    expect(svg.attributes('data-axis-view')).toBe('day');
+    const root = wrapper.find('div.cx-gantt-wrapper');
+    expect(root.exists()).toBe(true);
+    expect(root.attributes('data-axis-view')).toBe('day');
+    expect(wrapper.find('svg.cx-gantt-header').exists()).toBe(true);
+    expect(wrapper.find('svg.cx-gantt-body').exists()).toBe(true);
   });
 
   it('sizes rects from layout output: width = duration × pxPerMs, x = (start - axisStart) × pxPerMs', () => {
@@ -123,11 +125,10 @@ describe('<ChronixGantt>', () => {
   });
 });
 
-// Default header-band height: `axis.headerRows.length × 20` (one row in
-// day view) + `headerHeight` (24) = 44 px. Bars are translated down by
-// this amount, so SVG-space clientY for content-y N is `N + 44` under
-// happy-dom's zero-origin getBoundingClientRect.
-const DEFAULT_HEADER_BAND_HEIGHT = 44;
+// The body SVG carries all pointer handlers and renders the bar group
+// without any translate — its top edge (y=0) IS content-y 0. Happy-dom
+// returns `{0, 0, ...}` for getBoundingClientRect on un-laid-out SVGs,
+// so clientX/clientY directly equal content-x/content-y in this env.
 
 describe('<ChronixGantt> interactions', () => {
   it('editable: pointerdown on bar body → pointermove → pointerup emits `bar-drop` with shifted range', async () => {
@@ -140,11 +141,8 @@ describe('<ChronixGantt> interactions', () => {
       },
     });
     // Bar 'b1' content bounds: x ∈ [480, 720], y ∈ [8, 38] (day view, hour 8–12).
-    // Happy-dom returns {0,0,…} for getBoundingClientRect on un-laid-out SVG,
-    // so clientX equals contentX in the test environment; clientY is offset
-    // by the full header band (headerRows + tick row) to clear it.
-    const cy = 20 + DEFAULT_HEADER_BAND_HEIGHT;
-    const svg = wrapper.find('svg');
+    const cy = 20;
+    const svg = wrapper.find('svg.cx-gantt-body');
     await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
     await svg.trigger('pointerup', { clientX: 660, clientY: cy, pointerId: 1 });
@@ -170,9 +168,9 @@ describe('<ChronixGantt> interactions', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
+    const svg = wrapper.find('svg.cx-gantt-body');
     // Bar end edge at x=720; default 8-px end zone is [712, 720]. Click 715, drag +60.
-    const cy = 20 + DEFAULT_HEADER_BAND_HEIGHT;
+    const cy = 20;
     await svg.trigger('pointerdown', { clientX: 715, clientY: cy, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 775, clientY: cy, pointerId: 1 });
     await svg.trigger('pointerup', { clientX: 775, clientY: cy, pointerId: 1 });
@@ -198,9 +196,9 @@ describe('<ChronixGantt> interactions', () => {
         selectable: true,
       },
     });
-    const svg = wrapper.find('svg');
+    const svg = wrapper.find('svg.cx-gantt-body');
     // Hour 2 → hour 5 on row r1.
-    const cy = 20 + DEFAULT_HEADER_BAND_HEIGHT;
+    const cy = 20;
     await svg.trigger('pointerdown', { clientX: 120, clientY: cy, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 300, clientY: cy, pointerId: 1 });
     await svg.trigger('pointerup', { clientX: 300, clientY: cy, pointerId: 1 });
@@ -221,8 +219,8 @@ describe('<ChronixGantt> interactions', () => {
         axisInput,
       },
     });
-    const svg = wrapper.find('svg');
-    const cy = 20 + DEFAULT_HEADER_BAND_HEIGHT;
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
     await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
     await svg.trigger('pointerup', { clientX: 660, clientY: cy, pointerId: 1 });
@@ -232,7 +230,12 @@ describe('<ChronixGantt> interactions', () => {
     expect(wrapper.emitted('select')).toBeFalsy();
   });
 
-  it('editable: clientY inside the header band (y < headerBandHeight) does not start a transaction', async () => {
+  it('safety net: synthetic pointerdown with negative content-y on the body SVG starts no transaction', async () => {
+    // The header SVG has no pointer handlers, so in a real browser the
+    // body SVG never receives a negative-content-y event. The body
+    // pointerdown handler keeps an `if (pos.y < 0) return` filter as a
+    // safety net — this test exercises it directly by firing on the body
+    // SVG with a negative clientY (happy-dom's rect.top is 0).
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [bar('b1', 'r1', 8, 12)],
@@ -242,34 +245,14 @@ describe('<ChronixGantt> interactions', () => {
         selectable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    // clientY=10 → contentY = 10 - 44 = -34, inside the header band.
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 10, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 660, clientY: 10, pointerId: 1 });
-    await svg.trigger('pointerup', { clientX: 660, clientY: 10, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: -10, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: -10, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: -10, pointerId: 1 });
 
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
     expect(wrapper.emitted('bar-resize')).toBeFalsy();
     expect(wrapper.emitted('select')).toBeFalsy();
-  });
-
-  it('editable: clientY between header-rows and tick row is still blocked (within band)', async () => {
-    const wrapper = mount(ChronixGantt, {
-      props: {
-        bars: [bar('b1', 'r1', 8, 12)],
-        rows,
-        axisInput,
-        editable: true,
-      },
-    });
-    const svg = wrapper.find('svg');
-    // clientY=30 lands in the tick row (axis.headerRows.length × 20 = 20,
-    // tick row spans [20, 44]). contentY = 30 - 44 = -14, still inside band.
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 30, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 660, clientY: 30, pointerId: 1 });
-    await svg.trigger('pointerup', { clientX: 660, clientY: 30, pointerId: 1 });
-
-    expect(wrapper.emitted('bar-drop')).toBeFalsy();
   });
 });
 
@@ -304,17 +287,17 @@ describe('<ChronixGantt> axis ticks', () => {
     }
   });
 
-  it('SVG height equals contentSize.height + default header band (44 = 1 × 20 + 24)', () => {
+  it('header SVG height = default band (44 = 1 × 20 + 24); body SVG height = contentSize.height (77)', () => {
     // Two rows, defaultRowHeight 38, rowSpacing 1 → contentSize.height = 38 + 1 + 38 = 77.
     // Day view has 1 headerRow; band = 1×20 + 24 = 44.
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
     });
-    const svg = wrapper.find('svg');
-    expect(Number(svg.attributes('height'))).toBe(77 + 44);
+    expect(Number(wrapper.find('svg.cx-gantt-header').attributes('height'))).toBe(44);
+    expect(Number(wrapper.find('svg.cx-gantt-body').attributes('height'))).toBe(77);
   });
 
-  it('custom headerHeight + headerRowHeight: bar group is shifted by their sum', () => {
+  it('custom headerHeight + headerRowHeight: header SVG carries the band height; bar group has no translate', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [bar('b1', 'r1', 8, 12)],
@@ -326,21 +309,22 @@ describe('<ChronixGantt> axis ticks', () => {
     });
     // One bar on r1 → r1 height = 8 + 30 + 4 = 42. r2 stays at 38.
     // Content height: 42 + 1 + 38 = 81. Header band: 1×30 + 40 = 70.
-    const svg = wrapper.find('svg');
-    expect(Number(svg.attributes('height'))).toBe(81 + 70);
+    expect(Number(wrapper.find('svg.cx-gantt-header').attributes('height'))).toBe(70);
+    expect(Number(wrapper.find('svg.cx-gantt-body').attributes('height'))).toBe(81);
+    // Bar group now sits at the body SVG's origin — no transform.
     const barsGroup = wrapper.find('.cx-gantt-bars');
-    expect(barsGroup.attributes('transform')).toBe('translate(0, 70)');
-    // Rect's own y is unchanged (layout y=8); visual shift is via parent <g>.
+    expect(barsGroup.attributes('transform')).toBeUndefined();
+    // Rect's own y comes straight from the layout (y=8).
     const rect = wrapper.find('[data-bar-id="b1"]');
     expect(Number(rect.attributes('y'))).toBe(8);
   });
 
-  it('headerHeight=0 + headerRowHeight=0: no axis-divider, no header cells, SVG height equals contentSize.height', () => {
+  it('headerHeight=0 + headerRowHeight=0: no axis-divider, no header cells, header SVG collapses to height 0', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput, headerHeight: 0, headerRowHeight: 0 },
     });
-    const svg = wrapper.find('svg');
-    expect(Number(svg.attributes('height'))).toBe(77);
+    expect(Number(wrapper.find('svg.cx-gantt-header').attributes('height'))).toBe(0);
+    expect(Number(wrapper.find('svg.cx-gantt-body').attributes('height'))).toBe(77);
     expect(wrapper.find('.cx-gantt-axis-divider').exists()).toBe(false);
     expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(0);
     // Tick lines + labels still render (we don't gate them on headerHeight).
@@ -487,12 +471,12 @@ describe('<ChronixGantt> progress overlay', () => {
         editable: true,
       },
     });
-    // Handle for 50%-progress bar centered at content (600, 23). Default
-    // header band 44 → SVG-y 23+44 = 67. Drag +24 px → +10% → 60%.
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
-    await svg.trigger('pointerup', { clientX: 624, clientY: 67, pointerId: 1 });
+    // Handle for 50%-progress bar centered at content (600, 23). Drag
+    // +24 px → +10% → 60%.
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 23, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 624, clientY: 23, pointerId: 1 });
 
     const emitted = wrapper.emitted('bar-progress');
     expect(emitted).toBeTruthy();
@@ -521,9 +505,9 @@ describe('<ChronixGantt> progress overlay', () => {
     });
     // Pointer at handle center (600, 23) is also inside the bar body —
     // handle wins. Commit fires `bar-progress`, not `bar-drop`.
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
-    await svg.trigger('pointerup', { clientX: 600, clientY: 67, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 600, clientY: 23, pointerId: 1 });
     expect(wrapper.emitted('bar-progress')).toHaveLength(1);
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
   });
@@ -538,11 +522,11 @@ describe('<ChronixGantt> progress overlay', () => {
       },
     });
     // Click far left of the handle (handle x ∈ [594, 606]) — pointer at
-    // content (500, 20), SVG (500, 64). Should resolve to bar-body.
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 500, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 560, clientY: 64, pointerId: 1 });
-    await svg.trigger('pointerup', { clientX: 560, clientY: 64, pointerId: 1 });
+    // content (500, 20). Should resolve to bar-body.
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 500, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 560, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 560, clientY: 20, pointerId: 1 });
     expect(wrapper.emitted('bar-drop')).toHaveLength(1);
     expect(wrapper.emitted('bar-progress')).toBeFalsy();
   });
@@ -576,9 +560,9 @@ describe('<ChronixGantt> progress overlay — live update during drag', () => {
     // Bar at x ∈ [480, 720] (width 240). 50% → handle center x = 600,
     // handle rect x = 594. Drag +24 px in content space → projected 60%
     // → new handle center 480 + 0.6 × 240 = 624, rect x = 618.
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 23, pointerId: 1 });
 
     // Handle has moved BEFORE pointer-up. No bar-progress emit yet.
     const handle = wrapper.find('.cx-gantt-progress-handle');
@@ -595,10 +579,10 @@ describe('<ChronixGantt> progress overlay — live update during drag', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
     // Drag +12 px → projected 55% → fill width 0.55 × 240 = 132.
-    await svg.trigger('pointermove', { clientX: 612, clientY: 67, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 612, clientY: 23, pointerId: 1 });
 
     const fill = wrapper.find('.cx-gantt-progress-fill');
     expect(Number(fill.attributes('width'))).toBe(132);
@@ -613,11 +597,11 @@ describe('<ChronixGantt> progress overlay — live update during drag', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
     // Drag +500 px — projection past 100%. Fill should clamp to bar.width;
     // handle should clamp to bar.x + bar.width − handleSize/2.
-    await svg.trigger('pointermove', { clientX: 1100, clientY: 67, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 1100, clientY: 23, pointerId: 1 });
 
     const fill = wrapper.find('.cx-gantt-progress-fill');
     expect(Number(fill.attributes('width'))).toBe(240); // entire bar
@@ -634,10 +618,10 @@ describe('<ChronixGantt> progress overlay — live update during drag', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
-    await svg.trigger('pointerup', { clientX: 624, clientY: 67, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 23, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 624, clientY: 23, pointerId: 1 });
 
     // bar.progress.value is still 50 (the test doesn't write back; that's
     // the demo's job). With activeTransaction cleared the render falls
@@ -709,10 +693,10 @@ describe('<ChronixGantt> progress overlay — text label', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
     // +24 px → projected 60% on the 240-px-wide bar.
-    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 23, pointerId: 1 });
     expect(wrapper.find('.cx-gantt-progress-label').text()).toBe('60%');
   });
 });
@@ -728,9 +712,9 @@ describe('<ChronixGantt> bar-drag live-update', () => {
       },
     });
     // Bar at content x=480..720, y=8..38. Click center, drag +60 px right.
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 660, clientY: 64, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 20, pointerId: 1 });
 
     const rect = wrapper.find('[data-bar-id="b1"]');
     expect(Number(rect.attributes('x'))).toBe(540); // 480 + 60
@@ -749,10 +733,10 @@ describe('<ChronixGantt> bar-drag live-update', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 64, button: 0, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
     // Move +10 px down (still in content space; clientY shifts by same).
-    await svg.trigger('pointermove', { clientX: 600, clientY: 74, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 600, clientY: 30, pointerId: 1 });
     const rect = wrapper.find('[data-bar-id="b1"]');
     expect(Number(rect.attributes('y'))).toBe(18); // 8 + 10
   });
@@ -766,10 +750,10 @@ describe('<ChronixGantt> bar-drag live-update', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 660, clientY: 64, pointerId: 1 });
-    await svg.trigger('pointerup', { clientX: 660, clientY: 64, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: 20, pointerId: 1 });
 
     // Test doesn't write back; bar.range is unchanged, so the next render
     // shows the bar at its original x=480.
@@ -787,10 +771,10 @@ describe('<ChronixGantt> bar-drag live-update', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
+    const svg = wrapper.find('svg.cx-gantt-body');
     // Click far left of the handle (content x=500), drag +60 right.
-    await svg.trigger('pointerdown', { clientX: 500, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 560, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointerdown', { clientX: 500, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 560, clientY: 20, pointerId: 1 });
 
     // Bar shifted by +60 → x=540. Progress fill (50%) now at renderX=540
     // with width 120; handle centered at 540 + 120 = 660 → rect x=654.
@@ -810,11 +794,11 @@ describe('<ChronixGantt> bar-resize live-update', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
+    const svg = wrapper.find('svg.cx-gantt-body');
     // Bar end edge at content x=720; default 8-px end zone is [712, 720].
     // Click 715, drag +60 px right.
-    await svg.trigger('pointerdown', { clientX: 715, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 775, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointerdown', { clientX: 715, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 775, clientY: 20, pointerId: 1 });
 
     const rect = wrapper.find('[data-bar-id="b1"]');
     expect(Number(rect.attributes('x'))).toBe(480); // start pinned
@@ -830,11 +814,11 @@ describe('<ChronixGantt> bar-resize live-update', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
+    const svg = wrapper.find('svg.cx-gantt-body');
     // Bar start edge at content x=480; 485 is in start zone [480, 488].
     // Drag −30 px left.
-    await svg.trigger('pointerdown', { clientX: 485, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 455, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointerdown', { clientX: 485, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 455, clientY: 20, pointerId: 1 });
 
     const rect = wrapper.find('[data-bar-id="b1"]');
     expect(Number(rect.attributes('x'))).toBe(450); // 480 − 30
@@ -850,11 +834,11 @@ describe('<ChronixGantt> bar-resize live-update', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
+    const svg = wrapper.find('svg.cx-gantt-body');
     // Drag end edge way past the start: pointerdown at end zone, move left
     // 500 px → width would be 240 − 500 = −260. Clamp to 0.
-    await svg.trigger('pointerdown', { clientX: 715, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 215, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointerdown', { clientX: 715, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 215, clientY: 20, pointerId: 1 });
 
     expect(Number(wrapper.find('[data-bar-id="b1"]').attributes('width'))).toBe(0);
   });
@@ -870,10 +854,10 @@ describe('<ChronixGantt> pointercancel', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 660, clientY: 64, pointerId: 1 });
-    await svg.trigger('pointercancel', { clientX: 660, clientY: 64, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointercancel', { clientX: 660, clientY: 20, pointerId: 1 });
 
     // No bar-drop emit; bar rect snaps back to original layout x.
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
@@ -889,10 +873,10 @@ describe('<ChronixGantt> pointercancel', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 715, clientY: 64, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 775, clientY: 64, pointerId: 1 });
-    await svg.trigger('pointercancel', { clientX: 775, clientY: 64, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 715, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 775, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointercancel', { clientX: 775, clientY: 20, pointerId: 1 });
 
     expect(wrapper.emitted('bar-resize')).toBeFalsy();
     // Width reset to the layout's 240.
@@ -908,10 +892,10 @@ describe('<ChronixGantt> pointercancel', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
-    await svg.trigger('pointercancel', { clientX: 624, clientY: 67, pointerId: 1 });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 23, pointerId: 1 });
+    await svg.trigger('pointercancel', { clientX: 624, clientY: 23, pointerId: 1 });
 
     expect(wrapper.emitted('bar-progress')).toBeFalsy();
     // Live preview ended; fill width is back to the persisted 50% × 240 = 120.
@@ -927,9 +911,9 @@ describe('<ChronixGantt> pointercancel', () => {
         editable: true,
       },
     });
-    const svg = wrapper.find('svg');
+    const svg = wrapper.find('svg.cx-gantt-body');
     // No pointerdown — pointercancel arrives unsolicited.
-    await svg.trigger('pointercancel', { clientX: 600, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointercancel', { clientX: 600, clientY: 20, pointerId: 1 });
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
   });
 });

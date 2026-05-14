@@ -140,27 +140,27 @@ describe('<ChronixGantt> progress-handle drag — recording replay', () => {
 
     // chronix layout: bar.x = 0, bar.y = 8, bar.height = 30.
     // Handle (default 12 px) centered at content (bar.x + 0.5 × width, bar.y + 0.5 × height)
-    // = (3030, 23). Default header-band height is 44 (1 × 20 + 24), so
-    // SVG-y for content-y 23 is 67. Happy-dom reports rect.left = 0, so
-    // clientX === contentX in this environment.
+    // = (3030, 23). The body SVG's origin is content-y 0 (header lives in
+    // its own sibling SVG), so clientY equals content-y under happy-dom's
+    // zero-origin getBoundingClientRect.
     const handleContentX = 0 + (beforePct / 100) * RECORDED_BAR_WIDTH_PX;
-    const handleSvgY = 23 + 44;
-    const svg = wrapper.find('svg');
+    const handleContentY = 23;
+    const svg = wrapper.find('svg.cx-gantt-body');
 
     await svg.trigger('pointerdown', {
       clientX: handleContentX,
-      clientY: handleSvgY,
+      clientY: handleContentY,
       button: 0,
       pointerId: 1,
     });
     await svg.trigger('pointermove', {
       clientX: handleContentX + deltaX,
-      clientY: handleSvgY,
+      clientY: handleContentY,
       pointerId: 1,
     });
     await svg.trigger('pointerup', {
       clientX: handleContentX + deltaX,
-      clientY: handleSvgY,
+      clientY: handleContentY,
       pointerId: 1,
     });
 

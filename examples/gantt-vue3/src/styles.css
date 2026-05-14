@@ -123,9 +123,14 @@ body {
   color: #ffffff;
 }
 
-.cx-gantt {
+.cx-gantt-wrapper {
   display: block;
   background: #ffffff;
+}
+
+.cx-gantt-header,
+.cx-gantt-body {
+  display: block;
 }
 
 .cx-gantt-bar {

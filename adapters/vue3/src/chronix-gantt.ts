@@ -12,17 +12,20 @@ import {
 import type { AxisRangePlanInput, BarSpec, RowSpec, TimeRange } from '@chronixjs/gantt';
 
 /**
- * Minimum-viable SVG renderer over `useGanttLayout` + `useGanttPointer`.
+ * Minimum-viable renderer over `useGanttLayout` + `useGanttPointer`.
  *
- * Renders, in this order: zero or more `headerRows` (each row's cells
- * span their `cell.x .. cell.x + cell.width` range, e.g. month names
- * for season/halfYear/year views); the tick row (one line + label per
- * `axis.ticks` entry); and the bar area (`<rect class="cx-gantt-bar"
- * data-bar-id>` per placed bar). Bars are translated down by the total
- * header-band height so their layout y matches `BarPlacementPass`
- * output. When `editable=true` the bar's body becomes drag-able and its
- * 8-px edges resize-able; when `selectable=true` empty-row pointer
- * drags emit a `select` event.
+ * The root is a `<div class="cx-gantt-wrapper">` hosting two SVG
+ * children: a `<svg class="cx-gantt-header">` carrying the header-row
+ * cells (e.g. month bands) stacked on top of the tick row, and a
+ * `<svg class="cx-gantt-body">` carrying the bar area. Pointer handlers
+ * live on the body SVG only — header clicks have no handler, so they
+ * silently no-op. The split surfaces let the wrapper become a single
+ * `overflow:auto` scroll container with the header pinned via
+ * `position: sticky` (landed in the follow-up commit).
+ *
+ * When `editable=true` the bar's body becomes drag-able and its 8-px
+ * edges resize-able; when `selectable=true` empty-row pointer drags
+ * emit a `select` event.
  *
  * The component is intentionally a `defineComponent` with a render
  * function (no `.vue` SFC) so the package builds with just `tsup`, no
@@ -56,9 +59,10 @@ export const ChronixGantt = defineComponent({
     /**
      * Height of each `axis.headerRows` row (the outer bands carrying
      * cells like month names) in logical pixels. The total header band
-     * height is `axis.headerRows.length × headerRowHeight + headerHeight`;
-     * bars are translated down by that. 0 hides every header row (useful
-     * for views where only the tick row matters).
+     * height is `axis.headerRows.length × headerRowHeight + headerHeight`
+     * and becomes the header SVG's height; the body SVG sits flush below
+     * it. 0 hides every header row (useful for views where only the tick
+     * row matters).
      */
     headerRowHeight: { type: Number, default: 20 },
     /** Enable bar drag + edge resize. */
@@ -133,25 +137,21 @@ export const ChronixGantt = defineComponent({
       onBarProgress: (p) => emit('bar-progress', p),
     });
 
-    const svgRef = ref<SVGSVGElement | null>(null);
+    // The body SVG owns pointer interactions. The header SVG has no
+    // handlers — axis-row clicks reach no listener and silently no-op.
+    const bodySvgRef = ref<SVGSVGElement | null>(null);
 
-    // Total header-band height: outer header rows (e.g. month bands)
-    // stacked on top of the inner tick row. Bars are rendered inside a
-    // `<g transform="translate(0, headerBandHeight)">`, so SVG-y
-    // `headerBandHeight` corresponds to content-y `0`. Pointer math
-    // subtracts the same amount to keep the hit-tester operating in the
-    // bar group's coordinate space, unchanged from before the band.
-    const headerBandHeight = computed(
-      () => axis.value.headerRows.length * props.headerRowHeight + props.headerHeight,
-    );
-
+    // Body SVG's origin (y=0) is content-y 0: the bar group sits directly
+    // inside the body SVG with no translate, so `e.clientY - bodyRect.top`
+    // already lives in content-space. The header band is a separate SVG
+    // upstream in the wrapper and contributes nothing to the body's rect.
     function toContentXY(e: PointerEvent): { x: number; y: number } | null {
-      const svg = svgRef.value;
+      const svg = bodySvgRef.value;
       if (!svg) return null;
       const rect = svg.getBoundingClientRect();
       return {
         x: e.clientX - rect.left,
-        y: e.clientY - rect.top - headerBandHeight.value,
+        y: e.clientY - rect.top,
       };
     }
 
@@ -159,16 +159,16 @@ export const ChronixGantt = defineComponent({
       if (e.button !== 0) return; // primary mouse / touch only
       const pos = toContentXY(e);
       if (!pos) return;
-      // Clicks on the axis-tick band have content-y < 0; they never start
-      // a transaction. Without this guard the hit-tester would test
-      // against negative y and (incidentally) miss everything, but the
-      // explicit early-return makes the contract obvious.
+      // Safety net: the body SVG should never receive an event with
+      // negative content-y in a real browser (the header sits in its own
+      // SVG, geometrically above), but synthetic events from tests or
+      // future layouts could violate that — keep the early-return.
       if (pos.y < 0) return;
       pointer.begin(pos.x, pos.y);
       // If a transaction actually started, capture the pointer so move /
       // up events keep flowing even if the cursor leaves the SVG bounds.
-      if (pointer.activeTransaction.value && svgRef.value) {
-        svgRef.value.setPointerCapture?.(e.pointerId);
+      if (pointer.activeTransaction.value && bodySvgRef.value) {
+        bodySvgRef.value.setPointerCapture?.(e.pointerId);
       }
     }
 
@@ -182,7 +182,7 @@ export const ChronixGantt = defineComponent({
     function onPointerup(e: PointerEvent): void {
       if (!pointer.activeTransaction.value) return;
       pointer.commit();
-      svgRef.value?.releasePointerCapture?.(e.pointerId);
+      bodySvgRef.value?.releasePointerCapture?.(e.pointerId);
     }
 
     function onPointercancel(e: PointerEvent): void {
@@ -191,7 +191,7 @@ export const ChronixGantt = defineComponent({
       // OS gesture). Drop the in-flight transaction without firing a
       // commit callback — the user's intent is lost, not finalized.
       pointer.abort();
-      svgRef.value?.releasePointerCapture?.(e.pointerId);
+      bodySvgRef.value?.releasePointerCapture?.(e.pointerId);
     }
 
     return () => {
@@ -200,11 +200,13 @@ export const ChronixGantt = defineComponent({
       const hrh = props.headerRowHeight;
       const headerRowsHeight = a.headerRows.length * hrh;
       const totalHeaderBandHeight = headerRowsHeight + hh;
+      const totalWidth = contentSize.value.width;
+      const bodyHeight = contentSize.value.height;
 
       // Outer header rows (e.g. month bands above day ticks). One <rect>
       // per cell as the band background + a centered <text> for the label.
-      // Rendered first so the tick row + bars draw on top of cell strokes
-      // at shared edges.
+      // Rendered first so the tick row draws on top of cell strokes at
+      // shared edges.
       const headerRowChildren = [];
       if (hrh > 0) {
         for (let rowIdx = 0; rowIdx < a.headerRows.length; rowIdx += 1) {
@@ -284,18 +286,12 @@ export const ChronixGantt = defineComponent({
         );
       }
 
-      return h(
+      const headerSvg = h(
         'svg',
         {
-          ref: svgRef,
-          class: 'cx-gantt',
-          width: contentSize.value.width,
-          height: contentSize.value.height + totalHeaderBandHeight,
-          'data-axis-view': a.viewId,
-          onPointerdown,
-          onPointermove,
-          onPointerup,
-          onPointercancel,
+          class: 'cx-gantt-header',
+          width: totalWidth,
+          height: totalHeaderBandHeight,
         },
         [
           h('g', { class: 'cx-gantt-header-rows' }, headerRowChildren),
@@ -307,138 +303,154 @@ export const ChronixGantt = defineComponent({
             },
             tickChildren,
           ),
-          h(
-            'g',
-            {
-              class: 'cx-gantt-bars',
-              transform: `translate(0, ${totalHeaderBandHeight})`,
-            },
-            placedBars.value.flatMap((bar) => {
-              // Live geometry: when a `bar-drag` or `bar-resize`
-              // transaction is active on THIS bar, shift the rendered
-              // rect by the transaction's `deltaX` / `deltaY`. The
-              // progress fill + handle below read from the same render
-              // geometry so the overlay stays anchored to the bar's
-              // visible body during the drag.
-              const activeTxn = pointer.activeTransaction.value;
-              let renderX = bar.x;
-              let renderY = bar.y;
-              let renderWidth = bar.width;
-              if (activeTxn && 'barId' in activeTxn && activeTxn.barId === bar.barId) {
-                if (activeTxn.kind === 'bar-drag') {
-                  renderX = bar.x + activeTxn.deltaX;
-                  renderY = bar.y + activeTxn.deltaY;
-                } else if (activeTxn.kind === 'bar-resize') {
-                  if (activeTxn.edge === 'start') {
-                    renderX = bar.x + activeTxn.deltaX;
-                    renderWidth = Math.max(0, bar.width - activeTxn.deltaX);
-                  } else {
-                    renderWidth = Math.max(0, bar.width + activeTxn.deltaX);
-                  }
-                }
-              }
-
-              const nodes: ReturnType<typeof h>[] = [
-                h('rect', {
-                  key: bar.barId,
-                  'data-bar-id': bar.barId,
-                  class: 'cx-gantt-bar',
-                  x: renderX,
-                  y: renderY,
-                  width: renderWidth,
-                  height: bar.height,
-                }),
-              ];
-              // Progress fill + handle: only for bars that declared
-              // BOTH `progress` AND `pointerOverlayId`. Progress fill is
-              // a translucent overlay from bar start to the progress-x;
-              // the handle is a small square the user can grab.
-              //
-              // While a progress-handle drag is active on THIS bar, the
-              // displayed progress follows the transaction's live
-              // `projectedProgress` (clamped) instead of the bar's
-              // persisted `progress.value`. This lets the handle visibly
-              // track the pointer mid-drag; on commit the demo writes
-              // the new value back and the render falls through to the
-              // persisted path.
-              const sourceProgress = barProgressById.value.get(bar.barId);
-              const overlayId = overlayIdByBarId.value.get(bar.barId);
-              const sourceBar = props.bars.find((b) => b.id === bar.barId);
-              if (sourceProgress !== undefined && overlayId !== undefined) {
-                const displayedProgress =
-                  activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
-                    ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
-                    : sourceProgress;
-                const clamped = Math.max(0, Math.min(100, displayedProgress));
-                const fillWidth = (clamped / 100) * renderWidth;
-                const handleX = renderX + fillWidth;
-                const handleSize = props.progressHandleSize;
-                nodes.push(
-                  h('rect', {
-                    key: `${bar.barId}-progress-fill`,
-                    'data-progress-bar-id': bar.barId,
-                    class: 'cx-gantt-progress-fill',
-                    x: renderX,
-                    y: renderY,
-                    width: fillWidth,
-                    height: bar.height,
-                    fill: '#10b981',
-                    'fill-opacity': 0.35,
-                    'pointer-events': 'none',
-                  }),
-                  h('rect', {
-                    key: `${bar.barId}-progress-handle`,
-                    'data-progress-bar-id': bar.barId,
-                    'data-overlay-id': overlayId,
-                    class: 'cx-gantt-progress-handle',
-                    x: handleX - handleSize / 2,
-                    y: renderY + bar.height / 2 - handleSize / 2,
-                    width: handleSize,
-                    height: handleSize,
-                    fill: '#059669',
-                    stroke: '#ffffff',
-                    'stroke-width': 1,
-                    // The hit-tester drives this off the bar-rect map;
-                    // we keep DOM pointer-events off so the SVG's
-                    // pointerdown handler resolves through the parent
-                    // group (matches the separate-layer pattern).
-                    'pointer-events': 'none',
-                  }),
-                );
-
-                // Progress text label: `BarProgress.textFormat` template
-                // with `{value}` substituted by the rounded displayed
-                // progress. Suppressed when `BarProgress.showText === false`.
-                // Live-updates because `displayedProgress` already does.
-                const progressMeta = sourceBar?.progress;
-                if (progressMeta?.showText !== false) {
-                  const rounded = Math.round(clamped);
-                  const template = progressMeta?.textFormat ?? '{value}%';
-                  const labelText = template.replace('{value}', String(rounded));
-                  nodes.push(
-                    h(
-                      'text',
-                      {
-                        key: `${bar.barId}-progress-label`,
-                        'data-progress-bar-id': bar.barId,
-                        class: 'cx-gantt-progress-label',
-                        x: renderX + renderWidth / 2,
-                        y: renderY + bar.height / 2 + 4,
-                        'text-anchor': 'middle',
-                        fill: '#064e3b',
-                        'font-size': 11,
-                        'font-weight': 600,
-                        'pointer-events': 'none',
-                      },
-                      labelText,
-                    ),
-                  );
-                }
-              }
-              return nodes;
-            }),
-          ),
         ],
+      );
+
+      const barChildren = placedBars.value.flatMap((bar) => {
+        // Live geometry: when a `bar-drag` or `bar-resize` transaction
+        // is active on THIS bar, shift the rendered rect by the
+        // transaction's `deltaX` / `deltaY`. The progress fill + handle
+        // below read from the same render geometry so the overlay stays
+        // anchored to the bar's visible body during the drag.
+        const activeTxn = pointer.activeTransaction.value;
+        let renderX = bar.x;
+        let renderY = bar.y;
+        let renderWidth = bar.width;
+        if (activeTxn && 'barId' in activeTxn && activeTxn.barId === bar.barId) {
+          if (activeTxn.kind === 'bar-drag') {
+            renderX = bar.x + activeTxn.deltaX;
+            renderY = bar.y + activeTxn.deltaY;
+          } else if (activeTxn.kind === 'bar-resize') {
+            if (activeTxn.edge === 'start') {
+              renderX = bar.x + activeTxn.deltaX;
+              renderWidth = Math.max(0, bar.width - activeTxn.deltaX);
+            } else {
+              renderWidth = Math.max(0, bar.width + activeTxn.deltaX);
+            }
+          }
+        }
+
+        const nodes: ReturnType<typeof h>[] = [
+          h('rect', {
+            key: bar.barId,
+            'data-bar-id': bar.barId,
+            class: 'cx-gantt-bar',
+            x: renderX,
+            y: renderY,
+            width: renderWidth,
+            height: bar.height,
+          }),
+        ];
+        // Progress fill + handle: only for bars that declared BOTH
+        // `progress` AND `pointerOverlayId`. Progress fill is a
+        // translucent overlay from bar start to the progress-x; the
+        // handle is a small square the user can grab.
+        //
+        // While a progress-handle drag is active on THIS bar, the
+        // displayed progress follows the transaction's live
+        // `projectedProgress` (clamped) instead of the bar's persisted
+        // `progress.value`. This lets the handle visibly track the
+        // pointer mid-drag; on commit the demo writes the new value
+        // back and the render falls through to the persisted path.
+        const sourceProgress = barProgressById.value.get(bar.barId);
+        const overlayId = overlayIdByBarId.value.get(bar.barId);
+        const sourceBar = props.bars.find((b) => b.id === bar.barId);
+        if (sourceProgress !== undefined && overlayId !== undefined) {
+          const displayedProgress =
+            activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
+              ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
+              : sourceProgress;
+          const clamped = Math.max(0, Math.min(100, displayedProgress));
+          const fillWidth = (clamped / 100) * renderWidth;
+          const handleX = renderX + fillWidth;
+          const handleSize = props.progressHandleSize;
+          nodes.push(
+            h('rect', {
+              key: `${bar.barId}-progress-fill`,
+              'data-progress-bar-id': bar.barId,
+              class: 'cx-gantt-progress-fill',
+              x: renderX,
+              y: renderY,
+              width: fillWidth,
+              height: bar.height,
+              fill: '#10b981',
+              'fill-opacity': 0.35,
+              'pointer-events': 'none',
+            }),
+            h('rect', {
+              key: `${bar.barId}-progress-handle`,
+              'data-progress-bar-id': bar.barId,
+              'data-overlay-id': overlayId,
+              class: 'cx-gantt-progress-handle',
+              x: handleX - handleSize / 2,
+              y: renderY + bar.height / 2 - handleSize / 2,
+              width: handleSize,
+              height: handleSize,
+              fill: '#059669',
+              stroke: '#ffffff',
+              'stroke-width': 1,
+              // The hit-tester drives this off the bar-rect map; we keep
+              // DOM pointer-events off so the SVG's pointerdown handler
+              // resolves through the parent group (matches the
+              // separate-layer pattern).
+              'pointer-events': 'none',
+            }),
+          );
+
+          // Progress text label: `BarProgress.textFormat` template with
+          // `{value}` substituted by the rounded displayed progress.
+          // Suppressed when `BarProgress.showText === false`. Live-updates
+          // because `displayedProgress` already does.
+          const progressMeta = sourceBar?.progress;
+          if (progressMeta?.showText !== false) {
+            const rounded = Math.round(clamped);
+            const template = progressMeta?.textFormat ?? '{value}%';
+            const labelText = template.replace('{value}', String(rounded));
+            nodes.push(
+              h(
+                'text',
+                {
+                  key: `${bar.barId}-progress-label`,
+                  'data-progress-bar-id': bar.barId,
+                  class: 'cx-gantt-progress-label',
+                  x: renderX + renderWidth / 2,
+                  y: renderY + bar.height / 2 + 4,
+                  'text-anchor': 'middle',
+                  fill: '#064e3b',
+                  'font-size': 11,
+                  'font-weight': 600,
+                  'pointer-events': 'none',
+                },
+                labelText,
+              ),
+            );
+          }
+        }
+        return nodes;
+      });
+
+      const bodySvg = h(
+        'svg',
+        {
+          ref: bodySvgRef,
+          class: 'cx-gantt-body',
+          width: totalWidth,
+          height: bodyHeight,
+          onPointerdown,
+          onPointermove,
+          onPointerup,
+          onPointercancel,
+        },
+        [h('g', { class: 'cx-gantt-bars' }, barChildren)],
+      );
+
+      return h(
+        'div',
+        {
+          class: 'cx-gantt-wrapper',
+          'data-axis-view': a.viewId,
+        },
+        [headerSvg, bodySvg],
       );
     };
   },
