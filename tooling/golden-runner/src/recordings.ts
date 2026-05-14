@@ -2,6 +2,7 @@ import {
   PROGRESS_TRIANGLE,
   REF_ATTR_NAMES,
   TIMELINE_BODY_RIGHT,
+  TIMELINE_BODY_WRAPPER,
   eventBarByInstance,
   eventBarBySource,
   resourceRowBy,
@@ -212,15 +213,22 @@ export const INTERACTION_RECORDINGS: InteractionRecording[] = [
   {
     id: 'select-to-create',
     description:
-      'Drag horizontally on an empty row to define a new date range. ' +
-      "Auto-dismisses the upstream's create-confirm dialog so the recording " +
-      'completes cleanly. Validates CalendarRangeSelectTransaction parity ' +
-      '(commit math: resolvedRange.start = min, end = max).',
+      "Drag horizontally on an empty row (12车间, no events in today's day " +
+      "view) to define a new date range. Auto-dismisses the upstream's " +
+      'title-prompt so teardown stays clean. Captures the pointer-event ' +
+      'flow + the body-wrapper offset; parity is asserted by the slot- ' +
+      'width and bar-placement parity tests (the pixel↔time math is shared ' +
+      'with CalendarRangeSelect, so a dedicated commit-result parity would ' +
+      'be tautological — see audit/journal/2026-05-13.md for the analysis).',
     viewToggleLabel: '日',
     async perform({ page, chart, snapshot, log }) {
-      // The demo wires a `select` callback that pops `window.confirm()` on
-      // pointer-up. Auto-dismiss so the recording teardown stays clean —
-      // we're recording the pointer-event flow, not asserting the create.
+      // Auto-dismiss the upstream's title prompt. We do NOT accept it with a
+      // sentinel: confirmed empirically that the demo creates the event in
+      // its store but the scheduler doesn't re-render a bar for it in day
+      // view (likely an allDay/view-filter quirk). Without a rendered bar
+      // there's no oracle to compare chronix's commit against, and the
+      // commit math is anyway redundant with the other parity tests — see
+      // the journal entry. Dismiss is the clean teardown.
       page.on('dialog', (dialog) => {
         void dialog.dismiss();
       });
@@ -229,12 +237,17 @@ export const INTERACTION_RECORDINGS: InteractionRecording[] = [
       const bodyBox = await bodyRight.boundingBox();
       if (!bodyBox) throw new Error('timeline body-right pane not found');
 
-      // The "待排" row (id='32') in HAK-G base — its only event (event-1)
-      // sits before today's range, so today's day-view body strip is empty.
-      // Use the resource-panel TR for its y; the body strip aligns vertically.
-      const targetRow = page.locator(resourceRowBy('32')).first();
+      // Capture the wrapper's left edge for the parity test's reference.
+      const wrapper = chart.locator(TIMELINE_BODY_WRAPPER).first();
+      const wrapperBox = await wrapper.boundingBox();
+      if (!wrapperBox) throw new Error('timeline body wrapper not found');
+
+      // Resource row '12' (空港维修基地 - 12车间) — its only event in the
+      // test set (event-25, dayPlus15 → dayPlus30) is far outside today's
+      // day-view range, so the body strip for this row is empty.
+      const targetRow = page.locator(resourceRowBy('12')).first();
       const rowBox = await targetRow.boundingBox();
-      if (!rowBox) throw new Error('resource row 32 not found');
+      if (!rowBox) throw new Error('resource row 12 not found');
       const clickY = rowBox.y + rowBox.height / 2;
 
       const startX = bodyBox.x + 100; // ~hour 1.7 of day view (60px = 1h)
@@ -244,7 +257,13 @@ export const INTERACTION_RECORDINGS: InteractionRecording[] = [
       }
 
       await snapshot('before');
-      log({ kind: 'state', when: 'before', rowId: '32', rowBbox: rowBox });
+      log({
+        kind: 'state',
+        when: 'before',
+        rowId: '12',
+        rowBbox: rowBox,
+        wrapperLeft: wrapperBox.x,
+      });
 
       await page.mouse.move(startX, clickY);
       log({ kind: 'pointer-move', x: startX, y: clickY });
@@ -259,7 +278,7 @@ export const INTERACTION_RECORDINGS: InteractionRecording[] = [
       log({ kind: 'pointer-up', x: endX, y: clickY });
       await page.waitForTimeout(150);
 
-      log({ kind: 'state', when: 'after', rowId: '32' });
+      log({ kind: 'state', when: 'after', rowId: '12' });
 
       await snapshot('after');
     },

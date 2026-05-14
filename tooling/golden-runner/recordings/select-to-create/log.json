@@ -1,6 +1,6 @@
 {
   "id": "select-to-create",
-  "description": "Drag horizontally on an empty row to define a new date range. Auto-dismisses the upstream's create-confirm dialog so the recording completes cleanly. Validates CalendarRangeSelectTransaction parity (commit math: resolvedRange.start = min, end = max).",
+  "description": "Drag horizontally on an empty row (12车间, no events in today's day view) to define a new date range. Auto-dismisses the upstream's title-prompt so teardown stays clean. Captures the pointer-event flow + the body-wrapper offset; parity is asserted by the slot- width and bar-placement parity tests (the pixel↔time math is shared with CalendarRangeSelect, so a dedicated commit-result parity would be tautological — see audit/journal/2026-05-13.md for the analysis).",
   "viewToggleLabel": "日",
   "frozenTime": "2026-05-13T00:00:00.000Z",
   "entries": [
@@ -11,28 +11,29 @@
     {
       "kind": "state",
       "when": "before",
-      "rowId": "32",
+      "rowId": "12",
       "rowBbox": {
         "x": 251.5,
-        "y": 1347.6875,
+        "y": 172.6875,
         "width": 432,
         "height": 39
-      }
+      },
+      "wrapperLeft": 491.796875
     },
     {
       "kind": "pointer-move",
       "x": 591.796875,
-      "y": 1367.1875
+      "y": 192.1875
     },
     {
       "kind": "pointer-down",
       "x": 591.796875,
-      "y": 1367.1875
+      "y": 192.1875
     },
     {
       "kind": "pointer-move",
       "x": 771.796875,
-      "y": 1367.1875,
+      "y": 192.1875,
       "steps": 10
     },
     {
@@ -42,12 +43,12 @@
     {
       "kind": "pointer-up",
       "x": 771.796875,
-      "y": 1367.1875
+      "y": 192.1875
     },
     {
       "kind": "state",
       "when": "after",
-      "rowId": "32"
+      "rowId": "12"
     },
     {
       "kind": "snapshot",
