@@ -255,6 +255,103 @@ describe('defaultPointerHitTester — overlay-id pass-through', () => {
   });
 });
 
+describe('defaultPointerHitTester — progress-handle zone', () => {
+  // bar 'b1' at x ∈ [100, 300], y ∈ [8, 38]. Handle rect centered at the
+  // 50%-progress point: handleX = 100 + 0.5 × 200 = 200. Box 12×12 centered.
+  const handleCentered: PlacedBar[] = [{ barId: 'b1', x: 100, y: 8, width: 200, height: 30 }];
+  const oneStrip: SwimlaneStrip[] = [{ rowId: 'r1', y: 0, height: 40 }];
+  const progressHandleByBarId = new Map([['b1', { x: 194, y: 17, width: 12, height: 12 }]]);
+
+  it('hits progress-handle when pointer lands inside the rect', () => {
+    const result = defaultPointerHitTester.test({
+      contentX: 200,
+      contentY: 23,
+      placedBars: handleCentered,
+      strips: oneStrip,
+      progressHandleByBarId,
+    });
+    expect(result).toEqual({ kind: 'progress-handle', barId: 'b1' });
+  });
+
+  it('progress-handle takes precedence over bar-body within the same bar', () => {
+    // Pointer (200, 23) is in BOTH the handle rect AND the bar body. Handle wins.
+    const result = defaultPointerHitTester.test({
+      contentX: 200,
+      contentY: 23,
+      placedBars: handleCentered,
+      strips: oneStrip,
+      progressHandleByBarId,
+    });
+    expect(result?.kind).toBe('progress-handle');
+  });
+
+  it('falls through to bar-body when pointer is outside the handle rect', () => {
+    const result = defaultPointerHitTester.test({
+      contentX: 150, // inside bar but outside handle x ∈ [194, 206]
+      contentY: 23,
+      placedBars: handleCentered,
+      strips: oneStrip,
+      progressHandleByBarId,
+    });
+    expect(result).toEqual({ kind: 'bar-body', barId: 'b1' });
+  });
+
+  it('progress-handle hit attaches overlayId when the bar declared one', () => {
+    const overlayIdByBarId = new Map([['b1', 'progress-handle-overlay']]);
+    const result = defaultPointerHitTester.test({
+      contentX: 200,
+      contentY: 23,
+      placedBars: handleCentered,
+      strips: oneStrip,
+      progressHandleByBarId,
+      overlayIdByBarId,
+    });
+    expect(result).toEqual({
+      kind: 'progress-handle',
+      barId: 'b1',
+      overlayId: 'progress-handle-overlay',
+    });
+  });
+
+  it('handle that protrudes below the bar still hits (protruding-triangle pattern)', () => {
+    // Handle dipping 6 px below the bar bottom (bar ends at y=38, handle at y=32..50).
+    const protruding = new Map([['b1', { x: 194, y: 32, width: 12, height: 18 }]]);
+    const result = defaultPointerHitTester.test({
+      contentX: 200,
+      contentY: 45, // below bar bounds (y > 38) but inside handle rect
+      placedBars: handleCentered,
+      strips: oneStrip,
+      progressHandleByBarId: protruding,
+    });
+    expect(result).toEqual({ kind: 'progress-handle', barId: 'b1' });
+  });
+
+  it('handle for a bar that no longer exists in placedBars is ignored', () => {
+    // The map references 'ghost' but placedBars only contains 'b1'.
+    const ghostMap = new Map([['ghost', { x: 0, y: 0, width: 1000, height: 1000 }]]);
+    const result = defaultPointerHitTester.test({
+      contentX: 500,
+      contentY: 500,
+      placedBars: handleCentered,
+      strips: oneStrip,
+      progressHandleByBarId: ghostMap,
+    });
+    // (500, 500) is outside b1 AND outside any strip → null.
+    expect(result).toBeNull();
+  });
+
+  it('omitted progressHandleByBarId means handle path is fully disabled', () => {
+    const result = defaultPointerHitTester.test({
+      contentX: 200,
+      contentY: 23,
+      placedBars: handleCentered,
+      strips: oneStrip,
+    });
+    // No handle map → ordinary bar-body resolution.
+    expect(result).toEqual({ kind: 'bar-body', barId: 'b1' });
+  });
+});
+
 describe('defaultPointerHitTester — degenerate inputs', () => {
   it('empty placedBars + empty strips → null', () => {
     expect(

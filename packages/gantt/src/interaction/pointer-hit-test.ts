@@ -7,6 +7,11 @@ import type { PlacedBar, SwimlaneStrip } from '../layout/types.js';
  * - `'bar-body'` → `BarDragTransaction`
  * - `'bar-edge-start'` / `'bar-edge-end'` → `BarResizeTransaction` with the
  *   matching edge
+ * - `'progress-handle'` → `ProgressHandleTransaction`. The handle is a
+ *   small per-bar rect that the caller supplies via
+ *   `progressHandleByBarId`; it takes precedence over the bar's own
+ *   body / edge zones, and may extend slightly past the bar's bounding
+ *   box (matches the reference's protruding-triangle visual).
  * - `'empty-row'` → `CalendarRangeSelectTransaction` (the adapter converts
  *   `contentX` to a time via the axis)
  *
@@ -19,6 +24,7 @@ export type PointerHitResult =
   | { readonly kind: 'bar-body'; readonly barId: string; readonly overlayId?: string }
   | { readonly kind: 'bar-edge-start'; readonly barId: string; readonly overlayId?: string }
   | { readonly kind: 'bar-edge-end'; readonly barId: string; readonly overlayId?: string }
+  | { readonly kind: 'progress-handle'; readonly barId: string; readonly overlayId?: string }
   | { readonly kind: 'empty-row'; readonly rowId: string };
 
 export interface PointerHitTestInput {
@@ -56,6 +62,23 @@ export interface PointerHitTestInput {
    * `PointerHitResult` carries `overlayId`.
    */
   readonly overlayIdByBarId?: ReadonlyMap<string, string>;
+  /**
+   * Optional per-bar progress-handle rect, in TIMELINE-BODY CONTENT space
+   * (same coords as `PlacedBar.x / y`). When set AND the pointer lands
+   * inside the rect, the resulting hit kind is `'progress-handle'`,
+   * overriding the bar's body / edge zones. The rect can extend slightly
+   * past the bar's bounding box — the reference's progress triangle
+   * protrudes below the bar by a few pixels, and the hit zone follows
+   * the visible shape, not the underlying rect.
+   *
+   * Callers compute the rect from `BarSpec.progress` + `PlacedBar` (e.g.
+   * `handleX = bar.x + progress/100 × bar.width`); the hit-tester stays
+   * geometry-only and is not aware of the percent-to-pixel formula.
+   */
+  readonly progressHandleByBarId?: ReadonlyMap<
+    string,
+    { readonly x: number; readonly y: number; readonly width: number; readonly height: number }
+  >;
   /**
    * Width of each bar's edge resize zone in pixels. Default 8. When the
    * bar is narrower than `2 × edgeZoneWidth`, the two edge zones collide;
@@ -97,13 +120,33 @@ function hitZoneInBar(
 export const defaultPointerHitTester: PointerHitTester = {
   test(input) {
     const edgeZoneWidth = input.edgeZoneWidth ?? 8;
-    const { contentX, contentY, placedBars, strips, overlayIdByBarId } = input;
+    const { contentX, contentY, placedBars, strips, overlayIdByBarId, progressHandleByBarId } =
+      input;
 
     // Walk bars top-down (later in array = on top). The last matching
     // bar wins on overlap; this matches the natural paint order from
     // BarPlacementPass output.
     for (let i = placedBars.length - 1; i >= 0; i -= 1) {
       const bar = placedBars[i]!;
+
+      // Progress-handle rect is checked first because it can extend past
+      // the bar's bounding box (a triangle protruding below the body).
+      // The rect is the visible hit shape; we don't intersect it with
+      // the bar bounds.
+      const handle = progressHandleByBarId?.get(bar.barId);
+      if (
+        handle &&
+        contentX >= handle.x &&
+        contentX <= handle.x + handle.width &&
+        contentY >= handle.y &&
+        contentY <= handle.y + handle.height
+      ) {
+        const overlayId = overlayIdByBarId?.get(bar.barId);
+        return overlayId !== undefined
+          ? { kind: 'progress-handle', barId: bar.barId, overlayId }
+          : { kind: 'progress-handle', barId: bar.barId };
+      }
+
       if (
         contentX < bar.x ||
         contentX > bar.x + bar.width ||
