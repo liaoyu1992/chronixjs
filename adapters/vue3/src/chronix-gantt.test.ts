@@ -1116,4 +1116,57 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
       wrapper.find('svg.cx-gantt-body').attributes('width'),
     );
   });
+
+  it('sidebar-header has inline `position: sticky; top: 0; left: 0` so it pins to the wrapper top-left corner under any scroll', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [{ key: 'region', label: '地区', width: 80 }],
+      },
+    });
+    const header = wrapper.find('.cx-gantt-sidebar-header').element as HTMLElement;
+    expect(header.style.position).toBe('sticky');
+    expect(header.style.top).toBe('0px');
+    expect(header.style.left).toBe('0px');
+    // Opaque background prevents body bars from bleeding through during
+    // horizontal scroll.
+    expect(header.style.background).not.toBe('');
+  });
+
+  it('sidebar-body has inline `position: sticky; left: 0` so it stays put during horizontal scroll', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [{ key: 'region', label: '地区', width: 80 }],
+      },
+    });
+    const body = wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement;
+    expect(body.style.position).toBe('sticky');
+    expect(body.style.left).toBe('0px');
+    // Opaque background ditto.
+    expect(body.style.background).not.toBe('');
+  });
+
+  it('z-index ladder is monotone: sidebar-header > chart-header > sidebar-body', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [{ key: 'region', label: '地区', width: 80 }],
+      },
+    });
+    const sh = (wrapper.find('.cx-gantt-sidebar-header').element as HTMLElement).style.zIndex;
+    const ch = (wrapper.find('svg.cx-gantt-header').element as unknown as SVGSVGElement).style
+      .zIndex;
+    const sb = (wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement).style.zIndex;
+    // Strict monotone ordering ensures correct paint stacking when both
+    // axes scroll and the top-left corner of each pane overlaps.
+    expect(Number(sh)).toBeGreaterThan(Number(ch));
+    expect(Number(ch)).toBeGreaterThan(Number(sb));
+  });
 });

@@ -321,9 +321,11 @@ export const ChronixGantt = defineComponent({
       // Header is pinned to the top of the wrapper's scrollport so the
       // tick row + outer header bands stay visible while the body scrolls
       // vertically. `background` is opaque so bars don't bleed through
-      // while sliding under the band. `z-index: 1` keeps the header
-      // painted above the body in the (very unlikely) case that the body
-      // SVG overflows its own box upward.
+      // while sliding under the band. `z-index: 2` slots it between the
+      // sidebar-header (3, top-left corner) above and the sidebar-body
+      // (1) below — when both axes scroll, the chart-header passes
+      // BEHIND the sidebar-header at the corner and AHEAD of the
+      // sidebar-body at the time-row strip.
       const headerSvg = h(
         'svg',
         {
@@ -334,7 +336,7 @@ export const ChronixGantt = defineComponent({
             display: 'block',
             position: 'sticky',
             top: '0',
-            zIndex: 1,
+            zIndex: 2,
             background: '#ffffff',
           },
         },
@@ -503,6 +505,11 @@ export const ChronixGantt = defineComponent({
         sidebarWidth = cols.reduce((sum, c) => sum + c.width, 0);
         const colTemplate = cols.map((c) => `${c.width}px`).join(' ');
 
+        // sidebar-header pins to both top and left so the top-left
+        // corner stays visible during any combination of horizontal +
+        // vertical scroll. `z-index: 3` keeps it above the chart-header
+        // (z-index 2) and the sidebar-body (z-index 1) at the corner
+        // where they geometrically intersect during a diagonal scroll.
         sidebarHeader = h(
           'div',
           {
@@ -514,6 +521,10 @@ export const ChronixGantt = defineComponent({
               boxSizing: 'border-box',
               borderBottom: '1px solid #9ca3af',
               background: '#ffffff',
+              position: 'sticky',
+              top: '0',
+              left: '0',
+              zIndex: 3,
             },
           },
           cols.map((col) =>
@@ -546,6 +557,11 @@ export const ChronixGantt = defineComponent({
         // One row per swimlane strip. Heights match strip heights;
         // `gap: rowSpacing` between rows matches the body's strip-to-strip
         // spacing so sidebar cells line up vertically with their bar rows.
+        // sidebar-body pins to the left so it stays visible during
+        // horizontal scroll; vertical scroll moves it together with the
+        // body SVG (both share the wrapper's vertical scroll). `z-index: 1`
+        // keeps it above the chart-body during paint without competing
+        // with the headers.
         const rowsById = new Map(props.rows.map((r) => [r.id, r]));
         sidebarBody = h(
           'div',
@@ -556,6 +572,9 @@ export const ChronixGantt = defineComponent({
               flexDirection: 'column',
               gap: `${props.rowSpacing}px`,
               background: '#ffffff',
+              position: 'sticky',
+              left: '0',
+              zIndex: 1,
             },
           },
           strips.value.map((strip) => {
