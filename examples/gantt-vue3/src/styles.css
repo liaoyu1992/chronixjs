@@ -1,0 +1,154 @@
+:root {
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 14px;
+  color: #1f2937;
+  background: #f3f4f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.cx-demo-app {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  min-height: 100vh;
+  gap: 1px;
+  background: #d1d5db;
+}
+
+.cx-demo-main {
+  background: #ffffff;
+  padding: 16px 24px;
+  overflow: auto;
+}
+
+.cx-demo-side {
+  background: #ffffff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.cx-demo-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.cx-demo-header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.cx-demo-header .cx-demo-config {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.cx-demo-config label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.cx-demo-svg-frame {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f9fafb;
+}
+
+.cx-gantt {
+  display: block;
+  background: #ffffff;
+}
+
+.cx-gantt-bar {
+  fill: #3b82f6;
+  stroke: #1e40af;
+  stroke-width: 1;
+  rx: 3;
+  ry: 3;
+  cursor: move;
+}
+
+.cx-demo-side h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #4b5563;
+}
+
+.cx-demo-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.cx-demo-event {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-left: 3px solid #3b82f6;
+  background: #f3f4f6;
+  border-radius: 0 4px 4px 0;
+}
+
+.cx-demo-event.kind-bar-drop {
+  border-left-color: #10b981;
+}
+
+.cx-demo-event.kind-bar-resize {
+  border-left-color: #f59e0b;
+}
+
+.cx-demo-event.kind-select {
+  border-left-color: #6366f1;
+}
+
+.cx-demo-event-kind {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.cx-demo-event-detail {
+  color: #4b5563;
+  word-break: break-all;
+}
+
+.cx-demo-empty {
+  font-size: 12px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.cx-demo-footer {
+  font-size: 11px;
+  color: #6b7280;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 8px;
+  line-height: 1.5;
+}
