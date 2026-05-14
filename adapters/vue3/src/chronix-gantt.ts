@@ -304,14 +304,38 @@ export const ChronixGantt = defineComponent({
               transform: `translate(0, ${totalHeaderBandHeight})`,
             },
             placedBars.value.flatMap((bar) => {
+              // Live geometry: when a `bar-drag` or `bar-resize`
+              // transaction is active on THIS bar, shift the rendered
+              // rect by the transaction's `deltaX` / `deltaY`. The
+              // progress fill + handle below read from the same render
+              // geometry so the overlay stays anchored to the bar's
+              // visible body during the drag.
+              const activeTxn = pointer.activeTransaction.value;
+              let renderX = bar.x;
+              let renderY = bar.y;
+              let renderWidth = bar.width;
+              if (activeTxn && 'barId' in activeTxn && activeTxn.barId === bar.barId) {
+                if (activeTxn.kind === 'bar-drag') {
+                  renderX = bar.x + activeTxn.deltaX;
+                  renderY = bar.y + activeTxn.deltaY;
+                } else if (activeTxn.kind === 'bar-resize') {
+                  if (activeTxn.edge === 'start') {
+                    renderX = bar.x + activeTxn.deltaX;
+                    renderWidth = Math.max(0, bar.width - activeTxn.deltaX);
+                  } else {
+                    renderWidth = Math.max(0, bar.width + activeTxn.deltaX);
+                  }
+                }
+              }
+
               const nodes: ReturnType<typeof h>[] = [
                 h('rect', {
                   key: bar.barId,
                   'data-bar-id': bar.barId,
                   class: 'cx-gantt-bar',
-                  x: bar.x,
-                  y: bar.y,
-                  width: bar.width,
+                  x: renderX,
+                  y: renderY,
+                  width: renderWidth,
                   height: bar.height,
                 }),
               ];
@@ -331,22 +355,21 @@ export const ChronixGantt = defineComponent({
               const overlayId = overlayIdByBarId.value.get(bar.barId);
               const sourceBar = props.bars.find((b) => b.id === bar.barId);
               if (sourceProgress !== undefined && overlayId !== undefined) {
-                const activeTxn = pointer.activeTransaction.value;
                 const displayedProgress =
                   activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
                     ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
                     : sourceProgress;
                 const clamped = Math.max(0, Math.min(100, displayedProgress));
-                const fillWidth = (clamped / 100) * bar.width;
-                const handleX = bar.x + fillWidth;
+                const fillWidth = (clamped / 100) * renderWidth;
+                const handleX = renderX + fillWidth;
                 const handleSize = props.progressHandleSize;
                 nodes.push(
                   h('rect', {
                     key: `${bar.barId}-progress-fill`,
                     'data-progress-bar-id': bar.barId,
                     class: 'cx-gantt-progress-fill',
-                    x: bar.x,
-                    y: bar.y,
+                    x: renderX,
+                    y: renderY,
                     width: fillWidth,
                     height: bar.height,
                     fill: '#10b981',
@@ -359,7 +382,7 @@ export const ChronixGantt = defineComponent({
                     'data-overlay-id': overlayId,
                     class: 'cx-gantt-progress-handle',
                     x: handleX - handleSize / 2,
-                    y: bar.y + bar.height / 2 - handleSize / 2,
+                    y: renderY + bar.height / 2 - handleSize / 2,
                     width: handleSize,
                     height: handleSize,
                     fill: '#059669',
@@ -389,8 +412,8 @@ export const ChronixGantt = defineComponent({
                         key: `${bar.barId}-progress-label`,
                         'data-progress-bar-id': bar.barId,
                         class: 'cx-gantt-progress-label',
-                        x: bar.x + bar.width / 2,
-                        y: bar.y + bar.height / 2 + 4,
+                        x: renderX + renderWidth / 2,
+                        y: renderY + bar.height / 2 + 4,
                         'text-anchor': 'middle',
                         fill: '#064e3b',
                         'font-size': 11,

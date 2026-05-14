@@ -716,3 +716,146 @@ describe('<ChronixGantt> progress overlay — text label', () => {
     expect(wrapper.find('.cx-gantt-progress-label').text()).toBe('60%');
   });
 });
+
+describe('<ChronixGantt> bar-drag live-update', () => {
+  it('mid-drag pointermove shifts the rendered bar rect x by deltaX', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    // Bar at content x=480..720, y=8..38. Click center, drag +60 px right.
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 64, pointerId: 1 });
+
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(Number(rect.attributes('x'))).toBe(540); // 480 + 60
+    expect(Number(rect.attributes('width'))).toBe(240); // unchanged
+    expect(Number(rect.attributes('y'))).toBe(8); // unchanged (no y delta yet)
+    // No commit yet.
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+  });
+
+  it('mid-drag pointermove shifts y when the pointer moves vertically', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 64, button: 0, pointerId: 1 });
+    // Move +10 px down (still in content space; clientY shifts by same).
+    await svg.trigger('pointermove', { clientX: 600, clientY: 74, pointerId: 1 });
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(Number(rect.attributes('y'))).toBe(18); // 8 + 10
+  });
+
+  it('after pointer-up commit the live preview ends; rect x is back to layout value', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: 64, pointerId: 1 });
+
+    // Test doesn't write back; bar.range is unchanged, so the next render
+    // shows the bar at its original x=480.
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(Number(rect.attributes('x'))).toBe(480);
+    expect(wrapper.emitted('bar-drop')).toHaveLength(1);
+  });
+
+  it('progress fill + handle + label track the bar during a bar-drag (anchored to render geometry)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    // Click far left of the handle (content x=500), drag +60 right.
+    await svg.trigger('pointerdown', { clientX: 500, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 560, clientY: 64, pointerId: 1 });
+
+    // Bar shifted by +60 → x=540. Progress fill (50%) now at renderX=540
+    // with width 120; handle centered at 540 + 120 = 660 → rect x=654.
+    expect(Number(wrapper.find('[data-bar-id="b1"]').attributes('x'))).toBe(540);
+    expect(Number(wrapper.find('.cx-gantt-progress-fill').attributes('x'))).toBe(540);
+    expect(Number(wrapper.find('.cx-gantt-progress-handle').attributes('x'))).toBe(654);
+  });
+});
+
+describe('<ChronixGantt> bar-resize live-update', () => {
+  it('end-edge mid-drag grows the rendered bar width (x unchanged)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    // Bar end edge at content x=720; default 8-px end zone is [712, 720].
+    // Click 715, drag +60 px right.
+    await svg.trigger('pointerdown', { clientX: 715, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 775, clientY: 64, pointerId: 1 });
+
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(Number(rect.attributes('x'))).toBe(480); // start pinned
+    expect(Number(rect.attributes('width'))).toBe(300); // 240 + 60
+  });
+
+  it('start-edge mid-drag shifts x left and grows width (when dragged leftward)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    // Bar start edge at content x=480; 485 is in start zone [480, 488].
+    // Drag −30 px left.
+    await svg.trigger('pointerdown', { clientX: 485, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 455, clientY: 64, pointerId: 1 });
+
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(Number(rect.attributes('x'))).toBe(450); // 480 − 30
+    expect(Number(rect.attributes('width'))).toBe(270); // 240 + 30 (end pinned)
+  });
+
+  it('end-edge cross-over clamps rendered width to 0 (does not go negative)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    // Drag end edge way past the start: pointerdown at end zone, move left
+    // 500 px → width would be 240 − 500 = −260. Clamp to 0.
+    await svg.trigger('pointerdown', { clientX: 715, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 215, clientY: 64, pointerId: 1 });
+
+    expect(Number(wrapper.find('[data-bar-id="b1"]').attributes('width'))).toBe(0);
+  });
+});
