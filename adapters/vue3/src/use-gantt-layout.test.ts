@@ -1,8 +1,9 @@
-import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
 import { describe, expect, it } from 'vitest';
 import { ref } from 'vue';
 
 import { useGanttLayout } from './use-gantt-layout.js';
+
+import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 

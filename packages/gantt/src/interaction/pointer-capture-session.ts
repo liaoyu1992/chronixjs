@@ -1,11 +1,10 @@
-import type { TimeRange } from '../ir/index.js';
-
 import type {
   BarDragTransaction,
   BarResizeTransaction,
   CalendarRangeSelectTransaction,
   ProgressHandleTransaction,
 } from './transactions.js';
+import type { TimeRange } from '../ir/index.js';
 
 /**
  * Configuration for a `PointerCaptureSession`. Captured once at the
