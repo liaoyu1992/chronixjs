@@ -122,46 +122,70 @@ test.describe('parity: chronix vs reference demo', () => {
     expect(new Set(refLabels)).toEqual(new Set(chronixLabels));
   });
 
-  test('month-view tick labels (set equality)', async ({ page }) => {
-    const axis = defaultAxisRangePlanner.plan({
-      viewId: 'month',
-      anchorDate: new Date(FROZEN_TIME_ISO),
-      viewportWidth: VIEWPORT.width,
-      locale: 'zh-CN',
-      weekendsVisible: true,
-    });
-    const chronixLabels = axis.ticks.map((t) => t.label);
-    const chart = await loadView(page, '月');
+  /**
+   * Tick-label set-equality for every day-resolution view. All four use
+   * `planMonthBandedAxis` (or `planMonthView` for the single-month case),
+   * which emits `"DD日<wd>"` with narrow zh-CN weekday — matching the
+   * reference DOM character-for-character. Set-equality is a sharp
+   * detector of cross-month boundary bugs: if chronix were off by one day
+   * (e.g. emitting Mar 1 twice and skipping Feb 28), the chronix set
+   * would diverge from the rendered set even at the same `slotCount`.
+   *
+   * Year view typically dedupes to ~217 unique "DD日X" strings (31 days ×
+   * 7 weekdays, minus combinations that never occur in the calendar
+   * year). Smaller views have correspondingly smaller unique sets.
+   */
+  const DAY_RESOLUTION_VIEWS: readonly {
+    readonly viewId: ViewId;
+    readonly toggleLabel: string;
+  }[] = [
+    { viewId: 'month', toggleLabel: '月' },
+    { viewId: 'season', toggleLabel: '季' },
+    { viewId: 'halfYear', toggleLabel: '半年' },
+    { viewId: 'year', toggleLabel: '年' },
+  ];
 
-    // Same probe as day-view: pluck leaf-text nodes whose content matches
-    // the month-tick regex (`"DD日<wd>"`, narrow zh-CN weekday). The
-    // reference renders one `<text>` per day slot; some days may be
-    // off-screen in narrow viewports but the SVG layer reports their
-    // bounding rect anyway, so the DOM set should equal chronix's set.
-    const refLabels = await chart.evaluate((root) => {
-      const result: string[] = [];
-      const seen = new Set<string>();
-      root.querySelectorAll('*').forEach((node) => {
-        if (node.children.length > 0) return;
-        const txt = node.textContent?.trim() ?? '';
-        if (/^\d+日[一二三四五六日]$/u.test(txt) && !seen.has(txt)) {
-          seen.add(txt);
-          result.push(txt);
-        }
+  for (const { viewId, toggleLabel } of DAY_RESOLUTION_VIEWS) {
+    test(`${viewId}-view tick labels (set equality)`, async ({ page }) => {
+      const axis = defaultAxisRangePlanner.plan({
+        viewId,
+        anchorDate: new Date(FROZEN_TIME_ISO),
+        viewportWidth: VIEWPORT.width,
+        locale: 'zh-CN',
+        weekendsVisible: true,
       });
-      return result;
+      const chronixLabels = axis.ticks.map((t) => t.label);
+      const chart = await loadView(page, toggleLabel);
+
+      // Pluck leaf-text nodes matching the day-tick regex (`"DD日<wd>"`).
+      // The reference renders one `<text>` per day slot; off-screen days
+      // (half-year / year scrolled at range-start) still have their
+      // bounding rect in the SVG, so the DOM set holds the full label
+      // universe — which should equal chronix's `axis.ticks` label set.
+      const refLabels = await chart.evaluate((root) => {
+        const result: string[] = [];
+        const seen = new Set<string>();
+        root.querySelectorAll('*').forEach((node) => {
+          if (node.children.length > 0) return;
+          const txt = node.textContent?.trim() ?? '';
+          if (/^\d+日[一二三四五六日]$/u.test(txt) && !seen.has(txt)) {
+            seen.add(txt);
+            result.push(txt);
+          }
+        });
+        return result;
+      });
+
+      console.warn(
+        `chronix   ${viewId}-view labels (count=${chronixLabels.length}, unique=${new Set(chronixLabels).size})`,
+      );
+      console.warn(`reference ${viewId}-view labels (unique=${refLabels.length})`);
+
+      expect(chronixLabels.length).toBeGreaterThan(0);
+      expect(refLabels.length).toBeGreaterThan(0);
+      expect(new Set(refLabels)).toEqual(new Set(chronixLabels));
     });
-
-    console.warn('chronix   month-view labels:', chronixLabels);
-    console.warn('reference month-view labels:', refLabels);
-
-    // Month length varies (28..31). chronix's planner already iterates
-    // until the calendar month rolls over, so its length is the oracle.
-    expect(chronixLabels.length).toBeGreaterThanOrEqual(28);
-    expect(chronixLabels.length).toBeLessThanOrEqual(31);
-    expect(refLabels.length).toBeGreaterThan(0);
-    expect(new Set(refLabels)).toEqual(new Set(chronixLabels));
-  });
+  }
 
   test('day-view slot width (chronix slotWidth vs reference rendered spacing)', async ({
     page,
