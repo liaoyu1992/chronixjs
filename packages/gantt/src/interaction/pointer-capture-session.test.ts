@@ -883,6 +883,158 @@ describe('defaultPointerCaptureSession — BarDrag recording-replay parity', () 
   });
 });
 
+describe('defaultPointerCaptureSession — BarResize recording-replay parity', () => {
+  // Month-view axis: each slot is one day, 65 px wide.
+  const MS_PER_DAY = 24 * MS_PER_HOUR;
+  const monthPxPerMs = 65 / MS_PER_DAY;
+
+  // The frozen-clock reference's local-midnight epoch. Recordings run with
+  // `page.clock.install({ time: '2026-05-13T00:00:00Z' })` and the demo
+  // anchors all events at `today.setHours(0,0,0,0)` (local). With the
+  // session's TZ matching the demo's, both sides observe the same epoch.
+  const today = new Date('2026-05-13T00:00:00Z');
+  today.setHours(0, 0, 0, 0);
+  const todayMs = today.getTime();
+
+  function entriesOf(id: string) {
+    const { entries } = readRecording(id);
+    const before = entries.find((e) => e['kind'] === 'state' && e['when'] === 'before') as
+      | {
+          eventId: string;
+          edge: 'start' | 'end';
+          barBbox: { x: number; y: number; width: number; height: number };
+        }
+      | undefined;
+    const after = entries.find((e) => e['kind'] === 'state' && e['when'] === 'after') as
+      | {
+          eventId: string;
+          edge: 'start' | 'end';
+          barBbox: { x: number; y: number; width: number; height: number };
+        }
+      | undefined;
+    const down = entries.find((e) => e['kind'] === 'pointer-down') as
+      | { x: number; y: number }
+      | undefined;
+    const ups = entries.filter((e) => e['kind'] === 'pointer-up') as { x: number; y: number }[];
+    const up = ups[ups.length - 1];
+    if (!before || !after || !down || !up) {
+      throw new Error(`${id} recording missing required entries`);
+    }
+    return { before, after, down, up };
+  }
+
+  it("matches 'event-resize-left' recording: chronix start-edge math is unit-consistent with the recorded pointer drag", () => {
+    const { before, after, down, up } = entriesOf('event-resize-left');
+
+    expect(before.eventId).toBe('event-4');
+    expect(after.eventId).toBe('event-4');
+    expect(before.edge).toBe('start');
+
+    // event-4 source: dayMinus2 10:00 → dayPlus2 15:00 (per buildTestEvents).
+    const originalRange: TimeRange = {
+      start: new Date(todayMs - 2 * MS_PER_DAY + 10 * MS_PER_HOUR),
+      end: new Date(todayMs + 2 * MS_PER_DAY + 15 * MS_PER_HOUR),
+    };
+
+    const txn0 = defaultPointerCaptureSession.beginBarResize({
+      barId: 'event-4',
+      edge: 'start',
+      originPx: { x: down.x, y: down.y },
+      config: REQUIRE_HIT,
+      initialHit: true,
+      startedAt: 1000,
+    });
+    expect(txn0).not.toBeNull();
+    const txn = defaultPointerCaptureSession.advanceBarResize(txn0!, {
+      currentPx: { x: up.x, y: up.y },
+    });
+    const { resolvedRange, timeDeltaMs } = defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange,
+      pxPerMs: monthPxPerMs,
+    });
+
+    // Unit consistency: pointer pixel delta ≡ chronix time delta × pxPerMs.
+    const recordedPointerDeltaX = up.x - down.x;
+    expect(timeDeltaMs * monthPxPerMs).toBeCloseTo(recordedPointerDeltaX, 5);
+
+    // Edge-only mutation: start shifts, end stays. The pointer delta on
+    // month-view (60 px ÷ 65 px/day) resolves to a non-integer number of
+    // ms; `new Date(...).getTime()` truncates the float to an int, so
+    // accept a 2-ms tolerance for the integer-vs-float round-trip.
+    const startShiftMs = resolvedRange.start.getTime() - originalRange.start.getTime();
+    expect(Math.abs(startShiftMs - timeDeltaMs)).toBeLessThan(2);
+    expect(resolvedRange.end).toBe(originalRange.end);
+
+    // Direction parity: the upstream-rendered bar's start-edge bbox moved
+    // in the same direction as chronix's predicted start-edge time delta.
+    // Magnitude is NOT asserted because the upstream-reference applies a
+    // slot-hit-based snap on month-view resize (a ~2× pointer-to-bar
+    // multiplier that varies by drag length), and chronix's BarResize
+    // commit uses delta-snap only. See audit/journal for the snap-gap
+    // analysis. The recorded bbox delta is preserved here for any future
+    // slot-hit-snap parity work.
+    const upstreamStartEdgeDelta = after.barBbox.x - before.barBbox.x;
+    expect(Math.sign(upstreamStartEdgeDelta)).toBe(Math.sign(timeDeltaMs));
+    expect(Math.sign(upstreamStartEdgeDelta)).toBe(-1);
+    // Upstream pins the end edge, same as chronix.
+    const upstreamEndEdgeBefore = before.barBbox.x + before.barBbox.width;
+    const upstreamEndEdgeAfter = after.barBbox.x + after.barBbox.width;
+    expect(upstreamEndEdgeAfter).toBeCloseTo(upstreamEndEdgeBefore, 2);
+  });
+
+  it("matches 'event-resize-right' recording: chronix end-edge math is unit-consistent with the recorded pointer drag", () => {
+    const { before, after, down, up } = entriesOf('event-resize-right');
+
+    expect(before.eventId).toBe('event-6');
+    expect(after.eventId).toBe('event-6');
+    expect(before.edge).toBe('end');
+
+    // event-6 source: dayMinus7 08:00 → dayMinus3 18:00.
+    const originalRange: TimeRange = {
+      start: new Date(todayMs - 7 * MS_PER_DAY + 8 * MS_PER_HOUR),
+      end: new Date(todayMs - 3 * MS_PER_DAY + 18 * MS_PER_HOUR),
+    };
+
+    const txn0 = defaultPointerCaptureSession.beginBarResize({
+      barId: 'event-6',
+      edge: 'end',
+      originPx: { x: down.x, y: down.y },
+      config: REQUIRE_HIT,
+      initialHit: true,
+      startedAt: 1000,
+    });
+    expect(txn0).not.toBeNull();
+    const txn = defaultPointerCaptureSession.advanceBarResize(txn0!, {
+      currentPx: { x: up.x, y: up.y },
+    });
+    const { resolvedRange, timeDeltaMs } = defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange,
+      pxPerMs: monthPxPerMs,
+    });
+
+    // Unit consistency.
+    const recordedPointerDeltaX = up.x - down.x;
+    expect(timeDeltaMs * monthPxPerMs).toBeCloseTo(recordedPointerDeltaX, 5);
+
+    // Edge-only mutation: end shifts, start stays. Tolerance reasoning
+    // identical to the start-edge case above.
+    const endShiftMs = resolvedRange.end.getTime() - originalRange.end.getTime();
+    expect(Math.abs(endShiftMs - timeDeltaMs)).toBeLessThan(2);
+    expect(resolvedRange.start).toBe(originalRange.start);
+
+    // Direction parity (magnitude gap intentional — see start-edge case).
+    const upstreamEndEdgeBefore = before.barBbox.x + before.barBbox.width;
+    const upstreamEndEdgeAfter = after.barBbox.x + after.barBbox.width;
+    const upstreamEndEdgeDelta = upstreamEndEdgeAfter - upstreamEndEdgeBefore;
+    expect(Math.sign(upstreamEndEdgeDelta)).toBe(Math.sign(timeDeltaMs));
+    expect(Math.sign(upstreamEndEdgeDelta)).toBe(1);
+    // Upstream pins the start edge, same as chronix.
+    expect(after.barBbox.x).toBeCloseTo(before.barBbox.x, 2);
+  });
+});
+
 describe('defaultPointerCaptureSession — progress-handle full lifecycle', () => {
   it('reproduces the recorded progress-handle drag math: 60px/6060 + initial 50 → 50.99 (rounds to 51)', () => {
     // Numbers lifted from recordings/progress-handle-drag/log.json:

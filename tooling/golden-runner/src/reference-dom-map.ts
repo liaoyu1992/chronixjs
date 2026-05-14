@@ -83,3 +83,19 @@ export const RESIZER_START = '.gantt-event-resizer-start';
 
 /** End-edge resize handle (drags the bar's right edge). */
 export const RESIZER_END = '.gantt-event-resizer-end';
+
+/**
+ * CSS override that forces the upstream's resize handles to display:block
+ * regardless of `:hover` / `.gantt-event-selected` state. The handles are
+ * hidden by default and headless Playwright doesn't reliably trigger the
+ * SVG `:hover` pseudo-class on every page, which leaves the handle's
+ * underlying 8×8 rect unhittable. Inject via `page.addStyleTag({ content
+ * })` once per page load before driving a resize recording.
+ *
+ * The override only changes visibility — the resize-zone geometry, hit
+ * targets, mousedown handlers, and resulting commit math are all
+ * untouched. So a recording captured with the override active produces
+ * the same pointer→bbox trace the upstream would emit in a real user
+ * hover; chronix's recording-replay parity is unaffected.
+ */
+export const RESIZER_ALWAYS_VISIBLE_CSS = '.gantt-event-resizer { display: block !important; }';

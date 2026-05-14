@@ -1,0 +1,92 @@
+{
+  "id": "event-resize-left",
+  "description": "Drag the start-edge resize handle of a probed event left by 60px on month view. The bar shrinks from the left, end edge stays pinned. Month-view candidates are probed because day-view pushes all bar right edges past the visible body width, leaving no event whose start edge has both visible position and leftward drag headroom.",
+  "viewToggleLabel": "月",
+  "frozenTime": "2026-05-13T00:00:00.000Z",
+  "entries": [
+    {
+      "kind": "probe",
+      "when": "pre-down",
+      "elementAtClick": {
+        "tag": "rect",
+        "classes": "gantt-event-handle gantt-event-handle-start gantt-event-resizer gantt-event-resizer-start"
+      }
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "before"
+    },
+    {
+      "kind": "state",
+      "when": "before",
+      "eventId": "event-4",
+      "edge": "start",
+      "barBbox": {
+        "x": 1168.380126953125,
+        "y": 715.1875,
+        "width": 274.541748046875,
+        "height": 31
+      },
+      "bodyBox": {
+        "x": 491.796875,
+        "y": 86.1875,
+        "width": 948.203125,
+        "height": 813.8125
+      },
+      "candidateIds": [
+        "event-4",
+        "event-6",
+        "event-7",
+        "event-9",
+        "event-12",
+        "event-13",
+        "event-15",
+        "event-16",
+        "event-17",
+        "event-21",
+        "event-23"
+      ]
+    },
+    {
+      "kind": "pointer-move",
+      "x": 1172.380126953125,
+      "y": 730.6875
+    },
+    {
+      "kind": "pointer-down",
+      "x": 1172.380126953125,
+      "y": 730.6875
+    },
+    {
+      "kind": "pointer-move",
+      "x": 1112.380126953125,
+      "y": 730.6875,
+      "steps": 10
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "mid"
+    },
+    {
+      "kind": "pointer-up",
+      "x": 1112.380126953125,
+      "y": 730.6875
+    },
+    {
+      "kind": "state",
+      "when": "after",
+      "eventId": "event-4",
+      "edge": "start",
+      "barBbox": {
+        "x": 1038.380126953125,
+        "y": 715.1875,
+        "width": 404.541748046875,
+        "height": 31
+      }
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "after"
+    }
+  ]
+}

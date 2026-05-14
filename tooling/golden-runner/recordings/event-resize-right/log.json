@@ -1,0 +1,80 @@
+{
+  "id": "event-resize-right",
+  "description": "Drag the end-edge resize handle of a probed event right by 60px on month view. The bar extends to the right, start edge stays pinned. Same candidate-probe rationale as event-resize-left.",
+  "viewToggleLabel": "月",
+  "frozenTime": "2026-05-13T00:00:00.000Z",
+  "entries": [
+    {
+      "kind": "probe",
+      "when": "pre-down",
+      "elementAtClick": {
+        "tag": "rect",
+        "classes": "gantt-event-handle gantt-event-handle-end gantt-event-resizer gantt-event-resizer-end"
+      }
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "before"
+    },
+    {
+      "kind": "state",
+      "when": "before",
+      "eventId": "event-6",
+      "edge": "end",
+      "barBbox": {
+        "x": 837.9635009765625,
+        "y": 840.1875,
+        "width": 288.0833740234375,
+        "height": 31
+      },
+      "bodyBox": {
+        "x": 491.796875,
+        "y": 86.1875,
+        "width": 948.203125,
+        "height": 813.8125
+      },
+      "candidateIds": ["event-6"]
+    },
+    {
+      "kind": "pointer-move",
+      "x": 1122.046875,
+      "y": 855.6875
+    },
+    {
+      "kind": "pointer-down",
+      "x": 1122.046875,
+      "y": 855.6875
+    },
+    {
+      "kind": "pointer-move",
+      "x": 1182.046875,
+      "y": 855.6875,
+      "steps": 10
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "mid"
+    },
+    {
+      "kind": "pointer-up",
+      "x": 1182.046875,
+      "y": 855.6875
+    },
+    {
+      "kind": "state",
+      "when": "after",
+      "eventId": "event-6",
+      "edge": "end",
+      "barBbox": {
+        "x": 837.9635009765625,
+        "y": 840.1875,
+        "width": 418.0833740234375,
+        "height": 31
+      }
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "after"
+    }
+  ]
+}

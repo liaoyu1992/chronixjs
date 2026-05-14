@@ -1,6 +1,7 @@
 import {
   PROGRESS_TRIANGLE,
   REF_ATTR_NAMES,
+  RESIZER_ALWAYS_VISIBLE_CSS,
   TIMELINE_BODY_RIGHT,
   TIMELINE_BODY_WRAPPER,
   eventBarByInstance,
@@ -9,6 +10,147 @@ import {
 } from './reference-dom-map.js';
 
 import type { Locator, Page } from '@playwright/test';
+
+interface ResizeEdgeArgs {
+  readonly page: Page;
+  readonly chart: Locator;
+  readonly snapshot: (keyframeId: string) => Promise<void>;
+  readonly log: (entry: Record<string, unknown>) => void;
+  readonly edge: 'start' | 'end';
+  /** Signed pixel delta along x. Negative shifts left, positive shifts right. */
+  readonly deltaPx: number;
+}
+
+/**
+ * Probe every demo-known event id (1..25) under the current view, pick the
+ * first whose chosen edge is visible inside the timeline body's right pane
+ * AND has `|deltaPx| + MARGIN` of horizontal headroom for the drag, then
+ * drive a 10-step pointer drag from that edge by `deltaPx` and record the
+ * bbox before/after on the picked event. Used by event-resize-left and
+ * event-resize-right.
+ */
+async function pickAndResizeEdge({
+  page,
+  chart,
+  snapshot,
+  log,
+  edge,
+  deltaPx,
+}: ResizeEdgeArgs): Promise<void> {
+  const bodyRight = chart.locator(TIMELINE_BODY_RIGHT).first();
+  const bodyBox = await bodyRight.boundingBox();
+  if (!bodyBox) throw new Error('timeline body-right pane not found');
+
+  const MARGIN = 20;
+  const absDelta = Math.abs(deltaPx);
+
+  const candidates: {
+    id: string;
+    bbox: { x: number; y: number; width: number; height: number };
+  }[] = [];
+  for (let i = 1; i <= 25; i += 1) {
+    const id = `event-${i}`;
+    const bar = chart.locator(eventBarBySource(id)).first();
+    const count = await bar.count();
+    if (count === 0) continue;
+    const bb = await bar.boundingBox();
+    if (!bb) continue;
+    // Skip the slim progress-overlay rect — bar height should be at least
+    // the event minHeight (30). The overlay sibling is typically ~8px tall.
+    if (bb.height < 12) continue;
+    // Vertical position must be inside the body pane.
+    if (bb.y < bodyBox.y || bb.y + bb.height > bodyBox.y + bodyBox.height) continue;
+
+    const edgeX = edge === 'start' ? bb.x : bb.x + bb.width;
+    const dragEndX = edgeX + deltaPx;
+    // Both the pointer-down x and the pointer-up x must stay inside the
+    // body-right pane (with a small margin) so neither end of the drag
+    // leaves the timeline viewport.
+    const minX = bodyBox.x + MARGIN;
+    const maxX = bodyBox.x + bodyBox.width - MARGIN;
+    if (edgeX < minX || edgeX > maxX) continue;
+    if (dragEndX < minX || dragEndX > maxX) continue;
+    candidates.push({ id, bbox: bb });
+  }
+
+  if (candidates.length === 0) {
+    throw new Error(
+      `no candidate event for ${edge}-edge resize with ${absDelta}px headroom in month view`,
+    );
+  }
+
+  const picked = candidates[0]!;
+  const bbox = picked.bbox;
+  // The resize zones are 8px-wide invisible rects positioned at the bar's
+  // outermost 8px (`x..x+8` for the start edge, `x+w-8..x+w` for the end
+  // edge). They're `display:none` until `:hover` activates on the bar
+  // group, then become hit-testable. Click 4px inside the edge to land
+  // squarely in the middle of the 8px zone.
+  const RESIZER_INSET = 4;
+  const edgeX = edge === 'start' ? bbox.x + RESIZER_INSET : bbox.x + bbox.width - RESIZER_INSET;
+  const startY = bbox.y + bbox.height / 2;
+  const endX = edgeX + deltaPx;
+
+  // Force the resizer rects always-visible. The upstream-reference defaults
+  // them to `display:none` until the bar's `:hover` pseudo-class activates,
+  // which is unreliable to trigger via Playwright's `mouse.move` on SVG
+  // groups in headless Chromium. With the override injected, the 8×8
+  // handle rects become hit-testable everywhere, while the resize zone
+  // geometry and resize event handlers stay exactly as upstream renders
+  // them — so the recorded pointer→bbox trace matches what a real
+  // hovering user would produce.
+  await page.addStyleTag({ content: RESIZER_ALWAYS_VISIBLE_CSS });
+  await page.waitForTimeout(50);
+
+  // Verify the resize zone is what's actually under the click coordinate
+  // before going further — if `.gantt-event-resizer-{start,end}` isn't
+  // the top element here, the drag will trigger a bar-drag instead of an
+  // edge resize. The check uses string literals via evaluate-args so
+  // chronix-side code stays free of upstream class names.
+  const elementAtClick = await page.evaluate(
+    ({ x, y }) => {
+      const el = document.elementFromPoint(x, y);
+      if (!el) return { tag: null, classes: null };
+      return { tag: el.tagName, classes: el.getAttribute('class') };
+    },
+    { x: edgeX, y: startY },
+  );
+  log({ kind: 'probe', when: 'pre-down', elementAtClick });
+
+  await snapshot('before');
+  log({
+    kind: 'state',
+    when: 'before',
+    eventId: picked.id,
+    edge,
+    barBbox: bbox,
+    bodyBox,
+    candidateIds: candidates.map((c) => c.id),
+  });
+
+  await page.mouse.move(edgeX, startY);
+  log({ kind: 'pointer-move', x: edgeX, y: startY });
+  await page.mouse.down();
+  log({ kind: 'pointer-down', x: edgeX, y: startY });
+  await page.mouse.move(endX, startY, { steps: 10 });
+  log({ kind: 'pointer-move', x: endX, y: startY, steps: 10 });
+
+  await snapshot('mid');
+
+  await page.mouse.up();
+  log({ kind: 'pointer-up', x: endX, y: startY });
+  await page.waitForTimeout(200);
+
+  const bboxAfter = await chart.locator(eventBarBySource(picked.id)).first().boundingBox();
+  log({
+    kind: 'state',
+    when: 'after',
+    eventId: picked.id,
+    edge,
+    barBbox: bboxAfter,
+  });
+  await snapshot('after');
+}
 
 export interface RecordingContext {
   readonly page: Page;
@@ -208,6 +350,44 @@ export const INTERACTION_RECORDINGS: InteractionRecording[] = [
       });
 
       await snapshot('after');
+    },
+  },
+  {
+    id: 'event-resize-left',
+    description:
+      'Drag the start-edge resize handle of a probed event left by 60px on ' +
+      'month view. The bar shrinks from the left, end edge stays pinned. ' +
+      'Month-view candidates are probed because day-view pushes all bar ' +
+      'right edges past the visible body width, leaving no event whose ' +
+      'start edge has both visible position and leftward drag headroom.',
+    viewToggleLabel: '月',
+    async perform({ page, chart, snapshot, log }) {
+      await pickAndResizeEdge({
+        page,
+        chart,
+        snapshot,
+        log,
+        edge: 'start',
+        deltaPx: -60,
+      });
+    },
+  },
+  {
+    id: 'event-resize-right',
+    description:
+      'Drag the end-edge resize handle of a probed event right by 60px on ' +
+      'month view. The bar extends to the right, start edge stays pinned. ' +
+      'Same candidate-probe rationale as event-resize-left.',
+    viewToggleLabel: '月',
+    async perform({ page, chart, snapshot, log }) {
+      await pickAndResizeEdge({
+        page,
+        chart,
+        snapshot,
+        log,
+        edge: 'end',
+        deltaPx: 60,
+      });
     },
   },
   {
