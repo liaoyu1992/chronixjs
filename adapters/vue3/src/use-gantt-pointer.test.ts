@@ -1,0 +1,313 @@
+import {
+  defaultAxisRangePlanner,
+  type PlacedBar,
+  type PlannedAxis,
+  type SwimlaneStrip,
+  type TimeRange,
+} from '@chronixjs/gantt';
+import { describe, expect, it, vi } from 'vitest';
+
+import {
+  useGanttPointer,
+  type BarDropPayload,
+  type BarResizePayload,
+  type SelectPayload,
+} from './use-gantt-pointer.js';
+
+// Typed mock factories — vi.fn() defaults to (any) => any; explicit
+// generic params let the call-argument assertions stay safely typed
+// without per-test casts.
+const mockBarDrop = (): ReturnType<typeof vi.fn<(p: BarDropPayload) => void>> =>
+  vi.fn<(p: BarDropPayload) => void>();
+const mockBarResize = (): ReturnType<typeof vi.fn<(p: BarResizePayload) => void>> =>
+  vi.fn<(p: BarResizePayload) => void>();
+const mockSelect = (): ReturnType<typeof vi.fn<(p: SelectPayload) => void>> =>
+  vi.fn<(p: SelectPayload) => void>();
+
+const MS_PER_HOUR = 60 * 60 * 1000;
+
+// Local-midnight anchor — see use-gantt-layout.test.ts for the rationale.
+const today = new Date('2026-05-13T00:00:00Z');
+today.setHours(0, 0, 0, 0);
+const todayMs = today.getTime();
+
+function dayAxis(): PlannedAxis {
+  return defaultAxisRangePlanner.plan({
+    viewId: 'day',
+    anchorDate: new Date(todayMs),
+    viewportWidth: 1440,
+    locale: 'zh-CN',
+    weekendsVisible: true,
+  });
+}
+
+const strips: readonly SwimlaneStrip[] = [
+  { rowId: 'r1', y: 0, height: 40 },
+  { rowId: 'r2', y: 40, height: 40 },
+];
+
+// Bar at content x=480..720 (hour 8..12) on row r1 with height 30 inside strip 0.
+const placedBars: readonly PlacedBar[] = [{ barId: 'b1', x: 480, y: 8, width: 240, height: 30 }];
+
+const barRanges = new Map<string, TimeRange>([
+  [
+    'b1',
+    {
+      start: new Date(todayMs + 8 * MS_PER_HOUR),
+      end: new Date(todayMs + 12 * MS_PER_HOUR),
+    },
+  ],
+]);
+
+describe('useGanttPointer — bar drag', () => {
+  it('begin on bar-body + advance + commit emits onBarDrop with shifted range', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDrop,
+    });
+
+    // Click inside the bar body at content (600, 20) — bar spans 480..720.
+    ptr.begin(600, 20);
+    expect(ptr.activeTransaction.value?.kind).toBe('bar-drag');
+    expect(ptr.lastHit.value?.kind).toBe('bar-body');
+
+    // Drag +60 px (= +1 hour at day-view).
+    ptr.advance(660, 20);
+    expect(ptr.activeTransaction.value?.kind).toBe('bar-drag');
+
+    ptr.commit();
+    expect(ptr.activeTransaction.value).toBeNull();
+    expect(onBarDrop).toHaveBeenCalledOnce();
+    const payload = onBarDrop.mock.calls[0]![0];
+    expect(payload.barId).toBe('b1');
+    expect(payload.oldRange.start.toISOString()).toBe(barRanges.get('b1')!.start.toISOString());
+    // +1 hour shift.
+    expect(payload.newRange.start.getTime() - payload.oldRange.start.getTime()).toBe(MS_PER_HOUR);
+    expect(payload.newRange.end.getTime() - payload.oldRange.end.getTime()).toBe(MS_PER_HOUR);
+  });
+
+  it('skips bar-drag when editable=false (default)', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    expect(ptr.activeTransaction.value).toBeNull();
+    // Hit still recorded for diagnostic purposes even though no transaction started.
+    expect(ptr.lastHit.value?.kind).toBe('bar-body');
+    ptr.advance(660, 20);
+    ptr.commit();
+    expect(onBarDrop).not.toHaveBeenCalled();
+  });
+});
+
+describe('useGanttPointer — bar resize', () => {
+  it('begin on bar-edge-end + advance right + commit emits onBarResize with end-shift only', () => {
+    const onBarResize = mockBarResize();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarResize,
+    });
+
+    // Bar end edge at content x = 720. Default edgeZoneWidth = 8, so 715 is in end zone.
+    ptr.begin(715, 20);
+    expect(ptr.activeTransaction.value?.kind).toBe('bar-resize');
+    expect(ptr.lastHit.value?.kind).toBe('bar-edge-end');
+
+    // Drag right +60 px (= +1 hour).
+    ptr.advance(775, 20);
+    ptr.commit();
+
+    expect(onBarResize).toHaveBeenCalledOnce();
+    const payload = onBarResize.mock.calls[0]![0];
+    expect(payload.barId).toBe('b1');
+    expect(payload.edge).toBe('end');
+    // Start unchanged.
+    expect(payload.newRange.start.getTime()).toBe(payload.oldRange.start.getTime());
+    // End shifted by +1 hour.
+    expect(payload.newRange.end.getTime() - payload.oldRange.end.getTime()).toBe(MS_PER_HOUR);
+  });
+
+  it('begin on bar-edge-start + drag left + commit emits start-shift only', () => {
+    const onBarResize = mockBarResize();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarResize,
+    });
+
+    // Bar start edge at x = 480 → 485 lands in the 8-px start zone.
+    ptr.begin(485, 20);
+    expect(ptr.lastHit.value?.kind).toBe('bar-edge-start');
+
+    // Drag left −30 px (= −0.5 hour).
+    ptr.advance(455, 20);
+    ptr.commit();
+
+    expect(onBarResize).toHaveBeenCalledOnce();
+    const payload = onBarResize.mock.calls[0]![0];
+    expect(payload.edge).toBe('start');
+    expect(payload.newRange.end.getTime()).toBe(payload.oldRange.end.getTime());
+    expect(payload.newRange.start.getTime() - payload.oldRange.start.getTime()).toBe(
+      -0.5 * MS_PER_HOUR,
+    );
+  });
+});
+
+describe('useGanttPointer — calendar range select', () => {
+  it('begin on empty-row + advance + commit emits onSelect with the resolved range', () => {
+    const onSelect = mockSelect();
+    const ptr = useGanttPointer({
+      placedBars: () => [], // no bars → click anywhere on a strip is empty-row
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => new Map(),
+      selectable: true,
+      onSelect,
+    });
+
+    // Click at content (120, 20) → hour 2, row r1. Drag to (300, 20) → hour 5.
+    ptr.begin(120, 20);
+    expect(ptr.activeTransaction.value?.kind).toBe('calendar-range-select');
+    expect(ptr.lastHit.value?.kind).toBe('empty-row');
+
+    ptr.advance(300, 20);
+    ptr.commit();
+
+    expect(onSelect).toHaveBeenCalledOnce();
+    const payload = onSelect.mock.calls[0]![0];
+    expect(payload.rowId).toBe('r1');
+    // Hour 2 → 5 = 3-hour range.
+    expect(payload.range.end.getTime() - payload.range.start.getTime()).toBe(3 * MS_PER_HOUR);
+    // Range starts at hour 2 (= 2 × MS_PER_HOUR from local midnight).
+    expect(payload.range.start.getTime() - todayMs).toBe(2 * MS_PER_HOUR);
+  });
+
+  it('skips range-select when selectable=false (default)', () => {
+    const onSelect = mockSelect();
+    const ptr = useGanttPointer({
+      placedBars: () => [],
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => new Map(),
+      onSelect,
+    });
+    ptr.begin(120, 20);
+    expect(ptr.activeTransaction.value).toBeNull();
+    ptr.commit();
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+});
+
+describe('useGanttPointer — lifecycle invariants', () => {
+  it('advance is a no-op when no transaction is active', () => {
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+    });
+    expect(ptr.activeTransaction.value).toBeNull();
+    ptr.advance(700, 20);
+    expect(ptr.activeTransaction.value).toBeNull();
+  });
+
+  it('commit is a no-op when no transaction is active', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDrop,
+    });
+    ptr.commit();
+    expect(onBarDrop).not.toHaveBeenCalled();
+  });
+
+  it('a missed click (no hit) leaves activeTransaction null and lastHit null', () => {
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      selectable: true,
+    });
+    // Click at y above all strips.
+    ptr.begin(600, -5);
+    expect(ptr.lastHit.value).toBeNull();
+    expect(ptr.activeTransaction.value).toBeNull();
+  });
+
+  it('begin → commit without advance still emits with a zero-delta range', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    ptr.commit();
+    expect(onBarDrop).toHaveBeenCalledOnce();
+    const payload = onBarDrop.mock.calls[0]![0];
+    expect(payload.newRange.start.getTime()).toBe(payload.oldRange.start.getTime());
+  });
+
+  it('begin without a barRanges entry skips emit (orphan-safe)', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => new Map(), // no entry for 'b1'
+      editable: true,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    expect(ptr.activeTransaction.value?.kind).toBe('bar-drag'); // transaction started
+    ptr.commit();
+    expect(onBarDrop).not.toHaveBeenCalled(); // but commit skipped — no original range
+  });
+
+  it('snapDurationMs is forwarded to commitBarDrag', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      // Snap to 1 hour. A 30-min raw drag should round to 1 hour.
+      snapDurationMs: 60 * 60 * 1000,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    ptr.advance(630, 20); // +30 px = +30 min raw
+    ptr.commit();
+    const payload = onBarDrop.mock.calls[0]![0];
+    // Math.round(30min / 60min) = 1 → snap to 60 min.
+    expect(payload.newRange.start.getTime() - payload.oldRange.start.getTime()).toBe(MS_PER_HOUR);
+  });
+});

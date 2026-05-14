@@ -108,3 +108,102 @@ describe('<ChronixGantt>', () => {
     expect(Number(rect.attributes('y'))).toBe(4);
   });
 });
+
+describe('<ChronixGantt> interactions', () => {
+  it('editable: pointerdown on bar body → pointermove → pointerup emits `bar-drop` with shifted range', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    // Bar 'b1' content bounds: x ∈ [480, 720], y ∈ [8, 38] (day view, hour 8–12).
+    // Happy-dom returns {0,0,…} for getBoundingClientRect on un-laid-out SVG,
+    // so clientX equals contentX in the test environment.
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: 20, pointerId: 1 });
+
+    const emitted = wrapper.emitted('bar-drop');
+    expect(emitted).toBeTruthy();
+    expect(emitted!).toHaveLength(1);
+    const payload = emitted![0]![0] as {
+      barId: string;
+      oldRange: { start: Date };
+      newRange: { start: Date };
+    };
+    expect(payload.barId).toBe('b1');
+    expect(payload.newRange.start.getTime() - payload.oldRange.start.getTime()).toBe(MS_PER_HOUR);
+  });
+
+  it('editable: pointerdown on bar end-edge → drag right → emits `bar-resize` with end-edge shift', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    // Bar end edge at x=720; default 8-px end zone is [712, 720]. Click 715, drag +60.
+    await svg.trigger('pointerdown', { clientX: 715, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 775, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 775, clientY: 20, pointerId: 1 });
+
+    const emitted = wrapper.emitted('bar-resize');
+    expect(emitted).toBeTruthy();
+    expect(emitted!).toHaveLength(1);
+    const payload = emitted![0]![0] as {
+      edge: string;
+      oldRange: { end: Date };
+      newRange: { end: Date };
+    };
+    expect(payload.edge).toBe('end');
+    expect(payload.newRange.end.getTime() - payload.oldRange.end.getTime()).toBe(MS_PER_HOUR);
+  });
+
+  it('selectable: pointerdown on empty row → drag → emits `select` with the resolved range', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [], // no bars → click anywhere on a strip is empty-row
+        rows,
+        axisInput,
+        selectable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    // Hour 2 → hour 5 on row r1.
+    await svg.trigger('pointerdown', { clientX: 120, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 300, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 300, clientY: 20, pointerId: 1 });
+
+    const emitted = wrapper.emitted('select');
+    expect(emitted).toBeTruthy();
+    expect(emitted!).toHaveLength(1);
+    const payload = emitted![0]![0] as { rowId: string; range: { start: Date; end: Date } };
+    expect(payload.rowId).toBe('r1');
+    expect(payload.range.end.getTime() - payload.range.start.getTime()).toBe(3 * MS_PER_HOUR);
+  });
+
+  it('not editable + not selectable: pointer events do not start a transaction', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: 20, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+    expect(wrapper.emitted('bar-resize')).toBeFalsy();
+    expect(wrapper.emitted('select')).toBeFalsy();
+  });
+});
