@@ -25,6 +25,20 @@ function bar(id: string, rowId: string, startHour: number, endHour: number): Bar
   };
 }
 
+function progressBar(
+  id: string,
+  rowId: string,
+  startHour: number,
+  endHour: number,
+  progressValue: number,
+): BarSpec {
+  return {
+    ...bar(id, rowId, startHour, endHour),
+    progress: { value: progressValue },
+    pointerOverlayId: 'progress-handle',
+  };
+}
+
 const rows: readonly RowSpec[] = [
   { id: 'r1', columns: {} },
   { id: 'r2', columns: {} },
@@ -419,5 +433,132 @@ describe('<ChronixGantt> header rows', () => {
     // Axis group sits flush at y=0 with no headerRows above it.
     const axisGroup = wrapper.find('.cx-gantt-axis');
     expect(axisGroup.attributes('transform')).toBe('translate(0, 0)');
+  });
+});
+
+describe('<ChronixGantt> progress overlay', () => {
+  it('renders a progress fill + handle rect for bars with progress + pointerOverlayId', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+      },
+    });
+    // Bar 'b1' at x ∈ [480, 720], width 240. 50% → fill width 120, handle x=600.
+    const fill = wrapper.find('.cx-gantt-progress-fill');
+    expect(fill.exists()).toBe(true);
+    expect(Number(fill.attributes('x'))).toBe(480);
+    expect(Number(fill.attributes('width'))).toBe(120);
+    const handle = wrapper.find('.cx-gantt-progress-handle');
+    expect(handle.exists()).toBe(true);
+    // Default handleSize 12, centered at handleX=600 → x=594..606.
+    expect(Number(handle.attributes('x'))).toBe(594);
+    expect(Number(handle.attributes('width'))).toBe(12);
+    // Handle's overlay-id passes through.
+    expect(handle.attributes('data-overlay-id')).toBe('progress-handle');
+  });
+
+  it('skips the progress overlay for bars without progress or without pointerOverlayId', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [
+          bar('b1', 'r1', 8, 12), // no progress
+          {
+            // progress without overlay → also skipped (no hit zone makes sense)
+            ...bar('b2', 'r2', 0, 4),
+            progress: { value: 30 },
+          },
+        ],
+        rows,
+        axisInput,
+      },
+    });
+    expect(wrapper.findAll('.cx-gantt-progress-fill')).toHaveLength(0);
+    expect(wrapper.findAll('.cx-gantt-progress-handle')).toHaveLength(0);
+  });
+
+  it('handle hit (pointerdown at handle center) emits `bar-progress` after commit', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    // Handle for 50%-progress bar centered at content (600, 23). Default
+    // header band 44 → SVG-y 23+44 = 67. Drag +24 px → +10% → 60%.
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 624, clientY: 67, pointerId: 1 });
+
+    const emitted = wrapper.emitted('bar-progress');
+    expect(emitted).toBeTruthy();
+    expect(emitted!).toHaveLength(1);
+    const payload = emitted![0]![0] as {
+      barId: string;
+      oldProgress: number;
+      newProgress: number;
+    };
+    expect(payload.barId).toBe('b1');
+    expect(payload.oldProgress).toBe(50);
+    expect(payload.newProgress).toBeCloseTo(60, 5);
+    // bar-drop / bar-resize should NOT fire — progress-handle is its own kind.
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+    expect(wrapper.emitted('bar-resize')).toBeFalsy();
+  });
+
+  it('handle takes precedence over bar-body (clicking the handle does not drag the bar)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    // Pointer at handle center (600, 23) is also inside the bar body —
+    // handle wins. Commit fires `bar-progress`, not `bar-drop`.
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 600, clientY: 67, pointerId: 1 });
+    expect(wrapper.emitted('bar-progress')).toHaveLength(1);
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+  });
+
+  it('pointerdown outside the handle but inside the bar body still drags the bar', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    // Click far left of the handle (handle x ∈ [594, 606]) — pointer at
+    // content (500, 20), SVG (500, 64). Should resolve to bar-body.
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 500, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 560, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 560, clientY: 64, pointerId: 1 });
+    expect(wrapper.emitted('bar-drop')).toHaveLength(1);
+    expect(wrapper.emitted('bar-progress')).toBeFalsy();
+  });
+
+  it('progress fill width tracks the bar.progress.value (25% → 60-px fill on a 240-px bar)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 25)],
+        rows,
+        axisInput,
+      },
+    });
+    const fill = wrapper.find('.cx-gantt-progress-fill');
+    expect(Number(fill.attributes('width'))).toBe(60); // 0.25 × 240
+    const handle = wrapper.find('.cx-gantt-progress-handle');
+    // Handle centered at 480 + 60 = 540 → x = 534, width 12.
+    expect(Number(handle.attributes('x'))).toBe(534);
   });
 });

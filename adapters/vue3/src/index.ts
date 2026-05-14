@@ -3,6 +3,7 @@ export type { UseGanttLayoutInput, UseGanttLayoutOutput } from './use-gantt-layo
 export { useGanttLayout } from './use-gantt-layout.js';
 export type {
   BarDropPayload,
+  BarProgressPayload,
   BarResizePayload,
   SelectPayload,
   UseGanttPointerInput,

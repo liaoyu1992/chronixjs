@@ -10,6 +10,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   useGanttPointer,
   type BarDropPayload,
+  type BarProgressPayload,
   type BarResizePayload,
   type SelectPayload,
 } from './use-gantt-pointer.js';
@@ -23,6 +24,8 @@ const mockBarResize = (): ReturnType<typeof vi.fn<(p: BarResizePayload) => void>
   vi.fn<(p: BarResizePayload) => void>();
 const mockSelect = (): ReturnType<typeof vi.fn<(p: SelectPayload) => void>> =>
   vi.fn<(p: SelectPayload) => void>();
+const mockBarProgress = (): ReturnType<typeof vi.fn<(p: BarProgressPayload) => void>> =>
+  vi.fn<(p: BarProgressPayload) => void>();
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 
@@ -309,5 +312,181 @@ describe('useGanttPointer — lifecycle invariants', () => {
     const payload = onBarDrop.mock.calls[0]![0];
     // Math.round(30min / 60min) = 1 → snap to 60 min.
     expect(payload.newRange.start.getTime() - payload.oldRange.start.getTime()).toBe(MS_PER_HOUR);
+  });
+});
+
+describe('useGanttPointer — progress handle', () => {
+  // Bar 'b1' at content x=480..720 (width 240), y=8..38. 50% progress →
+  // handle x = 480 + 0.5 × 240 = 600. Default handle size 12 → rect
+  // x ∈ [594, 606], y ∈ [17, 29] (centered at bar y-mid = 23).
+  const overlayIdByBarId = new Map([['b1', 'progress-handle']]);
+  const barProgressById = new Map([['b1', 50]]);
+
+  it('begin on the handle rect routes to beginProgressHandle (initialProgress, barWidth pinned)', () => {
+    const onBarProgress = mockBarProgress();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      overlayIdByBarId: () => overlayIdByBarId,
+      barProgressById: () => barProgressById,
+      editable: true,
+      onBarProgress,
+    });
+
+    ptr.begin(600, 23); // dead-center of handle rect
+    expect(ptr.lastHit.value?.kind).toBe('progress-handle');
+    const txn = ptr.activeTransaction.value;
+    expect(txn?.kind).toBe('progress-handle');
+    if (txn?.kind === 'progress-handle') {
+      expect(txn.barId).toBe('b1');
+      expect(txn.initialProgress).toBe(50);
+      expect(txn.barWidth).toBe(240);
+      expect(txn.projectedProgress).toBe(50);
+    }
+  });
+
+  it('advance updates projectedProgress as a percentage of barWidth', () => {
+    const onBarProgress = mockBarProgress();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      overlayIdByBarId: () => overlayIdByBarId,
+      barProgressById: () => barProgressById,
+      editable: true,
+      onBarProgress,
+    });
+    ptr.begin(600, 23);
+    // Drag +24 px on a 240-px-wide bar → +10% progress.
+    ptr.advance(624, 23);
+    const txn = ptr.activeTransaction.value;
+    if (txn?.kind === 'progress-handle') {
+      expect(txn.projectedProgress).toBeCloseTo(60, 5);
+    }
+  });
+
+  it('commit fires onBarProgress with clamped new value', () => {
+    const onBarProgress = mockBarProgress();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      overlayIdByBarId: () => overlayIdByBarId,
+      barProgressById: () => barProgressById,
+      editable: true,
+      onBarProgress,
+    });
+    ptr.begin(600, 23);
+    ptr.advance(636, 23); // +36 px → +15% → 65%
+    ptr.commit();
+    expect(onBarProgress).toHaveBeenCalledOnce();
+    const payload = onBarProgress.mock.calls[0]![0];
+    expect(payload.barId).toBe('b1');
+    expect(payload.oldProgress).toBe(50);
+    expect(payload.newProgress).toBeCloseTo(65, 5);
+  });
+
+  it('clamps projectedProgress to [0, 100] at commit (dragging past 100%)', () => {
+    const onBarProgress = mockBarProgress();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      overlayIdByBarId: () => overlayIdByBarId,
+      barProgressById: () => barProgressById,
+      editable: true,
+      onBarProgress,
+    });
+    ptr.begin(600, 23);
+    // Drag +500 px — vastly past the bar's right edge. projectedProgress
+    // mid-drag may exceed 100; commit must clamp.
+    ptr.advance(1100, 23);
+    ptr.commit();
+    expect(onBarProgress.mock.calls[0]![0].newProgress).toBe(100);
+  });
+
+  it('clamps below 0 too (dragging far left)', () => {
+    const onBarProgress = mockBarProgress();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      overlayIdByBarId: () => overlayIdByBarId,
+      barProgressById: () => barProgressById,
+      editable: true,
+      onBarProgress,
+    });
+    ptr.begin(600, 23);
+    ptr.advance(100, 23); // far left of bar
+    ptr.commit();
+    expect(onBarProgress.mock.calls[0]![0].newProgress).toBe(0);
+  });
+
+  it('skipped when bar has no overlayId (handle rect not produced)', () => {
+    const onBarProgress = mockBarProgress();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      // No overlayIdByBarId — handle rect map stays empty.
+      barProgressById: () => barProgressById,
+      editable: true,
+      onBarProgress,
+    });
+    ptr.begin(600, 23);
+    // Falls through to bar-body (since editable=true and there's a bar there).
+    expect(ptr.lastHit.value?.kind).toBe('bar-body');
+    ptr.commit();
+    expect(onBarProgress).not.toHaveBeenCalled();
+  });
+
+  it('skipped when editable=false even with overlay + progress declared', () => {
+    const onBarProgress = mockBarProgress();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      overlayIdByBarId: () => overlayIdByBarId,
+      barProgressById: () => barProgressById,
+      // editable: false (default)
+      onBarProgress,
+    });
+    ptr.begin(600, 23);
+    // Hit is still detected (for diagnostic) but no transaction starts.
+    expect(ptr.lastHit.value?.kind).toBe('progress-handle');
+    expect(ptr.activeTransaction.value).toBeNull();
+    ptr.commit();
+    expect(onBarProgress).not.toHaveBeenCalled();
+  });
+
+  it('handle position tracks the current progress: 25% bar has handle at x=540', () => {
+    // 25% progress → handle x = 480 + 0.25 × 240 = 540.
+    const onBarProgress = mockBarProgress();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      overlayIdByBarId: () => overlayIdByBarId,
+      barProgressById: () => new Map([['b1', 25]]),
+      editable: true,
+      onBarProgress,
+    });
+    // Clicking at the old handle center (600, 23) now lands on bar-body
+    // because the handle moved to 540.
+    ptr.begin(600, 23);
+    expect(ptr.lastHit.value?.kind).toBe('bar-body');
+    ptr.commit();
+    // Re-test by clicking on the new handle location.
+    ptr.begin(540, 23);
+    expect(ptr.lastHit.value?.kind).toBe('progress-handle');
   });
 });

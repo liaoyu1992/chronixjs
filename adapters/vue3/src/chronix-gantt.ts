@@ -4,6 +4,7 @@ import { useGanttLayout } from './use-gantt-layout.js';
 import {
   useGanttPointer,
   type BarDropPayload,
+  type BarProgressPayload,
   type BarResizePayload,
   type SelectPayload,
 } from './use-gantt-pointer.js';
@@ -66,11 +67,17 @@ export const ChronixGantt = defineComponent({
     selectable: { type: Boolean, default: false },
     /** Snap drag/resize/select time-delta to this multiple of ms. Default no snap. */
     snapDurationMs: { type: Number, default: 0 },
+    /**
+     * Size (px) of the progress-handle hit rect, centered horizontally on
+     * the progress-x and vertically on the bar. Default 12.
+     */
+    progressHandleSize: { type: Number, default: 12 },
   },
   emits: {
     'bar-drop': (_payload: BarDropPayload) => true,
     'bar-resize': (_payload: BarResizePayload) => true,
     select: (_payload: SelectPayload) => true,
+    'bar-progress': (_payload: BarProgressPayload) => true,
   },
   setup(props, { emit }) {
     const { axis, strips, placedBars, contentSize } = useGanttLayout({
@@ -89,18 +96,41 @@ export const ChronixGantt = defineComponent({
       () => new Map(props.bars.map((b) => [b.id, b.range])),
     );
 
+    // Per-bar overlay-group id (only bars that declared a
+    // `pointerOverlayId`) and per-bar progress (0..100, only bars with a
+    // `progress.value`). Empty maps when no bars opt in — the composable
+    // safely skips the progress-handle path in that case.
+    const overlayIdByBarId = computed<ReadonlyMap<string, string>>(() => {
+      const m = new Map<string, string>();
+      for (const b of props.bars) {
+        if (b.pointerOverlayId !== undefined) m.set(b.id, b.pointerOverlayId);
+      }
+      return m;
+    });
+    const barProgressById = computed<ReadonlyMap<string, number>>(() => {
+      const m = new Map<string, number>();
+      for (const b of props.bars) {
+        if (b.progress !== undefined) m.set(b.id, b.progress.value);
+      }
+      return m;
+    });
+
     const pointer = useGanttPointer({
       placedBars,
       strips,
       axis,
       barRanges,
+      overlayIdByBarId,
+      barProgressById,
       editable: () => props.editable,
       selectable: () => props.selectable,
+      progressHandleSize: () => props.progressHandleSize,
       // 0 is treated as "no snap" by the commit layer — pass through verbatim.
       snapDurationMs: () => props.snapDurationMs,
       onBarDrop: (p) => emit('bar-drop', p),
       onBarResize: (p) => emit('bar-resize', p),
       onSelect: (p) => emit('select', p),
+      onBarProgress: (p) => emit('bar-progress', p),
     });
 
     const svgRef = ref<SVGSVGElement | null>(null);
@@ -273,17 +303,64 @@ export const ChronixGantt = defineComponent({
               class: 'cx-gantt-bars',
               transform: `translate(0, ${totalHeaderBandHeight})`,
             },
-            placedBars.value.map((bar) =>
-              h('rect', {
-                key: bar.barId,
-                'data-bar-id': bar.barId,
-                class: 'cx-gantt-bar',
-                x: bar.x,
-                y: bar.y,
-                width: bar.width,
-                height: bar.height,
-              }),
-            ),
+            placedBars.value.flatMap((bar) => {
+              const nodes: ReturnType<typeof h>[] = [
+                h('rect', {
+                  key: bar.barId,
+                  'data-bar-id': bar.barId,
+                  class: 'cx-gantt-bar',
+                  x: bar.x,
+                  y: bar.y,
+                  width: bar.width,
+                  height: bar.height,
+                }),
+              ];
+              // Progress fill + handle: only for bars that declared
+              // BOTH `progress` AND `pointerOverlayId`. Progress fill is
+              // a translucent overlay from bar start to the progress-x;
+              // the handle is a small square the user can grab.
+              const progress = barProgressById.value.get(bar.barId);
+              const overlayId = overlayIdByBarId.value.get(bar.barId);
+              if (progress !== undefined && overlayId !== undefined) {
+                const clamped = Math.max(0, Math.min(100, progress));
+                const fillWidth = (clamped / 100) * bar.width;
+                const handleX = bar.x + fillWidth;
+                const handleSize = props.progressHandleSize;
+                nodes.push(
+                  h('rect', {
+                    key: `${bar.barId}-progress-fill`,
+                    'data-progress-bar-id': bar.barId,
+                    class: 'cx-gantt-progress-fill',
+                    x: bar.x,
+                    y: bar.y,
+                    width: fillWidth,
+                    height: bar.height,
+                    fill: '#10b981',
+                    'fill-opacity': 0.35,
+                    'pointer-events': 'none',
+                  }),
+                  h('rect', {
+                    key: `${bar.barId}-progress-handle`,
+                    'data-progress-bar-id': bar.barId,
+                    'data-overlay-id': overlayId,
+                    class: 'cx-gantt-progress-handle',
+                    x: handleX - handleSize / 2,
+                    y: bar.y + bar.height / 2 - handleSize / 2,
+                    width: handleSize,
+                    height: handleSize,
+                    fill: '#059669',
+                    stroke: '#ffffff',
+                    'stroke-width': 1,
+                    // The hit-tester drives this off the bar-rect map;
+                    // we keep DOM pointer-events off so the SVG's
+                    // pointerdown handler resolves through the parent
+                    // group (matches the separate-layer pattern).
+                    'pointer-events': 'none',
+                  }),
+                );
+              }
+              return nodes;
+            }),
           ),
         ],
       );

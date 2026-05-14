@@ -9,6 +9,7 @@ import {
   type PlannedAxis,
   type PointerCaptureConfig,
   type PointerHitResult,
+  type ProgressHandleTransaction,
   type SwimlaneStrip,
   type TimeRange,
 } from '@chronixjs/gantt';
@@ -39,6 +40,15 @@ export interface SelectPayload {
   readonly range: TimeRange;
 }
 
+/** Commit payload for a `ProgressHandleTransaction`. */
+export interface BarProgressPayload {
+  readonly barId: string;
+  /** Bar's `progress.value` at pointerdown (0..100). */
+  readonly oldProgress: number;
+  /** Bar's clamped final `progress.value` after the drag (0..100). */
+  readonly newProgress: number;
+}
+
 /**
  * Reactive inputs to the pointer-interaction composable. The composable
  * is DOM-free: the consumer converts native PointerEvent coords into the
@@ -67,6 +77,20 @@ export interface UseGanttPointerInput {
   readonly edgeZoneWidth?: MaybeRefOrGetter<number>;
   /** Forwarded to the hit-tester. */
   readonly overlayIdByBarId?: MaybeRefOrGetter<ReadonlyMap<string, string>>;
+  /**
+   * Per-bar progress (0..100). When the matching entry is present AND
+   * the bar declared a `pointerOverlayId`, the composable computes the
+   * progress-handle rect (centered at `bar.x + progress/100 × bar.width`)
+   * and routes hits inside the rect to a `ProgressHandleTransaction`.
+   */
+  readonly barProgressById?: MaybeRefOrGetter<ReadonlyMap<string, number>>;
+  /**
+   * Width / height of the progress-handle rect in pixels. Default 12.
+   * The rect is centered horizontally on the progress-x and vertically
+   * on the bar; it can extend slightly above / below the bar bounds
+   * (mirrors the protruding-triangle visual from the reference).
+   */
+  readonly progressHandleSize?: MaybeRefOrGetter<number>;
   /** Snap drag-time delta to this multiple. Default no snap. */
   readonly snapDurationMs?: MaybeRefOrGetter<number>;
   /** Fires after a `BarDragTransaction` commits. */
@@ -75,6 +99,8 @@ export interface UseGanttPointerInput {
   readonly onBarResize?: (payload: BarResizePayload) => void;
   /** Fires after a `CalendarRangeSelectTransaction` commits. */
   readonly onSelect?: (payload: SelectPayload) => void;
+  /** Fires after a `ProgressHandleTransaction` commits. */
+  readonly onBarProgress?: (payload: BarProgressPayload) => void;
 }
 
 export interface UseGanttPointerOutput {
@@ -136,14 +162,52 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     return new Date(axisStartMs() + contentX / pxPerMs());
   }
 
+  // Build the per-bar progress-handle rect map from bar progress + the
+  // placed-bar geometry. Rect is centered at the progress-x with a
+  // square footprint of `progressHandleSize` (default 12 px). Bars
+  // missing from `barProgressById` or `overlayIdByBarId` don't get a
+  // handle entry — the rect map only contains opt-in bars.
+  const progressHandleRectsByBarId = computed<
+    ReadonlyMap<string, { x: number; y: number; width: number; height: number }>
+  >(() => {
+    const rects = new Map<string, { x: number; y: number; width: number; height: number }>();
+    const overlayMap = toValue(input.overlayIdByBarId);
+    const progressMap = toValue(input.barProgressById);
+    if (!overlayMap || !progressMap) return rects;
+    const size = toValue(input.progressHandleSize ?? 12);
+    for (const placed of toValue(input.placedBars)) {
+      if (!overlayMap.has(placed.barId)) continue;
+      const progress = progressMap.get(placed.barId);
+      if (progress === undefined) continue;
+      const clamped = Math.max(0, Math.min(100, progress));
+      const handleX = placed.x + (clamped / 100) * placed.width;
+      rects.set(placed.barId, {
+        x: handleX - size / 2,
+        y: placed.y + placed.height / 2 - size / 2,
+        width: size,
+        height: size,
+      });
+    }
+    return rects;
+  });
+
+  function placedBarById(barId: string): PlacedBar | undefined {
+    for (const placed of toValue(input.placedBars)) {
+      if (placed.barId === barId) return placed;
+    }
+    return undefined;
+  }
+
   function begin(contentX: number, contentY: number): void {
     const overlayMap = toValue(input.overlayIdByBarId);
+    const handleRects = progressHandleRectsByBarId.value;
     const hit = defaultPointerHitTester.test({
       contentX,
       contentY,
       placedBars: toValue(input.placedBars),
       strips: toValue(input.strips),
       ...(overlayMap !== undefined ? { overlayIdByBarId: overlayMap } : {}),
+      ...(handleRects.size > 0 ? { progressHandleByBarId: handleRects } : {}),
       edgeZoneWidth: toValue(input.edgeZoneWidth ?? 8),
     });
     lastHitResult.value = hit;
@@ -151,9 +215,10 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
 
     const editable = toValue(input.editable ?? false);
     const selectable = toValue(input.selectable ?? false);
-    // The overlayId, when present, signals the bar wants a permissive
-    // requireInitialHit (progress-handle pattern). For v1 we route all
-    // bar-* hits through REQUIRE_HIT since progress-handle isn't wired.
+    // Progress-handle hits use `requireInitialHit: false` (the
+    // separate-overlay-layer escape valve). Other hit kinds with an
+    // overlayId fall through to ALLOW_MISS too — the overlay membership
+    // signals the bar wants permissive capture. Default REQUIRE_HIT.
     const config =
       hit.kind !== 'empty-row' && hit.overlayId !== undefined ? ALLOW_MISS : REQUIRE_HIT;
 
@@ -171,6 +236,22 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
         originPx: { x: contentX, y: contentY },
         config,
         initialHit: true,
+      });
+    } else if (hit.kind === 'progress-handle' && editable) {
+      // Progress drag is enabled by `editable` (mirrors bar-drag /
+      // bar-resize). The bar must be in `barProgressById` to have
+      // reached this branch — re-read it for the `initialProgress`.
+      const progressMap = toValue(input.barProgressById);
+      const placed = placedBarById(hit.barId);
+      const initialProgress = progressMap?.get(hit.barId);
+      if (placed === undefined || initialProgress === undefined) return;
+      transaction.value = defaultPointerCaptureSession.beginProgressHandle({
+        barId: hit.barId,
+        originPx: { x: contentX, y: contentY },
+        config: ALLOW_MISS,
+        initialHit: true,
+        initialProgress,
+        barWidth: placed.width,
       });
     } else if (hit.kind === 'empty-row' && selectable) {
       transaction.value = defaultPointerCaptureSession.beginCalendarRangeSelect({
@@ -193,6 +274,10 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       transaction.value = defaultPointerCaptureSession.advanceBarResize(txn, {
         currentPx: { x: contentX, y: contentY },
       });
+    } else if (txn.kind === 'progress-handle') {
+      transaction.value = defaultPointerCaptureSession.advanceProgressHandle(txn, {
+        currentPx: { x: contentX, y: contentY },
+      });
     } else if (txn.kind === 'calendar-range-select') {
       transaction.value = defaultPointerCaptureSession.advanceCalendarRangeSelect(txn, {
         currentTime: contentXToTime(contentX),
@@ -207,6 +292,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
 
     if (txn.kind === 'bar-drag') commitDrag(txn, snapDurationMs);
     else if (txn.kind === 'bar-resize') commitResize(txn, snapDurationMs);
+    else if (txn.kind === 'progress-handle') commitProgress(txn);
     else if (txn.kind === 'calendar-range-select') commitSelect(txn, snapDurationMs);
 
     transaction.value = null;
@@ -253,6 +339,15 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       ...(snapDurationMs !== undefined ? { snapDurationMs } : {}),
     });
     input.onSelect?.({ rowId: txn.rowId, range: out.resolvedRange });
+  }
+
+  function commitProgress(txn: ProgressHandleTransaction): void {
+    const out = defaultPointerCaptureSession.commitProgressHandle({ txn });
+    input.onBarProgress?.({
+      barId: txn.barId,
+      oldProgress: txn.initialProgress,
+      newProgress: out.resolvedProgress,
+    });
   }
 
   return {
