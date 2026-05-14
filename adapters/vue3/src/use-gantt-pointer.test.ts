@@ -490,3 +490,81 @@ describe('useGanttPointer — progress handle', () => {
     expect(ptr.lastHit.value?.kind).toBe('progress-handle');
   });
 });
+
+describe('useGanttPointer — abort', () => {
+  it('abort() clears an in-flight bar-drag without firing onBarDrop', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    ptr.advance(660, 20);
+    expect(ptr.activeTransaction.value?.kind).toBe('bar-drag');
+
+    ptr.abort();
+    expect(ptr.activeTransaction.value).toBeNull();
+    expect(ptr.lastHit.value).toBeNull();
+    expect(onBarDrop).not.toHaveBeenCalled();
+  });
+
+  it('abort() then advance() is a no-op (transaction stays null)', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    ptr.abort();
+    ptr.advance(800, 20);
+    expect(ptr.activeTransaction.value).toBeNull();
+  });
+
+  it('abort() then begin() starts a fresh transaction', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    ptr.advance(660, 20);
+    ptr.abort();
+
+    // Fresh begin produces a new bar-drag with deltaX=0.
+    ptr.begin(600, 20);
+    const txn = ptr.activeTransaction.value;
+    expect(txn?.kind).toBe('bar-drag');
+    if (txn?.kind === 'bar-drag') {
+      expect(txn.deltaX).toBe(0);
+      expect(txn.deltaY).toBe(0);
+    }
+  });
+
+  it('abort() when idle is a safe no-op', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDrop,
+    });
+    expect(ptr.activeTransaction.value).toBeNull();
+    ptr.abort();
+    expect(ptr.activeTransaction.value).toBeNull();
+    expect(onBarDrop).not.toHaveBeenCalled();
+  });
+});

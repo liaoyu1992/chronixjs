@@ -859,3 +859,77 @@ describe('<ChronixGantt> bar-resize live-update', () => {
     expect(Number(wrapper.find('[data-bar-id="b1"]').attributes('width'))).toBe(0);
   });
 });
+
+describe('<ChronixGantt> pointercancel', () => {
+  it('pointercancel mid-drag aborts the in-flight transaction without firing emit', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointercancel', { clientX: 660, clientY: 64, pointerId: 1 });
+
+    // No bar-drop emit; bar rect snaps back to original layout x.
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+    expect(Number(wrapper.find('[data-bar-id="b1"]').attributes('x'))).toBe(480);
+  });
+
+  it('pointercancel mid-resize aborts without firing bar-resize', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 715, clientY: 64, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 775, clientY: 64, pointerId: 1 });
+    await svg.trigger('pointercancel', { clientX: 775, clientY: 64, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-resize')).toBeFalsy();
+    // Width reset to the layout's 240.
+    expect(Number(wrapper.find('[data-bar-id="b1"]').attributes('width'))).toBe(240);
+  });
+
+  it('pointercancel mid-progress-handle aborts without firing bar-progress', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
+    await svg.trigger('pointercancel', { clientX: 624, clientY: 67, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-progress')).toBeFalsy();
+    // Live preview ended; fill width is back to the persisted 50% × 240 = 120.
+    expect(Number(wrapper.find('.cx-gantt-progress-fill').attributes('width'))).toBe(120);
+  });
+
+  it('pointercancel when no transaction is active is a safe no-op', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    // No pointerdown — pointercancel arrives unsolicited.
+    await svg.trigger('pointercancel', { clientX: 600, clientY: 64, pointerId: 1 });
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+  });
+});

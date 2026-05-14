@@ -185,6 +185,15 @@ export const ChronixGantt = defineComponent({
       svgRef.value?.releasePointerCapture?.(e.pointerId);
     }
 
+    function onPointercancel(e: PointerEvent): void {
+      if (!pointer.activeTransaction.value) return;
+      // Browser-initiated cancellation (touch interruption, focus stolen,
+      // OS gesture). Drop the in-flight transaction without firing a
+      // commit callback — the user's intent is lost, not finalized.
+      pointer.abort();
+      svgRef.value?.releasePointerCapture?.(e.pointerId);
+    }
+
     return () => {
       const a = axis.value;
       const hh = props.headerHeight;
@@ -286,6 +295,7 @@ export const ChronixGantt = defineComponent({
           onPointerdown,
           onPointermove,
           onPointerup,
+          onPointercancel,
         },
         [
           h('g', { class: 'cx-gantt-header-rows' }, headerRowChildren),

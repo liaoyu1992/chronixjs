@@ -117,11 +117,18 @@ export interface UseGanttPointerOutput {
    */
   advance(contentX: number, contentY: number): void;
   /**
-   * Commit (or abort) the active transaction. On commit, the
-   * corresponding `onBar* / onSelect` callback fires with the resolved
-   * range. After commit the composable's state resets.
+   * Commit the active transaction. On commit, the corresponding
+   * `onBar* / onSelect` callback fires with the resolved range. After
+   * commit the composable's state resets.
    */
   commit(): void;
+  /**
+   * Abort the active transaction without firing a commit callback.
+   * Clears `activeTransaction` and `lastHit`. Used by callers handling
+   * `pointercancel` (browser-initiated drag interruption) or
+   * application-level escape gestures.
+   */
+  abort(): void;
   /** The current in-flight transaction, or `null` when idle. */
   readonly activeTransaction: ComputedRef<AnyTransaction | null>;
   /** The result of the last `defaultPointerHitTester.test()` from `begin()`. */
@@ -350,10 +357,16 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     });
   }
 
+  function abort(): void {
+    transaction.value = null;
+    lastHitResult.value = null;
+  }
+
   return {
     begin,
     advance,
     commit,
+    abort,
     activeTransaction: computed(() => transaction.value),
     lastHit: computed(() => lastHitResult.value),
   };
