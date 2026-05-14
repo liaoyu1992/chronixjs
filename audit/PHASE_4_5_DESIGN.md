@@ -1,6 +1,6 @@
 # Phase 4.5 — Sticky-header scroll wrapper design note
 
-**Status**: parked, waiting on user decision between three options.
+**Status**: **Z approved (2026-05-14)**. Implementation pending; will land as 3 commits with browser-verify pauses between each (see "Decision" section at the bottom).
 
 ## Problem
 
@@ -208,6 +208,86 @@ Reasoning:
    the cap becomes meaningless (no vertical clipping at the wrapper).
    Default the wrapper's max-height to the container's height.
 
+## Decision (2026-05-14)
+
+**Z approved.** Header rendered as a **separate inner SVG** (not HTML divs) —
+keeps tick / header-cell coordinate math identical to the body, avoids a
+second rendering model. Example app's `max-height: 70vh` cap stays but
+becomes the sticky scroll boundary instead of a content cap.
+
+### Execution plan — 3 commits with browser-verify pauses
+
+#### Commit 1: structural refactor (no sticky yet)
+
+- Change `<ChronixGantt>` return from `<svg>` root to `<div class="cx-gantt-wrapper">`
+- Wrapper contains two children:
+  - `<svg class="cx-gantt-header">` with the existing header-rows group +
+    axis-tick group (the latter no longer needs the `translate(0, headerRowsHeight)`
+    transform since the header SVG owns the band — origin is at y=0)
+  - `<svg class="cx-gantt-body">` with the bars group (no longer needs
+    `translate(0, totalHeaderBandHeight)` — body owns just the bar area)
+- Pointer events only on body SVG. The header SVG gets no pointer
+  handlers (axis-row clicks are simply ignored — no DOM listener to
+  receive them, so the explicit `if (pos.y < 0) return` filter at the
+  composable boundary becomes a no-op safety net).
+- Public API preserved: `headerHeight`, `headerRowHeight`,
+  `progressHandleSize`, all event emits, all class names.
+- Update ~30 SFC tests that use `wrapper.find('svg')` to disambiguate:
+  - Tests firing `pointerdown` etc.: `wrapper.find('svg.cx-gantt-body')`
+  - Tests asserting on overall structure: `wrapper.find('div.cx-gantt-wrapper')`
+  - Tests asserting on header content: `wrapper.find('svg.cx-gantt-header')`
+- Pointer math: SVG-y for content-y 0 is `bodyRect.top - wrapperRect.top` =
+  0 (body sits directly under header in document flow; their bounding rects
+  abut). Composable's `toContentXY` now reads from `bodySvg.getBoundingClientRect()`
+  not the wrapper, so the `headerBandHeight` subtraction term disappears
+  from the formula — the body SVG's origin IS content-y 0.
+- ci-check green → commit + push → **PAUSE for browser verify**: open
+  http://localhost:8702/, confirm chart looks the same as before, drag /
+  resize / progress-handle / select all still emit correctly.
+
+#### Commit 2: sticky behavior + new tests
+
+- `.cx-gantt-wrapper`: `display: block; overflow: auto; max-height: 70vh`
+  (the wrapper now owns the scroll, not the outer demo frame)
+- `.cx-gantt-header`: `position: sticky; top: 0; z-index: 1; background: #ffffff`
+  (sticks to wrapper top during vertical scroll)
+- `.cx-gantt-body`: no positioning needed; flows naturally below header
+- Example app: simplify `.cx-demo-svg-frame` (remove `overflow: auto` +
+  `max-height` since the wrapper handles it now)
+- Add 2-3 SFC tests asserting:
+  - `.cx-gantt-header` has `position: sticky` inline style or class
+  - `.cx-gantt-wrapper` has `overflow: auto`
+  - SVG widths match (header and body share `axis.totalWidth`)
+- ci-check green → commit + push → **PAUSE for browser verify**: scroll
+  vertically on a tall view (16 bars × 4 rows on year view should
+  overflow), confirm header stays at top; scroll horizontally, confirm
+  header scrolls left/right in lockstep with body.
+
+#### Commit 3: re-baseline VRT + polish
+
+- Restart chronix demo at 8702 fresh (kill any leftover vite first)
+- `pnpm --filter @chronixjs/golden-runner chronix-capture` to rebaseline
+  all 5 VRT PNGs against the new structure
+- Read each PNG via Read tool to visually verify content
+- Update `chronix-visual.spec.ts` if needed (the CSS injection should
+  still work but the selectors may shift; the `svg.cx-gantt` locator
+  becomes `svg.cx-gantt-body` for the bar area — header capture is a
+  separate concern, parked)
+- ci-check green → commit + push → **PAUSE for user to review the 5 new
+  baselines**
+
+### After Phase 4.5 lands
+
+- Update `audit/journal/2026-05-13.md` (or a new dated file) with
+  Reference reading / Mechanisms understood / Chronix work derived /
+  Naming justifications / Open & parked sections
+- Update `project_gantt_rewrite_plan.md` memory entry: total vitest count
+  bumps by 2-3 (new sticky CSS tests); 5 VRT baselines re-captured;
+  Phase 4.5 closed
+- Suggest the next phase for user's review (ResourceArea sidebar?
+  cross-row bar-drag? smooth LinkRouter? non-day bar-placement parity?)
+
 ---
 
-This document is updated when the decision lands.
+This document is the source of truth for the design decision. Update
+the status line at the top if the decision changes mid-implementation.
