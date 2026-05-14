@@ -391,15 +391,12 @@ describe('<ChronixGantt> header rows', () => {
     });
     expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(1);
     // Day-resolution ticks: between 28 and 31 depending on month. zh-CN
-    // day labels emitted by chronix's `weekday: 'short'` formatter look
-    // like "1日周X" (where X is a weekday letter). The reference DOM
-    // renders these as "1日X" (no `周` prefix) — that divergence is
-    // tracked in the planner's open items; this regex follows what
-    // chronix actually produces.
+    // day labels emitted by `weekday: 'narrow'` are `"DD日<wd>"`, e.g.
+    // "1日五" — matching the reference DOM exactly.
     const tickLabels = wrapper.findAll('.cx-gantt-tick-label');
     expect(tickLabels.length).toBeGreaterThanOrEqual(28);
     expect(tickLabels.length).toBeLessThanOrEqual(31);
-    expect(tickLabels[0]!.text()).toMatch(/^1日周?[一二三四五六日]$/u);
+    expect(tickLabels[0]!.text()).toMatch(/^1日[一二三四五六日]$/u);
   });
 
   it('year view: 12 outer header cells (one per month) covering the year', () => {

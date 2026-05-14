@@ -148,9 +148,13 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
   const slotCount = countDaysAcrossMonths(start, 1);
   const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE.month);
 
+  // `weekday: 'narrow'` emits a one-char weekday in zh-CN ("一" … "六" / "日"),
+  // matching the reference DOM's `"DD日<wd>"` tick-label format. The previous
+  // `'short'` value emitted `"周X"` which is wider and looks wrong above
+  // narrow day slots. See `audit/journal/2026-05-13.md` Phase 4.7.
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
     day: 'numeric',
-    weekday: 'short',
+    weekday: 'narrow',
   });
   const monthFmt = new Intl.DateTimeFormat(input.locale, {
     year: 'numeric',
@@ -201,9 +205,10 @@ function planMonthBandedAxis(
   const slotCount = countDaysAcrossMonths(start, monthCount);
   const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE[input.viewId]);
 
+  // `weekday: 'narrow'` — see `planMonthView` for the rationale.
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
     day: 'numeric',
-    weekday: 'short',
+    weekday: 'narrow',
   });
   const monthFmt = new Intl.DateTimeFormat(input.locale, {
     year: 'numeric',
