@@ -20,13 +20,20 @@ export type {
 export type { BarTable, LinkTable, PendingTransaction, RowDataSource } from './data/index.js';
 
 export type {
+  AdvanceBarDragInput,
   AnyTransaction,
   BarDragTransaction,
   BarResizeTransaction,
+  BeginBarDragInput,
   CalendarRangeSelectTransaction,
+  CommitBarDragInput,
+  CommitBarDragOutput,
   PointerCaptureConfig,
+  PointerCaptureSession,
+  PointerPx,
   ProgressHandleTransaction,
 } from './interaction/index.js';
+export { defaultPointerCaptureSession } from './interaction/index.js';
 
 export type {
   IRCanvas,

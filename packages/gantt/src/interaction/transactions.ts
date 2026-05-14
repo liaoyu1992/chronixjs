@@ -8,7 +8,13 @@ import type { PendingTransaction } from '../data/index.js';
 export interface BarDragTransaction extends PendingTransaction {
   readonly kind: 'bar-drag';
   readonly barId: string;
-  /** Pixel delta accumulated from pointerdown to now. */
+  /**
+   * Viewport-pixel position at the original `pointerdown`. Pinned at
+   * begin time so subsequent `advance` calls compute cumulative deltas
+   * without the caller bookkeeping the origin.
+   */
+  readonly originPx: { readonly x: number; readonly y: number };
+  /** Pixel delta accumulated from pointerdown to now (`current.x - origin.x`). */
   readonly deltaX: number;
   readonly deltaY: number;
 }
