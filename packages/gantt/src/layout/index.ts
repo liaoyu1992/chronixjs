@@ -8,6 +8,8 @@ export type { LinkRouter } from './link-router.js';
 export { defaultLinkRouter } from './link-router.js';
 export type { RowSwimlaneLayout } from './row-swimlane-layout.js';
 export { defaultRowSwimlaneLayout } from './row-swimlane-layout.js';
+export type { VirtualizedPaneLayout } from './virtualized-pane-layout.js';
+export { defaultVirtualizedPaneLayout } from './virtualized-pane-layout.js';
 export type {
   AxisHeaderCell,
   AxisHeaderRow,
@@ -25,6 +27,12 @@ export type {
   RoutedLinkMarker,
   RowSwimlaneLayoutInput,
   RowSwimlaneLayoutOutput,
+  IndexRange,
   SwimlaneStrip,
   ViewId,
+  VirtualizedPaneLayoutInput,
+  VirtualizedPaneLayoutOutput,
+  VirtualizedPaneOverscan,
+  VirtualizedPaneScroll,
+  VirtualizedPaneViewport,
 } from './types.js';

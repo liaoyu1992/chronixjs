@@ -69,11 +69,18 @@ export type {
   PlannedAxis,
   RoutedLink,
   RoutedLinkMarker,
+  IndexRange,
   RowSwimlaneLayout,
   RowSwimlaneLayoutInput,
   RowSwimlaneLayoutOutput,
   SwimlaneStrip,
   ViewId,
+  VirtualizedPaneLayout,
+  VirtualizedPaneLayoutInput,
+  VirtualizedPaneLayoutOutput,
+  VirtualizedPaneOverscan,
+  VirtualizedPaneScroll,
+  VirtualizedPaneViewport,
 } from './layout/index.js';
 export {
   defaultAxisRangePlanner,
@@ -81,4 +88,5 @@ export {
   defaultBarStackHeightPass,
   defaultLinkRouter,
   defaultRowSwimlaneLayout,
+  defaultVirtualizedPaneLayout,
 } from './layout/index.js';

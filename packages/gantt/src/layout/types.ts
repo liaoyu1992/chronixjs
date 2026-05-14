@@ -221,3 +221,64 @@ export interface LinkRouterOutput {
   /** IDs of links whose `fromBarId` or `toBarId` didn't match any placedBar. */
   readonly orphanLinkIds: readonly string[];
 }
+
+/**
+ * Half-open index range. `firstIndex` is the lowest index in range,
+ * `lastIndex` is the highest. Both are −1 when the range is empty.
+ * Inclusive bounds on both ends to match the standard "first..last"
+ * idiom used elsewhere in chronix layout.
+ */
+export interface IndexRange {
+  readonly firstIndex: number;
+  readonly lastIndex: number;
+}
+
+export interface VirtualizedPaneViewport {
+  /** Visible width of the timeline body in CSS pixels (post-sidebar). */
+  readonly width: number;
+  /** Visible height of the timeline body in CSS pixels. */
+  readonly height: number;
+}
+
+export interface VirtualizedPaneScroll {
+  /** Horizontal scroll offset of the timeline body, in CSS pixels. */
+  readonly x: number;
+  /** Vertical scroll offset of the timeline body, in CSS pixels. */
+  readonly y: number;
+}
+
+export interface VirtualizedPaneOverscan {
+  /** Extra strip indexes to include above/below the visible range. Default 0. */
+  readonly rows?: number;
+  /** Extra slot indexes to include left/right of the visible range. Default 0. */
+  readonly slots?: number;
+}
+
+export interface VirtualizedPaneLayoutInput {
+  readonly axis: PlannedAxis;
+  readonly strips: readonly SwimlaneStrip[];
+  readonly viewport: VirtualizedPaneViewport;
+  readonly scroll: VirtualizedPaneScroll;
+  readonly overscan?: VirtualizedPaneOverscan;
+}
+
+export interface VirtualizedPaneLayoutOutput {
+  /**
+   * Strip indexes (into the input `strips` array) whose Y bounds overlap
+   * the overscan-adjusted viewport. Empty (`{-1, -1}`) when no strip is
+   * visible — e.g. scroll past content end, or empty input.
+   */
+  readonly visibleStripRange: IndexRange;
+  /**
+   * Slot indexes (into the axis) whose X bounds overlap the overscan-
+   * adjusted viewport. Empty when scrolled past the axis or empty axis.
+   */
+  readonly visibleSlotRange: IndexRange;
+  /**
+   * Total content footprint — the scroll container should be sized to
+   * at least this. `width` = `axis.totalWidth`; `height` = bottom of the
+   * last strip (`strip.y + strip.height` for the last entry, or 0 when
+   * empty).
+   */
+  readonly contentSize: { readonly width: number; readonly height: number };
+}
