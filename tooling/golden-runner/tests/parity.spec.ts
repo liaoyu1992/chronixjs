@@ -300,7 +300,7 @@ test.describe('parity: chronix vs k-ui demo', () => {
     ];
   }
 
-  test('day-view bar placement (x + width per event-id)', async ({ page }) => {
+  test('day-view bar placement (x + y + width per event-id)', async ({ page }) => {
     // Step 1: compute `today` (local midnight of FROZEN_TIME_ISO) in Node.
     // The browser does `today = new Date(); today.setHours(0,0,0,0)` after
     // clock-install — same arithmetic, so todayMs is shared.
@@ -309,7 +309,58 @@ test.describe('parity: chronix vs k-ui demo', () => {
     const todayMs = today.getTime();
     const events = buildTestEvents(todayMs);
 
-    // Step 2: chronix pipeline. Strips are dummy — we only assert x/width.
+    const chart = await loadDayView(page);
+
+    // Step 2: probe k-ui's rendered row layout. The body has one strip per
+    // leaf resource, contiguous, with heights driven by k-ui's event-stack
+    // math (`eventMinHeight + stacking-adjusted padding`). Chronix v0
+    // doesn't model the stacking, but RowSwimlaneLayout accepts an
+    // explicit `heightHint` per row, so passing the probed heights forward
+    // pins the swimlane to k-ui's geometry. The first row's top relative
+    // to the body wrapper is also captured — k-ui's body has ~0.5px of
+    // internal border / wrapper padding before the first lane.
+    const domRows = await chart.evaluate(() => {
+      const wrapper = document.querySelector('.gantt-timeline-body-wrapper');
+      const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0;
+      // Use the resource-panel TR rows as the lane source — every leaf
+      // resource has one, in render order. Body has no per-row container
+      // with data-resource-id, but the panel's row top mirrors the body's
+      // strip top because the two sync via the scroller's vertical layout.
+      const rows = Array.from(
+        document.querySelectorAll<HTMLTableRowElement>('tr[data-resource-id]'),
+      );
+      const seen = new Set<string>();
+      const out: { resourceId: string; y: number; height: number }[] = [];
+      for (const tr of rows) {
+        const id = tr.getAttribute('data-resource-id') ?? '';
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const r = tr.getBoundingClientRect();
+        out.push({
+          resourceId: id,
+          y: Math.round((r.top - wrapperTop) * 100) / 100,
+          height: Math.round(r.height * 100) / 100,
+        });
+      }
+      out.sort((a, b) => a.y - b.y);
+      return out;
+    });
+
+    // The first row's top edge — chronix's strip[0].y is 0 by contract,
+    // and the body has a ~0.5px wrapper offset before the lanes start.
+    const wrapperRowOffsetY = domRows[0]?.y ?? 0;
+
+    // k-ui empirical body-layout constants. Source:
+    // `packages/gantt/src/resource-timeline/GanttView.tsx:1979-2022`
+    // (calculateActualSlotWidths) defines per-slot widths but not Y math;
+    // Y is driven by `eventMinHeight` + `firstEventTopPadding` callback
+    // (demo sets eventMinHeight=30; the top padding empirically resolves
+    // to 8px for un-stacked rows).
+    const BAR_HEIGHT = 30;
+    const BAR_TOP_PADDING = 8;
+
+    // Step 3: chronix pipeline using probed row heights so the swimlane
+    // matches k-ui's stacked geometry.
     const axis = defaultAxisRangePlanner.plan({
       viewId: 'day',
       anchorDate: new Date(FROZEN_TIME_ISO),
@@ -317,38 +368,49 @@ test.describe('parity: chronix vs k-ui demo', () => {
       locale: 'zh-CN',
       weekendsVisible: true,
     });
-    const uniqueRowIds = [...new Set(events.map((e) => e.resourceId))];
-    const rows: RowSpec[] = uniqueRowIds.map((id) => ({ id, columns: {} }));
-    const { strips } = defaultRowSwimlaneLayout.layout({ rows, defaultRowHeight: 30 });
+    const rows: RowSpec[] = domRows.map((r) => ({
+      id: r.resourceId,
+      columns: {},
+      heightHint: r.height,
+    }));
+    const { strips } = defaultRowSwimlaneLayout.layout({ rows, defaultRowHeight: 39 });
     const bars: BarSpec[] = events.map((e) => ({
       id: e.id,
       rowId: e.resourceId,
       range: { start: new Date(e.startMs), end: new Date(e.endMs) },
       dprIntent: 'crisp-pixel',
     }));
-    const { placedBars } = defaultBarPlacementPass.place({ bars, axis, strips });
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars,
+      axis,
+      strips,
+      barVerticalPadding: BAR_TOP_PADDING,
+      barHeight: BAR_HEIGHT,
+    });
     const chronixByEventId = new Map(placedBars.map((p) => [p.barId, p]));
 
-    // Step 3: drive k-ui to day view, extract every bar's (x, width)
-    // relative to the timeline-body-wrapper origin.
-    const chart = await loadDayView(page);
+    // Step 4: extract every bar's (x, y, width) from the DOM relative to
+    // the timeline-body-wrapper origin.
     const domBars = await chart.evaluate(() => {
       const wrapper = document.querySelector('.gantt-timeline-body-wrapper');
       const wrapperLeft = wrapper ? wrapper.getBoundingClientRect().left : 0;
-      const out: { eventId: string; x: number; width: number }[] = [];
+      const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0;
+      const out: { eventId: string; x: number; y: number; width: number; height: number }[] = [];
       document.querySelectorAll<SVGElement>('[data-event-id]').forEach((el) => {
         const eventId = el.getAttribute('data-event-id') ?? '';
         const r = el.getBoundingClientRect();
+        // Skip thin overlay handles (progress triangle is ~8px tall).
+        if (r.height < 4) return;
         out.push({
           eventId,
           x: Math.round((r.left - wrapperLeft) * 100) / 100,
+          y: Math.round((r.top - wrapperTop) * 100) / 100,
           width: Math.round(r.width * 100) / 100,
+          height: Math.round(r.height * 100) / 100,
         });
       });
-      // Dedupe by eventId — the SVG layer renders the bar plus optional
-      // overlays (progress triangle etc.) all with `[data-event-id]`. Keep
-      // the widest hit per id (the bar itself, not a 12px triangle handle).
-      const widest = new Map<string, { eventId: string; x: number; width: number }>();
+      // Dedupe by eventId, widest wins (filters any non-handle overlays).
+      const widest = new Map<string, (typeof out)[number]>();
       for (const b of out) {
         const prev = widest.get(b.eventId);
         if (!prev || b.width > prev.width) widest.set(b.eventId, b);
@@ -356,11 +418,10 @@ test.describe('parity: chronix vs k-ui demo', () => {
       return [...widest.values()];
     });
 
-    // Step 4: per-id parity assertion. Skip ids that exist on only one side
-    // (chronix produces a placement for every input event; k-ui may omit
-    // some that fall entirely outside the visible chart, depending on its
-    // rendering policy — we want to fail loudly only when ids on BOTH
-    // sides disagree).
+    // Step 5: per-id parity assertion. Skip ids that exist on only one
+    // side — chronix produces a placement for every input event; k-ui
+    // may omit some that fall entirely outside the visible chart. Only
+    // assert on the intersection.
     let comparedCount = 0;
     const failures: string[] = [];
     for (const dom of domBars) {
@@ -369,15 +430,18 @@ test.describe('parity: chronix vs k-ui demo', () => {
       comparedCount += 1;
       const xDelta = Math.abs(chronix.x - dom.x);
       const wDelta = Math.abs(chronix.width - dom.width);
-      if (xDelta > 1 || wDelta > 1) {
+      // Chronix's strip[0].y starts at 0; DOM's first lane is offset by
+      // ~0.5px from the body wrapper. Subtract that to compare.
+      const yDelta = Math.abs(chronix.y + wrapperRowOffsetY - dom.y);
+      if (xDelta > 1 || yDelta > 1 || wDelta > 1) {
         failures.push(
-          `${dom.eventId}: chronix=(${chronix.x},${chronix.width}) dom=(${dom.x},${dom.width}) Δx=${xDelta} Δw=${wDelta}`,
+          `${dom.eventId}: chronix=(${chronix.x},${chronix.y},${chronix.width}) dom=(${dom.x},${dom.y},${dom.width}) Δx=${xDelta} Δy=${yDelta} Δw=${wDelta}`,
         );
       }
     }
 
     console.warn(
-      `bar-placement parity: compared ${comparedCount}/${domBars.length} events (chronix produced ${placedBars.length})`,
+      `bar-placement parity: compared ${comparedCount}/${domBars.length} events (chronix produced ${placedBars.length}); wrapperRowOffsetY=${wrapperRowOffsetY}`,
     );
     if (failures.length) {
       console.warn('bar-placement parity failures:');

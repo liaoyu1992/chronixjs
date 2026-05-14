@@ -106,8 +106,26 @@ export interface BarPlacementPassInput {
   readonly bars: readonly BarSpec[];
   readonly axis: PlannedAxis;
   readonly strips: readonly SwimlaneStrip[];
-  /** Pixels of empty space between a strip's top/bottom and the bar. Default 2. */
+  /**
+   * Pixels of empty space above the bar relative to the strip's top edge.
+   * Default 2. When `barHeight` is omitted, this is also the bottom padding
+   * (so `bar.height = strip.height - 2 × barVerticalPadding`).
+   */
   readonly barVerticalPadding?: number;
+  /**
+   * Fixed bar height in pixels. When set, `bar.height = barHeight`
+   * regardless of strip dimensions; `bar.y = strip.y + barVerticalPadding`.
+   * When unset, bar height fills the strip minus symmetric padding —
+   * the v0 behavior, kept for callers that don't care about a separate
+   * height knob (e.g. uniform-strip demos).
+   *
+   * The k-ui reference uses `eventMinHeight` (default 30) here and stacks
+   * strips taller than that to fit multiple bars per row. Chronix v1
+   * exposes the same knob; the bar-row stacking that derives strip
+   * heights from event collisions is a separate concern, owned by the
+   * caller until a Phase 2.x pass lands.
+   */
+  readonly barHeight?: number;
 }
 
 export interface BarPlacementPassOutput {

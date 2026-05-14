@@ -106,6 +106,25 @@ describe('defaultBarPlacementPass — happy path (day view)', () => {
     expect(placedBars[0]?.y).toBe(0 + 5);
     expect(placedBars[0]?.height).toBe(30 - 10);
   });
+
+  it('explicit barHeight overrides strip-derived height; padding still drives y', () => {
+    // k-ui mode: fixed bar height (eventMinHeight=30) + top padding 8.
+    // Bar should be at strip.y + 8 with height 30, regardless of strip.height.
+    const tallerStrips = defaultRowSwimlaneLayout.layout({
+      rows: [{ id: 'r1', columns: {}, heightHint: 43 }],
+      defaultRowHeight: 43,
+    });
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('b1', 'r1', '2026-05-13T00:00:00', '2026-05-13T01:00:00')],
+      axis: dayAxis,
+      strips: tallerStrips.strips,
+      barVerticalPadding: 8,
+      barHeight: 30,
+    });
+
+    expect(placedBars[0]?.y).toBe(0 + 8);
+    expect(placedBars[0]?.height).toBe(30); // strip is 43 tall but bar is fixed 30
+  });
 });
 
 describe('defaultBarPlacementPass — edge cases', () => {

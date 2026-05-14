@@ -17,6 +17,7 @@ export interface BarPlacementPass {
 export const defaultBarPlacementPass: BarPlacementPass = {
   place(input) {
     const padding = input.barVerticalPadding ?? 2;
+    const explicitBarHeight = input.barHeight;
     const axisStartMs = input.axis.ticks[0]?.time.getTime() ?? 0;
     const pxPerMs = input.axis.slotWidth / input.axis.slotDurationMs;
 
@@ -34,12 +35,17 @@ export const defaultBarPlacementPass: BarPlacementPass = {
       }
       const startMs = bar.range.start.getTime();
       const endMs = bar.range.end.getTime();
+      // Two height modes:
+      // - explicit barHeight: top-aligned with padding, bar overflows if
+      //   strip.height < padding + barHeight (caller's contract).
+      // - implicit: symmetric padding fills the strip (legacy v0).
+      const height = explicitBarHeight ?? Math.max(0, strip.height - 2 * padding);
       placedBars.push({
         barId: bar.id,
         x: (startMs - axisStartMs) * pxPerMs,
         y: strip.y + padding,
         width: (endMs - startMs) * pxPerMs,
-        height: Math.max(0, strip.height - 2 * padding),
+        height,
       });
     }
 
