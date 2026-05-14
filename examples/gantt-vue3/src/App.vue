@@ -5,6 +5,7 @@ import type {
   BarDropPayload,
   BarProgressPayload,
   BarResizePayload,
+  ColumnSpec,
   SelectPayload,
 } from '@chronixjs/gantt-vue3';
 import { computed, ref } from 'vue';
@@ -21,6 +22,13 @@ const VIEW_TOGGLE: readonly { readonly id: ViewId; readonly label: string }[] = 
   { id: 'halfYear', label: '半年' },
   { id: 'year', label: '年' },
 ];
+
+// Resource-panel column descriptors. The sample rows populate
+// `{ name: '车间 A' }` etc., so a single column keyed `name` is enough
+// to demonstrate the sidebar. Width sums into the wrapper's grid track
+// for the left column (`120px auto`). Multi-column / tree-grouping
+// scenarios are parked — see audit/PHASE_5_RESOURCE_AREA_DESIGN.md.
+const columns: readonly ColumnSpec[] = [{ key: 'name', label: '车间', width: 120 }];
 
 // Reactive copy of the bar set — drag / resize results mutate this in
 // place so the demo shows a real end-to-end round-trip (commit →
@@ -147,6 +155,7 @@ function resetBars(): void {
           :bars="bars"
           :rows="sampleRows"
           :axis-input="axisInput"
+          :columns="columns"
           :editable="editable"
           :selectable="selectable"
           @bar-drop="onBarDrop"
