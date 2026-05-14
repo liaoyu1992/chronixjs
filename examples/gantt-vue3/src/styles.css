@@ -87,9 +87,7 @@ body {
 .cx-demo-svg-frame {
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  overflow: auto;
   background: #f9fafb;
-  max-height: 70vh;
 }
 
 .cx-demo-view-toggle {
@@ -124,13 +122,12 @@ body {
 }
 
 .cx-gantt-wrapper {
-  display: block;
   background: #ffffff;
-}
-
-.cx-gantt-header,
-.cx-gantt-body {
-  display: block;
+  /* The wrapper is the scroll container (overflow:auto is set inline by
+     the library). Capping max-height here is what actually engages the
+     vertical scroll for long bar lists and lets the sticky header
+     anchor to this scrollport instead of the page. */
+  max-height: 70vh;
 }
 
 .cx-gantt-bar {

@@ -75,6 +75,37 @@ describe('<ChronixGantt>', () => {
     expect(wrapper.find('svg.cx-gantt-body').exists()).toBe(true);
   });
 
+  it('wrapper div has inline `overflow: auto` so it acts as the sticky-header scrollport', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput },
+    });
+    const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
+    expect(root.style.overflow).toBe('auto');
+  });
+
+  it('header SVG has inline `position: sticky` + `top: 0` so it pins to the wrapper top during vertical scroll', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput },
+    });
+    const header = wrapper.find('svg.cx-gantt-header').element as SVGSVGElement;
+    expect(header.style.position).toBe('sticky');
+    expect(header.style.top).toBe('0px');
+    // Opaque background prevents body bars from bleeding through the
+    // header while sliding under it during scroll.
+    expect(header.style.background).not.toBe('');
+  });
+
+  it('header SVG and body SVG render at the same width (both bound to axis.totalWidth) so horizontal scroll stays locked', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput },
+    });
+    const headerWidth = wrapper.find('svg.cx-gantt-header').attributes('width');
+    const bodyWidth = wrapper.find('svg.cx-gantt-body').attributes('width');
+    expect(headerWidth).toBe(bodyWidth);
+    // Day view: 24 hours × slotWidth 60 = 1440.
+    expect(Number(bodyWidth)).toBe(1440);
+  });
+
   it('sizes rects from layout output: width = duration × pxPerMs, x = (start - axisStart) × pxPerMs', () => {
     const bars: readonly BarSpec[] = [bar('b1', 'r1', 8, 12)]; // 4 hours
     const wrapper = mount(ChronixGantt, {

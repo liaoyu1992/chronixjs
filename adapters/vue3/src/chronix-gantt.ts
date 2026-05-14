@@ -286,12 +286,25 @@ export const ChronixGantt = defineComponent({
         );
       }
 
+      // Header is pinned to the top of the wrapper's scrollport so the
+      // tick row + outer header bands stay visible while the body scrolls
+      // vertically. `background` is opaque so bars don't bleed through
+      // while sliding under the band. `z-index: 1` keeps the header
+      // painted above the body in the (very unlikely) case that the body
+      // SVG overflows its own box upward.
       const headerSvg = h(
         'svg',
         {
           class: 'cx-gantt-header',
           width: totalWidth,
           height: totalHeaderBandHeight,
+          style: {
+            display: 'block',
+            position: 'sticky',
+            top: '0',
+            zIndex: 1,
+            background: '#ffffff',
+          },
         },
         [
           h('g', { class: 'cx-gantt-header-rows' }, headerRowChildren),
@@ -436,6 +449,7 @@ export const ChronixGantt = defineComponent({
           class: 'cx-gantt-body',
           width: totalWidth,
           height: bodyHeight,
+          style: { display: 'block' },
           onPointerdown,
           onPointermove,
           onPointerup,
@@ -444,11 +458,16 @@ export const ChronixGantt = defineComponent({
         [h('g', { class: 'cx-gantt-bars' }, barChildren)],
       );
 
+      // The wrapper is the scroll container that anchors the sticky
+      // header. Consumers constrain its height (e.g. `max-height: 70vh`
+      // via class CSS) to actually engage the scroll; with no height
+      // cap the wrapper grows to fit the body and no scroll engages.
       return h(
         'div',
         {
           class: 'cx-gantt-wrapper',
           'data-axis-view': a.viewId,
+          style: { overflow: 'auto' },
         },
         [headerSvg, bodySvg],
       );
