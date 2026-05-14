@@ -562,3 +562,88 @@ describe('<ChronixGantt> progress overlay', () => {
     expect(Number(handle.attributes('x'))).toBe(534);
   });
 });
+
+describe('<ChronixGantt> progress overlay — live update during drag', () => {
+  it('mid-drag pointermove moves the rendered handle x to the projected position', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    // Bar at x ∈ [480, 720] (width 240). 50% → handle center x = 600,
+    // handle rect x = 594. Drag +24 px in content space → projected 60%
+    // → new handle center 480 + 0.6 × 240 = 624, rect x = 618.
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
+
+    // Handle has moved BEFORE pointer-up. No bar-progress emit yet.
+    const handle = wrapper.find('.cx-gantt-progress-handle');
+    expect(Number(handle.attributes('x'))).toBe(618);
+    expect(wrapper.emitted('bar-progress')).toBeFalsy();
+  });
+
+  it('mid-drag pointermove updates the progress-fill width to track the projected percentage', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    // Drag +12 px → projected 55% → fill width 0.55 × 240 = 132.
+    await svg.trigger('pointermove', { clientX: 612, clientY: 67, pointerId: 1 });
+
+    const fill = wrapper.find('.cx-gantt-progress-fill');
+    expect(Number(fill.attributes('width'))).toBe(132);
+  });
+
+  it('mid-drag projection is clamped to [0, 100] when pointer moves past the bar bounds', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    // Drag +500 px — projection past 100%. Fill should clamp to bar.width;
+    // handle should clamp to bar.x + bar.width − handleSize/2.
+    await svg.trigger('pointermove', { clientX: 1100, clientY: 67, pointerId: 1 });
+
+    const fill = wrapper.find('.cx-gantt-progress-fill');
+    expect(Number(fill.attributes('width'))).toBe(240); // entire bar
+    const handle = wrapper.find('.cx-gantt-progress-handle');
+    expect(Number(handle.attributes('x'))).toBe(720 - 6); // 100% → x=720, rect x = 714
+  });
+
+  it('after pointer-up commit the live preview ends; fill width is back to bar.progress.value', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 67, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 624, clientY: 67, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 624, clientY: 67, pointerId: 1 });
+
+    // bar.progress.value is still 50 (the test doesn't write back; that's
+    // the demo's job). With activeTransaction cleared the render falls
+    // through to the persisted value → fill width is back to 120.
+    const fill = wrapper.find('.cx-gantt-progress-fill');
+    expect(Number(fill.attributes('width'))).toBe(120);
+    expect(wrapper.emitted('bar-progress')).toHaveLength(1);
+  });
+});

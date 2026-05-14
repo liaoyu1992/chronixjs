@@ -319,10 +319,23 @@ export const ChronixGantt = defineComponent({
               // BOTH `progress` AND `pointerOverlayId`. Progress fill is
               // a translucent overlay from bar start to the progress-x;
               // the handle is a small square the user can grab.
-              const progress = barProgressById.value.get(bar.barId);
+              //
+              // While a progress-handle drag is active on THIS bar, the
+              // displayed progress follows the transaction's live
+              // `projectedProgress` (clamped) instead of the bar's
+              // persisted `progress.value`. This lets the handle visibly
+              // track the pointer mid-drag; on commit the demo writes
+              // the new value back and the render falls through to the
+              // persisted path.
+              const sourceProgress = barProgressById.value.get(bar.barId);
               const overlayId = overlayIdByBarId.value.get(bar.barId);
-              if (progress !== undefined && overlayId !== undefined) {
-                const clamped = Math.max(0, Math.min(100, progress));
+              if (sourceProgress !== undefined && overlayId !== undefined) {
+                const activeTxn = pointer.activeTransaction.value;
+                const displayedProgress =
+                  activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
+                    ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
+                    : sourceProgress;
+                const clamped = Math.max(0, Math.min(100, displayedProgress));
                 const fillWidth = (clamped / 100) * bar.width;
                 const handleX = bar.x + fillWidth;
                 const handleSize = props.progressHandleSize;
