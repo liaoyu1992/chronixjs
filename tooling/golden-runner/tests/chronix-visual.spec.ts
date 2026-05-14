@@ -53,15 +53,27 @@ test.describe('chronix gantt visual goldens (chronix demo at 8702)', () => {
       await page.getByRole('button', { name: toggleLabel, exact: true }).click();
       await settle(page);
 
-      // Reset the demo's scroll wrapper so the screenshot starts at x=0.
-      // The wrapper is `.cx-demo-svg-frame`; without this the SVG's
-      // bounding-box origin would shift if a prior interaction scrolled.
-      await page.evaluate(() => {
-        const frame = document.querySelector('.cx-demo-svg-frame');
-        if (frame instanceof HTMLElement) {
-          frame.scrollLeft = 0;
-          frame.scrollTop = 0;
-        }
+      // Isolate the SVG for capture. Playwright's `locator.screenshot()`
+      // captures pixels at the element's bounding-box position on the
+      // page — for a wide-view SVG (5980 px on season, 23725 on year)
+      // the bbox overlaps the events sidebar's page position, so the
+      // sidebar's text would otherwise bleed into the PNG. We:
+      //   1. Hide the sidebar + header + page-frame padding.
+      //   2. Strip the SVG wrapper's `overflow: auto` + `max-height`
+      //      so the SVG can render at its natural dimensions without
+      //      being clipped by its frame.
+      //   3. Anchor body backgrounds to white so transparent areas
+      //      capture cleanly.
+      // After capture, no need to reset — the test ends and the page
+      // is disposed.
+      await page.addStyleTag({
+        content: `
+          body { background: #ffffff !important; margin: 0 !important; }
+          .cx-demo-side, .cx-demo-header { display: none !important; }
+          .cx-demo-app { display: block !important; width: auto !important; }
+          .cx-demo-main { padding: 0 !important; overflow: visible !important; }
+          .cx-demo-svg-frame { border: 0 !important; max-height: none !important; overflow: visible !important; }
+        `,
       });
       await settle(page);
 
