@@ -3,6 +3,7 @@ import type { TimeRange } from '../ir/index.js';
 import type {
   BarDragTransaction,
   BarResizeTransaction,
+  CalendarRangeSelectTransaction,
   ProgressHandleTransaction,
 } from './transactions.js';
 
@@ -140,6 +141,49 @@ export interface CommitBarResizeOutput {
   readonly timeDeltaMs: number;
 }
 
+export interface BeginCalendarRangeSelectInput {
+  readonly rowId: string;
+  /**
+   * Date at the `pointerdown` position. The caller has already converted
+   * the pointer pixel coordinate into a time via the axis (e.g. via the
+   * `pxPerMs` reciprocal used elsewhere in this session) — so this
+   * transaction lives in time-space, not pixel-space, unlike `BarDrag`
+   * and `BarResize`.
+   */
+  readonly anchorTime: Date;
+  readonly config: PointerCaptureConfig;
+  readonly initialHit: boolean;
+  readonly startedAt?: number;
+}
+
+export interface AdvanceCalendarRangeSelectInput {
+  /** Date at the current pointer position — see `anchorTime` for the conversion contract. */
+  readonly currentTime: Date;
+}
+
+export interface CommitCalendarRangeSelectInput {
+  readonly txn: CalendarRangeSelectTransaction;
+  /**
+   * Optional snap. Each end of the range is independently rounded to a
+   * multiple of this many ms — distinct from `BarDrag`/`BarResize`,
+   * which snap the delta. Reason: range-select defines BOTH ends from
+   * scratch (no original to preserve a relative offset against), so
+   * grid-aligned ends are the natural intent.
+   */
+  readonly snapDurationMs?: number;
+}
+
+export interface CommitCalendarRangeSelectOutput {
+  /**
+   * Normalized range with `start <= end` regardless of drag direction.
+   * If the user dragged backwards (current before anchor), the values
+   * are swapped before snapping. Snapping may collapse the range to
+   * zero duration; caller's job to reject if that's invalid.
+   */
+  readonly resolvedRange: TimeRange;
+  readonly rowId: string;
+}
+
 /**
  * Runtime for pointer-capture transactions. Pure functional — each
  * method returns a new transaction value or a resolved output; the
@@ -147,10 +191,12 @@ export interface CommitBarResizeOutput {
  * parallel (e.g. one per touch-id) by keeping their own transaction
  * objects separately.
  *
- * Implements `BarDragTransaction`, `ProgressHandleTransaction`, and
- * `BarResizeTransaction`. `CalendarRangeSelectTransaction` lands in a
- * follow-up; its begin/advance/commit triplet will follow the same
- * shape.
+ * Implements all four transaction kinds: `BarDragTransaction`,
+ * `BarResizeTransaction`, `ProgressHandleTransaction`, and
+ * `CalendarRangeSelectTransaction`. The four share the begin/advance/
+ * commit shape; `CalendarRangeSelect` works in time-space (Dates) at
+ * its boundary instead of pixel-space, because range-select has no
+ * "original range" to anchor pixel deltas against.
  */
 export interface PointerCaptureSession {
   /**
@@ -211,6 +257,30 @@ export interface PointerCaptureSession {
    * to clamp / reject if that's invalid in their domain.
    */
   commitBarResize(input: CommitBarResizeInput): CommitBarResizeOutput;
+
+  /**
+   * Start a calendar range-select. Caller has converted the
+   * `pointerdown` pixel position to `anchorTime` via the axis. Same
+   * `requireInitialHit` semantic as the other kinds (typically `true`
+   * for range-select since the subject is the empty calendar area).
+   */
+  beginCalendarRangeSelect(
+    input: BeginCalendarRangeSelectInput,
+  ): CalendarRangeSelectTransaction | null;
+  /**
+   * Update `currentTime` to the latest pointer position (in time-space).
+   * `anchorTime` stays pinned at the begin value.
+   */
+  advanceCalendarRangeSelect(
+    txn: CalendarRangeSelectTransaction,
+    input: AdvanceCalendarRangeSelectInput,
+  ): CalendarRangeSelectTransaction;
+  /**
+   * Resolve to a normalized `{ start <= end }` range. Optional
+   * `snapDurationMs` rounds each end independently. Caller writes the
+   * result to a new bar / event via the data layer.
+   */
+  commitCalendarRangeSelect(input: CommitCalendarRangeSelectInput): CommitCalendarRangeSelectOutput;
 }
 
 export const defaultPointerCaptureSession: PointerCaptureSession = {
@@ -311,5 +381,36 @@ export const defaultPointerCaptureSession: PointerCaptureSession = {
             end: new Date(originalRange.end.getTime() + timeDeltaMs),
           };
     return { resolvedRange, timeDeltaMs };
+  },
+
+  beginCalendarRangeSelect(input) {
+    if (input.config.requireInitialHit && !input.initialHit) return null;
+    return {
+      kind: 'calendar-range-select',
+      rowId: input.rowId,
+      anchorTime: input.anchorTime,
+      currentTime: input.anchorTime,
+      startedAt: input.startedAt ?? performance.now(),
+    };
+  },
+
+  advanceCalendarRangeSelect(txn, input) {
+    return { ...txn, currentTime: input.currentTime };
+  },
+
+  commitCalendarRangeSelect(input) {
+    const { txn, snapDurationMs } = input;
+    const aMs = txn.anchorTime.getTime();
+    const cMs = txn.currentTime.getTime();
+    let startMs = Math.min(aMs, cMs);
+    let endMs = Math.max(aMs, cMs);
+    if (snapDurationMs != null && snapDurationMs > 0) {
+      startMs = Math.round(startMs / snapDurationMs) * snapDurationMs;
+      endMs = Math.round(endMs / snapDurationMs) * snapDurationMs;
+    }
+    return {
+      resolvedRange: { start: new Date(startMs), end: new Date(endMs) },
+      rowId: txn.rowId,
+    };
   },
 };

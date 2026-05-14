@@ -587,6 +587,160 @@ describe('defaultPointerCaptureSession.commitBarResize', () => {
   });
 });
 
+describe('defaultPointerCaptureSession.beginCalendarRangeSelect', () => {
+  it('returns a transaction with anchor pinned and current == anchor initially', () => {
+    const anchor = new Date('2026-05-13T10:00:00Z');
+    const txn = defaultPointerCaptureSession.beginCalendarRangeSelect({
+      rowId: 'r1',
+      anchorTime: anchor,
+      config: REQUIRE_HIT,
+      initialHit: true,
+      startedAt: 1000,
+    });
+    expect(txn).not.toBeNull();
+    expect(txn?.kind).toBe('calendar-range-select');
+    expect(txn?.rowId).toBe('r1');
+    expect(txn?.anchorTime.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+    expect(txn?.currentTime.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+    expect(txn?.startedAt).toBe(1000);
+  });
+
+  it('honors requireInitialHit', () => {
+    expect(
+      defaultPointerCaptureSession.beginCalendarRangeSelect({
+        rowId: 'r1',
+        anchorTime: new Date('2026-05-13T10:00:00Z'),
+        config: REQUIRE_HIT,
+        initialHit: false,
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('defaultPointerCaptureSession.advanceCalendarRangeSelect', () => {
+  it('updates currentTime; anchorTime stays pinned', () => {
+    const anchor = new Date('2026-05-13T10:00:00Z');
+    const txn = defaultPointerCaptureSession.beginCalendarRangeSelect({
+      rowId: 'r1',
+      anchorTime: anchor,
+      config: REQUIRE_HIT,
+      initialHit: true,
+    })!;
+    const a = defaultPointerCaptureSession.advanceCalendarRangeSelect(txn, {
+      currentTime: new Date('2026-05-13T11:00:00Z'),
+    });
+    expect(a.anchorTime.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+    expect(a.currentTime.toISOString()).toBe('2026-05-13T11:00:00.000Z');
+    const b = defaultPointerCaptureSession.advanceCalendarRangeSelect(a, {
+      currentTime: new Date('2026-05-13T09:00:00Z'),
+    });
+    expect(b.anchorTime.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+    expect(b.currentTime.toISOString()).toBe('2026-05-13T09:00:00.000Z');
+  });
+});
+
+describe('defaultPointerCaptureSession.commitCalendarRangeSelect', () => {
+  function selected(anchorISO: string, currentISO: string, rowId = 'r1') {
+    const txn = defaultPointerCaptureSession.beginCalendarRangeSelect({
+      rowId,
+      anchorTime: new Date(anchorISO),
+      config: REQUIRE_HIT,
+      initialHit: true,
+    })!;
+    return defaultPointerCaptureSession.advanceCalendarRangeSelect(txn, {
+      currentTime: new Date(currentISO),
+    });
+  }
+
+  it('forward drag (anchor < current) produces { start: anchor, end: current }', () => {
+    const txn = selected('2026-05-13T10:00:00Z', '2026-05-13T12:30:00Z');
+    const { resolvedRange, rowId } = defaultPointerCaptureSession.commitCalendarRangeSelect({
+      txn,
+    });
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T12:30:00.000Z');
+    expect(rowId).toBe('r1');
+  });
+
+  it('backward drag (anchor > current) swaps to { start: current, end: anchor }', () => {
+    const txn = selected('2026-05-13T12:30:00Z', '2026-05-13T10:00:00Z');
+    const { resolvedRange } = defaultPointerCaptureSession.commitCalendarRangeSelect({ txn });
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T12:30:00.000Z');
+  });
+
+  it('anchor == current produces a zero-duration range', () => {
+    const txn = selected('2026-05-13T10:00:00Z', '2026-05-13T10:00:00Z');
+    const { resolvedRange } = defaultPointerCaptureSession.commitCalendarRangeSelect({ txn });
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+  });
+
+  it('snap rounds EACH end independently — not the delta', () => {
+    // 10:23 → 12:08, snap 30min: each end rounds to nearest 30min boundary.
+    // 10:23 → 10:30 (round up), 12:08 → 12:00 (round down).
+    const txn = selected('2026-05-13T10:23:00Z', '2026-05-13T12:08:00Z');
+    const { resolvedRange } = defaultPointerCaptureSession.commitCalendarRangeSelect({
+      txn,
+      snapDurationMs: 30 * 60 * 1000,
+    });
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T10:30:00.000Z');
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T12:00:00.000Z');
+  });
+
+  it('snap can collapse the range to zero duration (caller policy decides validity)', () => {
+    // 10:10 → 10:14: both within ±15min of 10:00 → both round to 10:00.
+    // Range zero-collapses, so the caller can detect and reject if needed.
+    const txn = selected('2026-05-13T10:10:00Z', '2026-05-13T10:14:00Z');
+    const { resolvedRange } = defaultPointerCaptureSession.commitCalendarRangeSelect({
+      txn,
+      snapDurationMs: 30 * 60 * 1000,
+    });
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T10:00:00.000Z');
+  });
+
+  it('snap with snapDurationMs <= 0 is treated as no-snap', () => {
+    const txn = selected('2026-05-13T10:23:00Z', '2026-05-13T12:08:00Z');
+    const { resolvedRange } = defaultPointerCaptureSession.commitCalendarRangeSelect({
+      txn,
+      snapDurationMs: 0,
+    });
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T10:23:00.000Z');
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T12:08:00.000Z');
+  });
+
+  it('rowId propagates from begin → commit', () => {
+    const txn = selected('2026-05-13T10:00:00Z', '2026-05-13T11:00:00Z', 'workshop-A');
+    const { rowId } = defaultPointerCaptureSession.commitCalendarRangeSelect({ txn });
+    expect(rowId).toBe('workshop-A');
+  });
+});
+
+describe('defaultPointerCaptureSession — calendar-range-select full lifecycle', () => {
+  it('begin → advance × N → commit produces normalized range', () => {
+    const txn0 = defaultPointerCaptureSession.beginCalendarRangeSelect({
+      rowId: 'r1',
+      anchorTime: new Date('2026-05-13T14:00:00Z'),
+      config: REQUIRE_HIT,
+      initialHit: true,
+      startedAt: 1000,
+    });
+    expect(txn0).not.toBeNull();
+    let txn = txn0!;
+    txn = defaultPointerCaptureSession.advanceCalendarRangeSelect(txn, {
+      currentTime: new Date('2026-05-13T13:30:00Z'),
+    });
+    txn = defaultPointerCaptureSession.advanceCalendarRangeSelect(txn, {
+      currentTime: new Date('2026-05-13T12:00:00Z'),
+    });
+    const { resolvedRange } = defaultPointerCaptureSession.commitCalendarRangeSelect({ txn });
+    // User dragged backwards (14:00 → 12:00). Normalized: start=12:00, end=14:00.
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T12:00:00.000Z');
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T14:00:00.000Z');
+  });
+});
+
 describe('defaultPointerCaptureSession — bar-resize full lifecycle', () => {
   it('begin → advance × N → commit shifts the chosen edge', () => {
     const txn0 = defaultPointerCaptureSession.beginBarResize({
