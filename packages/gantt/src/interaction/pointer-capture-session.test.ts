@@ -1,9 +1,37 @@
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { describe, expect, it } from 'vitest';
 
 import { defaultPointerCaptureSession } from './pointer-capture-session.js';
 
 import type { PointerCaptureConfig } from './pointer-capture-session.js';
 import type { TimeRange } from '../ir/index.js';
+
+/**
+ * Path to a captured interaction recording's `log.json`. Used by the
+ * recording-replay parity blocks below. The recordings live in the
+ * golden-runner workspace package, four levels up from this test file.
+ */
+function readRecording(id: string): { entries: readonly Record<string, unknown>[] } {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const path = resolve(
+    here,
+    '..',
+    '..',
+    '..',
+    '..',
+    'tooling',
+    'golden-runner',
+    'recordings',
+    id,
+    'log.json',
+  );
+  return JSON.parse(readFileSync(path, 'utf8')) as {
+    entries: readonly Record<string, unknown>[];
+  };
+}
 
 const REQUIRE_HIT: PointerCaptureConfig = { requireInitialHit: true };
 const ALLOW_MISS: PointerCaptureConfig = { requireInitialHit: false };
@@ -771,6 +799,87 @@ describe('defaultPointerCaptureSession — bar-resize full lifecycle', () => {
       pxPerMs: dayAxisPxPerMs,
     });
     expect(resolvedRange.end.toISOString()).toBe('2026-05-13T11:30:00.000Z');
+  });
+});
+
+describe('defaultPointerCaptureSession — BarDrag recording-replay parity', () => {
+  it("matches the 'event-drag' recording: +60px pointer drag → +1h time shift on event-7", () => {
+    const { entries } = readRecording('event-drag');
+
+    // Pull the canonical entries from the recording.
+    const before = entries.find((e) => e['kind'] === 'state' && e['when'] === 'before') as
+      | { eventId: string; barBbox: { x: number; y: number; width: number; height: number } }
+      | undefined;
+    const after = entries.find((e) => e['kind'] === 'state' && e['when'] === 'after') as
+      | { eventId: string; barBbox: { x: number; y: number; width: number; height: number } }
+      | undefined;
+    const down = entries.find((e) => e['kind'] === 'pointer-down') as
+      | { x: number; y: number }
+      | undefined;
+    // The recording has two pointer-up entries possible across runs; pick the LAST.
+    const ups = entries.filter((e) => e['kind'] === 'pointer-up') as { x: number; y: number }[];
+    const up = ups[ups.length - 1];
+
+    if (!before || !after || !down || !up) {
+      throw new Error('event-drag recording missing required entries');
+    }
+
+    expect(before.eventId).toBe('event-7');
+    expect(after.eventId).toBe('event-7');
+
+    // The upstream-rendered bar shifted by exactly the pointer-delta (1:1 drag).
+    const recordedPointerDeltaX = up.x - down.x;
+    const upstreamBarDeltaX = after.barBbox.x - before.barBbox.x;
+    expect(recordedPointerDeltaX).toBeCloseTo(60, 5);
+    expect(upstreamBarDeltaX).toBeCloseTo(60, 5);
+
+    // Now replay through chronix. Day view: slot=60px, slotDuration=1h.
+    const dayPxPerMs = 60 / MS_PER_HOUR;
+
+    // event-7 source: dayMinus1 09:00 → dayPlus10 16:00 (per buildTestEvents).
+    // FROZEN_TIME_ISO is 2026-05-13T00:00:00Z; in local TZ today.setHours(0,0,0,0)
+    // gives local midnight of 2026-05-13. dayMinus1 = -86400000 ms; dayPlus10 = +10*86400000.
+    const today = new Date('2026-05-13T00:00:00Z');
+    today.setHours(0, 0, 0, 0);
+    const todayMs = today.getTime();
+    const MS_PER_DAY = 24 * MS_PER_HOUR;
+    const originalRange: TimeRange = {
+      start: new Date(todayMs - MS_PER_DAY + 9 * MS_PER_HOUR), // dayMinus1 09:00
+      end: new Date(todayMs + 10 * MS_PER_DAY + 16 * MS_PER_HOUR), // dayPlus10 16:00
+    };
+
+    const txn0 = defaultPointerCaptureSession.beginBarDrag({
+      barId: 'event-7',
+      originPx: { x: down.x, y: down.y },
+      config: REQUIRE_HIT,
+      initialHit: true,
+      startedAt: 1000,
+    });
+    expect(txn0).not.toBeNull();
+    const txn = defaultPointerCaptureSession.advanceBarDrag(txn0!, {
+      currentPx: { x: up.x, y: up.y },
+    });
+    const { resolvedRange, timeDeltaMs } = defaultPointerCaptureSession.commitBarDrag({
+      txn,
+      originalRange,
+      pxPerMs: dayPxPerMs,
+    });
+
+    // Chronix's time delta corresponds 1:1 with the recorded pointer delta:
+    //   60 px / (60/MS_PER_HOUR px/ms) = MS_PER_HOUR
+    expect(timeDeltaMs).toBeCloseTo(MS_PER_HOUR, 5);
+
+    // And the resolvedRange is shifted by the same amount.
+    expect(resolvedRange.start.getTime() - originalRange.start.getTime()).toBeCloseTo(
+      MS_PER_HOUR,
+      5,
+    );
+    expect(resolvedRange.end.getTime() - originalRange.end.getTime()).toBeCloseTo(MS_PER_HOUR, 5);
+
+    // Sanity: chronix's predicted pixel shift (timeDelta × pxPerMs) equals the
+    // upstream's observed bar pixel shift. Closes the recording-replay loop.
+    const chronixPredictedBarDeltaX = timeDeltaMs * dayPxPerMs;
+    expect(chronixPredictedBarDeltaX).toBeCloseTo(upstreamBarDeltaX, 5);
   });
 });
 
