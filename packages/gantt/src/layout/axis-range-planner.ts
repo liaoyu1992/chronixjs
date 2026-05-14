@@ -210,8 +210,14 @@ function planMonthBandedAxis(
     day: 'numeric',
     weekday: 'narrow',
   });
+  // Season / half-year / year views render each month band with the
+  // short month name only (`"五月"`, `"六月"`, …) — no year, no leading
+  // numeric. The reference DOM uses `{ month: 'long' }` so the band
+  // stays compact across N parallel months. `planMonthView` (single
+  // month) keeps `{ year: 'numeric', month: 'long' }` since the band
+  // spans the entire axis and the year context is meaningful. See
+  // `audit/journal/2026-05-13.md` Phase 4.9.
   const monthFmt = new Intl.DateTimeFormat(input.locale, {
-    year: 'numeric',
     month: 'long',
   });
 

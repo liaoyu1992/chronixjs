@@ -145,6 +145,119 @@ test.describe('parity: chronix vs reference demo', () => {
     { viewId: 'year', toggleLabel: '年' },
   ];
 
+  /**
+   * Week-view outer header cells. chronix `planWeekView` emits one cell
+   * per day with the format `<month>/<day><weekday-short>` (e.g.
+   * `"5/13周三"` via `Intl.DateTimeFormat('zh-CN', { weekday: 'short',
+   * month: 'numeric', day: 'numeric' })`).
+   *
+   * The reference's outer-cell format is unverified — this parity check
+   * makes any divergence visible. If chronix and the reference render
+   * different formats, the test fails with the diff in the diagnostic
+   * console.warn (left- and right-side sets logged).
+   */
+  test('week-view header cells (set equality)', async ({ page }) => {
+    const axis = defaultAxisRangePlanner.plan({
+      viewId: 'week',
+      anchorDate: new Date(FROZEN_TIME_ISO),
+      viewportWidth: VIEWPORT.width,
+      locale: 'zh-CN',
+      weekendsVisible: true,
+    });
+    const chronixLabels = axis.headerRows[0]?.cells.map((c) => c.label) ?? [];
+    const chart = await loadView(page, '周');
+
+    const refLabels = await chart.evaluate((root) => {
+      const result: string[] = [];
+      const seen = new Set<string>();
+      // chronix format `"<M>/<D>周<wd>"`. Permissive regex matches any
+      // leaf text that has the digit/slash/digit anchor and ends with a
+      // CJK weekday — captures the reference even if the surrounding
+      // punctuation differs.
+      const re = /^\d+\/\d+周[一二三四五六日]$/u;
+      root.querySelectorAll('*').forEach((node) => {
+        if (node.children.length > 0) return;
+        const txt = node.textContent?.trim() ?? '';
+        if (re.test(txt) && !seen.has(txt)) {
+          seen.add(txt);
+          result.push(txt);
+        }
+      });
+      return result;
+    });
+
+    console.warn('chronix   week-view header cells:', chronixLabels);
+    console.warn('reference week-view header cells:', refLabels);
+
+    expect(chronixLabels).toHaveLength(7);
+    expect(refLabels.length).toBeGreaterThan(0);
+    expect(new Set(refLabels)).toEqual(new Set(chronixLabels));
+  });
+
+  /**
+   * Outer monthFmt cell label across the four day-resolution views.
+   * chronix emits `"YYYY年M月"` via `Intl.DateTimeFormat('zh-CN', {
+   * year: 'numeric', month: 'long' })`. month view has 1 outer cell;
+   * season / halfYear / year have N month cells (3 / 6 / 12).
+   *
+   * Like the week-view test above, this surfaces any reference-side
+   * format divergence rather than asserting a specific one.
+   */
+  /**
+   * Header-row label format differs by view. `planMonthView` (single
+   * month) emits `"YYYY年M月"`; `planMonthBandedAxis` (season /
+   * halfYear / year, multiple parallel months) emits short month names
+   * (`"五月"`, `"六月"`, …) — see Phase 4.9 for the alignment rationale.
+   */
+  const MONTH_FMT_RE_BY_VIEW: Record<string, RegExp> = {
+    month: /^\d+年\d+月$/u,
+    season: /^[一二三四五六七八九十]+月$/u,
+    halfYear: /^[一二三四五六七八九十]+月$/u,
+    year: /^[一二三四五六七八九十]+月$/u,
+  };
+
+  for (const { viewId, toggleLabel } of DAY_RESOLUTION_VIEWS) {
+    test(`${viewId}-view header-row monthFmt cells (set equality)`, async ({ page }) => {
+      const axis = defaultAxisRangePlanner.plan({
+        viewId,
+        anchorDate: new Date(FROZEN_TIME_ISO),
+        viewportWidth: VIEWPORT.width,
+        locale: 'zh-CN',
+        weekendsVisible: true,
+      });
+      const chronixLabels = axis.headerRows[0]?.cells.map((c) => c.label) ?? [];
+      const chart = await loadView(page, toggleLabel);
+
+      const re = MONTH_FMT_RE_BY_VIEW[viewId]!;
+      const refLabels = await chart.evaluate(
+        (_root, { regexSource, regexFlags }) => {
+          const r = new RegExp(regexSource, regexFlags);
+          const result: string[] = [];
+          const seen = new Set<string>();
+          document.querySelectorAll('*').forEach((node) => {
+            if (node.children.length > 0) return;
+            const txt = node.textContent?.trim() ?? '';
+            if (r.test(txt) && !seen.has(txt)) {
+              seen.add(txt);
+              result.push(txt);
+            }
+          });
+          return result;
+        },
+        { regexSource: re.source, regexFlags: re.flags },
+      );
+
+      console.warn(`chronix   ${viewId} header cells:`, chronixLabels);
+      console.warn(`reference ${viewId} header cells:`, refLabels);
+
+      const expectedCount =
+        viewId === 'month' ? 1 : viewId === 'season' ? 3 : viewId === 'halfYear' ? 6 : 12;
+      expect(chronixLabels).toHaveLength(expectedCount);
+      expect(refLabels.length).toBeGreaterThan(0);
+      expect(new Set(refLabels)).toEqual(new Set(chronixLabels));
+    });
+  }
+
   for (const { viewId, toggleLabel } of DAY_RESOLUTION_VIEWS) {
     test(`${viewId}-view tick labels (set equality)`, async ({ page }) => {
       const axis = defaultAxisRangePlanner.plan({
