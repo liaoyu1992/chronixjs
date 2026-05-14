@@ -13,12 +13,12 @@ import type { AxisRangePlanInput, BarSpec, RowSpec, TimeRange } from '@chronixjs
 /**
  * Minimum-viable SVG renderer over `useGanttLayout` + `useGanttPointer`.
  *
- * Renders one `<rect class="cx-gantt-bar" data-bar-id>` per placed bar
- * inside a single `<svg class="cx-gantt">` root, sized from
- * `contentSize`. When `editable=true` the bar's body becomes drag-able
- * and its 8-px edges resize-able; when `selectable=true` empty-row
- * pointer drags emit a `select` event. Commit results surface through
- * the three component events.
+ * Renders a top axis-tick header band followed by one
+ * `<rect class="cx-gantt-bar" data-bar-id>` per placed bar inside a
+ * single `<svg class="cx-gantt">` root. When `editable=true` the bar's
+ * body becomes drag-able and its 8-px edges resize-able; when
+ * `selectable=true` empty-row pointer drags emit a `select` event.
+ * Commit results surface through the three component events.
  *
  * The component is intentionally a `defineComponent` with a render
  * function (no `.vue` SFC) so the package builds with just `tsup`, no
@@ -44,6 +44,13 @@ export const ChronixGantt = defineComponent({
     barVerticalPadding: { type: Number, default: 8 },
     rowSpacing: { type: Number, default: 1 },
     defaultRowHeight: { type: Number, default: 38 },
+    /**
+     * Height of the axis-tick header band at the top of the SVG, in
+     * logical pixels. Bars are translated down by this amount; the SVG
+     * itself grows by this amount so the bar area's content space is
+     * unchanged. 0 hides the band entirely.
+     */
+    headerHeight: { type: Number, default: 24 },
     /** Enable bar drag + edge resize. */
     editable: { type: Boolean, default: false },
     /** Enable calendar range-select on empty rows. */
@@ -89,17 +96,29 @@ export const ChronixGantt = defineComponent({
 
     const svgRef = ref<SVGSVGElement | null>(null);
 
+    // Bars are rendered inside a `<g transform="translate(0, headerHeight)">`,
+    // so SVG-y `headerHeight` corresponds to content-y `0`. Pointer math
+    // subtracts `headerHeight` to keep the hit-tester operating in the
+    // bar group's content space, unchanged from before the axis band.
     function toContentXY(e: PointerEvent): { x: number; y: number } | null {
       const svg = svgRef.value;
       if (!svg) return null;
       const rect = svg.getBoundingClientRect();
-      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top - props.headerHeight,
+      };
     }
 
     function onPointerdown(e: PointerEvent): void {
       if (e.button !== 0) return; // primary mouse / touch only
       const pos = toContentXY(e);
       if (!pos) return;
+      // Clicks on the axis-tick band have content-y < 0; they never start
+      // a transaction. Without this guard the hit-tester would test
+      // against negative y and (incidentally) miss everything, but the
+      // explicit early-return makes the contract obvious.
+      if (pos.y < 0) return;
       pointer.begin(pos.x, pos.y);
       // If a transaction actually started, capture the pointer so move /
       // up events keep flowing even if the cursor leaves the SVG bounds.
@@ -121,30 +140,83 @@ export const ChronixGantt = defineComponent({
       svgRef.value?.releasePointerCapture?.(e.pointerId);
     }
 
-    return () =>
-      h(
+    return () => {
+      const a = axis.value;
+      const hh = props.headerHeight;
+      const axisChildren = [];
+      for (const tick of a.ticks) {
+        axisChildren.push(
+          h('line', {
+            key: `tick-line-${tick.x}`,
+            class: 'cx-gantt-tick-line',
+            x1: tick.x,
+            y1: 0,
+            x2: tick.x,
+            y2: hh,
+            stroke: '#d1d5db',
+          }),
+          h(
+            'text',
+            {
+              key: `tick-label-${tick.x}`,
+              class: 'cx-gantt-tick-label',
+              x: tick.x + 2,
+              y: hh - 6,
+              fill: '#6b7280',
+              'font-size': 10,
+            },
+            tick.label,
+          ),
+        );
+      }
+      if (hh > 0) {
+        axisChildren.push(
+          h('line', {
+            key: 'axis-divider',
+            class: 'cx-gantt-axis-divider',
+            x1: 0,
+            y1: hh,
+            x2: a.totalWidth,
+            y2: hh,
+            stroke: '#9ca3af',
+          }),
+        );
+      }
+
+      return h(
         'svg',
         {
           ref: svgRef,
           class: 'cx-gantt',
           width: contentSize.value.width,
-          height: contentSize.value.height,
-          'data-axis-view': axis.value.viewId,
+          height: contentSize.value.height + hh,
+          'data-axis-view': a.viewId,
           onPointerdown,
           onPointermove,
           onPointerup,
         },
-        placedBars.value.map((bar) =>
-          h('rect', {
-            key: bar.barId,
-            'data-bar-id': bar.barId,
-            class: 'cx-gantt-bar',
-            x: bar.x,
-            y: bar.y,
-            width: bar.width,
-            height: bar.height,
-          }),
-        ),
+        [
+          h('g', { class: 'cx-gantt-axis' }, axisChildren),
+          h(
+            'g',
+            {
+              class: 'cx-gantt-bars',
+              transform: `translate(0, ${hh})`,
+            },
+            placedBars.value.map((bar) =>
+              h('rect', {
+                key: bar.barId,
+                'data-bar-id': bar.barId,
+                class: 'cx-gantt-bar',
+                x: bar.x,
+                y: bar.y,
+                width: bar.width,
+                height: bar.height,
+              }),
+            ),
+          ),
+        ],
       );
+    };
   },
 });
