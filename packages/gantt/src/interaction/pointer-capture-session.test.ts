@@ -415,6 +415,211 @@ describe('defaultPointerCaptureSession.commitProgressHandle', () => {
   });
 });
 
+describe('defaultPointerCaptureSession.beginBarResize', () => {
+  it('returns a transaction with edge + origin pinned (start-edge)', () => {
+    const txn = defaultPointerCaptureSession.beginBarResize({
+      barId: 'b1',
+      edge: 'start',
+      originPx: { x: 480, y: 10 },
+      config: REQUIRE_HIT,
+      initialHit: true,
+      startedAt: 1000,
+    });
+    expect(txn).not.toBeNull();
+    expect(txn?.kind).toBe('bar-resize');
+    expect(txn?.barId).toBe('b1');
+    expect(txn?.edge).toBe('start');
+    expect(txn?.originPx).toEqual({ x: 480, y: 10 });
+    expect(txn?.deltaX).toBe(0);
+    expect(txn?.startedAt).toBe(1000);
+  });
+
+  it('end-edge variant', () => {
+    const txn = defaultPointerCaptureSession.beginBarResize({
+      barId: 'b1',
+      edge: 'end',
+      originPx: { x: 1200, y: 10 },
+      config: REQUIRE_HIT,
+      initialHit: true,
+    });
+    expect(txn?.edge).toBe('end');
+  });
+
+  it('honors requireInitialHit', () => {
+    expect(
+      defaultPointerCaptureSession.beginBarResize({
+        barId: 'b1',
+        edge: 'start',
+        originPx: { x: 0, y: 0 },
+        config: REQUIRE_HIT,
+        initialHit: false,
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('defaultPointerCaptureSession.advanceBarResize', () => {
+  it('computes deltaX cumulative from origin', () => {
+    const txn = defaultPointerCaptureSession.beginBarResize({
+      barId: 'b1',
+      edge: 'end',
+      originPx: { x: 1200, y: 10 },
+      config: REQUIRE_HIT,
+      initialHit: true,
+    })!;
+    const a = defaultPointerCaptureSession.advanceBarResize(txn, {
+      currentPx: { x: 1250, y: 10 },
+    });
+    expect(a.deltaX).toBe(50);
+    const b = defaultPointerCaptureSession.advanceBarResize(a, {
+      currentPx: { x: 1320, y: 10 },
+    });
+    expect(b.deltaX).toBe(120); // 1320 − 1200, NOT 1320 − 1250
+  });
+
+  it('negative deltas (shrink end-edge / extend start-edge left)', () => {
+    const txn = defaultPointerCaptureSession.beginBarResize({
+      barId: 'b1',
+      edge: 'end',
+      originPx: { x: 1200, y: 10 },
+      config: REQUIRE_HIT,
+      initialHit: true,
+    })!;
+    const a = defaultPointerCaptureSession.advanceBarResize(txn, {
+      currentPx: { x: 1140, y: 10 },
+    });
+    expect(a.deltaX).toBe(-60);
+  });
+});
+
+describe('defaultPointerCaptureSession.commitBarResize', () => {
+  const baseRange = {
+    start: new Date('2026-05-13T10:00:00Z'),
+    end: new Date('2026-05-13T12:00:00Z'),
+  };
+
+  function resized(edge: 'start' | 'end', deltaX: number) {
+    const txn = defaultPointerCaptureSession.beginBarResize({
+      barId: 'b1',
+      edge,
+      originPx: { x: 0, y: 0 },
+      config: REQUIRE_HIT,
+      initialHit: true,
+    })!;
+    return defaultPointerCaptureSession.advanceBarResize(txn, {
+      currentPx: { x: deltaX, y: 0 },
+    });
+  }
+
+  it('start-edge resize shifts only start; end is unchanged', () => {
+    const txn = resized('start', 60); // 60px → +1h at 60px/h
+    const { resolvedRange, timeDeltaMs } = defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange: baseRange,
+      pxPerMs: dayAxisPxPerMs,
+    });
+    expect(timeDeltaMs).toBe(MS_PER_HOUR);
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T11:00:00.000Z');
+    expect(resolvedRange.end).toBe(baseRange.end); // same reference, unchanged
+  });
+
+  it('end-edge resize shifts only end; start is unchanged', () => {
+    const txn = resized('end', 60);
+    const { resolvedRange, timeDeltaMs } = defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange: baseRange,
+      pxPerMs: dayAxisPxPerMs,
+    });
+    expect(timeDeltaMs).toBe(MS_PER_HOUR);
+    expect(resolvedRange.start).toBe(baseRange.start);
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T13:00:00.000Z');
+  });
+
+  it('negative delta on start-edge extends the bar backward', () => {
+    const txn = resized('start', -30); // 0.5h backward
+    const { resolvedRange } = defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange: baseRange,
+      pxPerMs: dayAxisPxPerMs,
+    });
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T09:30:00.000Z');
+    expect(resolvedRange.end).toBe(baseRange.end);
+  });
+
+  it('snap-to-grid rounds the delta — same semantic as BarDrag', () => {
+    const txn = resized('end', 35); // raw 35min
+    const { timeDeltaMs, resolvedRange } = defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange: baseRange,
+      pxPerMs: dayAxisPxPerMs,
+      snapDurationMs: 30 * 60 * 1000,
+    });
+    expect(timeDeltaMs).toBe(30 * 60 * 1000); // snap to 30min
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T12:30:00.000Z');
+  });
+
+  it('cross-over: start dragged past end produces start > end (caller must clamp/reject)', () => {
+    // Bar is [10:00, 12:00]. Drag start +3h → start = 13:00 > end = 12:00.
+    const txn = resized('start', 180); // 3h forward
+    const { resolvedRange } = defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange: baseRange,
+      pxPerMs: dayAxisPxPerMs,
+    });
+    expect(resolvedRange.start.toISOString()).toBe('2026-05-13T13:00:00.000Z');
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T12:00:00.000Z');
+    expect(resolvedRange.start.getTime()).toBeGreaterThan(resolvedRange.end.getTime());
+  });
+
+  it('commit does not mutate the input range', () => {
+    const original = {
+      start: new Date('2026-05-13T10:00:00Z'),
+      end: new Date('2026-05-13T12:00:00Z'),
+    };
+    const origStartMs = original.start.getTime();
+    const txn = resized('end', 60);
+    defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange: original,
+      pxPerMs: dayAxisPxPerMs,
+    });
+    expect(original.start.getTime()).toBe(origStartMs);
+  });
+});
+
+describe('defaultPointerCaptureSession — bar-resize full lifecycle', () => {
+  it('begin → advance × N → commit shifts the chosen edge', () => {
+    const txn0 = defaultPointerCaptureSession.beginBarResize({
+      barId: 'b1',
+      edge: 'end',
+      originPx: { x: 1200, y: 10 },
+      config: REQUIRE_HIT,
+      initialHit: true,
+      startedAt: 1000,
+    });
+    expect(txn0).not.toBeNull();
+
+    let txn = txn0!;
+    txn = defaultPointerCaptureSession.advanceBarResize(txn, {
+      currentPx: { x: 1230, y: 10 },
+    });
+    txn = defaultPointerCaptureSession.advanceBarResize(txn, {
+      currentPx: { x: 1290, y: 10 },
+    });
+    expect(txn.deltaX).toBe(90); // 1.5h shift
+
+    const { resolvedRange } = defaultPointerCaptureSession.commitBarResize({
+      txn,
+      originalRange: {
+        start: new Date('2026-05-13T08:00:00Z'),
+        end: new Date('2026-05-13T10:00:00Z'),
+      },
+      pxPerMs: dayAxisPxPerMs,
+    });
+    expect(resolvedRange.end.toISOString()).toBe('2026-05-13T11:30:00.000Z');
+  });
+});
+
 describe('defaultPointerCaptureSession — progress-handle full lifecycle', () => {
   it('reproduces the recorded progress-handle drag math: 60px/6060 + initial 50 → 50.99 (rounds to 51)', () => {
     // Numbers lifted from recordings/progress-handle-drag/log.json:

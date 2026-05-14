@@ -1,6 +1,10 @@
 import type { TimeRange } from '../ir/index.js';
 
-import type { BarDragTransaction, ProgressHandleTransaction } from './transactions.js';
+import type {
+  BarDragTransaction,
+  BarResizeTransaction,
+  ProgressHandleTransaction,
+} from './transactions.js';
 
 /**
  * Configuration for a `PointerCaptureSession`. Captured once at the
@@ -102,6 +106,40 @@ export interface CommitProgressHandleOutput {
   readonly resolvedProgress: number;
 }
 
+export interface BeginBarResizeInput {
+  readonly barId: string;
+  /** Which edge the user is dragging — `'start'` pins the right edge, `'end'` pins the left. */
+  readonly edge: 'start' | 'end';
+  readonly originPx: PointerPx;
+  readonly config: PointerCaptureConfig;
+  readonly initialHit: boolean;
+  readonly startedAt?: number;
+}
+
+export interface AdvanceBarResizeInput {
+  readonly currentPx: PointerPx;
+}
+
+export interface CommitBarResizeInput {
+  readonly txn: BarResizeTransaction;
+  readonly originalRange: TimeRange;
+  readonly pxPerMs: number;
+  readonly snapDurationMs?: number;
+}
+
+export interface CommitBarResizeOutput {
+  /**
+   * Range after the resize. Only the dragged `edge` is shifted by
+   * `timeDeltaMs`; the opposite edge equals `originalRange`'s opposite
+   * edge. May have `start >= end` if the user crossed over the pinned
+   * edge — caller is responsible for clamping / disallowing if needed
+   * (e.g. min-duration policy).
+   */
+  readonly resolvedRange: TimeRange;
+  /** Time delta in milliseconds applied to the dragged edge. */
+  readonly timeDeltaMs: number;
+}
+
 /**
  * Runtime for pointer-capture transactions. Pure functional — each
  * method returns a new transaction value or a resolved output; the
@@ -109,9 +147,10 @@ export interface CommitProgressHandleOutput {
  * parallel (e.g. one per touch-id) by keeping their own transaction
  * objects separately.
  *
- * v0 implements `BarDragTransaction` only. `BarResize`,
- * `ProgressHandle`, `CalendarRangeSelect` land in follow-ups; their
- * begin/advance/commit triplets will follow the same shape.
+ * Implements `BarDragTransaction`, `ProgressHandleTransaction`, and
+ * `BarResizeTransaction`. `CalendarRangeSelectTransaction` lands in a
+ * follow-up; its begin/advance/commit triplet will follow the same
+ * shape.
  */
 export interface PointerCaptureSession {
   /**
@@ -152,6 +191,26 @@ export interface PointerCaptureSession {
   ): ProgressHandleTransaction;
   /** Clamp `projectedProgress` to `[0, 100]` and return the resolved value. */
   commitProgressHandle(input: CommitProgressHandleInput): CommitProgressHandleOutput;
+
+  /**
+   * Start a bar-resize. The pointer is interpreted as dragging the
+   * `edge`-edge of the bar; the other edge stays pinned. Reject /
+   * acceptance follows `requireInitialHit` like the other kinds.
+   */
+  beginBarResize(input: BeginBarResizeInput): BarResizeTransaction | null;
+  /**
+   * Recompute `deltaX` from the original origin to the current pointer.
+   * Pure; cumulative-from-origin.
+   */
+  advanceBarResize(txn: BarResizeTransaction, input: AdvanceBarResizeInput): BarResizeTransaction;
+  /**
+   * Resolve the resize to a new range where the dragged edge is shifted
+   * by `deltaX × pxPerMs` (optionally snapped). The pinned edge equals
+   * `originalRange`'s pinned edge unchanged. `resolvedRange.start` may
+   * exceed `resolvedRange.end` if the user crossed over — caller's job
+   * to clamp / reject if that's invalid in their domain.
+   */
+  commitBarResize(input: CommitBarResizeInput): CommitBarResizeOutput;
 }
 
 export const defaultPointerCaptureSession: PointerCaptureSession = {
@@ -216,5 +275,41 @@ export const defaultPointerCaptureSession: PointerCaptureSession = {
     const raw = input.txn.projectedProgress;
     const resolvedProgress = Math.max(0, Math.min(100, raw));
     return { resolvedProgress };
+  },
+
+  beginBarResize(input) {
+    if (input.config.requireInitialHit && !input.initialHit) return null;
+    return {
+      kind: 'bar-resize',
+      barId: input.barId,
+      edge: input.edge,
+      originPx: { x: input.originPx.x, y: input.originPx.y },
+      deltaX: 0,
+      startedAt: input.startedAt ?? performance.now(),
+    };
+  },
+
+  advanceBarResize(txn, input) {
+    return { ...txn, deltaX: input.currentPx.x - txn.originPx.x };
+  },
+
+  commitBarResize(input) {
+    const { txn, originalRange, pxPerMs, snapDurationMs } = input;
+    const rawDeltaMs = txn.deltaX / pxPerMs;
+    const timeDeltaMs =
+      snapDurationMs != null && snapDurationMs > 0
+        ? Math.round(rawDeltaMs / snapDurationMs) * snapDurationMs
+        : rawDeltaMs;
+    const resolvedRange =
+      txn.edge === 'start'
+        ? {
+            start: new Date(originalRange.start.getTime() + timeDeltaMs),
+            end: originalRange.end,
+          }
+        : {
+            start: originalRange.start,
+            end: new Date(originalRange.end.getTime() + timeDeltaMs),
+          };
+    return { resolvedRange, timeDeltaMs };
   },
 };

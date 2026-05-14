@@ -23,8 +23,15 @@ export interface BarDragTransaction extends PendingTransaction {
 export interface BarResizeTransaction extends PendingTransaction {
   readonly kind: 'bar-resize';
   readonly barId: string;
+  /** Which edge the pointer is dragging. The other edge stays pinned at commit. */
   readonly edge: 'start' | 'end';
-  /** Pixel delta accumulated from pointerdown to now. */
+  /**
+   * Viewport-pixel position at the original `pointerdown`. Pinned at
+   * begin time so subsequent `advance` calls compute cumulative deltas
+   * without the caller bookkeeping the origin.
+   */
+  readonly originPx: { readonly x: number; readonly y: number };
+  /** Pixel delta accumulated from pointerdown to now (`current.x - origin.x`). */
   readonly deltaX: number;
 }
 
