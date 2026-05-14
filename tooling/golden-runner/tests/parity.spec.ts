@@ -1,6 +1,7 @@
 import {
   defaultAxisRangePlanner,
   defaultBarPlacementPass,
+  defaultBarStackHeightPass,
   defaultRowSwimlaneLayout,
 } from '@chronixjs/gantt';
 import { expect, test } from '@playwright/test';
@@ -319,56 +320,53 @@ test.describe('parity: chronix vs reference demo', () => {
 
     const chart = await loadDayView(page);
 
-    // Step 2: probe the reference rendered row layout. The body has one
-    // strip per leaf resource, contiguous, with heights driven by the
-    // reference's event-stack math (`eventMinHeight + stacking-adjusted
-    // padding`). Chronix v0 doesn't model the stacking, but
-    // RowSwimlaneLayout accepts an explicit `heightHint` per row, so
-    // passing the probed heights forward pins the swimlane to the
-    // reference geometry. The first row's top relative to the body
-    // wrapper is also captured — the reference body has ~0.5px of
-    // internal border / wrapper padding before the first lane.
-    const domRows = await chart.evaluate(() => {
+    // Step 2: probe the reference rendered row ORDER. The body has one
+    // strip per leaf resource, contiguous, in render order — but that
+    // order DIFFERS from the demo's source `RESOURCES[]` list because
+    // the reference groups resources by baseName internally. Chronix
+    // doesn't have a tree-aware row-ordering pass yet, so the test
+    // reads the order off the DOM and feeds it to chronix verbatim.
+    // (Heights are NO LONGER probed here — `BarStackHeightPass`
+    // computes them from the same bar set, closing the cheat.)
+    const renderedRowOrder = await chart.evaluate(() => {
       const wrapper = document.querySelector('.gantt-timeline-body-wrapper');
       const wrapperTop = wrapper ? wrapper.getBoundingClientRect().top : 0;
-      // Use the resource-panel TR rows as the lane source — every leaf
-      // resource has one, in render order. Body has no per-row container
-      // with data-resource-id, but the panel's row top mirrors the body's
-      // strip top because the two sync via the scroller's vertical layout.
-      const rows = Array.from(
+      const trs = Array.from(
         document.querySelectorAll<HTMLTableRowElement>('tr[data-resource-id]'),
       );
       const seen = new Set<string>();
-      const out: { resourceId: string; y: number; height: number }[] = [];
-      for (const tr of rows) {
+      const ordered: { resourceId: string; y: number }[] = [];
+      for (const tr of trs) {
         const id = tr.getAttribute('data-resource-id') ?? '';
         if (seen.has(id)) continue;
         seen.add(id);
-        const r = tr.getBoundingClientRect();
-        out.push({
+        ordered.push({
           resourceId: id,
-          y: Math.round((r.top - wrapperTop) * 100) / 100,
-          height: Math.round(r.height * 100) / 100,
+          y: Math.round((tr.getBoundingClientRect().top - wrapperTop) * 100) / 100,
         });
       }
-      out.sort((a, b) => a.y - b.y);
-      return out;
+      ordered.sort((a, b) => a.y - b.y);
+      return {
+        wrapperOffsetY: ordered[0]?.y ?? 0,
+        resourceIds: ordered.map((r) => r.resourceId),
+      };
     });
+    const wrapperRowOffsetY = renderedRowOrder.wrapperOffsetY;
 
-    // The first row's top edge — chronix's strip[0].y is 0 by contract,
-    // and the body has a ~0.5px wrapper offset before the lanes start.
-    const wrapperRowOffsetY = domRows[0]?.y ?? 0;
-
-    // Reference empirical body-layout constants. The reference timeline
-    // view uses a per-slot-width pass (the slot-width parity tests above
-    // already lock that in); Y is driven by an `eventMinHeight` + first-
-    // event-top-padding config pair (the demo sets eventMinHeight=30 and
-    // the top padding empirically resolves to 8px for un-stacked rows).
+    // Body-layout constants — match the demo's options exactly so chronix
+    // produces the same logical geometry: eventMinHeight=30, eventSpacing=10,
+    // resourceFirstEventTopPadding=8, bottom padding=4. The +1px CSS row
+    // border between rendered TR strips lands in RowSwimlaneLayout's
+    // `rowSpacing` so chronix's cumulative Y matches the layout-flow.
     const BAR_HEIGHT = 30;
+    const BAR_STACK_SPACING = 10;
     const BAR_TOP_PADDING = 8;
+    const BAR_BOTTOM_PADDING = 4;
+    const ROW_BORDER_PX = 1;
 
-    // Step 3: chronix pipeline using probed row heights so the swimlane
-    // matches the reference's stacked geometry.
+    // Step 3: chronix pipeline. Order rows by the rendered sequence,
+    // derive heights from the event stack, lay out swimlanes (with the
+    // 1px row-border accounted for), and place each bar.
     const axis = defaultAxisRangePlanner.plan({
       viewId: 'day',
       anchorDate: new Date(FROZEN_TIME_ISO),
@@ -376,18 +374,37 @@ test.describe('parity: chronix vs reference demo', () => {
       locale: 'zh-CN',
       weekendsVisible: true,
     });
-    const rows: RowSpec[] = domRows.map((r) => ({
-      id: r.resourceId,
-      columns: {},
-      heightHint: r.height,
-    }));
-    const { strips } = defaultRowSwimlaneLayout.layout({ rows, defaultRowHeight: 39 });
     const bars: BarSpec[] = events.map((e) => ({
       id: e.id,
       rowId: e.resourceId,
       range: { start: new Date(e.startMs), end: new Date(e.endMs) },
       dprIntent: 'crisp-pixel',
     }));
+    const rowsNoHeight: RowSpec[] = renderedRowOrder.resourceIds.map((id) => ({
+      id,
+      columns: {},
+    }));
+    const { heightByRowId } = defaultBarStackHeightPass.compute({
+      bars,
+      rows: rowsNoHeight,
+      axis,
+      barHeight: BAR_HEIGHT,
+      barStackSpacing: BAR_STACK_SPACING,
+      firstBarTopPadding: BAR_TOP_PADDING,
+      lastBarBottomPadding: BAR_BOTTOM_PADDING,
+    });
+    // BarStackHeightPass guarantees an entry per input row, but `Map.get`
+    // is typed as `T | undefined` so spread the field conditionally —
+    // `exactOptionalPropertyTypes` rejects `heightHint: undefined`.
+    const rows: RowSpec[] = rowsNoHeight.map((r) => {
+      const h = heightByRowId.get(r.id);
+      return h === undefined ? r : { ...r, heightHint: h };
+    });
+    const { strips } = defaultRowSwimlaneLayout.layout({
+      rows,
+      defaultRowHeight: BAR_HEIGHT + BAR_TOP_PADDING,
+      rowSpacing: ROW_BORDER_PX,
+    });
     const { placedBars } = defaultBarPlacementPass.place({
       bars,
       axis,

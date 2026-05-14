@@ -109,6 +109,49 @@ export interface PlacedBar {
   readonly height: number;
 }
 
+/**
+ * Per-row height contribution from stacked bars. Output of
+ * `BarStackHeightPass.compute`. Lets the caller pass these as
+ * `RowSpec.heightHint` into `RowSwimlaneLayout` so the swimlane
+ * accommodates the bars that will land on each row.
+ */
+export interface BarStackHeightPassOutput {
+  /**
+   * Computed height per input row, in input order. Always the same length
+   * as `BarStackHeightPassInput.rows`.
+   */
+  readonly heightsPerRow: readonly number[];
+  /** Same data as `heightsPerRow`, keyed by `RowSpec.id` for direct lookup. */
+  readonly heightByRowId: ReadonlyMap<string, number>;
+}
+
+export interface BarStackHeightPassInput {
+  /**
+   * Bars to consider for stacking. Bars whose `range` falls entirely
+   * outside the axis time range are filtered out — they don't render
+   * and don't push the row taller.
+   */
+  readonly bars: readonly BarSpec[];
+  /** Rows to compute heights for. Output preserves this order. */
+  readonly rows: readonly RowSpec[];
+  /** Drives the axis-range filter; bars outside `[ticks[0], ticks[0]+slotCount×slotDuration)` are ignored. */
+  readonly axis: PlannedAxis;
+  /** Fixed bar height in pixels. Default 30. */
+  readonly barHeight?: number;
+  /** Vertical gap between stacked bars in pixels. Default 10. */
+  readonly barStackSpacing?: number;
+  /** Top padding above the first stacked bar within the row. Default 8. */
+  readonly firstBarTopPadding?: number;
+  /** Bottom padding below the last stacked bar within the row. Default 4. */
+  readonly lastBarBottomPadding?: number;
+  /**
+   * Floor height for any row, including rows with zero in-range bars.
+   * Default: `barHeight + firstBarTopPadding` so a placeholder row still
+   * has room for one bar's worth of clickable target area.
+   */
+  readonly minRowHeight?: number;
+}
+
 export interface BarPlacementPassInput {
   readonly bars: readonly BarSpec[];
   readonly axis: PlannedAxis;
