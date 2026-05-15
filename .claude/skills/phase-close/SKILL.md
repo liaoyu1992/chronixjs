@@ -53,6 +53,12 @@ Open the design doc. Find the section `## Parity assertion plan`.
     for that string. Every ID must be present.
   - `✅ Parity assertion plan: N/N assertions found in parity.spec.ts`
   - If any are missing: `❌ Parity assertion(s) missing from parity.spec.ts: <list>`
+  - **Positive signal**: if the new test imports from
+    `../src/parity-helpers.js` (the Phase 17 cross-demo helper),
+    that's strong evidence the assertion follows the canonical
+    `loadBothDemos` / `extractBarsSnapshot` / `diffBarsSnapshots`
+    pattern. For pure-core algorithms the older "chronix in-process
+    vs k-ui DOM" pattern (no helper import) is still valid.
 
 - If the section instead contains the declaration `**chronix-new — no
 parity assertion possible.**` followed by a non-empty rationale:

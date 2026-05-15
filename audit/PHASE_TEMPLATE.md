@@ -61,6 +61,25 @@ The rationale field is what /phase-close checks for: an empty
 parity-assertion list with no chronix-new declaration blocks the
 phase from being marked DONE. -->
 
+<!-- Example row format (replace with your phase's specific assertions):
+
+| Assertion id (in parity.spec.ts) | Drives k-ui demo via | Drives chronix demo via | Compares | Tolerance |
+| -------------------------------- | -------------------- | ----------------------- | -------- | --------- |
+| `<phase>-<channel> parity across both rendered demos` | `loadBothDemos` → k-ui at 8701 | `loadBothDemos` → chronix at 8702 with `?parity=true` | Per-bar `(x, width)` via `extractBarsSnapshot` + `diffBarsSnapshots` | `x: 1px, width: 1px, y: Infinity, height: Infinity` |
+
+The canonical helper lives at `tooling/golden-runner/src/parity-helpers.ts`
+(Phase 17). For algorithm code that doesn't render to DOM (pure
+core utilities), the older `chronix in-process vs k-ui DOM` pattern
+in `parity.spec.ts:90-415` is still valid — pick whichever matches
+your phase's algorithm-vs-implementation surface.
+
+Empty table = no parity assertion this phase. Either fill the table
+OR write the chronix-new declaration below.
+
+| Assertion id (in parity.spec.ts) | Drives k-ui demo via | Drives chronix demo via | Compares | Tolerance |
+| -------------------------------- | -------------------- | ----------------------- | -------- | --------- |
+-->
+
 | Assertion id (in parity.spec.ts) | Drives k-ui demo via | Drives chronix demo via | Compares | Tolerance |
 | -------------------------------- | -------------------- | ----------------------- | -------- | --------- |
 
