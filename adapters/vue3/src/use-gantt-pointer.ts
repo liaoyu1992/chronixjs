@@ -573,10 +573,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     return validateResize({ range: proposedRange, rowId: currentRowId }, movingBar, ctx);
   }
 
-  function runSelectValidation(
-    proposedRange: TimeRange,
-    rowId: string,
-  ): RejectionReason | null {
+  function runSelectValidation(proposedRange: TimeRange, rowId: string): RejectionReason | null {
     const ctx = buildValidationContext();
     return validateSelect({ range: proposedRange, rowId }, ctx);
   }

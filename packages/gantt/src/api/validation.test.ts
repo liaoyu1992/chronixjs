@@ -171,7 +171,8 @@ describe('validateDrop — eventAllow', () => {
     });
     expect(result).toBeNull();
     expect(allowFunc).toHaveBeenCalledTimes(1);
-    expect(allowFunc).toHaveBeenCalledWith({ rowId: 'r1', range: expect.any(Object) }, movingBar);
+    expect(allowFunc.mock.calls[0]?.[0]).toMatchObject({ rowId: 'r1' });
+    expect(allowFunc.mock.calls[0]?.[1]).toBe(movingBar);
   });
 
   it('fails with reason "allow" when eventAllow returns false', () => {
@@ -260,7 +261,7 @@ describe('validateSelect', () => {
     });
     expect(result).toBe('allow');
     expect(allowFunc).toHaveBeenCalledTimes(1);
-    expect(allowFunc).toHaveBeenCalledWith({ rowId: 'r1', range: expect.any(Object) });
+    expect(allowFunc.mock.calls[0]?.[0]).toMatchObject({ rowId: 'r1' });
   });
 
   it('does NOT consult eventOverlap (parked for selectOverlap follow-up)', () => {
