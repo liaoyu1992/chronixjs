@@ -1,4 +1,4 @@
-import { defaultChronixTheme, defaultLinkRouter } from '@chronixjs/gantt';
+import { BAR_SLOT_NAME, defaultChronixTheme, defaultLinkRouter } from '@chronixjs/gantt';
 import { computed, defineComponent, h, ref, watchEffect, type PropType } from 'vue';
 
 import { useGanttLayout } from './use-gantt-layout.js';
@@ -12,12 +12,14 @@ import {
 
 import type {
   AxisRangePlanInput,
+  BarSlotArgs,
   BarSpec,
   ChronixTheme,
   CustomLinkMarker,
   LinkMarker,
   LinkSpec,
   RowSpec,
+  SlotRegistry,
   TimeRange,
 } from '@chronixjs/gantt';
 
@@ -325,6 +327,20 @@ export const ChronixGantt = defineComponent({
     theme: {
       type: Object as PropType<Partial<ChronixTheme>>,
       default: () => ({}),
+    },
+    /**
+     * Optional slot registry consulted per render to look up custom
+     * templates. When `registry.has('bar')` is true, the registered
+     * template replaces the default `<rect class="cx-gantt-bar">` for
+     * every placed bar; the template receives a `BarSlotArgs` ctx
+     * including the live geometry, the effective theme, and the
+     * in-flight transaction. When undefined or no `'bar'` template
+     * is registered, every bar falls through to the default rect —
+     * existing consumers see no behavior change.
+     */
+    slotRegistry: {
+      type: Object as PropType<SlotRegistry | undefined>,
+      default: undefined,
     },
   },
   emits: {
@@ -673,17 +689,53 @@ export const ChronixGantt = defineComponent({
           }
         }
 
-        const nodes: ReturnType<typeof h>[] = [
-          h('rect', {
-            key: bar.barId,
-            'data-bar-id': bar.barId,
-            class: 'cx-gantt-bar',
-            x: renderX,
-            y: renderY,
-            width: renderWidth,
-            height: bar.height,
-          }),
-        ];
+        // Bar render: prefer a registered `'bar'` slot template when
+        // present; fall back to the default `<rect class="cx-gantt-bar">`.
+        // The slot template receives the same live geometry the default
+        // would use, plus the effective theme + in-flight transaction.
+        const barTemplate = props.slotRegistry?.get(BAR_SLOT_NAME);
+        const nodes: ReturnType<typeof h>[] = [];
+        if (barTemplate) {
+          const sourceBar = props.bars.find((b) => b.id === bar.barId);
+          if (sourceBar) {
+            const slotArgs: BarSlotArgs = {
+              placedBar: bar,
+              sourceBar,
+              renderX,
+              renderY,
+              renderWidth,
+              renderHeight: bar.height,
+              theme: t,
+              activeTransaction: activeTxn,
+            };
+            // `SlotContext.args` is typed `Readonly<Record<string, unknown>>`
+            // because core can't know per-slot shapes — cast through
+            // `unknown` here; the `BarSlotArgs` interface is the
+            // documented contract the consumer reads from. The template
+            // return is `unknown` per IR (cross-framework) — narrow at
+            // the boundary to Vue's VNode shape.
+            const raw = barTemplate({
+              slot: BAR_SLOT_NAME,
+              args: slotArgs as unknown as Readonly<Record<string, unknown>>,
+            });
+            const customVNodes: ReturnType<typeof h>[] = Array.isArray(raw)
+              ? (raw as ReturnType<typeof h>[])
+              : [raw as ReturnType<typeof h>];
+            nodes.push(...customVNodes);
+          }
+        } else {
+          nodes.push(
+            h('rect', {
+              key: bar.barId,
+              'data-bar-id': bar.barId,
+              class: 'cx-gantt-bar',
+              x: renderX,
+              y: renderY,
+              width: renderWidth,
+              height: bar.height,
+            }),
+          );
+        }
         // Progress fill + handle: only for bars that declared BOTH
         // `progress` AND `pointerOverlayId`. Progress fill is a
         // translucent overlay from bar start to the progress-x; the

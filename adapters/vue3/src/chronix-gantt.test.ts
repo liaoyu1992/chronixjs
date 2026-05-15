@@ -1,9 +1,17 @@
+import { BAR_SLOT_NAME, createSlotRegistry, defaultChronixTheme } from '@chronixjs/gantt';
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
+import { h } from 'vue';
 
 import { ChronixGantt, computeRowSpans } from './chronix-gantt.js';
 
-import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
+import type {
+  AxisRangePlanInput,
+  BarSlotArgs,
+  BarSpec,
+  ChronixTheme,
+  RowSpec,
+} from '@chronixjs/gantt';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 
@@ -1546,5 +1554,120 @@ describe('<ChronixGantt> theme (Phase 10)', () => {
     });
     const path = wrapper.find('path.cx-gantt-link');
     expect(Number(path.attributes('stroke-width'))).toBe(3);
+  });
+});
+
+describe('<ChronixGantt> slot registry (Phase 11)', () => {
+  it('no slotRegistry prop → bars render as default <rect class="cx-gantt-bar">', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 1, 4)],
+        rows,
+        axisInput,
+      },
+    });
+    const defaults = wrapper.findAll('rect.cx-gantt-bar');
+    expect(defaults).toHaveLength(2);
+    expect(defaults[0]!.attributes('data-bar-id')).toBe('b1');
+    expect(wrapper.findAll('[data-custom-bar]')).toHaveLength(0);
+  });
+
+  it("'bar' slot template fires once per placed bar and fully replaces the default rect", () => {
+    const registry = createSlotRegistry();
+    registry.register(BAR_SLOT_NAME, () =>
+      h('g', { 'data-custom-bar': true }, [h('circle', { r: 4 })]),
+    );
+
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 1, 4)],
+        rows,
+        axisInput,
+        slotRegistry: registry,
+      },
+    });
+    expect(wrapper.findAll('[data-custom-bar]')).toHaveLength(2);
+    expect(wrapper.findAll('rect.cx-gantt-bar')).toHaveLength(0);
+  });
+
+  it('slot template receives placedBar + sourceBar + live render geometry', () => {
+    const calls: BarSlotArgs[] = [];
+    const registry = createSlotRegistry();
+    registry.register(BAR_SLOT_NAME, (ctx) => {
+      calls.push(ctx.args as unknown as BarSlotArgs);
+      return h('rect', {
+        'data-probe-id': (ctx.args as unknown as BarSlotArgs).placedBar.barId,
+      });
+    });
+
+    mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        slotRegistry: registry,
+      },
+    });
+    expect(calls).toHaveLength(1);
+    const args = calls[0]!;
+    expect(args.placedBar.barId).toBe('b1');
+    expect(args.sourceBar.id).toBe('b1');
+    // Day view: hour 8 × slotWidth 60 = 480. No active transaction at
+    // mount, so renderX === placedBar.x.
+    expect(args.renderX).toBe(args.placedBar.x);
+    expect(args.renderX).toBe(480);
+    expect(args.renderY).toBe(args.placedBar.y);
+    expect(args.renderWidth).toBe(args.placedBar.width);
+    expect(args.renderHeight).toBe(args.placedBar.height);
+    expect(args.activeTransaction).toBeNull();
+  });
+
+  it('slot template receives the effective theme (merged defaults + override)', () => {
+    let receivedTheme: ChronixTheme | undefined;
+    const registry = createSlotRegistry();
+    registry.register(BAR_SLOT_NAME, (ctx) => {
+      receivedTheme = (ctx.args as unknown as BarSlotArgs).theme;
+      return h('rect', { 'data-themed': true });
+    });
+
+    mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        theme: { progressFill: '#7c3aed' },
+        slotRegistry: registry,
+      },
+    });
+    expect(receivedTheme).toBeDefined();
+    // Overridden token comes through.
+    expect(receivedTheme!.progressFill).toBe('#7c3aed');
+    // Other tokens stay at defaults — proves the slot ctx receives the
+    // MERGED theme, not just the partial override.
+    expect(receivedTheme!.linkDefaultColor).toBe(defaultChronixTheme.linkDefaultColor);
+  });
+
+  it('unregister mid-life → next render falls back to default <rect>', async () => {
+    const registry = createSlotRegistry();
+    registry.register(BAR_SLOT_NAME, () => h('rect', { 'data-custom-bar': true }));
+
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        slotRegistry: registry,
+      },
+    });
+    expect(wrapper.findAll('[data-custom-bar]')).toHaveLength(1);
+    expect(wrapper.findAll('rect.cx-gantt-bar')).toHaveLength(0);
+
+    // Unregister, then trigger a re-render by changing a reactive
+    // prop. The next render reads `registry.has('bar')` as false →
+    // falls back to default rect.
+    registry.unregister(BAR_SLOT_NAME);
+    await wrapper.setProps({ bars: [bar('b1', 'r1', 9, 13)] });
+    expect(wrapper.findAll('[data-custom-bar]')).toHaveLength(0);
+    expect(wrapper.findAll('rect.cx-gantt-bar')).toHaveLength(1);
   });
 });
