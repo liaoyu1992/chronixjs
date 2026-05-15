@@ -1,6 +1,6 @@
 # Phase 6 — Non-day-view bar-placement parity
 
-**Status**: **Approved (2026-05-15)**. Single-commit scope; hard-assert failures; per-view test isolation. Implementation starting.
+**Status**: **DONE (2026-05-15)**. Landed as 2 commits: `6c9493b` (design doc), `b73ff52` (test refactor + 5 new assertions). All 6 views passed parity on first run — no drift detected anywhere. See `audit/journal/2026-05-13.md` "Phase 6" section for the post-mortem.
 
 ## Problem
 
