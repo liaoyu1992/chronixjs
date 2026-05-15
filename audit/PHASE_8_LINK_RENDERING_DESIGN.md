@@ -1,6 +1,12 @@
 # Phase 8 — Link rendering in `<ChronixGantt>` (SVG `<path>` + markers)
 
-**Status**: Approved (2026-05-15). Implementation in progress.
+**Status**: **DONE (2026-05-15)**. Landed as 4 commits: `5a932d1`
+(design doc) → `5f07a6b` (Commit 1: paths) → `65088ce` (Commit 2:
+markers + colorOverride) → `d4688b0` (Commit 3: demo + VRT
+rebaseline). 14 new SFC tests; vue3 adapter 110 → 124. See
+`audit/journal/2026-05-13.md` "Phase 8" section for the post-mortem
+including the smooth-backward sample-data bug that crashed the demo
+on first wire-up.
 
 ## Problem
 

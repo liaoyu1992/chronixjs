@@ -161,10 +161,10 @@ separate parked item). One commit:
 
 Optional follow-up phases (NOT in scope here):
 
-- Link rendering in `<ChronixGantt>` adapter (would require demo
-  data extension + new SFC tests + VRT impact).
+- ✅ Link rendering in `<ChronixGantt>` adapter — closed by Phase 8.
+  See `audit/PHASE_8_LINK_RENDERING_DESIGN.md`.
 - Backward smooth routing (branches 2 + 4) when a demo exercises
-  it.
+  it — still parked at the router layer.
 
 ## Estimated scope
 
