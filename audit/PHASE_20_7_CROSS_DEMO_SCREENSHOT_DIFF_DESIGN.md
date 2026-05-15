@@ -1,6 +1,16 @@
 # Phase 20.7 — Cross-demo screenshot diff infrastructure
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)**. Landed as 3 commits: `4257932`
+(design doc, 483 lines) → `0eb774e` (registry + capture helper + 15
+Playwright unit tests) → `8601e85` (verify spec + 25 baselines +
+launcher + /phase-close step 6.5 + day-1 verify + fault-injection).
+golden-runner Playwright unit tests 17 → 32; vitest 436 unchanged
+(memory description corrected from a pre-existing 453 over-count
+inherited from Phase 20.6 close). 25 cross-demo scenarios captured
+(13 truly green + 12 `test.fail()`-passing pending Phase 20.7.1
+body-region dimension fix). `/phase-close` gate walked 7/7 green
+before status flip. See `audit/journal/2026-05-13.md` "Phase 20.7"
+section.
 
 ## Problem
 
