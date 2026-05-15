@@ -26,6 +26,8 @@ export type {
   PointerHitTester,
 } from './pointer-hit-test.js';
 export { defaultPointerHitTester } from './pointer-hit-test.js';
+export type { SwimlaneStripResolver } from './swimlane-strip-at-y.js';
+export { defaultStripResolver } from './swimlane-strip-at-y.js';
 export type {
   AnyTransaction,
   BarDragTransaction,

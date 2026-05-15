@@ -47,8 +47,13 @@ export type {
   PointerHitTester,
   PointerPx,
   ProgressHandleTransaction,
+  SwimlaneStripResolver,
 } from './interaction/index.js';
-export { defaultPointerCaptureSession, defaultPointerHitTester } from './interaction/index.js';
+export {
+  defaultPointerCaptureSession,
+  defaultPointerHitTester,
+  defaultStripResolver,
+} from './interaction/index.js';
 
 export type {
   IRCanvas,
