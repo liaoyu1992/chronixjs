@@ -1,6 +1,11 @@
 # Phase 10 — Theme tokens (`ChronixTheme` prop)
 
-**Status**: Approved (2026-05-15). Implementation in progress.
+**Status**: **DONE (2026-05-15)**. Landed as 3 commits: `49645aa`
+(design doc) → `2340b96` (Commit 1: interface + defaults) →
+`3b660c0` (Commit 2: adapter consumes theme + tests). +8 tests;
+chronix vitest 320 → 328. 5 VRT baselines re-verified
+idempotent — default theme is byte-for-byte pixel-identical. See
+`audit/journal/2026-05-13.md` "Phase 10" section.
 
 ## Problem
 
