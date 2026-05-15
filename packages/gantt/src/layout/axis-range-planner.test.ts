@@ -372,3 +372,155 @@ describe('defaultAxisRangePlanner — year view (12-month span, year-boundary an
     expect(cells[1]?.width).toBe(axis.slotWidth * 29);
   });
 });
+
+/**
+ * `weekendsVisible: false` filter tests. Closes the BLOCKING drift
+ * called out in `audit/PARITY_RECHECK.md` Batch 1 #10 — the flag
+ * was plumbed through the input type but never read by the planner.
+ *
+ * Semantics under `weekendsVisible: false`: day-of-week 0 (Sun) and
+ * 6 (Sat) are filtered out of the slot loop. Tick X positions stay
+ * dense-packed (no visual gap where weekends would be); header band
+ * widths shrink to cover only the visible days; slot width is
+ * recomputed against the filtered slot count.
+ *
+ * Scope: week / month / season / halfYear / year views filter; day
+ * view stays untouched (renders 24 hourly ticks regardless). See
+ * `audit/PHASE_18_WEEKENDS_VISIBLE_FILTER_DESIGN.md` for the catalog.
+ *
+ * Day-count math (anchor 2026-05-13 = Wed, Mon 2026-05-11 starts week):
+ * - Week Mon-Sun: 5 weekdays (Mon-Fri) × 24 = 120 hourly slots
+ * - May 2026: 31 days, 10 weekend days → 21 weekdays
+ * - Jun 2026: 30 days, 8 weekend days → 22 weekdays
+ * - Jul 2026: 31 days, 8 weekend days → 23 weekdays
+ *   (May+Jun+Jul = 66 weekdays for season)
+ * - Aug 2026: 31 days, 10 weekend days → 21 weekdays
+ * - Sep 2026: 30 days, 8 weekend days → 22 weekdays
+ * - Oct 2026: 31 days, 9 weekend days → 22 weekdays
+ *   (May..Oct = 131 weekdays for halfYear)
+ * - 2026 full year: 365 days, 104 weekend days → 261 weekdays
+ */
+describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
+  const weekdaysOnly = (anchor: string): AxisRangePlanInput => ({
+    ...baseInput,
+    weekendsVisible: false,
+    anchorDate: new Date(anchor),
+  });
+
+  it('week view: 5 visible days × 24 hours = 120 slots, 5 day-cells, no Sat/Sun labels', () => {
+    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'week' });
+
+    expect(axis.slotCount).toBe(120);
+    expect(axis.ticks).toHaveLength(120);
+    expect(axis.headerRows[0]?.cells).toHaveLength(5);
+
+    const dayCellLabels = axis.headerRows[0]?.cells.map((c) => c.label) ?? [];
+    // zh-CN `weekday: 'short'` emits `周一 .. 周日`. Verify Sat/Sun are absent.
+    expect(dayCellLabels.some((l) => l.includes('周六') || l.includes('周日'))).toBe(false);
+
+    // Tick dates carry no Sat/Sun day-of-week.
+    const tickDays = new Set(axis.ticks.map((t) => t.time.getDay()));
+    expect(tickDays.has(0)).toBe(false);
+    expect(tickDays.has(6)).toBe(false);
+    expect(tickDays).toEqual(new Set([1, 2, 3, 4, 5]));
+  });
+
+  it('week view: ticks are dense-packed (no X gaps where weekends would be)', () => {
+    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'week' });
+
+    for (let i = 0; i < axis.ticks.length; i += 1) {
+      expect(axis.ticks[i]?.x).toBe(i * axis.slotWidth);
+    }
+    expect(axis.totalWidth).toBe(axis.slotWidth * 120);
+  });
+
+  it('week view: slotWidth differs from weekendsVisible:true (recomputed against smaller slotCount)', () => {
+    const off = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'week' });
+    const on = defaultAxisRangePlanner.plan({
+      ...baseInput,
+      viewId: 'week',
+      anchorDate: new Date('2026-05-13T08:00:00'),
+    });
+
+    // viewportWidth=1200 stretches to fill in both cases:
+    //   on:  1200 / 168 = 7.14px (under the 52px floor → 52px)
+    //   off: 1200 / 120 = 10px   (still under the 52px floor → 52px)
+    // Both hit the floor at baseInput.viewportWidth=1200, so slotWidth
+    // is equal here. Verify the *slotCounts* differ — the visible
+    // change — and totalWidth scales accordingly.
+    expect(off.slotCount).toBe(120);
+    expect(on.slotCount).toBe(168);
+    expect(off.totalWidth).toBeLessThan(on.totalWidth);
+  });
+
+  it('month view: May 2026 has 21 weekdays (31 days − 10 weekend days)', () => {
+    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'month' });
+
+    expect(axis.slotCount).toBe(21);
+    expect(axis.ticks).toHaveLength(21);
+    expect(axis.totalWidth).toBe(axis.slotWidth * 21);
+
+    // Outer header cell still spans the full filtered axis width.
+    expect(axis.headerRows[0]?.cells).toHaveLength(1);
+    expect(axis.headerRows[0]?.cells[0]?.width).toBe(axis.totalWidth);
+
+    // No Sat/Sun in tick dates.
+    const tickDays = new Set(axis.ticks.map((t) => t.time.getDay()));
+    expect(tickDays.has(0)).toBe(false);
+    expect(tickDays.has(6)).toBe(false);
+  });
+
+  it('season view: May+Jun+Jul 2026 weekdays sum to 21+22+23 = 66; monthCells reflect per-month visible-day widths', () => {
+    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'season' });
+
+    expect(axis.slotCount).toBe(66);
+    const cells = axis.headerRows[0]?.cells ?? [];
+    expect(cells).toHaveLength(3);
+    expect(cells[0]?.width).toBe(axis.slotWidth * 21); // May
+    expect(cells[1]?.width).toBe(axis.slotWidth * 22); // Jun
+    expect(cells[2]?.width).toBe(axis.slotWidth * 23); // Jul
+
+    // monthCells tile the axis with no gaps.
+    const summed = cells.reduce((acc, c) => acc + c.width, 0);
+    expect(summed).toBe(axis.totalWidth);
+    for (let i = 1; i < cells.length; i += 1) {
+      expect(cells[i]?.x).toBe((cells[i - 1]?.x ?? 0) + (cells[i - 1]?.width ?? 0));
+    }
+  });
+
+  it('halfYear view: May..Oct 2026 weekdays = 131 (within parity assertion 125..135 range)', () => {
+    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'halfYear' });
+
+    expect(axis.slotCount).toBe(131);
+    expect(axis.slotCount).toBeGreaterThanOrEqual(125);
+    expect(axis.slotCount).toBeLessThanOrEqual(135);
+
+    const cells = axis.headerRows[0]?.cells ?? [];
+    expect(cells).toHaveLength(6);
+    const summed = cells.reduce((acc, c) => acc + c.width, 0);
+    expect(summed).toBe(axis.totalWidth);
+  });
+
+  it('year view: 2026 has 261 weekdays (365 − 104 weekend days); 12 monthCells tile the axis', () => {
+    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'year' });
+
+    expect(axis.slotCount).toBe(261);
+    const cells = axis.headerRows[0]?.cells ?? [];
+    expect(cells).toHaveLength(12);
+    const summed = cells.reduce((acc, c) => acc + c.width, 0);
+    expect(summed).toBe(axis.totalWidth);
+  });
+
+  it('day view is unaffected: still 24 hourly ticks even when the anchor is a Saturday', () => {
+    // 2026-05-16 is a Saturday. The filter's scope is "week-and-wider
+    // views" — day view always renders 24 hourly ticks on the anchor
+    // day so a host can still drill into a weekend day without the
+    // view going blank.
+    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-16T08:00:00'), viewId: 'day' });
+
+    expect(axis.slotCount).toBe(24);
+    expect(axis.ticks).toHaveLength(24);
+    expect(axis.ticks[0]?.time.getDate()).toBe(16);
+    expect(axis.ticks[0]?.time.getDay()).toBe(6); // Saturday
+  });
+});

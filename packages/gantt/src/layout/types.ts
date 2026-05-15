@@ -59,7 +59,25 @@ export interface AxisRangePlanInput {
   readonly viewportWidth: number;
   /** BCP-47 locale code, used by `Intl.DateTimeFormat` for tick labels. */
   readonly locale: string;
-  /** When false, Saturday + Sunday slots are omitted from week-and-wider views. */
+  /**
+   * When false, Saturday + Sunday day-slots are filtered out of
+   * `week` / `month` / `season` / `halfYear` / `year` views. Tick
+   * X positions remain dense-packed (no visual gaps where weekends
+   * would be) and header band widths (week dayCells, month-banded
+   * monthCells) shrink to cover only the visible days. Slot width
+   * is recomputed against the filtered slot count.
+   *
+   * `day` view is unaffected: it always renders 24 hourly ticks
+   * on the anchor calendar day, weekend or not. This matches the
+   * docstring's _"week-and-wider views"_ original scope.
+   *
+   * Bars whose timestamps fall on hidden weekend days are NOT
+   * sliced in v0 — they render at their raw
+   * `(t - axisStart) × pxPerMs` offset, which may visually land
+   * inside an adjacent weekday's slot. Hidden-day bar slicing
+   * (analog of the reference's per-segment lane slicer) is parked
+   * for a follow-up phase.
+   */
   readonly weekendsVisible: boolean;
 }
 

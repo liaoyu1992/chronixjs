@@ -725,3 +725,125 @@ test.describe('cross-demo parity (Phase 17 helper)', () => {
     }
   });
 });
+
+/**
+ * `weekendsVisible: false` parity (Phase 18). Closes the BLOCKING
+ * drift from `audit/PARITY_RECHECK.md` Batch 1 #10 — chronix's axis
+ * planner used to ignore the flag entirely. These two assertions
+ * drive the reference demo's `显示周末` checkbox (located in the
+ * sidebar `demo-app-sidebar-section` outside the chart locator) to
+ * flip its weekendsVisible state OFF, then compare against the
+ * chronix planner's filtered output run in-process.
+ *
+ * Scope: week view (planWeekView path) + halfYear view
+ * (planMonthBandedAxis path). planMonthView (single-month)
+ * isn't exercised here because the parity test infrastructure
+ * compares against the reference's rendered DOM and adding a third
+ * view doubles flake risk for marginal extra coverage — the unit
+ * tests in `packages/gantt/src/layout/axis-range-planner.test.ts`
+ * cover planMonthView. See PHASE_18 design doc for the
+ * drift-detection scope decision.
+ */
+test.describe('parity: chronix vs reference demo — weekendsVisible: false (Phase 18)', () => {
+  /**
+   * Open the reference demo, flip the 显示周末 checkbox OFF, then
+   * switch to the requested view. The default state is checked
+   * (weekendsVisible: true); one click toggles to false. The
+   * sidebar section that hosts the checkbox sits outside the chart
+   * locator, so resolution is rooted at `page`, not `chart`.
+   */
+  async function loadViewWeekendsOff(page: Page, viewToggleLabel: string) {
+    await page.clock.install({ time: new Date(FROZEN_TIME_ISO) });
+    await page.goto('/');
+    const chart = page.locator(CHART_SELECTOR);
+    await chart.waitFor({ state: 'visible' });
+    await page.waitForLoadState('networkidle');
+    await settle(page);
+    await page.getByLabel('显示周末').click();
+    await settle(page);
+    await chart.getByRole('button', { name: viewToggleLabel, exact: true }).click();
+    await settle(page);
+    return chart;
+  }
+
+  /**
+   * Week view dayCells under weekends-off. chronix `planWeekView`
+   * with `weekendsVisible: false` emits 5 dayCells (Mon..Fri only).
+   * Reference renders the same 5 day-header cells. The leaf-text
+   * regex `^\d+\/\d+周[一二三四五]$` deliberately excludes 六/日 so
+   * any chronix bug that leaks Sat/Sun into the dayCell label set
+   * would fail the set-equality assertion below — both sides should
+   * be Mon..Fri only.
+   */
+  test('week-view dayCells (weekendsVisible: false) — set equality + count', async ({ page }) => {
+    const axis = defaultAxisRangePlanner.plan({
+      viewId: 'week',
+      anchorDate: new Date(FROZEN_TIME_ISO),
+      viewportWidth: VIEWPORT.width,
+      locale: 'zh-CN',
+      weekendsVisible: false,
+    });
+    const chronixLabels = axis.headerRows[0]?.cells.map((c) => c.label) ?? [];
+    expect(chronixLabels).toHaveLength(5);
+    expect(chronixLabels.some((l) => /[六日]/u.test(l))).toBe(false);
+
+    const chart = await loadViewWeekendsOff(page, '周');
+    const refLabels = await chart.evaluate((root) => {
+      const result: string[] = [];
+      const seen = new Set<string>();
+      // Mon-Fri only — narrow weekday char restricted to 一..五.
+      const re = /^\d+\/\d+周[一二三四五]$/u;
+      root.querySelectorAll('*').forEach((node) => {
+        if (node.children.length > 0) return;
+        const txt = node.textContent?.trim() ?? '';
+        if (re.test(txt) && !seen.has(txt)) {
+          seen.add(txt);
+          result.push(txt);
+        }
+      });
+      return result;
+    });
+
+    console.warn('chronix   week-view dayCells (weekends-off):', chronixLabels);
+    console.warn('reference week-view dayCells (weekends-off):', refLabels);
+
+    expect(refLabels.length).toBeGreaterThan(0);
+    expect(new Set(refLabels)).toEqual(new Set(chronixLabels));
+  });
+
+  /**
+   * HalfYear view slot count under weekends-off. chronix
+   * `planMonthBandedAxis(monthCount=6, weekendsVisible:false)` for
+   * May..Oct 2026 emits 131 day ticks. The reference renders the
+   * same set of weekday-only day ticks; their bounding rects are
+   * reported even for off-screen labels, so the rendered count
+   * equals chronix's `slotCount`. Mon-Fri-only regex
+   * (`^\d+日[一二三四五]$`) ensures any 六/日 leak on the reference
+   * side would shrink the rendered count and fail the equality.
+   */
+  test('halfYear-view slot count (weekendsVisible: false) — count equality', async ({ page }) => {
+    const axis = defaultAxisRangePlanner.plan({
+      viewId: 'halfYear',
+      anchorDate: new Date(FROZEN_TIME_ISO),
+      viewportWidth: VIEWPORT.width,
+      locale: 'zh-CN',
+      weekendsVisible: false,
+    });
+    // Sanity range — bounds the slotCount within the design doc's
+    // [125, 135] expectation so a wildly off chronix output fails
+    // here before the rendered-count diff drags the message into
+    // the noise.
+    expect(axis.slotCount).toBeGreaterThanOrEqual(125);
+    expect(axis.slotCount).toBeLessThanOrEqual(135);
+
+    const chart = await loadViewWeekendsOff(page, '半年');
+    const ticks = await extractRenderedTickRects(chart, /^\d+日[一二三四五]$/u);
+
+    console.warn(
+      `chronix   halfYear slotCount (weekends-off): ${axis.slotCount}; ` +
+        `reference rendered tick count: ${ticks.length}`,
+    );
+
+    expect(ticks).toHaveLength(axis.slotCount);
+  });
+});

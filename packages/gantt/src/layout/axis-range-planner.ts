@@ -77,7 +77,28 @@ function startOfWeekMonday(d: Date): Date {
   return x;
 }
 
+/**
+ * Whether the given date is a hidden weekend day under the current
+ * `weekendsVisible` setting. When the option is off, day-of-week 0
+ * (Sunday) and 6 (Saturday) are filtered out of the slot loop.
+ *
+ * Day view (single anchor day) never consults this — its filter
+ * scope is _"week-and-wider views"_; see `planDayView` for the
+ * rationale and `types.ts` for the public-API docstring.
+ */
+function isHiddenWeekendDay(d: Date, weekendsVisible: boolean): boolean {
+  if (weekendsVisible) return false;
+  const dow = d.getDay();
+  return dow === 0 || dow === 6;
+}
+
 function planDayView(input: AxisRangePlanInput): PlannedAxis {
+  // `input.weekendsVisible` is intentionally ignored for day view:
+  // a day view renders 24 hourly ticks on the anchor calendar day,
+  // even if that day is Saturday or Sunday. The filter's scope is
+  // "week-and-wider views" (see types.ts JSDoc); day view always
+  // shows the anchor day so a host can still drill into a Saturday
+  // without the view going blank.
   const start = startOfDay(input.anchorDate);
   const slotCount = 24;
   const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE.day);
@@ -125,17 +146,26 @@ function startOfYear(d: Date): Date {
 }
 
 /**
- * Counts how many days fall in the `monthCount` months starting at `start`.
+ * Counts how many _visible_ days fall in the `monthCount` months
+ * starting at `start`, honoring the `weekendsVisible` filter. When
+ * `weekendsVisible` is true, this equals the total day count of the
+ * range (i.e. the original `countDaysAcrossMonths` behavior). When
+ * false, Saturday + Sunday days are subtracted.
+ *
  * Used to derive slot width up-front (the per-month iteration in
  * `planMonthBandedAxis` would otherwise need a two-pass structure).
  */
-function countDaysAcrossMonths(start: Date, monthCount: number): number {
+function countVisibleDaysAcrossMonths(
+  start: Date,
+  monthCount: number,
+  weekendsVisible: boolean,
+): number {
   let total = 0;
   const cursor = new Date(start);
   for (let m = 0; m < monthCount; m += 1) {
     const monthIndex = cursor.getMonth();
     while (cursor.getMonth() === monthIndex) {
-      total += 1;
+      if (!isHiddenWeekendDay(cursor, weekendsVisible)) total += 1;
       cursor.setDate(cursor.getDate() + 1);
     }
   }
@@ -145,7 +175,7 @@ function countDaysAcrossMonths(start: Date, monthCount: number): number {
 function planMonthView(input: AxisRangePlanInput): PlannedAxis {
   const start = startOfMonth(input.anchorDate);
   const monthIndex = start.getMonth();
-  const slotCount = countDaysAcrossMonths(start, 1);
+  const slotCount = countVisibleDaysAcrossMonths(start, 1, input.weekendsVisible);
   const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE.month);
 
   // `weekday: 'narrow'` emits a one-char weekday in zh-CN ("一" … "六" / "日"),
@@ -163,16 +193,18 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
 
   const ticks: AxisTick[] = [];
   const cursor = new Date(start);
-  let i = 0;
   // Iterate via setDate until the month rolls over — robust to month length
   // and to any DST transition that might shorten or lengthen a single day.
+  // Tick X uses the dense post-filter index (`ticks.length × slotWidth`) so
+  // weekends-off views have no visual gaps where Sat/Sun would be.
   while (cursor.getMonth() === monthIndex) {
-    ticks.push({
-      x: i * slotWidth,
-      time: new Date(cursor),
-      label: dayFmt.format(cursor),
-    });
-    i += 1;
+    if (!isHiddenWeekendDay(cursor, input.weekendsVisible)) {
+      ticks.push({
+        x: ticks.length * slotWidth,
+        time: new Date(cursor),
+        label: dayFmt.format(cursor),
+      });
+    }
     cursor.setDate(cursor.getDate() + 1);
   }
   const totalWidth = slotWidth * slotCount;
@@ -202,7 +234,7 @@ function planMonthBandedAxis(
   start: Date,
   monthCount: number,
 ): PlannedAxis {
-  const slotCount = countDaysAcrossMonths(start, monthCount);
+  const slotCount = countVisibleDaysAcrossMonths(start, monthCount, input.weekendsVisible);
   const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE[input.viewId]);
 
   // `weekday: 'narrow'` — see `planMonthView` for the rationale.
@@ -231,18 +263,20 @@ function planMonthBandedAxis(
     const firstSlotIdx = ticks.length;
 
     while (cursor.getMonth() === monthIndex) {
-      ticks.push({
-        x: ticks.length * slotWidth,
-        time: new Date(cursor),
-        label: dayFmt.format(cursor),
-      });
+      if (!isHiddenWeekendDay(cursor, input.weekendsVisible)) {
+        ticks.push({
+          x: ticks.length * slotWidth,
+          time: new Date(cursor),
+          label: dayFmt.format(cursor),
+        });
+      }
       cursor.setDate(cursor.getDate() + 1);
     }
 
-    const daysInMonth = ticks.length - firstSlotIdx;
+    const visibleDaysInMonth = ticks.length - firstSlotIdx;
     monthCells.push({
       x: firstSlotIdx * slotWidth,
-      width: daysInMonth * slotWidth,
+      width: visibleDaysInMonth * slotWidth,
       label: monthFmt.format(monthStart),
     });
   }
@@ -263,8 +297,19 @@ function planMonthBandedAxis(
 function planWeekView(input: AxisRangePlanInput): PlannedAxis {
   const monday = startOfWeekMonday(input.anchorDate);
   const hoursPerDay = 24;
-  const days = 7;
-  const slotCount = hoursPerDay * days;
+  const daysInWeek = 7;
+
+  // Pre-resolve the visible days (Mon..Fri when `weekendsVisible` is off,
+  // Mon..Sun when on). Walking via setDate is robust to DST transitions
+  // that could shorten/lengthen a single calendar day.
+  const visibleDays: Date[] = [];
+  for (let d = 0; d < daysInWeek; d += 1) {
+    const day = new Date(monday);
+    day.setDate(monday.getDate() + d);
+    if (!isHiddenWeekendDay(day, input.weekendsVisible)) visibleDays.push(day);
+  }
+  const visibleDayCount = visibleDays.length;
+  const slotCount = hoursPerDay * visibleDayCount;
   const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE.week);
   const totalWidth = slotWidth * slotCount;
 
@@ -276,16 +321,14 @@ function planWeekView(input: AxisRangePlanInput): PlannedAxis {
   });
 
   const ticks: AxisTick[] = [];
-  for (let i = 0; i < slotCount; i += 1) {
-    const t = new Date(monday);
-    t.setHours(i); // setHours auto-overflows into the next day
-    ticks.push({ x: i * slotWidth, time: t, label: hourFmt.format(t) });
-  }
-
   const dayCells: AxisHeaderCell[] = [];
-  for (let d = 0; d < days; d += 1) {
-    const dayStart = new Date(monday);
-    dayStart.setDate(monday.getDate() + d);
+  for (let d = 0; d < visibleDayCount; d += 1) {
+    const dayStart = visibleDays[d]!;
+    for (let h = 0; h < hoursPerDay; h += 1) {
+      const t = new Date(dayStart);
+      t.setHours(h);
+      ticks.push({ x: ticks.length * slotWidth, time: t, label: hourFmt.format(t) });
+    }
     dayCells.push({
       x: d * hoursPerDay * slotWidth,
       width: hoursPerDay * slotWidth,
