@@ -34,6 +34,7 @@ import type {
   SelectAllowFunc,
   SlotRegistry,
   TimeRange,
+  TodayLineOption,
 } from '@chronixjs/gantt';
 
 /**
@@ -516,6 +517,16 @@ export const ChronixGantt = defineComponent({
       type: Function as PropType<BarColorFunc | undefined>,
       default: undefined,
     },
+    /**
+     * Phase 21: today-line config. `false` or omitted = hide (default);
+     * `true` = enable with all defaults (red `#ff6b6b`, 2 px, dashed,
+     * `'今日'` tooltip); an object literal overrides per-field. See
+     * `TodayLineOption` for the resolution cascade with theme tokens.
+     */
+    todayLine: {
+      type: [Boolean, Object] as PropType<TodayLineOption | boolean>,
+      default: false,
+    },
   },
   emits: {
     'bar-drop': (_payload: BarDropPayload) => true,
@@ -590,6 +601,60 @@ export const ChronixGantt = defineComponent({
         if (b.progress !== undefined) m.set(b.id, b.progress.value);
       }
       return m;
+    });
+
+    /**
+     * Phase 21: resolved today-line state. Returns `null` when:
+     * - `todayLine` prop is `false` / omitted
+     * - axis has no ticks (degenerate input)
+     * - today's x-coordinate falls outside the axis range
+     *
+     * x-coordinate uses the same `pxPerMs` formula as `BarPlacementPass`
+     * so the line aligns pixel-exactly with bars that start today.
+     * `Date.now()` is sampled at re-render time — no `setTimeout` keeps
+     * it live across midnight; consumers needing live "now" updates can
+     * trigger a manual re-render via a reactive ref.
+     *
+     * Cascade for stroke + tooltip background:
+     * - `props.todayLine.color` explicitly set → drives BOTH (parity-
+     *   reference behavior where one color knob controls both)
+     * - else → `theme.todayLineColor` (stroke) +
+     *   `theme.todayLineTooltipBg` (tooltip bg) independently
+     */
+    const resolvedTodayLine = computed<{
+      x: number;
+      color: string;
+      tooltipBg: string;
+      width: number;
+      dasharray: string | undefined;
+      tooltip: string;
+    } | null>(() => {
+      const opt = props.todayLine;
+      if (opt === false || opt === undefined) return null;
+      const config: TodayLineOption = opt === true ? {} : opt;
+
+      const a = axis.value;
+      if (a.ticks.length === 0) return null;
+      const axisStartMs = a.ticks[0]!.time.getTime();
+      const pxPerMs = a.slotWidth / a.slotDurationMs;
+      const todayX = (Date.now() - axisStartMs) * pxPerMs;
+      if (todayX < 0 || todayX > a.totalWidth) return null;
+
+      const t = theme.value;
+      const color = config.color ?? t.todayLineColor;
+      const tooltipBg = config.color ?? t.todayLineTooltipBg;
+      const styleName = config.style ?? 'dashed';
+      const dasharray: string | undefined =
+        styleName === 'solid' ? undefined : styleName === 'dashed' ? '6 4' : '2 3';
+
+      return {
+        x: todayX,
+        color,
+        tooltipBg,
+        width: config.width ?? 2,
+        dasharray,
+        tooltip: config.tooltip ?? '今日',
+      };
     });
 
     // Route dependency links through the layout pass. Re-derives when
@@ -982,6 +1047,75 @@ export const ChronixGantt = defineComponent({
       // (1) below — when both axes scroll, the chart-header passes
       // BEHIND the sidebar-header at the corner and AHEAD of the
       // sidebar-body at the time-row strip.
+      // Phase 21: header-side today-line + tooltip widget. The line
+      // spans the full header band (y=0 to totalHeaderBandHeight) so it
+      // visually continues into the body-side line below. The tooltip
+      // group renders LAST so its rect + text paint on top of any
+      // overlapping header content. Tooltip is centered horizontally on
+      // todayX with a fixed 36 px width — that fits the 2-character
+      // default '今日' label at 11 px font; users passing a wider
+      // custom tooltip via `TodayLineOption.tooltip` will overflow,
+      // which is the same v0 trade-off k-ui makes (CSS-driven; no
+      // text-measurement step). `pointer-events: none` on both line
+      // and tooltip so they don't intercept clicks on header tick
+      // labels underneath.
+      const headerExtras: ReturnType<typeof h>[] = [];
+      if (resolvedTodayLine.value !== null) {
+        const tl = resolvedTodayLine.value;
+        headerExtras.push(
+          h('line', {
+            key: 'today-line',
+            class: 'cx-gantt-today-line',
+            'data-today-line-side': 'header',
+            x1: tl.x,
+            x2: tl.x,
+            y1: 0,
+            y2: totalHeaderBandHeight,
+            stroke: tl.color,
+            'stroke-width': tl.width,
+            ...(tl.dasharray ? { 'stroke-dasharray': tl.dasharray } : {}),
+            'pointer-events': 'none',
+          }),
+        );
+        if (tl.tooltip !== '') {
+          const tooltipWidth = 36;
+          const tooltipHeight = 16;
+          const tooltipX = tl.x - tooltipWidth / 2;
+          const tooltipY = 0;
+          headerExtras.push(
+            h(
+              'g',
+              {
+                key: 'today-line-tooltip',
+                class: 'cx-gantt-today-line-tooltip',
+                'pointer-events': 'none',
+              },
+              [
+                h('rect', {
+                  x: tooltipX,
+                  y: tooltipY,
+                  width: tooltipWidth,
+                  height: tooltipHeight,
+                  fill: tl.tooltipBg,
+                  rx: 2,
+                }),
+                h(
+                  'text',
+                  {
+                    x: tl.x,
+                    y: tooltipY + tooltipHeight / 2 + 4,
+                    'text-anchor': 'middle',
+                    fill: '#ffffff',
+                    'font-size': 11,
+                  },
+                  tl.tooltip,
+                ),
+              ],
+            ),
+          );
+        }
+      }
+
       const headerSvg = h(
         'svg',
         {
@@ -1010,6 +1144,7 @@ export const ChronixGantt = defineComponent({
             },
             tickChildren,
           ),
+          ...headerExtras,
         ],
       );
 
@@ -1302,6 +1437,28 @@ export const ChronixGantt = defineComponent({
         }
       }
 
+      // Phase 21: today-line under bars. Drawn BEFORE the bars group so
+      // bars paint on top (matches parity-reference behavior where the
+      // line sits below bar bodies but above the bg). Tooltip widget
+      // is in the header SVG, not here — body only carries the stroke.
+      const todayLineBodyNode =
+        resolvedTodayLine.value !== null
+          ? h('line', {
+              class: 'cx-gantt-today-line',
+              'data-today-line-side': 'body',
+              x1: resolvedTodayLine.value.x,
+              x2: resolvedTodayLine.value.x,
+              y1: 0,
+              y2: bodyHeight,
+              stroke: resolvedTodayLine.value.color,
+              'stroke-width': resolvedTodayLine.value.width,
+              ...(resolvedTodayLine.value.dasharray
+                ? { 'stroke-dasharray': resolvedTodayLine.value.dasharray }
+                : {}),
+              'pointer-events': 'none',
+            })
+          : null;
+
       const bodySvg = h(
         'svg',
         {
@@ -1322,6 +1479,7 @@ export const ChronixGantt = defineComponent({
         },
         [
           h('defs', { class: 'cx-gantt-defs' }, defsChildren),
+          ...(todayLineBodyNode ? [todayLineBodyNode] : []),
           h('g', { class: 'cx-gantt-bars' }, barChildren),
           h('g', { class: 'cx-gantt-links', 'pointer-events': 'none' }, linkPathNodes),
         ],

@@ -63,14 +63,60 @@ export interface GanttEventMap {
 }
 
 /**
+ * Phase 21: configuration for the vertical "today" line drawn over the
+ * timeline. The line renders at the same x-coordinate as a bar whose
+ * range started at `Date.now()` — adapter uses the same `pxPerMs` math
+ * as `BarPlacementPass` so the line is pixel-aligned with bars starting
+ * today.
+ *
+ * Defaults match the parity reference: red (`#ff6b6b`), 2 px wide,
+ * dashed pattern, `'今日'` header tooltip. Every field is optional;
+ * supply `todayLine: true` to use all defaults, `todayLine: {...}` for
+ * per-field override, `todayLine: false` or omit to hide.
+ *
+ * "Today" is sampled at adapter render time (no `setTimeout` /
+ * visibility-change listener); a chart staying mounted across midnight
+ * will not auto-advance the line until the next reactive re-render.
+ * Live "now" updates + sub-second indicator markers are deferred —
+ * see `audit/PHASE_21_TODAY_LINE_DESIGN.md`.
+ */
+export interface TodayLineOption {
+  /**
+   * Stroke color for the body + header `<line>`. Also used as the
+   * tooltip background (matching parity-reference behavior where one
+   * color drives both). When omitted, falls back to the theme tokens
+   * `todayLineColor` (line stroke) and `todayLineTooltipBg` (tooltip
+   * fill).
+   */
+  readonly color?: string;
+  /** SVG `stroke-width` in px. Default 2. */
+  readonly width?: number;
+  /**
+   * Stroke pattern. Maps to SVG `stroke-dasharray`:
+   * - `'solid'`  → no dasharray
+   * - `'dashed'` → `'6 4'`
+   * - `'dotted'` → `'2 3'`
+   *
+   * Default `'dashed'`. Parity reference's `'double'` and `'dashed-dot'`
+   * are parked v0 (no clean SVG translation).
+   */
+  readonly style?: 'solid' | 'dashed' | 'dotted';
+  /**
+   * Header-band tooltip label text. Default `'今日'`. Pass `''` to
+   * suppress the tooltip widget without disabling the line itself.
+   */
+  readonly tooltip?: string;
+}
+
+/**
  * External configuration surface. Users supply this once at mount; adapters
  * forward it into the core. Shape is intentionally similar to common
  * scheduler-library option conventions so existing call sites can migrate
  * with renaming-only changes.
  *
  * v0 surface is minimal. Demo-specific options (`themeOverrides`,
- * `eventStyleCallbacks`, `markerType`, `lineStyle`, `todayLine`,
- * `resourceAreaColumns`, etc.) land in v1 when adapter MVPs need them.
+ * `eventStyleCallbacks`, `markerType`, `lineStyle`, `resourceAreaColumns`,
+ * etc.) land in v1 when adapter MVPs need them.
  */
 export interface GanttOptions {
   /** Initial bar set. Identifier collisions are caller's responsibility. */
@@ -95,6 +141,15 @@ export interface GanttOptions {
 
   /** Slot templates, keyed by slot name. Adapter merges with adapter-supplied defaults. */
   readonly slots?: Readonly<Record<string, SlotTemplate>>;
+
+  /**
+   * Phase 21: vertical line marking "today" on the timeline. Pass
+   * `false` or omit to hide; `true` to enable with all defaults
+   * (`#ff6b6b` × 2 px × dashed × `'今日'` tooltip); an object literal
+   * for per-field override. See `TodayLineOption` for the resolution
+   * cascade with theme tokens.
+   */
+  readonly todayLine?: TodayLineOption | boolean;
 
   /** Event callbacks. Equivalent to `GanttHandle.subscribe`, given as options for ergonomic call sites. */
   readonly onBarDrop?: (payload: BarDropPayload) => void;

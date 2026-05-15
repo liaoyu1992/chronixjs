@@ -87,6 +87,7 @@ export type {
   ResolveBarStyleInput,
   SelectAllowFunc,
   SelectPayload,
+  TodayLineOption,
   ValidationContext,
   ViewChangePayload,
 } from './api/index.js';

@@ -46,6 +46,9 @@ const EXPECTED_TOKEN_KEYS: readonly (keyof ChronixTheme)[] = [
   'barBackgroundColor',
   'barBorderColor',
   'barTextColor',
+  // Today line (Phase 21)
+  'todayLineColor',
+  'todayLineTooltipBg',
 ];
 
 describe('defaultChronixTheme', () => {
@@ -83,6 +86,8 @@ describe('defaultChronixTheme', () => {
       'barBackgroundColor',
       'barBorderColor',
       'barTextColor',
+      'todayLineColor',
+      'todayLineTooltipBg',
     ];
     for (const key of stringKeys) {
       expect(typeof defaultChronixTheme[key]).toBe('string');

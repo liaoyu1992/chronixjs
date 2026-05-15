@@ -1,6 +1,6 @@
 import { BAR_SLOT_NAME, createSlotRegistry, defaultChronixTheme } from '@chronixjs/gantt';
 import { mount } from '@vue/test-utils';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { h } from 'vue';
 
 import { ChronixGantt, computeRowSpans } from './chronix-gantt.js';
@@ -2384,5 +2384,122 @@ describe('<ChronixGantt> drag/resize lifecycle emits (Phase 16)', () => {
     await svg.trigger('pointercancel', { clientX: 660, clientY: cy, pointerId: 1 });
     expect(wrapper.emitted('bar-dragstop')).toHaveLength(1);
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
+  });
+});
+
+describe('<ChronixGantt> — Phase 21 todayLine', () => {
+  // Pin `Date.now()` to mid-axis so the line lands inside the axis
+  // range. The axisInput defaults to `anchorDate: 2026-05-13T00:00:00Z`
+  // (day view spans the next 24 hours); 08:00 UTC is well inside that
+  // span for any test runner timezone within ±12 hours of UTC.
+  beforeEach(() => {
+    vi.useFakeTimers({ now: new Date('2026-05-13T08:00:00Z') });
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('renders <line.cx-gantt-today-line> in both body + header SVGs when todayLine is `true`', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, todayLine: true },
+    });
+    const lines = wrapper.findAll('line.cx-gantt-today-line');
+    // One line in the header SVG + one in the body SVG.
+    expect(lines).toHaveLength(2);
+    const sides = lines.map((l) => l.attributes('data-today-line-side')).sort();
+    expect(sides).toEqual(['body', 'header']);
+  });
+
+  it('does NOT render any today-line when todayLine prop is `false` (default)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput },
+    });
+    expect(wrapper.findAll('line.cx-gantt-today-line')).toHaveLength(0);
+    expect(wrapper.find('g.cx-gantt-today-line-tooltip').exists()).toBe(false);
+  });
+
+  it('does NOT render the line when today falls outside the axis range', () => {
+    // Move "now" 30 days past the axis anchor → far beyond the day-view's
+    // 24-hour window. resolvedTodayLine should return null.
+    vi.setSystemTime(new Date('2026-06-13T08:00:00Z'));
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, todayLine: true },
+    });
+    expect(wrapper.findAll('line.cx-gantt-today-line')).toHaveLength(0);
+  });
+
+  it('applies explicit color + width props to both line SVG elements', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput,
+        todayLine: { color: '#3b82f6', width: 4 },
+      },
+    });
+    const lines = wrapper.findAll('line.cx-gantt-today-line');
+    expect(lines).toHaveLength(2);
+    for (const line of lines) {
+      expect(line.attributes('stroke')).toBe('#3b82f6');
+      expect(line.attributes('stroke-width')).toBe('4');
+    }
+  });
+
+  it('maps style: solid → no stroke-dasharray; dashed → "6 4"; dotted → "2 3"', () => {
+    const cases: { style: 'solid' | 'dashed' | 'dotted'; expected: string | undefined }[] = [
+      { style: 'solid', expected: undefined },
+      { style: 'dashed', expected: '6 4' },
+      { style: 'dotted', expected: '2 3' },
+    ];
+    for (const c of cases) {
+      const wrapper = mount(ChronixGantt, {
+        props: { bars: [], rows, axisInput, todayLine: { style: c.style } },
+      });
+      const line = wrapper.find('line.cx-gantt-today-line');
+      expect(line.attributes('stroke-dasharray')).toBe(c.expected);
+    }
+  });
+
+  it('renders the header tooltip group with default "今日" label; omits it when tooltip="" ', () => {
+    const withTooltip = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, todayLine: true },
+    });
+    const tooltip = withTooltip.find('g.cx-gantt-today-line-tooltip');
+    expect(tooltip.exists()).toBe(true);
+    expect(tooltip.find('text').text()).toBe('今日');
+
+    const noTooltip = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, todayLine: { tooltip: '' } },
+    });
+    expect(noTooltip.find('g.cx-gantt-today-line-tooltip').exists()).toBe(false);
+    // The line itself still renders.
+    expect(noTooltip.findAll('line.cx-gantt-today-line')).toHaveLength(2);
+  });
+
+  it("tooltip's rect fill follows the line color override (one knob drives both, matching parity reference)", () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, todayLine: { color: '#10b981' } },
+    });
+    const tooltipRect = wrapper.find('g.cx-gantt-today-line-tooltip rect');
+    expect(tooltipRect.attributes('fill')).toBe('#10b981');
+  });
+
+  it('falls back to theme.todayLineColor / theme.todayLineTooltipBg when color is unset', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput,
+        todayLine: {},
+        theme: {
+          todayLineColor: '#aa00bb',
+          todayLineTooltipBg: '#cc11dd',
+        },
+      },
+    });
+    const line = wrapper.find('line.cx-gantt-today-line');
+    expect(line.attributes('stroke')).toBe('#aa00bb');
+    const tooltipRect = wrapper.find('g.cx-gantt-today-line-tooltip rect');
+    expect(tooltipRect.attributes('fill')).toBe('#cc11dd');
   });
 });

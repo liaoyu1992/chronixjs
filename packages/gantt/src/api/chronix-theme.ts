@@ -106,6 +106,21 @@ export interface ChronixTheme {
    * output.
    */
   readonly barTextColor: string;
+
+  // ----- Today line (Phase 21) -----
+  /**
+   * Default stroke color for the `todayLine` line element. Used when
+   * the per-prop `TodayLineOption.color` is unset. Adapter applies as
+   * the `<line stroke=...>` attribute on both body + header SVG.
+   */
+  readonly todayLineColor: string;
+  /**
+   * Default fill for the today-line's header tooltip rect. Used when
+   * the per-prop `TodayLineOption.color` is unset; when `color` IS
+   * set, it overrides BOTH the line stroke AND the tooltip background
+   * (matches parity-reference behavior where one color drives both).
+   */
+  readonly todayLineTooltipBg: string;
 }
 
 /**
@@ -161,4 +176,9 @@ export const defaultChronixTheme: ChronixTheme = {
   barBackgroundColor: '#3b82f6',
   barBorderColor: '#1e40af',
   barTextColor: '#ffffff',
+
+  // Today line — Phase 21. Both default to the parity-reference's
+  // tomato red so the no-prop-override render matches.
+  todayLineColor: '#ff6b6b',
+  todayLineTooltipBg: '#ff6b6b',
 };
