@@ -488,7 +488,14 @@ test.describe('parity: chronix vs reference demo', () => {
     ];
   }
 
-  test('day-view bar placement (x + y + width per event-id)', async ({ page }) => {
+  /**
+   * Drive the chronix layout pipeline + reference DOM extraction for one
+   * view, then compare per-event-id (x, y, width). Returns the
+   * intersection-size and failure list so the calling test can assert
+   * over them (allows per-view test reporting in Playwright). Extracted
+   * from the original day-view test so all six views can share the body.
+   */
+  async function runBarPlacementParity(page: Page, viewId: ViewId, viewToggleLabel: string) {
     // Step 1: compute `today` (local midnight of FROZEN_TIME_ISO) in Node.
     // The browser does `today = new Date(); today.setHours(0,0,0,0)` after
     // clock-install — same arithmetic, so todayMs is shared.
@@ -497,7 +504,7 @@ test.describe('parity: chronix vs reference demo', () => {
     const todayMs = today.getTime();
     const events = buildTestEvents(todayMs);
 
-    const chart = await loadDayView(page);
+    const chart = await loadView(page, viewToggleLabel);
 
     // Step 2: probe the reference rendered row ORDER. The body has one
     // strip per leaf resource, contiguous, in render order — but that
@@ -552,7 +559,7 @@ test.describe('parity: chronix vs reference demo', () => {
     // derive heights from the event stack, lay out swimlanes (with the
     // 1px row-border accounted for), and place each bar.
     const axis = defaultAxisRangePlanner.plan({
-      viewId: 'day',
+      viewId,
       anchorDate: new Date(FROZEN_TIME_ISO),
       viewportWidth: VIEWPORT.width,
       locale: 'zh-CN',
@@ -630,10 +637,10 @@ test.describe('parity: chronix vs reference demo', () => {
       { wrapperSel: TIMELINE_BODY_WRAPPER, eventIdAttr: REF_ATTR_NAMES.eventId },
     );
 
-    // Step 5: per-id parity assertion. Skip ids that exist on only one
-    // side — chronix produces a placement for every input event; the
-    // reference may omit some that fall entirely outside the visible
-    // chart. Only assert on the intersection.
+    // Step 5: per-id parity diff. Skip ids that exist on only one side —
+    // chronix produces a placement for every input event; the reference
+    // may omit some that fall entirely outside the visible chart. Only
+    // diff the intersection.
     let comparedCount = 0;
     const failures: string[] = [];
     for (const dom of domBars) {
@@ -652,14 +659,49 @@ test.describe('parity: chronix vs reference demo', () => {
       }
     }
 
+    return {
+      viewId,
+      comparedCount,
+      failures,
+      totalDomBars: domBars.length,
+      totalChronixBars: placedBars.length,
+      wrapperRowOffsetY,
+    };
+  }
+
+  function assertBarPlacementParity(result: Awaited<ReturnType<typeof runBarPlacementParity>>) {
     console.warn(
-      `bar-placement parity: compared ${comparedCount}/${domBars.length} events (chronix produced ${placedBars.length}); wrapperRowOffsetY=${wrapperRowOffsetY}`,
+      `${result.viewId}-view bar-placement parity: compared ${result.comparedCount}/${result.totalDomBars} events (chronix produced ${result.totalChronixBars}); wrapperRowOffsetY=${result.wrapperRowOffsetY}`,
     );
-    if (failures.length) {
-      console.warn('bar-placement parity failures:');
-      for (const f of failures) console.warn(`  ${f}`);
+    if (result.failures.length) {
+      console.warn(`${result.viewId}-view bar-placement parity failures:`);
+      for (const f of result.failures) console.warn(`  ${f}`);
     }
-    expect(comparedCount).toBeGreaterThan(0);
-    expect(failures).toEqual([]);
+    expect(result.comparedCount).toBeGreaterThan(0);
+    expect(result.failures).toEqual([]);
+  }
+
+  test('day-view bar placement (x + y + width per event-id)', async ({ page }) => {
+    assertBarPlacementParity(await runBarPlacementParity(page, 'day', '日'));
+  });
+
+  test('week-view bar placement (x + y + width per event-id)', async ({ page }) => {
+    assertBarPlacementParity(await runBarPlacementParity(page, 'week', '周'));
+  });
+
+  test('month-view bar placement (x + y + width per event-id)', async ({ page }) => {
+    assertBarPlacementParity(await runBarPlacementParity(page, 'month', '月'));
+  });
+
+  test('season-view bar placement (x + y + width per event-id)', async ({ page }) => {
+    assertBarPlacementParity(await runBarPlacementParity(page, 'season', '季'));
+  });
+
+  test('half-year-view bar placement (x + y + width per event-id)', async ({ page }) => {
+    assertBarPlacementParity(await runBarPlacementParity(page, 'halfYear', '半年'));
+  });
+
+  test('year-view bar placement (x + y + width per event-id)', async ({ page }) => {
+    assertBarPlacementParity(await runBarPlacementParity(page, 'year', '年'));
   });
 });
