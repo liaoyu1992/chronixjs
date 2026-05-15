@@ -1,4 +1,4 @@
-import { defaultLinkRouter } from '@chronixjs/gantt';
+import { defaultChronixTheme, defaultLinkRouter } from '@chronixjs/gantt';
 import { computed, defineComponent, h, ref, watchEffect, type PropType } from 'vue';
 
 import { useGanttLayout } from './use-gantt-layout.js';
@@ -13,19 +13,13 @@ import {
 import type {
   AxisRangePlanInput,
   BarSpec,
+  ChronixTheme,
   CustomLinkMarker,
   LinkMarker,
   LinkSpec,
   RowSpec,
   TimeRange,
 } from '@chronixjs/gantt';
-
-/**
- * Stroke width for dependency-line paths. Matches the parity-reference
- * verbatim. Not a prop in v0 — consumers who need a different width can
- * add it when there's a concrete use case.
- */
-const LINK_STROKE_WIDTH = 1.5;
 
 /**
  * Encode a color string into the suffix used in marker ids. Strips
@@ -321,11 +315,17 @@ export const ChronixGantt = defineComponent({
       default: () => [] as readonly LinkSpec[],
     },
     /**
-     * Chart-level default stroke color for dependency lines. Each link
-     * can override via `LinkSpec.colorOverride`. Default `'#3788d8'`
-     * matches the parity reference's `dependencyLineColor`.
+     * Visual customization for `<ChronixGantt>`'s chrome (header band,
+     * progress overlay, sidebar borders, link default color, typography).
+     * Bar fills are NOT covered — those stay in consumer CSS via
+     * `.cx-gantt-bar`. Pass a `Partial<ChronixTheme>` to override
+     * individual tokens; undefined fields fall back to
+     * `defaultChronixTheme`.
      */
-    defaultLinkColor: { type: String, default: '#3788d8' },
+    theme: {
+      type: Object as PropType<Partial<ChronixTheme>>,
+      default: () => ({}),
+    },
   },
   emits: {
     'bar-drop': (_payload: BarDropPayload) => true,
@@ -335,6 +335,14 @@ export const ChronixGantt = defineComponent({
     'link-orphan': (_linkId: string) => true,
   },
   setup(props, { emit }) {
+    // Effective theme: merge consumer overrides over chronix defaults.
+    // Reactive — a `theme` prop change triggers re-render with the new
+    // tokens applied through every callsite below.
+    const theme = computed<ChronixTheme>(() => ({
+      ...defaultChronixTheme,
+      ...props.theme,
+    }));
+
     const { axis, strips, placedBars, contentSize } = useGanttLayout({
       bars: () => props.bars,
       rows: () => props.rows,
@@ -497,6 +505,7 @@ export const ChronixGantt = defineComponent({
       const totalHeaderBandHeight = headerRowsHeight + hh;
       const totalWidth = contentSize.value.width;
       const bodyHeight = contentSize.value.height;
+      const t = theme.value;
 
       // Outer header rows (e.g. month bands above day ticks). One <rect>
       // per cell as the band background + a centered <text> for the label.
@@ -517,8 +526,8 @@ export const ChronixGantt = defineComponent({
                 y: rowY,
                 width: cell.width,
                 height: hrh,
-                fill: '#f9fafb',
-                stroke: '#d1d5db',
+                fill: t.headerCellFill,
+                stroke: t.headerCellStroke,
               }),
               h(
                 'text',
@@ -528,8 +537,8 @@ export const ChronixGantt = defineComponent({
                   x: cell.x + cell.width / 2,
                   y: rowY + hrh / 2 + 4,
                   'text-anchor': 'middle',
-                  fill: '#374151',
-                  'font-size': 11,
+                  fill: t.headerCellLabel,
+                  'font-size': t.headerCellLabelFontSize,
                 },
                 cell.label,
               ),
@@ -551,7 +560,7 @@ export const ChronixGantt = defineComponent({
             y1: 0,
             x2: tick.x,
             y2: hh,
-            stroke: '#d1d5db',
+            stroke: t.headerTickStroke,
           }),
           h(
             'text',
@@ -560,8 +569,8 @@ export const ChronixGantt = defineComponent({
               class: 'cx-gantt-tick-label',
               x: tick.x + 2,
               y: hh - 6,
-              fill: '#6b7280',
-              'font-size': 10,
+              fill: t.headerTickLabel,
+              'font-size': t.tickLabelFontSize,
             },
             tick.label,
           ),
@@ -576,7 +585,7 @@ export const ChronixGantt = defineComponent({
             y1: hh,
             x2: a.totalWidth,
             y2: hh,
-            stroke: '#9ca3af',
+            stroke: t.headerDivider,
           }),
         );
       }
@@ -600,7 +609,7 @@ export const ChronixGantt = defineComponent({
             position: 'sticky',
             top: '0',
             zIndex: 2,
-            background: '#ffffff',
+            background: t.headerBackground,
           },
         },
         [
@@ -707,8 +716,8 @@ export const ChronixGantt = defineComponent({
               y: renderY,
               width: fillWidth,
               height: bar.height,
-              fill: '#10b981',
-              'fill-opacity': 0.35,
+              fill: t.progressFill,
+              'fill-opacity': t.progressFillOpacity,
               'pointer-events': 'none',
             }),
             h('rect', {
@@ -720,9 +729,9 @@ export const ChronixGantt = defineComponent({
               y: renderY + bar.height / 2 - handleSize / 2,
               width: handleSize,
               height: handleSize,
-              fill: '#059669',
-              stroke: '#ffffff',
-              'stroke-width': 1,
+              fill: t.progressHandleFill,
+              stroke: t.progressHandleStroke,
+              'stroke-width': t.progressHandleStrokeWidth,
               // The hit-tester drives this off the bar-rect map; we keep
               // DOM pointer-events off so the SVG's pointerdown handler
               // resolves through the parent group (matches the
@@ -750,9 +759,9 @@ export const ChronixGantt = defineComponent({
                   x: renderX + renderWidth / 2,
                   y: renderY + bar.height / 2 + 4,
                   'text-anchor': 'middle',
-                  fill: '#064e3b',
-                  'font-size': 11,
-                  'font-weight': 600,
+                  fill: t.progressLabel,
+                  'font-size': t.progressLabelFontSize,
+                  'font-weight': t.progressLabelFontWeight,
                   'pointer-events': 'none',
                 },
                 labelText,
@@ -774,7 +783,7 @@ export const ChronixGantt = defineComponent({
       // the link's `marker` to form the marker-end URL.
       const linkSpecById = new Map<string, LinkSpec>(props.links.map((l) => [l.id, l]));
       const linkPathNodes = routedLinks.value.map((routed) => {
-        const color = routed.color ?? props.defaultLinkColor;
+        const color = routed.color ?? t.linkDefaultColor;
         const spec = linkSpecById.get(routed.linkId);
         // `spec` always exists for non-orphan routed links — orphans
         // never make it into routedLinks. Defensive lookup keeps the
@@ -786,7 +795,7 @@ export const ChronixGantt = defineComponent({
           class: 'cx-gantt-link',
           d: routed.pathD,
           stroke: color,
-          'stroke-width': LINK_STROKE_WIDTH,
+          'stroke-width': t.linkStrokeWidth,
           fill: 'none',
           ...(markerEnd !== null ? { 'marker-end': markerEnd } : {}),
         });
@@ -800,7 +809,7 @@ export const ChronixGantt = defineComponent({
       // if the demo currently uses only one. Custom markers in `links`
       // get their own defs.
       const usedColors = new Set<string>();
-      usedColors.add(props.defaultLinkColor);
+      usedColors.add(t.linkDefaultColor);
       for (const routed of routedLinks.value) {
         if (routed.color !== undefined) usedColors.add(routed.color);
       }
@@ -828,7 +837,7 @@ export const ChronixGantt = defineComponent({
           class: 'cx-gantt-body',
           width: totalWidth,
           height: bodyHeight,
-          style: { display: 'block' },
+          style: { display: 'block', background: t.chartBackground },
           onPointerdown,
           onPointermove,
           onPointerup,
@@ -880,8 +889,8 @@ export const ChronixGantt = defineComponent({
               top: '0',
               left: '0',
               zIndex: 3,
-              background: '#ffffff',
-              borderBottom: '1px solid #9ca3af',
+              background: t.sidebarBackground,
+              borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
               boxSizing: 'border-box',
             },
           },
@@ -908,10 +917,10 @@ export const ChronixGantt = defineComponent({
                           'data-column-key': col.key,
                           style: {
                             padding: '0 8px',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            color: '#374151',
-                            borderRight: '1px solid #d1d5db',
+                            fontSize: `${t.sidebarHeaderFontSize}px`,
+                            fontWeight: t.sidebarHeaderFontWeight,
+                            color: t.sidebarHeaderCellLabel,
+                            borderRight: `1px solid ${t.sidebarHeaderCellBorder}`,
                             textAlign: 'center',
                             boxSizing: 'border-box',
                             overflow: 'hidden',
@@ -950,7 +959,7 @@ export const ChronixGantt = defineComponent({
               position: 'sticky',
               left: '0',
               zIndex: 1,
-              background: '#ffffff',
+              background: t.sidebarBackground,
             },
           },
           [
@@ -981,11 +990,11 @@ export const ChronixGantt = defineComponent({
                           ...(isMerged ? { rowspan: span } : {}),
                           style: {
                             padding: '0 8px',
-                            fontSize: '12px',
+                            fontSize: `${t.sidebarBodyFontSize}px`,
                             fontWeight: isMerged ? 600 : 400,
-                            color: '#1f2937',
-                            borderRight: '1px solid #e5e7eb',
-                            borderBottom: '1px solid #e5e7eb',
+                            color: t.sidebarBodyCellLabel,
+                            borderRight: `1px solid ${t.sidebarBodyCellBorder}`,
+                            borderBottom: `1px solid ${t.sidebarBodyCellBorder}`,
                             verticalAlign: 'middle',
                             textAlign: isMerged ? 'center' : 'left',
                             boxSizing: 'border-box',

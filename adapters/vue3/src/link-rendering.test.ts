@@ -268,7 +268,7 @@ describe('<ChronixGantt> link rendering — Commit 2: markers + colorOverride', 
     expect(defs.querySelector(`marker#${CSS.escape('cx-marker-arrow-ef4444')}`)).not.toBeNull();
   });
 
-  it('no colorOverride → <path>.stroke uses defaultLinkColor prop (default `#3788d8`)', () => {
+  it('no colorOverride → <path>.stroke uses theme.linkDefaultColor (default `#3788d8`)', () => {
     const links: readonly LinkSpec[] = [
       { id: 'l-1', fromBarId: 'b1', toBarId: 'b2', routing: 'square', marker: 'arrow' },
     ];
@@ -277,8 +277,11 @@ describe('<ChronixGantt> link rendering — Commit 2: markers + colorOverride', 
     });
     expect(wrapper1.find('path.cx-gantt-link').attributes('stroke')).toBe('#3788d8');
 
+    // Phase 10: defaultLinkColor moved onto theme. Verify a theme
+    // override propagates to the path stroke and the matching <defs>
+    // marker color id.
     const wrapper2 = mount(ChronixGantt, {
-      props: { bars: twoBars, rows, axisInput, links, defaultLinkColor: '#10b981' },
+      props: { bars: twoBars, rows, axisInput, links, theme: { linkDefaultColor: '#10b981' } },
     });
     const path2 = wrapper2.find('path.cx-gantt-link');
     expect(path2.attributes('stroke')).toBe('#10b981');

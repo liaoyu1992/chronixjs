@@ -1436,3 +1436,115 @@ describe('<ChronixGantt> sidebar vGrouping (rowspan merge)', () => {
     expect(wrapper.findAll('[rowspan]')).toHaveLength(0);
   });
 });
+
+describe('<ChronixGantt> theme (Phase 10)', () => {
+  // Bar with progress so the progress-overlay-themed rect + label both
+  // render in tests that exercise progress tokens.
+  const progressBars = [
+    {
+      ...bar('b1', 'r1', 8, 12),
+      progress: { value: 50 },
+      pointerOverlayId: 'progress-handle',
+    },
+  ];
+
+  it('renders header tick-label and outer-header-cell tokens from defaultChronixTheme', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [bar('b1', 'r1', 8, 12)], rows, axisInput },
+    });
+    // Default: headerTickLabel = '#6b7280', headerCellLabel = '#374151'.
+    const tickLabel = wrapper.find('.cx-gantt-tick-label');
+    expect(tickLabel.attributes('fill')).toBe('#6b7280');
+    expect(Number(tickLabel.attributes('font-size'))).toBe(10);
+
+    const headerCellLabel = wrapper.find('.cx-gantt-header-cell-label');
+    expect(headerCellLabel.attributes('fill')).toBe('#374151');
+    expect(Number(headerCellLabel.attributes('font-size'))).toBe(11);
+  });
+
+  it('partial theme override on `headerCellFill` propagates to outer header rects', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput,
+        theme: { headerCellFill: '#fef3c7' },
+      },
+    });
+    const cells = wrapper.findAll('.cx-gantt-header-cell');
+    expect(cells.length).toBeGreaterThan(0);
+    // All outer header rects pick up the override.
+    for (const cell of cells) {
+      expect(cell.attributes('fill')).toBe('#fef3c7');
+    }
+    // Other tokens stay at default — divider still uses '#9ca3af'.
+    expect(wrapper.find('.cx-gantt-axis-divider').attributes('stroke')).toBe('#9ca3af');
+  });
+
+  it('theme.tickLabelFontSize override applies to every tick label', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput,
+        theme: { tickLabelFontSize: 14 },
+      },
+    });
+    const labels = wrapper.findAll('.cx-gantt-tick-label');
+    expect(labels.length).toBe(24); // day view: 24 hour labels
+    for (const label of labels) {
+      expect(Number(label.attributes('font-size'))).toBe(14);
+    }
+  });
+
+  it('theme.progressFill override propagates to the progress overlay rect', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: progressBars,
+        rows,
+        axisInput,
+        theme: { progressFill: '#7c3aed' },
+      },
+    });
+    const fill = wrapper.find('.cx-gantt-progress-fill');
+    expect(fill.exists()).toBe(true);
+    expect(fill.attributes('fill')).toBe('#7c3aed');
+    // Opacity stays at default 0.35.
+    expect(Number(fill.attributes('fill-opacity'))).toBeCloseTo(0.35, 5);
+  });
+
+  it('theme.linkDefaultColor override drives both link stroke and matching marker def color', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 1, 4), bar('b2', 'r2', 8, 12)],
+        rows,
+        axisInput,
+        links: [{ id: 'l-1', fromBarId: 'b1', toBarId: 'b2', routing: 'square', marker: 'arrow' }],
+        theme: { linkDefaultColor: '#ef4444' },
+      },
+    });
+    const path = wrapper.find('path.cx-gantt-link');
+    expect(path.attributes('stroke')).toBe('#ef4444');
+    expect(path.attributes('marker-end')).toBe('url(#cx-marker-arrow-ef4444)');
+    // The matching marker def exists with the override color.
+    const arrowMarker = wrapper
+      .find('defs.cx-gantt-defs')
+      .element.querySelector(`marker#${CSS.escape('cx-marker-arrow-ef4444')}`);
+    expect(arrowMarker).not.toBeNull();
+    expect(arrowMarker!.querySelector('polygon')!.getAttribute('fill')).toBe('#ef4444');
+  });
+
+  it('theme.linkStrokeWidth override applies to link <path>', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 1, 4), bar('b2', 'r2', 8, 12)],
+        rows,
+        axisInput,
+        links: [{ id: 'l-1', fromBarId: 'b1', toBarId: 'b2', routing: 'square', marker: 'arrow' }],
+        theme: { linkStrokeWidth: 3 },
+      },
+    });
+    const path = wrapper.find('path.cx-gantt-link');
+    expect(Number(path.attributes('stroke-width'))).toBe(3);
+  });
+});
