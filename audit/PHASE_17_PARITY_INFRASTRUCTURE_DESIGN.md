@@ -1,6 +1,15 @@
 # Phase 17 — Side-by-side parity infrastructure (chronix demo parity mode + helper)
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-15)**. Landed as 4 commits: `d019340`
+(design doc) → `6c1fef9` (Commit 1: chronix demo parity mode + shared
+`parity-events.ts`) → `7e88f6c` (Commit 2: `parity-helpers.ts` +
+first cross-demo bar X+width assertion) → `b3d0b5a` (Commit 3:
+PHASE_TEMPLATE + phase-close skill updates). +1 parity assertion in
+`parity.spec.ts` — 13 paired bars match within 1px on (x, width) for
+day view; 12 bars "only in chronix" due to k-ui's day-view visible-
+range filter, accepted per design-doc caveat. /phase-close gate
+walked manually (skill registration deferred to next session reload).
+See `audit/journal/2026-05-13.md` "Phase 17" section.
 
 ## Problem
 
