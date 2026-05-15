@@ -175,7 +175,104 @@ export interface DomBarSnapshot {
    * walks one child level when the bar element itself isn't a rect.
    */
   readonly fill: string;
+  /**
+   * Phase 20.5: optional computed-style map. Only populated when
+   * the caller passes `options.computedStyle` to `extractBarsSnapshot`.
+   * Keys match the `ComputedStyleKey` union; values are the
+   * browser-normalized strings from `getComputedStyle()`.
+   */
+  readonly style?: Readonly<Partial<Record<ComputedStyleKey, string>>>;
 }
+
+/**
+ * **Phase 20.5: centralized snapshot infrastructure.**
+ *
+ * 16 computed-style keys the snapshot helpers can capture per
+ * element. Restricted to a typed string-literal union so each new
+ * channel that wants to read a style key extends this list
+ * explicitly — typos at the test-site fail at compile time. Add
+ * new keys here as future phases need them.
+ */
+export type ComputedStyleKey =
+  | 'fill'
+  | 'stroke'
+  | 'strokeWidth'
+  | 'opacity'
+  | 'fontFamily'
+  | 'fontSize'
+  | 'fontWeight'
+  | 'fontStyle'
+  | 'color'
+  | 'backgroundColor'
+  | 'borderColor'
+  | 'cursor'
+  | 'visibility'
+  | 'display'
+  | 'transform'
+  | 'transition';
+
+/**
+ * Phase 20.5: options bag accepted by every `extractXxxSnapshot`
+ * helper. Empty / omitted = cheap path (no computed-style
+ * extraction); non-empty list = `getComputedStyle()` is called per
+ * element and the requested keys are bundled into each snapshot's
+ * `style` field.
+ */
+export interface SnapshotOptions {
+  /** Which computed-style keys to capture per element. */
+  readonly computedStyle?: readonly ComputedStyleKey[];
+  /**
+   * Optional regex applied to leaf-text content when the source
+   * DOM doesn't carry a stable class selector for the channel
+   * (k-ui ticks and header cells are text-only — no class). Pass
+   * the format regex (e.g. `/^\d+时$/` for day-view hour ticks).
+   * When omitted, the helper falls back to class-based selection
+   * via `SELECTORS[source]`.
+   */
+  readonly labelRegex?: RegExp;
+}
+
+/**
+ * Phase 20.5: generic element snapshot shape used by every
+ * non-bar extractor. Bars keep their own `DomBarSnapshot` because
+ * pre-Phase-20.5 tests expect the `fill` field to be top-level
+ * (not buried under `style`). New channels share this shape so
+ * the generic `diffSnapshots` helper can pair + compare any
+ * channel uniformly.
+ */
+export interface DomElementSnapshot {
+  /** Stable id for cross-demo pairing. Channel-specific shape: tick label text, header cell label, sidebar row's `data-row-id`, etc. */
+  readonly id: string;
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+  /** Leaf text content. Only set when the element renders text. */
+  readonly text?: string;
+  /** Only present if `options.computedStyle` was non-empty. */
+  readonly style?: Readonly<Partial<Record<ComputedStyleKey, string>>>;
+}
+
+/**
+ * Phase 20.5: per-channel selectors for k-ui + chronix. Centralized
+ * here so each phase's snapshot helper doesn't re-derive them.
+ * Reference-side selectors (k-ui) are sourced from `reference-dom-map.ts`
+ * — DO NOT inline literal k-ui class names here. The
+ * `check-no-external-repo-refs.mjs` hook enforces this everywhere
+ * outside that one allow-listed module.
+ *
+ * `null` for a channel means "this source doesn't have a stable
+ * class selector — pass `options.labelRegex` instead". Currently
+ * k-ui's tick + header text uses regex-based filtering.
+ */
+const CHRONIX_SELECTORS = {
+  bar: '[data-bar-id]',
+  bodyWrapper: 'svg.cx-gantt-body',
+  tick: '.cx-gantt-tick-label',
+  headerCell: '.cx-gantt-header-cell',
+  sidebarRow: '.cx-gantt-sidebar-row',
+  sidebarCell: '.cx-gantt-sidebar-cell',
+} as const;
 
 /**
  * Phase 20: normalize a `#rrggbb` hex string to the `rgb(R, G, B)`
@@ -218,8 +315,15 @@ export function hexToRgbString(hex: string): string | null {
 export function extractBarsSnapshot(
   source: 'kui' | 'chronix',
   chart: Locator,
+  options?: SnapshotOptions,
 ): Promise<DomBarSnapshot[]> {
   const attrName = source === 'kui' ? 'data-event-id' : 'data-bar-id';
+  // Phase 20.5: optional computed-style capture. When the caller
+  // passes a non-empty `computedStyle` list, each bar's snapshot
+  // gains a `style: { fill: '...', stroke: '...' }` map. Empty /
+  // omitted = cheap path (no `getComputedStyle()` calls beyond the
+  // existing `fill` read).
+  const styleKeys = options?.computedStyle ?? [];
   // Bars are positioned in TIMELINE-BODY content space — relative to
   // the body wrapper's left edge (post-sidebar). The chart-root
   // Locator includes the sidebar, which differs in width between
@@ -231,7 +335,7 @@ export function extractBarsSnapshot(
   const bodyWrapperSelector =
     source === 'kui' ? '.gantt-timeline-body-wrapper' : 'svg.cx-gantt-body';
   return chart.evaluate(
-    (_root, { attrName: attr, bodySel }) => {
+    (_root, { attrName: attr, bodySel, styleKeys: skList }) => {
       const bodyEl = document.querySelector(bodySel);
       const bodyRect = bodyEl?.getBoundingClientRect();
       if (!bodyRect) return [];
@@ -242,13 +346,17 @@ export function extractBarsSnapshot(
       // bar element itself isn't a rect. `getComputedStyle` returns
       // the painted color in normalized `rgb(R, G, B)` form so
       // inline-attribute vs CSS-class resolution doesn't matter.
-      const readFill = (el: Element): string => {
-        let target: Element = el;
-        if (target.tagName.toLowerCase() !== 'rect') {
-          const innerRect = target.querySelector('rect');
-          if (innerRect) target = innerRect;
-        }
-        return window.getComputedStyle(target).fill;
+      const resolveColoredTarget = (el: Element): Element => {
+        if (el.tagName.toLowerCase() === 'rect') return el;
+        const innerRect = el.querySelector('rect');
+        return innerRect ?? el;
+      };
+      const readStyleMap = (el: Element): Record<string, string> => {
+        const target = resolveColoredTarget(el);
+        const cs = window.getComputedStyle(target);
+        const map: Record<string, string> = {};
+        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? "";
+        return map;
       };
       const out: {
         id: string;
@@ -257,19 +365,24 @@ export function extractBarsSnapshot(
         width: number;
         height: number;
         fill: string;
+        style?: Record<string, string>;
       }[] = [];
       document.querySelectorAll<SVGElement>(`[${attr}]`).forEach((el) => {
         const id = el.getAttribute(attr) ?? '';
         const r = el.getBoundingClientRect();
         if (r.height < 4 || r.width < 1) return;
-        out.push({
+        const target = resolveColoredTarget(el);
+        const fill = window.getComputedStyle(target).fill;
+        const entry: (typeof out)[number] = {
           id,
           x: Math.round((r.left - bodyRect.left) * 100) / 100,
           y: Math.round((r.top - bodyRect.top) * 100) / 100,
           width: Math.round(r.width * 100) / 100,
           height: Math.round(r.height * 100) / 100,
-          fill: readFill(el),
-        });
+          fill,
+        };
+        if (skList.length > 0) entry.style = readStyleMap(el);
+        out.push(entry);
       });
       // Dedupe by id, widest wins — k-ui bars may have inner-overlay
       // children (progress triangle, resize handles) that also carry
@@ -281,7 +394,327 @@ export function extractBarsSnapshot(
       }
       return [...widest.values()];
     },
-    { attrName, bodySel: bodyWrapperSelector },
+    { attrName, bodySel: bodyWrapperSelector, styleKeys: [...styleKeys] },
+  );
+}
+
+/**
+ * **Phase 20.5: extract tick labels.** Each axis tick rendered in
+ * the header band produces one snapshot entry with the leaf text
+ * (`"0时"`, `"15日三"`, etc.) and its bbox relative to the body
+ * wrapper.
+ *
+ * - chronix: queries `.cx-gantt-tick-label`
+ * - k-ui: walks leaf `<text>` elements inside the header wrapper,
+ *   filters by `options.labelRegex` (k-ui's tick text has no stable
+ *   class — caller passes the format regex like `/^\d+时$/`)
+ *
+ * The `id` field carries the leaf text — fits the cross-demo
+ * pairing pattern when the same tick label appears on both sides.
+ * When labels repeat (e.g. week-view "0时" appears 7 times across
+ * 7 days), the `id` is augmented with a position suffix:
+ * `"0时#0"`, `"0时#1"`, etc., so dedup-by-id doesn't collapse them.
+ */
+export function extractTicksSnapshot(
+  source: 'kui' | 'chronix',
+  chart: Locator,
+  options?: SnapshotOptions,
+): Promise<DomElementSnapshot[]> {
+  const styleKeys = options?.computedStyle ?? [];
+  const labelPattern = options?.labelRegex?.source ?? null;
+  const labelFlags = options?.labelRegex?.flags ?? '';
+  const chronixTickSel = CHRONIX_SELECTORS.tick;
+  const chronixBodySel = CHRONIX_SELECTORS.bodyWrapper;
+  return chart.evaluate(
+    (_root, { src, tickSel, bodySel, pattern, flags, skList }) => {
+      const bodyEl = document.querySelector(bodySel);
+      const bodyRect = bodyEl?.getBoundingClientRect();
+      if (!bodyRect) return [];
+      const readStyleMap = (el: Element): Record<string, string> => {
+        const cs = window.getComputedStyle(el);
+        const map: Record<string, string> = {};
+        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? "";
+        return map;
+      };
+      // Collect `(text, element)` pairs honoring source-specific
+      // selection. chronix uses a stable class; k-ui walks leaf
+      // text nodes filtered by regex.
+      const pairs: { text: string; el: Element }[] = [];
+      if (src === 'chronix') {
+        document.querySelectorAll<Element>(tickSel).forEach((el) => {
+          const t = el.textContent?.trim() ?? '';
+          if (pattern && !new RegExp(pattern, flags).test(t)) return;
+          pairs.push({ text: t, el });
+        });
+      } else {
+        // k-ui: walk leaf nodes, regex-match, then walk up to the
+        // first ancestor with a non-zero rendered width (SVG
+        // `<title>` children are 0×0 and shouldn't be measured).
+        const re = pattern ? new RegExp(pattern, flags) : null;
+        document.querySelectorAll('*').forEach((node) => {
+          if (node.children.length > 0) return;
+          const t = node.textContent?.trim() ?? '';
+          if (!t) return;
+          if (re && !re.test(t)) return;
+          let candidate: Element | null = node;
+          while (candidate) {
+            const rr = candidate.getBoundingClientRect();
+            if (rr.width > 0 && rr.height > 0) {
+              pairs.push({ text: t, el: candidate });
+              return;
+            }
+            candidate = candidate.parentElement;
+          }
+        });
+      }
+      // De-duplicate by `(rounded-left, text)` so labels that repeat
+      // at distinct positions (week-view "0时" × 7) each contribute
+      // their own snapshot entry. Then suffix the id with a 0-based
+      // occurrence index to make each id unique for pair-by-id diff.
+      const seen = new Set<string>();
+      const dedup: { text: string; el: Element }[] = [];
+      for (const p of pairs) {
+        const r = p.el.getBoundingClientRect();
+        const key = `${Math.round(r.left)}|${p.text}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        dedup.push(p);
+      }
+      // Sort by left edge so the occurrence-index suffix is
+      // deterministic across runs.
+      dedup.sort((a, b) => a.el.getBoundingClientRect().left - b.el.getBoundingClientRect().left);
+      const perText = new Map<string, number>();
+      const out: {
+        id: string;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        text: string;
+        style?: Record<string, string>;
+      }[] = [];
+      for (const p of dedup) {
+        const r = p.el.getBoundingClientRect();
+        const occ = perText.get(p.text) ?? 0;
+        perText.set(p.text, occ + 1);
+        const entry: (typeof out)[number] = {
+          id: `${p.text}#${occ}`,
+          x: Math.round((r.left - bodyRect.left) * 100) / 100,
+          y: Math.round((r.top - bodyRect.top) * 100) / 100,
+          width: Math.round(r.width * 100) / 100,
+          height: Math.round(r.height * 100) / 100,
+          text: p.text,
+        };
+        if (skList.length > 0) entry.style = readStyleMap(p.el);
+        out.push(entry);
+      }
+      return out;
+    },
+    {
+      src: source,
+      tickSel: chronixTickSel,
+      bodySel: chronixBodySel,
+      pattern: labelPattern,
+      flags: labelFlags,
+      skList: [...styleKeys],
+    },
+  );
+}
+
+/**
+ * **Phase 20.5: extract outer header-band cells.** Each header cell
+ * (month band above day ticks, day band above hour ticks) produces
+ * one snapshot entry with its label text + bbox.
+ *
+ * Same regex-fallback shape as `extractTicksSnapshot` since k-ui's
+ * header cells use the same plain-`<text>`-leaf rendering pattern.
+ */
+export function extractHeaderCellsSnapshot(
+  source: 'kui' | 'chronix',
+  chart: Locator,
+  options?: SnapshotOptions,
+): Promise<DomElementSnapshot[]> {
+  const styleKeys = options?.computedStyle ?? [];
+  const labelPattern = options?.labelRegex?.source ?? null;
+  const labelFlags = options?.labelRegex?.flags ?? '';
+  const chronixSel = CHRONIX_SELECTORS.headerCell;
+  const chronixBodySel = CHRONIX_SELECTORS.bodyWrapper;
+  return chart.evaluate(
+    (_root, { src, cellSel, bodySel, pattern, flags, skList }) => {
+      const bodyEl = document.querySelector(bodySel);
+      const bodyRect = bodyEl?.getBoundingClientRect();
+      if (!bodyRect) return [];
+      const readStyleMap = (el: Element): Record<string, string> => {
+        const cs = window.getComputedStyle(el);
+        const map: Record<string, string> = {};
+        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? "";
+        return map;
+      };
+      const pairs: { text: string; el: Element }[] = [];
+      if (src === 'chronix') {
+        document.querySelectorAll<Element>(cellSel).forEach((el) => {
+          const t = el.textContent?.trim() ?? '';
+          if (pattern && !new RegExp(pattern, flags).test(t)) return;
+          pairs.push({ text: t, el });
+        });
+      } else {
+        const re = pattern ? new RegExp(pattern, flags) : null;
+        document.querySelectorAll('*').forEach((node) => {
+          if (node.children.length > 0) return;
+          const t = node.textContent?.trim() ?? '';
+          if (!t) return;
+          if (re && !re.test(t)) return;
+          let candidate: Element | null = node;
+          while (candidate) {
+            const rr = candidate.getBoundingClientRect();
+            if (rr.width > 0 && rr.height > 0) {
+              pairs.push({ text: t, el: candidate });
+              return;
+            }
+            candidate = candidate.parentElement;
+          }
+        });
+      }
+      const seen = new Set<string>();
+      const dedup: { text: string; el: Element }[] = [];
+      for (const p of pairs) {
+        const r = p.el.getBoundingClientRect();
+        const key = `${Math.round(r.left)}|${p.text}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        dedup.push(p);
+      }
+      dedup.sort((a, b) => a.el.getBoundingClientRect().left - b.el.getBoundingClientRect().left);
+      const perText = new Map<string, number>();
+      const out: {
+        id: string;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        text: string;
+        style?: Record<string, string>;
+      }[] = [];
+      for (const p of dedup) {
+        const r = p.el.getBoundingClientRect();
+        const occ = perText.get(p.text) ?? 0;
+        perText.set(p.text, occ + 1);
+        const entry: (typeof out)[number] = {
+          id: `${p.text}#${occ}`,
+          x: Math.round((r.left - bodyRect.left) * 100) / 100,
+          y: Math.round((r.top - bodyRect.top) * 100) / 100,
+          width: Math.round(r.width * 100) / 100,
+          height: Math.round(r.height * 100) / 100,
+          text: p.text,
+        };
+        if (skList.length > 0) entry.style = readStyleMap(p.el);
+        out.push(entry);
+      }
+      return out;
+    },
+    {
+      src: source,
+      cellSel: chronixSel,
+      bodySel: chronixBodySel,
+      pattern: labelPattern,
+      flags: labelFlags,
+      skList: [...styleKeys],
+    },
+  );
+}
+
+/**
+ * **Phase 20.5: extract sidebar cells.** Each rendered sidebar cell
+ * (resource panel `<td>` in k-ui; `.cx-gantt-sidebar-cell` in
+ * chronix) produces one snapshot entry. Id is composed as
+ * `${rowId}|${columnKey}` for chronix (both attrs always present
+ * on rendered cells); k-ui uses `${rowId}#${cellIndex}` since k-ui
+ * cells lack a column-id attribute.
+ *
+ * Coordinate frame: relative to the sidebar's own origin (NOT body
+ * wrapper) — sidebar has its own left edge, separate from the
+ * timeline body. Cross-demo column-width parity needs this frame
+ * to be sidebar-local.
+ */
+export function extractSidebarSnapshot(
+  source: 'kui' | 'chronix',
+  chart: Locator,
+  options?: SnapshotOptions,
+): Promise<DomElementSnapshot[]> {
+  const styleKeys = options?.computedStyle ?? [];
+  const chronixRowSel = CHRONIX_SELECTORS.sidebarRow;
+  const chronixCellSel = CHRONIX_SELECTORS.sidebarCell;
+  return chart.evaluate(
+    (_root, { src, rowSel, cellSel, skList }) => {
+      const readStyleMap = (el: Element): Record<string, string> => {
+        const cs = window.getComputedStyle(el);
+        const map: Record<string, string> = {};
+        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? "";
+        return map;
+      };
+      const out: {
+        id: string;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        text: string;
+        style?: Record<string, string>;
+      }[] = [];
+      // Anchor the coordinate frame to the FIRST row's leftmost
+      // edge — chronix sidebar's `.cx-gantt-sidebar-row` and k-ui's
+      // `tr[data-resource-id]` both share the panel's left edge,
+      // so the first row's `left` is the sidebar origin.
+      const firstRow = document.querySelector(rowSel);
+      const sidebarLeft = firstRow?.getBoundingClientRect().left ?? 0;
+      const sidebarTop = firstRow?.getBoundingClientRect().top ?? 0;
+      if (src === 'chronix') {
+        document.querySelectorAll<Element>(cellSel).forEach((el) => {
+          const rowId = el.getAttribute('data-row-id') ?? '';
+          const colKey = el.getAttribute('data-column-key') ?? '';
+          const r = el.getBoundingClientRect();
+          if (r.width < 1 || r.height < 1) return;
+          const entry: (typeof out)[number] = {
+            id: `${rowId}|${colKey}`,
+            x: Math.round((r.left - sidebarLeft) * 100) / 100,
+            y: Math.round((r.top - sidebarTop) * 100) / 100,
+            width: Math.round(r.width * 100) / 100,
+            height: Math.round(r.height * 100) / 100,
+            text: el.textContent?.trim() ?? '',
+          };
+          if (skList.length > 0) entry.style = readStyleMap(el);
+          out.push(entry);
+        });
+      } else {
+        // k-ui: walk `tr[data-resource-id]` rows, then their `td`
+        // children. Cells get id `${rowId}#${cellIndex}`.
+        document.querySelectorAll<Element>(rowSel).forEach((row) => {
+          const rowId = row.getAttribute('data-resource-id') ?? '';
+          const cells = row.querySelectorAll('td');
+          cells.forEach((cell, idx) => {
+            const r = cell.getBoundingClientRect();
+            if (r.width < 1 || r.height < 1) return;
+            const entry: (typeof out)[number] = {
+              id: `${rowId}#${idx}`,
+              x: Math.round((r.left - sidebarLeft) * 100) / 100,
+              y: Math.round((r.top - sidebarTop) * 100) / 100,
+              width: Math.round(r.width * 100) / 100,
+              height: Math.round(r.height * 100) / 100,
+              text: cell.textContent?.trim() ?? '',
+            };
+            if (skList.length > 0) entry.style = readStyleMap(cell);
+            out.push(entry);
+          });
+        });
+      }
+      return out;
+    },
+    {
+      src: source,
+      rowSel: source === 'chronix' ? chronixRowSel : 'tr[data-resource-id]',
+      cellSel: chronixCellSel,
+      skList: [...styleKeys],
+    },
   );
 }
 
@@ -410,6 +843,202 @@ export function formatParityDiff(diff: ParityDiff): string {
   if (diff.onlyInChronix.length > 0) {
     lines.push(
       `Bars only in chronix DOM (${diff.onlyInChronix.length}): ${diff.onlyInChronix.join(', ')}`,
+    );
+  }
+
+  return lines.length === 0 ? 'parity OK (no mismatches)' : lines.join('\n');
+}
+
+/**
+ * **Phase 20.5: per-channel tolerance for the generic `diffSnapshots`.**
+ *
+ * Numeric channels (x / y / width / height) accept a `number` =
+ * max-allowed-px-delta OR `Infinity` to skip the channel. The
+ * `text` channel is checked for exact equality unless set to
+ * `'skip'`. The `style` channel accepts a per-style-key map:
+ * `'exact'` enforces string equality (most colors / cursor names /
+ * font families), `'skip'` ignores the key, and `number` enables
+ * numeric tolerance for keys whose values parse as px / unitless
+ * numbers (e.g. `fontSize: 1` allows ±1px on the parsed font-size).
+ */
+export interface SnapshotTolerance {
+  readonly x?: number;
+  readonly y?: number;
+  readonly width?: number;
+  readonly height?: number;
+  readonly text?: 'exact' | 'skip';
+  readonly style?: Readonly<Partial<Record<ComputedStyleKey, number | 'exact' | 'skip'>>>;
+}
+
+export interface SnapshotMismatch {
+  readonly id: string;
+  /** Channel name: `'x'` / `'y'` / `'width'` / `'height'` / `'text'` / `'style.<key>'`. */
+  readonly field: string;
+  readonly kuiValue: unknown;
+  readonly chronixValue: unknown;
+  readonly delta?: number;
+}
+
+export interface SnapshotDiff {
+  readonly mismatches: readonly SnapshotMismatch[];
+  readonly onlyInKui: readonly string[];
+  readonly onlyInChronix: readonly string[];
+}
+
+const DEFAULT_SNAPSHOT_TOLERANCE: Required<Pick<SnapshotTolerance, 'x' | 'y' | 'width' | 'height' | 'text'>> = {
+  x: 1,
+  y: 1,
+  width: 1,
+  height: 1,
+  text: 'exact',
+};
+
+/**
+ * **Phase 20.5: generic per-channel diff over `DomElementSnapshot` pairs.**
+ *
+ * Pairs by `id`. For each paired element, walks every numeric +
+ * `text` + `style` channel and records a `SnapshotMismatch` when
+ * the per-channel tolerance is exceeded. Channels with `Infinity`
+ * (numeric) or `'skip'` (text/style) tolerance are bypassed
+ * entirely.
+ *
+ * The `'style.<key>'` field naming in `SnapshotMismatch.field`
+ * lets the caller surface a single style-key mismatch (e.g.
+ * `'style.fill'`) without having to flatten the snapshot itself.
+ *
+ * Bars present on only one side are NOT mismatches — they're
+ * reported via `onlyInKui` / `onlyInChronix` so the calling test
+ * can decide whether to hard-fail on missing pairs.
+ */
+export function diffSnapshots(
+  kui: readonly DomElementSnapshot[],
+  chronix: readonly DomElementSnapshot[],
+  tolerance: SnapshotTolerance = {},
+): SnapshotDiff {
+  const tol = { ...DEFAULT_SNAPSHOT_TOLERANCE, ...tolerance };
+  const styleTol = tolerance.style ?? {};
+  const kuiById = new Map(kui.map((b) => [b.id, b]));
+  const chronixById = new Map(chronix.map((b) => [b.id, b]));
+
+  const mismatches: SnapshotMismatch[] = [];
+  const onlyInKui: string[] = [];
+  const onlyInChronix: string[] = [];
+
+  for (const [id, kuiEl] of kuiById) {
+    const chronixEl = chronixById.get(id);
+    if (!chronixEl) {
+      onlyInKui.push(id);
+      continue;
+    }
+    // Numeric channels.
+    for (const field of ['x', 'y', 'width', 'height'] as const) {
+      const fieldTol = tol[field];
+      if (!Number.isFinite(fieldTol)) continue;
+      const delta = Math.abs(kuiEl[field] - chronixEl[field]);
+      if (delta > fieldTol) {
+        mismatches.push({
+          id,
+          field,
+          kuiValue: kuiEl[field],
+          chronixValue: chronixEl[field],
+          delta,
+        });
+      }
+    }
+    // Text channel.
+    if (tol.text !== 'skip' && (kuiEl.text !== undefined || chronixEl.text !== undefined)) {
+      if (kuiEl.text !== chronixEl.text) {
+        mismatches.push({
+          id,
+          field: 'text',
+          kuiValue: kuiEl.text,
+          chronixValue: chronixEl.text,
+        });
+      }
+    }
+    // Style channel: per-key comparison driven by the tolerance map.
+    // Only fields that appear in at least one of the two snapshots
+    // are checked — if neither side captured a style key, there's
+    // nothing to compare.
+    const allStyleKeys = new Set<string>([
+      ...(kuiEl.style ? Object.keys(kuiEl.style) : []),
+      ...(chronixEl.style ? Object.keys(chronixEl.style) : []),
+    ]);
+    for (const key of allStyleKeys) {
+      const keyTol = styleTol[key as ComputedStyleKey];
+      if (keyTol === 'skip') continue;
+      const kv = kuiEl.style?.[key as ComputedStyleKey];
+      const cv = chronixEl.style?.[key as ComputedStyleKey];
+      if (kv === cv) continue;
+      if (typeof keyTol === 'number') {
+        // Numeric tolerance: parse both sides as floats; mismatch
+        // if either parse fails OR delta exceeds tolerance.
+        const kn = Number.parseFloat(kv ?? '');
+        const cn = Number.parseFloat(cv ?? '');
+        if (Number.isFinite(kn) && Number.isFinite(cn)) {
+          const delta = Math.abs(kn - cn);
+          if (delta <= keyTol) continue;
+          mismatches.push({
+            id,
+            field: `style.${key}`,
+            kuiValue: kv,
+            chronixValue: cv,
+            delta,
+          });
+          continue;
+        }
+      }
+      // Default = exact equality (covers `'exact'` and undefined-
+      // tolerance cases).
+      mismatches.push({
+        id,
+        field: `style.${key}`,
+        kuiValue: kv,
+        chronixValue: cv,
+      });
+    }
+  }
+  for (const id of chronixById.keys()) {
+    if (!kuiById.has(id)) onlyInChronix.push(id);
+  }
+
+  return { mismatches, onlyInKui, onlyInChronix };
+}
+
+/**
+ * **Phase 20.5: human-readable diff string for the generic diff.**
+ * Mirrors `formatParityDiff` shape but for `SnapshotDiff`.
+ */
+export function formatSnapshotDiff(diff: SnapshotDiff): string {
+  const lines: string[] = [];
+
+  if (diff.mismatches.length > 0) {
+    lines.push(`${diff.mismatches.length} element-field mismatch(es):`);
+    const byId = new Map<string, SnapshotMismatch[]>();
+    for (const m of diff.mismatches) {
+      const list = byId.get(m.id) ?? [];
+      list.push(m);
+      byId.set(m.id, list);
+    }
+    for (const [id, ms] of byId) {
+      lines.push(`  ${id}:`);
+      for (const m of ms) {
+        const deltaPart = m.delta !== undefined ? ` Δ=${m.delta.toFixed(2)}` : '';
+        lines.push(
+          `    ${m.field}: kui=${String(m.kuiValue)} chronix=${String(m.chronixValue)}${deltaPart}`,
+        );
+      }
+    }
+  }
+
+  if (diff.onlyInKui.length > 0) {
+    lines.push(
+      `Elements only in k-ui DOM (${diff.onlyInKui.length}): ${diff.onlyInKui.join(', ')}`,
+    );
+  }
+  if (diff.onlyInChronix.length > 0) {
+    lines.push(
+      `Elements only in chronix DOM (${diff.onlyInChronix.length}): ${diff.onlyInChronix.join(', ')}`,
     );
   }
 
