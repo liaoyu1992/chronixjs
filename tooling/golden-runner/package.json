@@ -13,6 +13,8 @@
     "verify": "playwright test",
     "chronix-capture": "playwright test tests/chronix-visual.spec.ts --update-snapshots",
     "chronix-verify": "playwright test tests/chronix-visual.spec.ts",
+    "cross-demo-capture": "node scripts/run-cross-demo.mjs capture",
+    "cross-demo-verify": "node scripts/run-cross-demo.mjs verify",
     "report": "playwright show-report",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src tests",

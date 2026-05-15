@@ -2,13 +2,14 @@
 
 **Status**: **DONE (2026-05-16)**. Landed as 2 commits: `5e85bd9`
 (design doc, 342 lines) → `975a8d4` (implementation: demo-config.ts
-+ useDemoConfig composable + sample-callbacks.ts extraction + App.vue
-refactor + URL schema panel + 10 unit tests). 10 new unit tests pass;
-existing 27 parity assertions + 5 chronix VRT baselines unchanged
-(default URL state = pre-refactor state by construction). Cumulative
-vitest 443 → 453. App.vue's per-toggle cost dropped from ~30 LOC to
-~3 LOC. `/phase-close` gate walked 6/6 green before status flip. See
-`audit/journal/2026-05-13.md` "Phase 20.5 + 20.6" section.
+
+- useDemoConfig composable + sample-callbacks.ts extraction + App.vue
+  refactor + URL schema panel + 10 unit tests). 10 new unit tests pass;
+  existing 27 parity assertions + 5 chronix VRT baselines unchanged
+  (default URL state = pre-refactor state by construction). Cumulative
+  vitest 443 → 453. App.vue's per-toggle cost dropped from ~30 LOC to
+  ~3 LOC. `/phase-close` gate walked 6/6 green before status flip. See
+  `audit/journal/2026-05-13.md` "Phase 20.5 + 20.6" section.
 
 ## Problem
 

@@ -157,9 +157,60 @@ If green:
 If red, fail the gate with the failing step:
 `❌ ci-check failed at <step>. Resolve before closing.`
 
+### 6.5 Cross-demo screenshot diff freshness — Phase 20.7
+
+```bash
+cd D:/work/chronix/tooling/golden-runner && pnpm cross-demo-verify
+```
+
+This runs the 25-scenario pixel-diff gate (12 cross vs k-ui baseline
+
+- 13 vrt vs chronix self-baseline). Tolerance is fixed at
+  `maxDiffPixelRatio: 0` + `threshold: 0.2` (pixel-perfect modulo AA).
+
+Pre-conditions:
+
+- Both demos must be running: k-ui at `http://localhost:8701/` AND
+  chronix at `http://localhost:8702/`. If either is down, this step
+  fails with a Playwright navigation timeout. Start them via
+  `pnpm --filter @chronix/example-gantt-vue3 dev` (chronix) and the
+  equivalent in k-ui's demo dir before retrying.
+- Baselines must exist under
+  `tooling/golden-runner/goldens/cross-demo-baselines/{kui,chronix}/<id>.png`.
+  Missing baselines fail with "snapshot doesn't exist". If this
+  happens, the phase was closed without baselines being captured —
+  out-of-band failure. Run `pnpm cross-demo-capture` to bootstrap,
+  manually review every generated PNG, commit them in a dedicated
+  baseline commit, then re-run.
+
+If green:
+`✅ cross-demo screenshot diff (25 scenarios passed; X cross + Y vrt;
+Z test.fail-passing as expected)`
+
+If red (a scenario that was previously passing now fails):
+
+- The current phase likely introduced a visual regression. Inspect
+  the diff PNG (Playwright writes to `test-results/<test-name>/`)
+  and decide whether to fix the regression in the current phase
+  OR open a follow-up micro phase + add a `test.fail()` mark with
+  the follow-up phase number.
+- If a `test.fail()`-marked scenario unexpectedly passes (green
+  inside a `test.fail()` block), Playwright reports it as a failure
+  with `Expected to fail, but passed`. This is the GOOD case: the
+  follow-up phase has been silently completed. Remove the
+  `test.fail()` mark, refresh the baseline if needed, close the
+  follow-up phase's tracking entry.
+- If k-ui upstream changed (rare; k-ui is in maintenance), refresh
+  baselines via `pnpm cross-demo-capture`, PNG-by-PNG manual review,
+  commit the refreshed baselines in a dedicated commit (NOT mixed
+  with feature work), then re-verify.
+
+Report `❌ cross-demo screenshot diff failed: <N> scenario(s)
+unexpectedly failed: <list>` and refuse to flip Status to DONE.
+
 ## Final summary
 
-After all 6 checks, output:
+After all 7 checks (6 standard + 6.5 cross-demo diff), output:
 
 - All `✅`: `✅ Phase close gate PASSED for Phase <N>. Safe to flip
 Status to DONE.` Then propose the exact `Status:` line edit + the

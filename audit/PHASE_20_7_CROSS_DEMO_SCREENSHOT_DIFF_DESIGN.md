@@ -288,7 +288,7 @@ follow-up micro phase is single-session and small (one scenario fix).
 Add a new step **6.5** in `.claude/skills/phase-close/SKILL.md`,
 between ci-check (step 6) and the final summary:
 
-````markdown
+```markdown
 ### 6.5 Cross-demo screenshot diff freshness
 
 ​`bash
@@ -307,7 +307,7 @@ If red, fail the gate with the failing scenario list. Suggested next steps:
 - If k-ui upstream changed (rare), re-run `pnpm cross-demo-capture`
   to refresh the frozen k-ui baselines, manual PNG review, commit
   refreshed baselines in a dedicated commit.
-````
+```
 
 ## Parity assertion plan — MANDATORY
 
