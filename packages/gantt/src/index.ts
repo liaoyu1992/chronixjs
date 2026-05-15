@@ -69,6 +69,7 @@ export type {
   BarDropPayload,
   BarResizePayload,
   BarsSetPayload,
+  ChronixTheme,
   GanttEventMap,
   GanttHandle,
   GanttOptions,
@@ -76,6 +77,7 @@ export type {
   SelectPayload,
   ViewChangePayload,
 } from './api/index.js';
+export { defaultChronixTheme } from './api/index.js';
 
 export type {
   AxisHeaderCell,

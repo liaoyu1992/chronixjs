@@ -1,3 +1,5 @@
+export type { ChronixTheme } from './chronix-theme.js';
+export { defaultChronixTheme } from './chronix-theme.js';
 export type { GanttHandle } from './gantt-handle.js';
 export type {
   BarClickPayload,
