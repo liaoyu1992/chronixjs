@@ -261,6 +261,79 @@ describe('<ChronixGantt> interactions', () => {
     expect(wrapper.emitted('select')).toBeFalsy();
   });
 
+  it('cross-row drag: mid-drag renders bar at target strip Y + intra-strip offset', async () => {
+    // Two bars (one per row) so both strips get definite heights from
+    // `BarStackHeightPass`. Strip layout with default props:
+    //   r1: y=0,  height=42 (barHeight 30 + topPad 8 + bottomPad 4)
+    //   r2: y=43, height=42 (rowSpacing 1 gap)
+    // Bar 'b1' on r1: y=8 (=0 + barVerticalPadding 8), height 30. Intra-
+    // strip offset = 8. Snap to r2 → renderY = 43 + 8 = 51.
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    // Begin at clientY=20 (inside r1 [0, 42)), drag to clientY=60
+    // (inside r2 [43, 85)). deltaY = 40; originPx.y = 20; dropY = 60.
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 600, clientY: 60, pointerId: 1 });
+
+    const b1 = wrapper.find('[data-bar-id="b1"]');
+    expect(Number(b1.attributes('y'))).toBe(51); // 43 + 8
+
+    await svg.trigger('pointerup', { clientX: 600, clientY: 60, pointerId: 1 });
+  });
+
+  it('cross-row drag commit: bar-drop payload carries oldRowId + newRowId', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 600, clientY: 60, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 600, clientY: 60, pointerId: 1 });
+
+    const emitted = wrapper.emitted('bar-drop');
+    expect(emitted).toBeTruthy();
+    const payload = emitted![0]![0] as { oldRowId: string; newRowId: string };
+    expect(payload.oldRowId).toBe('r1');
+    expect(payload.newRowId).toBe('r2');
+  });
+
+  it('drag outside all strips: free-Y render + commit reverts newRowId to oldRowId', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    // Begin inside r1, drag to clientY=500 (well past r2's bottom at 85).
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 600, clientY: 500, pointerId: 1 });
+
+    // No projected row → render falls back to free-Y = bar.y + deltaY = 8 + 480 = 488.
+    const b1 = wrapper.find('[data-bar-id="b1"]');
+    expect(Number(b1.attributes('y'))).toBe(488);
+
+    await svg.trigger('pointerup', { clientX: 600, clientY: 500, pointerId: 1 });
+    const emitted = wrapper.emitted('bar-drop');
+    const payload = emitted![0]![0] as { oldRowId: string; newRowId: string };
+    expect(payload.oldRowId).toBe('r1');
+    expect(payload.newRowId).toBe('r1'); // revert
+  });
+
   it('safety net: synthetic pointerdown with negative content-y on the body SVG starts no transaction', async () => {
     // The header SVG has no pointer handlers, so in a real browser the
     // body SVG never receives a negative-content-y event. The body

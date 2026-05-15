@@ -357,6 +357,11 @@ export const ChronixGantt = defineComponent({
       () => new Map(props.bars.map((b) => [b.id, b.rowId])),
     );
 
+    // Strips keyed by rowId for O(1) lookup in the render path's
+    // cross-row snap logic. Rebuilds whenever the layout passes
+    // re-derive (axis switch, bar / row changes).
+    const stripByRowId = computed(() => new Map(strips.value.map((s) => [s.rowId, s])));
+
     // Per-bar overlay-group id (only bars that declared a
     // `pointerOverlayId`) and per-bar progress (0..100, only bars with a
     // `progress.value`). Empty maps when no bars opt in — the composable
@@ -624,7 +629,31 @@ export const ChronixGantt = defineComponent({
         if (activeTxn && 'barId' in activeTxn && activeTxn.barId === bar.barId) {
           if (activeTxn.kind === 'bar-drag') {
             renderX = bar.x + activeTxn.deltaX;
-            renderY = bar.y + activeTxn.deltaY;
+            // Cross-row snap: when the pointer is over a strip that
+            // differs from the source row, position the bar at the
+            // target strip's Y plus the same intra-strip offset the
+            // bar had at drag-start. When projection is null (gap or
+            // out-of-content) or matches the source row, free-fall
+            // by deltaY so the bar follows the pointer smoothly.
+            const projectedRowId = pointer.projectedRowId.value;
+            const sourceBar = props.bars.find((b) => b.id === bar.barId);
+            const sourceRowId = sourceBar?.rowId;
+            if (
+              projectedRowId !== null &&
+              sourceRowId !== undefined &&
+              projectedRowId !== sourceRowId
+            ) {
+              const sourceStrip = stripByRowId.value.get(sourceRowId);
+              const targetStrip = stripByRowId.value.get(projectedRowId);
+              if (sourceStrip && targetStrip) {
+                const intraStripOffset = bar.y - sourceStrip.y;
+                renderY = targetStrip.y + intraStripOffset;
+              } else {
+                renderY = bar.y + activeTxn.deltaY;
+              }
+            } else {
+              renderY = bar.y + activeTxn.deltaY;
+            }
           } else if (activeTxn.kind === 'bar-resize') {
             if (activeTxn.edge === 'start') {
               renderX = bar.x + activeTxn.deltaX;
