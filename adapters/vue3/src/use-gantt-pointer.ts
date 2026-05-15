@@ -59,6 +59,41 @@ export interface BarProgressPayload {
 }
 
 /**
+ * Lifecycle callback payload for `bar-drag` transactions. Fires only
+ * after a drag is CONFIRMED — i.e. after the first `advance()` call
+ * that yields a non-zero `deltaX` or `deltaY`. Pure 0-delta clicks
+ * never trigger start/stop, matching the reference's "isDragging gate"
+ * semantics where a click-without-move emits neither lifecycle event.
+ */
+export interface BarDragStartCallback {
+  readonly barId: string;
+}
+
+/**
+ * Lifecycle callback payload for the end of a `bar-drag` transaction.
+ * Fires on `commit()` (immediately before `onBarDrop`) AND on `abort()`
+ * — symmetric to the reference's "fire stop regardless of mutation
+ * validity" rule, so consumers can reset their drag-state UI without
+ * having to distinguish the two paths. Consumers infer commit-vs-abort
+ * from whether `onBarDrop` runs afterwards.
+ */
+export interface BarDragStopCallback {
+  readonly barId: string;
+}
+
+/** Lifecycle callback payload for `bar-resize` transactions (start). */
+export interface BarResizeStartCallback {
+  readonly barId: string;
+  readonly edge: 'start' | 'end';
+}
+
+/** Lifecycle callback payload for `bar-resize` transactions (end). */
+export interface BarResizeStopCallback {
+  readonly barId: string;
+  readonly edge: 'start' | 'end';
+}
+
+/**
  * Reactive inputs to the pointer-interaction composable. The composable
  * is DOM-free: the consumer converts native PointerEvent coords into the
  * timeline body's content space (post-scroll, origin at `PlacedBar.x` /
@@ -121,6 +156,23 @@ export interface UseGanttPointerInput {
   readonly onSelect?: (payload: SelectPayload) => void;
   /** Fires after a `ProgressHandleTransaction` commits. */
   readonly onBarProgress?: (payload: BarProgressPayload) => void;
+  /**
+   * Fires the first time an `advance()` after a `bar-drag` begin
+   * yields a non-zero pointer delta. Lazy semantics ensure pure
+   * 0-delta clicks never fire start/stop.
+   */
+  readonly onBarDragStart?: (payload: BarDragStartCallback) => void;
+  /**
+   * Fires on `commit()` or `abort()` of a `bar-drag` transaction, IF
+   * `onBarDragStart` already fired for the same transaction.
+   * Sequenced BEFORE `onBarDrop` on the commit path so consumers see
+   * a clean "lifecycle is ending" signal before any mutation arrives.
+   */
+  readonly onBarDragStop?: (payload: BarDragStopCallback) => void;
+  /** Symmetric to `onBarDragStart` but for `bar-resize` transactions. */
+  readonly onBarResizeStart?: (payload: BarResizeStartCallback) => void;
+  /** Symmetric to `onBarDragStop` but for `bar-resize` transactions. */
+  readonly onBarResizeStop?: (payload: BarResizeStopCallback) => void;
 }
 
 export interface UseGanttPointerOutput {
@@ -198,6 +250,13 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   // — a click that came AFTER a committed drag/resize/progress should
   // not fire click. Phase 12.
   const dragCommittedFlag = ref(false);
+  // Phase 16: lazy-fire latch for the start/stop lifecycle callbacks.
+  // Reset on each `begin()`; set to true on the first `advance()` that
+  // produces a non-zero delta for a drag/resize transaction. Read by
+  // `commit()` / `abort()` to decide whether the symmetric stop
+  // callback fires — pure 0-delta clicks leave it false so neither
+  // start nor stop fires.
+  const dragStartFired = ref(false);
 
   function pxPerMs(): number {
     const a = toValue(input.axis);
@@ -254,6 +313,9 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     // pointer interaction. The adapter checks this at pointerup to
     // decide whether to also fire `'bar-click'`.
     dragCommittedFlag.value = false;
+    // Phase 16: reset the start-fired latch so the first non-zero
+    // advance of this new transaction can re-fire start.
+    dragStartFired.value = false;
     const overlayMap = toValue(input.overlayIdByBarId);
     const handleRects = progressHandleRectsByBarId.value;
     const hit = defaultPointerHitTester.test({
@@ -338,12 +400,40 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
         currentTime: contentXToTime(contentX),
       });
     }
+
+    // Phase 16: lazy-fire start once the transaction has moved past
+    // zero delta. Pure 0-delta clicks (which the adapter turns into
+    // `abort()` via the noOp gate) never reach this branch — start
+    // stays unfired, stop won't fire either, matching reference parity.
+    if (!dragStartFired.value) {
+      const updated = transaction.value;
+      if (updated?.kind === 'bar-drag' && (updated.deltaX !== 0 || updated.deltaY !== 0)) {
+        dragStartFired.value = true;
+        input.onBarDragStart?.({ barId: updated.barId });
+      } else if (updated?.kind === 'bar-resize' && updated.deltaX !== 0) {
+        dragStartFired.value = true;
+        input.onBarResizeStart?.({ barId: updated.barId, edge: updated.edge });
+      }
+    }
   }
 
   function commit(): void {
     const txn = transaction.value;
     if (!txn) return;
     const snapDurationMs = toValue(input.snapDurationMs);
+
+    // Phase 16: stop fires BEFORE the commit callback. Reference order
+    // is `handleDragEnd` line 450 (eventDragStop) → line 457+ (drop).
+    // Gated by `dragStartFired` so a transaction that started but
+    // immediately hit commit without advancing (synthetic test path)
+    // still won't fire spurious stops.
+    if (dragStartFired.value) {
+      if (txn.kind === 'bar-drag') {
+        input.onBarDragStop?.({ barId: txn.barId });
+      } else if (txn.kind === 'bar-resize') {
+        input.onBarResizeStop?.({ barId: txn.barId, edge: txn.edge });
+      }
+    }
 
     if (txn.kind === 'bar-drag') commitDrag(txn, snapDurationMs);
     else if (txn.kind === 'bar-resize') commitResize(txn, snapDurationMs);
@@ -426,6 +516,21 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   }
 
   function abort(): void {
+    // Phase 16: fire stop on abort too. Reference fires
+    // `eventDragStop` / `eventResizeStop` regardless of whether the
+    // mutation was valid, so a confirmed drag that gets cancelled
+    // (browser pointercancel, or the adapter's mid-drag escape)
+    // still resets the consumer's drag-state symmetrically. Gated by
+    // `dragStartFired` so an aborted-without-advance transaction
+    // doesn't fire a stop with no matching start.
+    const txn = transaction.value;
+    if (dragStartFired.value && txn) {
+      if (txn.kind === 'bar-drag') {
+        input.onBarDragStop?.({ barId: txn.barId });
+      } else if (txn.kind === 'bar-resize') {
+        input.onBarResizeStop?.({ barId: txn.barId, edge: txn.edge });
+      }
+    }
     transaction.value = null;
     lastHitResult.value = null;
   }

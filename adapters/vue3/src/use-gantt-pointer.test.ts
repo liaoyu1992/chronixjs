@@ -9,9 +9,13 @@ import { describe, expect, it, vi } from 'vitest';
 
 import {
   useGanttPointer,
+  type BarDragStartCallback,
+  type BarDragStopCallback,
   type BarDropPayload,
   type BarProgressPayload,
   type BarResizePayload,
+  type BarResizeStartCallback,
+  type BarResizeStopCallback,
   type SelectPayload,
 } from './use-gantt-pointer.js';
 
@@ -664,5 +668,165 @@ describe('useGanttPointer — cross-row drag (Phase 9)', () => {
     const outOfStripPayload = onBarDrop.mock.calls[0]![0];
     expect(outOfStripPayload.oldRowId).toBe('r1');
     expect(outOfStripPayload.newRowId).toBe('r1'); // fallback
+  });
+});
+
+describe('useGanttPointer — drag/resize lifecycle emits (Phase 16)', () => {
+  const mockDragStart = (): ReturnType<typeof vi.fn<(p: BarDragStartCallback) => void>> =>
+    vi.fn<(p: BarDragStartCallback) => void>();
+  const mockDragStop = (): ReturnType<typeof vi.fn<(p: BarDragStopCallback) => void>> =>
+    vi.fn<(p: BarDragStopCallback) => void>();
+  const mockResizeStart = (): ReturnType<typeof vi.fn<(p: BarResizeStartCallback) => void>> =>
+    vi.fn<(p: BarResizeStartCallback) => void>();
+  const mockResizeStop = (): ReturnType<typeof vi.fn<(p: BarResizeStopCallback) => void>> =>
+    vi.fn<(p: BarResizeStopCallback) => void>();
+
+  it('0-delta drag: begin → commit fires NEITHER onBarDragStart NOR onBarDragStop (matches reference "pure click" behavior)', () => {
+    const onBarDragStart = mockDragStart();
+    const onBarDragStop = mockDragStop();
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDragStart,
+      onBarDragStop,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    // No advance — delta stays 0.
+    ptr.commit();
+    expect(onBarDragStart).not.toHaveBeenCalled();
+    expect(onBarDragStop).not.toHaveBeenCalled();
+    // The commit still happens (the kind-internal logic doesn't care
+    // about delta zeroness; that gate lives in the adapter).
+    expect(onBarDrop).toHaveBeenCalledTimes(1);
+  });
+
+  it('non-zero drag: begin → advance(+60,0) → commit fires start once, then stop, then onBarDrop in that order', () => {
+    const onBarDragStart = mockDragStart();
+    const onBarDragStop = mockDragStop();
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDragStart,
+      onBarDragStop,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    ptr.advance(660, 20);
+    expect(onBarDragStart).toHaveBeenCalledTimes(1);
+    expect(onBarDragStart).toHaveBeenCalledWith({ barId: 'b1' });
+    expect(onBarDragStop).not.toHaveBeenCalled();
+    ptr.commit();
+    expect(onBarDragStop).toHaveBeenCalledTimes(1);
+    expect(onBarDragStop).toHaveBeenCalledWith({ barId: 'b1' });
+    // Order: stop must precede drop. The vi.fn invocation-order
+    // property is the call sequence index on `.mock.invocationCallOrder`.
+    const stopOrder = onBarDragStop.mock.invocationCallOrder[0];
+    const dropOrder = onBarDrop.mock.invocationCallOrder[0];
+    expect(stopOrder).toBeDefined();
+    expect(dropOrder).toBeDefined();
+    expect(stopOrder!).toBeLessThan(dropOrder!);
+  });
+
+  it('multi-advance drag: begin → advance(+30,0) → advance(+60,0) → commit fires start EXACTLY ONCE, stop once', () => {
+    const onBarDragStart = mockDragStart();
+    const onBarDragStop = mockDragStop();
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDragStart,
+      onBarDragStop,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    ptr.advance(630, 20);
+    ptr.advance(660, 20);
+    ptr.advance(690, 20);
+    expect(onBarDragStart).toHaveBeenCalledTimes(1);
+    ptr.commit();
+    expect(onBarDragStop).toHaveBeenCalledTimes(1);
+  });
+
+  it('abort after non-zero advance: start fires, stop fires (matches reference "stop fires regardless of valid mutation"), onBarDrop does NOT fire', () => {
+    const onBarDragStart = mockDragStart();
+    const onBarDragStop = mockDragStop();
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDragStart,
+      onBarDragStop,
+      onBarDrop,
+    });
+    ptr.begin(600, 20);
+    ptr.advance(660, 20);
+    expect(onBarDragStart).toHaveBeenCalledTimes(1);
+    ptr.abort();
+    expect(onBarDragStop).toHaveBeenCalledTimes(1);
+    expect(onBarDrop).not.toHaveBeenCalled();
+  });
+
+  it('0-delta resize: begin (edge-end) → commit fires NEITHER resize-start NOR resize-stop', () => {
+    const onBarResizeStart = mockResizeStart();
+    const onBarResizeStop = mockResizeStop();
+    const onBarResize = mockBarResize();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarResizeStart,
+      onBarResizeStop,
+      onBarResize,
+    });
+    // End-edge zone is [712, 720] by default (edgeZoneWidth=8). Click 715.
+    ptr.begin(715, 20);
+    expect(ptr.activeTransaction.value?.kind).toBe('bar-resize');
+    ptr.commit();
+    expect(onBarResizeStart).not.toHaveBeenCalled();
+    expect(onBarResizeStop).not.toHaveBeenCalled();
+  });
+
+  it('non-zero resize: begin (edge-end) → advance(+60,0) → commit fires resize-start with edge:end, then resize-stop, then onBarResize', () => {
+    const onBarResizeStart = mockResizeStart();
+    const onBarResizeStop = mockResizeStop();
+    const onBarResize = mockBarResize();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarResizeStart,
+      onBarResizeStop,
+      onBarResize,
+    });
+    ptr.begin(715, 20);
+    ptr.advance(775, 20);
+    expect(onBarResizeStart).toHaveBeenCalledTimes(1);
+    expect(onBarResizeStart).toHaveBeenCalledWith({ barId: 'b1', edge: 'end' });
+    ptr.commit();
+    expect(onBarResizeStop).toHaveBeenCalledTimes(1);
+    expect(onBarResizeStop).toHaveBeenCalledWith({ barId: 'b1', edge: 'end' });
+    // Order: stop precedes resize commit.
+    const stopOrder = onBarResizeStop.mock.invocationCallOrder[0];
+    const resizeOrder = onBarResize.mock.invocationCallOrder[0];
+    expect(stopOrder!).toBeLessThan(resizeOrder!);
   });
 });
