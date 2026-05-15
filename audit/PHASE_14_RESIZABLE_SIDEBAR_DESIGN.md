@@ -1,6 +1,15 @@
 # Phase 14 — Resizable sidebar (single area divider)
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-15)**. Landed as 3 commits: `a45dad1`
+(design doc — bundled with Phase 13 skip record) → `a8b7688`
+(Commit 1: divider + state + 6 SFC tests + demo CSS) → `faae9b0`
+(VRT rebaseline; 5 baselines shift +8px wider for the divider track).
++6 vue3 tests; 1 existing test updated to assert the new 3-column
+grid template; chronix vitest 358 → 364. Plus a latent
+reuse-the-same-VNode bug fix in the `<colgroup>` render path that
+would have silently caused state-change rerenders to patch only one
+of the two sidebar tables (uncovered by the proportional-scaling
+test). See `audit/journal/2026-05-13.md` "Phase 14" section.
 
 ## Problem
 
