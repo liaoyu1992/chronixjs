@@ -1088,9 +1088,7 @@ export const ChronixGantt = defineComponent({
               ...(props.barBorderColor !== undefined
                 ? { barBorderColor: props.barBorderColor }
                 : {}),
-              ...(props.barTextColor !== undefined
-                ? { barTextColor: props.barTextColor }
-                : {}),
+              ...(props.barTextColor !== undefined ? { barTextColor: props.barTextColor } : {}),
               ...(props.barBackgroundColorCallback
                 ? { barBackgroundColorCallback: props.barBackgroundColorCallback }
                 : {}),
