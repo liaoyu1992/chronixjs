@@ -1,6 +1,14 @@
 # Phase 18 — `weekendsVisible` actually filters the axis
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-15)**. Landed as 2 commits: `bccc93d`
+(design doc) → `7575231` (algorithm + 8 unit tests + 2 parity
+assertions, all in one commit per discipline). 207/207 chronix-gantt
+vitest (+8), 174/174 adapter vitest unchanged, total 381/381. Parity
+assertions 22 → 24 in-process (week dayCells set equality + halfYear
+slot count count equality, both driving the reference demo's
+`显示周末` checkbox to OFF). `/phase-close` gate walked 6/6 green
+before the status flip. See `audit/journal/2026-05-13.md` "Phase 18"
+section.
 
 ## Problem
 
@@ -36,22 +44,22 @@ filters those dates out of `slotDates` via `isValidDate(...)` →
 
 ## Reference (k-ui) behavior surface — full catalog
 
-| Item                                                                              | k-ui                                                                                                                       | chronix v0                                                                                  | Reason                                                                                                          |
-| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| Boolean `weekends: false` → mark Sat (6) + Sun (0) hidden                         | `DateProfileGenerator.ts:388-390` pushes `0, 6` into `hiddenDays`                                                          | ✅ port — same semantics via the existing `weekendsVisible: boolean` flag                   | direct semantic match                                                                                           |
-| User-supplied `hiddenDays` array (any subset of 0..6)                             | `DateProfileGenerator.ts:383` reads `props.hiddenDays`                                                                     | ⏸️ parked — only the `weekendsVisible` boolean exists in v0                                 | full hidden-days array is a separate phase; out of demo + audit scope                                           |
-| Slot-loop date filter via `isValidDate` → `isHiddenDay`                           | `timeline-date-profile.ts:160-167` (`while (date < end) { if (isValidDate(...)) slotDates.push(date); ... }`)              | ✅ port — inline filter inside `planWeekView` + `planMonthView` + `planMonthBandedAxis`     | observable filter; the structural shape stays chronix-native (no separate `DateProfileGenerator` object)        |
-| Snap-index filter (`snapDiffToIndex`) skips hidden days for interaction snapping  | `timeline-date-profile.ts:173-194`                                                                                         | ⏸️ parked — chronix's snap math uses `slotDurationMs` directly, not a per-date snap array   | snap-on-hidden-day is an interaction concern; out of axis-planner scope. Revisit if snap ↔ weekends bug appears |
-| `trimHiddenDays(range)` for view-range pre-trim                                   | `DateProfileGenerator.ts:407-423`                                                                                          | ❌ rejected v0 — chronix doesn't expose a range-trim API; the view range is `anchorDate`-driven | not needed for slot generation; planner walks the raw range and filters at emit time                            |
-| All-days-hidden throw (`invalid hiddenDays`)                                      | `DateProfileGenerator.ts:398-400`                                                                                          | ❌ rejected — only the boolean exists; "hide every day" is unreachable                       | impossible state in v0; revisit when `hiddenDays` array lands                                                   |
-| Day view weekend behavior (weekends-off on a Sat/Sun anchor)                      | k-ui's `trimHiddenDays` on a single weekend day returns null → view fails to render                                        | ❌ rejected — `planDayView` stays unchanged; renders 24 hourly ticks on the anchor day      | matches the docstring scope: _"week-and-wider views"_. Day view = single calendar day, weekend or not          |
-| Week view per-day filter                                                          | `weekends: false` → `slotDates` skips Sat/Sun; `<th>` count drops to 5                                                     | ✅ port — `planWeekView` filters per-hour loop; emits 5 × 24 = 120 ticks; 5 dayCells       | core week-view algorithm change                                                                                 |
-| Month view per-day filter                                                         | `weekends: false` → ~20-23 day ticks (28-31 calendar days minus weekend days)                                              | ✅ port — `planMonthView` filters; `slotCount` via new `countVisibleDaysAcrossMonths` helper | core month-view algorithm change                                                                                |
-| Season / halfYear / year per-day filter                                           | same per-day filter applied across N months                                                                                | ✅ port — `planMonthBandedAxis` filters; per-month `monthCell.width = visibleDaysInMonth × slotWidth` | core multi-month algorithm change                                                                               |
-| Dense-packed tick X positions post-filter (no visual gaps where weekends would be) | `slotDates` is dense after filter; rendered at `i * slotWidth` for dense `i`                                              | ✅ port — chronix emits `x = (post-filter-index) × slotWidth`; no gaps                       | matches k-ui's rendered geometry; visible day cells abut directly                                                |
-| Header band widths recomputed against filtered visible-day count                  | k-ui `<th>` widths come from CSS grid template; band shrinks as `slotDates` shrinks                                       | ✅ port — `dayCells[d].width = hoursPerDay × slotWidth` only for visible d; `monthCells[m].width = visibleDays[m] × slotWidth` | matches k-ui's visible band geometry                                                                            |
-| `slotDurationMs` semantic unchanged                                               | k-ui keeps `slotDuration` constant; bars at hidden-day timestamps slice via `TimelineLaneSlicer`                          | ✅ same — `slotDurationMs` stays `MS_PER_HOUR` / `MS_PER_DAY`; bars use `pxPerMs` math unchanged | preserves all downstream layout passes' math; gap is bar-on-weekend slicing — see below                          |
-| Bar slicing across hidden weekend days (`TimelineLaneSlicer`)                     | `packages/gantt/src/resource-timeline/utils/TimelineLaneSlicer.ts:42-67` slices bars at hidden-day boundaries              | ⏸️ parked v0 — chronix's `BarPlacementPass` doesn't slice; a bar starting on Sat in weekends-off mode renders at its raw `(t - axisStart) × pxPerMs` offset | scope-out per discipline; bar-slicing is a separate Phase 18.x. Demo data + parity assertions deliberately avoid weekend-anchored bars when asserting under weekends-off |
+| Item                                                                               | k-ui                                                                                                          | chronix v0                                                                                                                                                  | Reason                                                                                                                                                                   |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Boolean `weekends: false` → mark Sat (6) + Sun (0) hidden                          | `DateProfileGenerator.ts:388-390` pushes `0, 6` into `hiddenDays`                                             | ✅ port — same semantics via the existing `weekendsVisible: boolean` flag                                                                                   | direct semantic match                                                                                                                                                    |
+| User-supplied `hiddenDays` array (any subset of 0..6)                              | `DateProfileGenerator.ts:383` reads `props.hiddenDays`                                                        | ⏸️ parked — only the `weekendsVisible` boolean exists in v0                                                                                                 | full hidden-days array is a separate phase; out of demo + audit scope                                                                                                    |
+| Slot-loop date filter via `isValidDate` → `isHiddenDay`                            | `timeline-date-profile.ts:160-167` (`while (date < end) { if (isValidDate(...)) slotDates.push(date); ... }`) | ✅ port — inline filter inside `planWeekView` + `planMonthView` + `planMonthBandedAxis`                                                                     | observable filter; the structural shape stays chronix-native (no separate `DateProfileGenerator` object)                                                                 |
+| Snap-index filter (`snapDiffToIndex`) skips hidden days for interaction snapping   | `timeline-date-profile.ts:173-194`                                                                            | ⏸️ parked — chronix's snap math uses `slotDurationMs` directly, not a per-date snap array                                                                   | snap-on-hidden-day is an interaction concern; out of axis-planner scope. Revisit if snap ↔ weekends bug appears                                                          |
+| `trimHiddenDays(range)` for view-range pre-trim                                    | `DateProfileGenerator.ts:407-423`                                                                             | ❌ rejected v0 — chronix doesn't expose a range-trim API; the view range is `anchorDate`-driven                                                             | not needed for slot generation; planner walks the raw range and filters at emit time                                                                                     |
+| All-days-hidden throw (`invalid hiddenDays`)                                       | `DateProfileGenerator.ts:398-400`                                                                             | ❌ rejected — only the boolean exists; "hide every day" is unreachable                                                                                      | impossible state in v0; revisit when `hiddenDays` array lands                                                                                                            |
+| Day view weekend behavior (weekends-off on a Sat/Sun anchor)                       | k-ui's `trimHiddenDays` on a single weekend day returns null → view fails to render                           | ❌ rejected — `planDayView` stays unchanged; renders 24 hourly ticks on the anchor day                                                                      | matches the docstring scope: _"week-and-wider views"_. Day view = single calendar day, weekend or not                                                                    |
+| Week view per-day filter                                                           | `weekends: false` → `slotDates` skips Sat/Sun; `<th>` count drops to 5                                        | ✅ port — `planWeekView` filters per-hour loop; emits 5 × 24 = 120 ticks; 5 dayCells                                                                        | core week-view algorithm change                                                                                                                                          |
+| Month view per-day filter                                                          | `weekends: false` → ~20-23 day ticks (28-31 calendar days minus weekend days)                                 | ✅ port — `planMonthView` filters; `slotCount` via new `countVisibleDaysAcrossMonths` helper                                                                | core month-view algorithm change                                                                                                                                         |
+| Season / halfYear / year per-day filter                                            | same per-day filter applied across N months                                                                   | ✅ port — `planMonthBandedAxis` filters; per-month `monthCell.width = visibleDaysInMonth × slotWidth`                                                       | core multi-month algorithm change                                                                                                                                        |
+| Dense-packed tick X positions post-filter (no visual gaps where weekends would be) | `slotDates` is dense after filter; rendered at `i * slotWidth` for dense `i`                                  | ✅ port — chronix emits `x = (post-filter-index) × slotWidth`; no gaps                                                                                      | matches k-ui's rendered geometry; visible day cells abut directly                                                                                                        |
+| Header band widths recomputed against filtered visible-day count                   | k-ui `<th>` widths come from CSS grid template; band shrinks as `slotDates` shrinks                           | ✅ port — `dayCells[d].width = hoursPerDay × slotWidth` only for visible d; `monthCells[m].width = visibleDays[m] × slotWidth`                              | matches k-ui's visible band geometry                                                                                                                                     |
+| `slotDurationMs` semantic unchanged                                                | k-ui keeps `slotDuration` constant; bars at hidden-day timestamps slice via `TimelineLaneSlicer`              | ✅ same — `slotDurationMs` stays `MS_PER_HOUR` / `MS_PER_DAY`; bars use `pxPerMs` math unchanged                                                            | preserves all downstream layout passes' math; gap is bar-on-weekend slicing — see below                                                                                  |
+| Bar slicing across hidden weekend days (`TimelineLaneSlicer`)                      | `packages/gantt/src/resource-timeline/utils/TimelineLaneSlicer.ts:42-67` slices bars at hidden-day boundaries | ⏸️ parked v0 — chronix's `BarPlacementPass` doesn't slice; a bar starting on Sat in weekends-off mode renders at its raw `(t - axisStart) × pxPerMs` offset | scope-out per discipline; bar-slicing is a separate Phase 18.x. Demo data + parity assertions deliberately avoid weekend-anchored bars when asserting under weekends-off |
 
 ## Approach
 
@@ -123,7 +131,9 @@ function planWeekView(input: AxisRangePlanInput): PlannedAxis {
 
   const hourFmt = new Intl.DateTimeFormat(input.locale, { hour: 'numeric', hour12: false });
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
-    weekday: 'short', month: 'numeric', day: 'numeric',
+    weekday: 'short',
+    month: 'numeric',
+    day: 'numeric',
   });
 
   const ticks: AxisTick[] = [];
@@ -143,8 +153,13 @@ function planWeekView(input: AxisRangePlanInput): PlannedAxis {
   }
 
   return {
-    viewId: 'week', slotWidth, slotDurationMs: MS_PER_HOUR,
-    totalWidth, slotCount, ticks, headerRows: [{ cells: dayCells }],
+    viewId: 'week',
+    slotWidth,
+    slotDurationMs: MS_PER_HOUR,
+    totalWidth,
+    slotCount,
+    ticks,
+    headerRows: [{ cells: dayCells }],
   };
 }
 ```
@@ -179,8 +194,12 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
   }
   const totalWidth = slotWidth * slotCount;
   return {
-    viewId: 'month', slotWidth, slotDurationMs: MS_PER_DAY,
-    totalWidth, slotCount, ticks,
+    viewId: 'month',
+    slotWidth,
+    slotDurationMs: MS_PER_DAY,
+    totalWidth,
+    slotCount,
+    ticks,
     headerRows: [{ cells: [{ x: 0, width: totalWidth, label: monthFmt.format(start) }] }],
   };
 }
@@ -226,8 +245,12 @@ function planMonthBandedAxis(
   }
 
   return {
-    viewId: input.viewId, slotWidth, slotDurationMs: MS_PER_DAY,
-    totalWidth: slotCount * slotWidth, slotCount, ticks,
+    viewId: input.viewId,
+    slotWidth,
+    slotDurationMs: MS_PER_DAY,
+    totalWidth: slotCount * slotWidth,
+    slotCount,
+    ticks,
     headerRows: [{ cells: monthCells }],
   };
 }
@@ -266,8 +289,8 @@ function planMonthBandedAxis(
    widens scope beyond the 🔴 BLOCKING fix. The catalog above marks
    it ⏸️ parked. Phase 18.1 (if/when a host needs it) is a thin
    extension: `isHiddenWeekendDay` becomes `isHiddenDay(d,
-   hiddenDays)`; `weekendsVisible: false` desugars to `hiddenDays:
-   [0, 6]`.
+hiddenDays)`; `weekendsVisible: false` desugars to `hiddenDays:
+[0, 6]`.
 
 3. **Slice bars in this phase**: catalog row marks bar-slicing as
    ⏸️ parked. Adding it would (a) double the algorithmic surface,
@@ -292,12 +315,13 @@ DemoApp.vue:1941`). The parity tests click that checkbox to flip
 the k-ui demo into weekends-off mode, then switch to the view
 under test, then extract rendered ticks.
 
-| Assertion id (in parity.spec.ts)                                                              | Drives k-ui demo via                                                                            | Drives chronix demo via                                                                       | Compares                                                       | Tolerance                                  |
-| --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------ |
-| `week-view dayCells (weekendsVisible: false) — set equality + count`                          | `loadView(page, '周')` after clicking `getByLabel('显示周末')` to uncheck                       | `defaultAxisRangePlanner.plan({ viewId: 'week', weekendsVisible: false, ... })` in-process    | dayCell labels (regex `^\d+\/\d+周[一二三四五]$` — Mon-Fri only) | exact set equality + chronix `dayCells.length === 5` + ref ≥ 1 |
-| `halfYear-view slot count (weekendsVisible: false) — count equality`                          | `loadView(page, '半年')` after clicking `getByLabel('显示周末')` to uncheck                     | `defaultAxisRangePlanner.plan({ viewId: 'halfYear', weekendsVisible: false, ... })` in-process | rendered tick count (regex `^\d+日[一二三四五]$` — Mon-Fri only) | exact integer equality (`chronix.slotCount === refTickCount`); chronix `slotCount` in [125, 135] sanity range |
+| Assertion id (in parity.spec.ts)                                     | Drives k-ui demo via                                                        | Drives chronix demo via                                                                        | Compares                                                         | Tolerance                                                                                                     |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `week-view dayCells (weekendsVisible: false) — set equality + count` | `loadView(page, '周')` after clicking `getByLabel('显示周末')` to uncheck   | `defaultAxisRangePlanner.plan({ viewId: 'week', weekendsVisible: false, ... })` in-process     | dayCell labels (regex `^\d+\/\d+周[一二三四五]$` — Mon-Fri only) | exact set equality + chronix `dayCells.length === 5` + ref ≥ 1                                                |
+| `halfYear-view slot count (weekendsVisible: false) — count equality` | `loadView(page, '半年')` after clicking `getByLabel('显示周末')` to uncheck | `defaultAxisRangePlanner.plan({ viewId: 'halfYear', weekendsVisible: false, ... })` in-process | rendered tick count (regex `^\d+日[一二三四五]$` — Mon-Fri only) | exact integer equality (`chronix.slotCount === refTickCount`); chronix `slotCount` in [125, 135] sanity range |
 
 **Drift-detection scope of these two assertions**:
+
 - ✅ catches: chronix forgetting to filter weekends in `planWeekView`
   (assertion 1 fails — chronix emits 7 dayCells with Sat/Sun while
   k-ui renders 5)

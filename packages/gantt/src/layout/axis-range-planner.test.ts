@@ -408,7 +408,10 @@ describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
   });
 
   it('week view: 5 visible days × 24 hours = 120 slots, 5 day-cells, no Sat/Sun labels', () => {
-    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'week' });
+    const axis = defaultAxisRangePlanner.plan({
+      ...weekdaysOnly('2026-05-13T08:00:00'),
+      viewId: 'week',
+    });
 
     expect(axis.slotCount).toBe(120);
     expect(axis.ticks).toHaveLength(120);
@@ -426,7 +429,10 @@ describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
   });
 
   it('week view: ticks are dense-packed (no X gaps where weekends would be)', () => {
-    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'week' });
+    const axis = defaultAxisRangePlanner.plan({
+      ...weekdaysOnly('2026-05-13T08:00:00'),
+      viewId: 'week',
+    });
 
     for (let i = 0; i < axis.ticks.length; i += 1) {
       expect(axis.ticks[i]?.x).toBe(i * axis.slotWidth);
@@ -435,7 +441,10 @@ describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
   });
 
   it('week view: slotWidth differs from weekendsVisible:true (recomputed against smaller slotCount)', () => {
-    const off = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'week' });
+    const off = defaultAxisRangePlanner.plan({
+      ...weekdaysOnly('2026-05-13T08:00:00'),
+      viewId: 'week',
+    });
     const on = defaultAxisRangePlanner.plan({
       ...baseInput,
       viewId: 'week',
@@ -454,7 +463,10 @@ describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
   });
 
   it('month view: May 2026 has 21 weekdays (31 days − 10 weekend days)', () => {
-    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'month' });
+    const axis = defaultAxisRangePlanner.plan({
+      ...weekdaysOnly('2026-05-13T08:00:00'),
+      viewId: 'month',
+    });
 
     expect(axis.slotCount).toBe(21);
     expect(axis.ticks).toHaveLength(21);
@@ -471,7 +483,10 @@ describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
   });
 
   it('season view: May+Jun+Jul 2026 weekdays sum to 21+22+23 = 66; monthCells reflect per-month visible-day widths', () => {
-    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'season' });
+    const axis = defaultAxisRangePlanner.plan({
+      ...weekdaysOnly('2026-05-13T08:00:00'),
+      viewId: 'season',
+    });
 
     expect(axis.slotCount).toBe(66);
     const cells = axis.headerRows[0]?.cells ?? [];
@@ -489,7 +504,10 @@ describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
   });
 
   it('halfYear view: May..Oct 2026 weekdays = 131 (within parity assertion 125..135 range)', () => {
-    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'halfYear' });
+    const axis = defaultAxisRangePlanner.plan({
+      ...weekdaysOnly('2026-05-13T08:00:00'),
+      viewId: 'halfYear',
+    });
 
     expect(axis.slotCount).toBe(131);
     expect(axis.slotCount).toBeGreaterThanOrEqual(125);
@@ -502,7 +520,10 @@ describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
   });
 
   it('year view: 2026 has 261 weekdays (365 − 104 weekend days); 12 monthCells tile the axis', () => {
-    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-13T08:00:00'), viewId: 'year' });
+    const axis = defaultAxisRangePlanner.plan({
+      ...weekdaysOnly('2026-05-13T08:00:00'),
+      viewId: 'year',
+    });
 
     expect(axis.slotCount).toBe(261);
     const cells = axis.headerRows[0]?.cells ?? [];
@@ -516,7 +537,10 @@ describe('defaultAxisRangePlanner — weekendsVisible: false', () => {
     // views" — day view always renders 24 hourly ticks on the anchor
     // day so a host can still drill into a weekend day without the
     // view going blank.
-    const axis = defaultAxisRangePlanner.plan({ ...weekdaysOnly('2026-05-16T08:00:00'), viewId: 'day' });
+    const axis = defaultAxisRangePlanner.plan({
+      ...weekdaysOnly('2026-05-16T08:00:00'),
+      viewId: 'day',
+    });
 
     expect(axis.slotCount).toBe(24);
     expect(axis.ticks).toHaveLength(24);
