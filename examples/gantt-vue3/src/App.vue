@@ -10,7 +10,7 @@ import type {
 } from '@chronixjs/gantt-vue3';
 import { computed, ref } from 'vue';
 
-import { sampleBars, sampleRows, todayLocalMidnight } from './sample-data';
+import { sampleBars, sampleLinks, sampleRows, todayLocalMidnight } from './sample-data';
 
 type ViewId = AxisRangePlanInput['viewId'];
 
@@ -160,6 +160,7 @@ function resetBars(): void {
           :rows="sampleRows"
           :axis-input="axisInput"
           :columns="columns"
+          :links="sampleLinks"
           :editable="editable"
           :selectable="selectable"
           @bar-drop="onBarDrop"

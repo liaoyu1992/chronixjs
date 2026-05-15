@@ -1,4 +1,4 @@
-import type { BarSpec, RowSpec } from '@chronixjs/gantt';
+import type { BarSpec, CustomLinkMarker, LinkSpec, RowSpec } from '@chronixjs/gantt';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
@@ -101,4 +101,66 @@ export const sampleBars: readonly BarSpec[] = [
   multiDayBar('bar-14', 'workshop-b', 120, 60, '下半年项目 - 工艺改造'),
   multiDayBar('bar-15', 'workshop-c', 210, 45, '年末交付 - 客户验收'),
   multiDayBar('bar-16', 'workshop-d', 300, 30, '次年初规划', 5),
+];
+
+/**
+ * A user-supplied marker shape: a stylized heart for one link in the
+ * sample set. Proves the `CustomLinkMarker` codepath at both the IR
+ * layer (`LinkSpec.marker` accepts an object) and the render layer
+ * (`<ChronixGantt>` emits a `<marker>` with the custom paths).
+ */
+const heartMarker: CustomLinkMarker = {
+  id: 'heart',
+  viewBox: '0 0 10 10',
+  paths: [
+    {
+      d: 'M 5 8.5 C 1 6 1 1.5 3 1.5 C 4 1.5 4.5 2.5 5 3.5 C 5.5 2.5 6 1.5 7 1.5 C 9 1.5 9 6 5 8.5 Z',
+    },
+  ],
+};
+
+/**
+ * Sample dependency links. Covers the (routing × marker × color) matrix
+ * laid out in `audit/PHASE_8_LINK_RENDERING_DESIGN.md`: both routings,
+ * 5 of the 7 built-in markers, one colorOverride, and one
+ * CustomLinkMarker. **All forward** (target's x ≥ source's x) — backward
+ * smooth routing is parked at the router layer with an explicit throw,
+ * so the demo data must respect the forward-only invariant.
+ *
+ * Hour ranges below describe the day-view geometry. Multi-day bars
+ * (`bar-9..bar-16`) anchor at full-day offsets so they all land far to
+ * the right of any today-anchored bar — any link from a today bar to a
+ * multi-day bar is automatically forward across all 6 views.
+ */
+export const sampleLinks: readonly LinkSpec[] = [
+  // bar-1 (a, 1–5h) → bar-2 (a, 8–12h): same row, forward (5 < 8).
+  { id: 'link-1', fromBarId: 'bar-1', toBarId: 'bar-2', routing: 'square', marker: 'arrow' },
+  // bar-4 (b, 2–7h) → bar-5 (b, 10–18h): same row, forward (7 < 10).
+  { id: 'link-2', fromBarId: 'bar-4', toBarId: 'bar-5', routing: 'square', marker: 'diamond' },
+  // bar-1 (a, 1–5h) → bar-6 (c, 6–14h): cross-row a→c, forward (5 < 6),
+  // smooth Bézier branch.
+  { id: 'link-3', fromBarId: 'bar-1', toBarId: 'bar-6', routing: 'smooth', marker: 'arrow' },
+  // bar-8 (d, 4–11h) → bar-3 (a, 15–22h): cross-row d→a, forward
+  // (11 < 15), smooth + circle-hollow + red colorOverride.
+  {
+    id: 'link-4',
+    fromBarId: 'bar-8',
+    toBarId: 'bar-3',
+    routing: 'smooth',
+    marker: 'circle-hollow',
+    colorOverride: '#ef4444',
+  },
+  // bar-6 (c, 6–14h) → bar-7 (c, 16–20h): same row, forward (14 < 16),
+  // square + plus marker.
+  { id: 'link-5', fromBarId: 'bar-6', toBarId: 'bar-7', routing: 'square', marker: 'plus' },
+  // bar-3 (a, 15–22h today) → bar-11 (c, +14 days): cross-row a→c,
+  // forward across all views, smooth + custom heart + green override.
+  {
+    id: 'link-6',
+    fromBarId: 'bar-3',
+    toBarId: 'bar-11',
+    routing: 'smooth',
+    marker: heartMarker,
+    colorOverride: '#10b981',
+  },
 ];
