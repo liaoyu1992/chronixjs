@@ -72,14 +72,21 @@ export type {
   BarResizePayload,
   BarsSetPayload,
   ChronixTheme,
+  DropProposal,
+  EventAllowFunc,
+  EventConstraint,
+  EventOverlapFunc,
   GanttEventMap,
   GanttHandle,
   GanttOptions,
   ProgressChangePayload,
+  RejectionReason,
+  SelectAllowFunc,
   SelectPayload,
+  ValidationContext,
   ViewChangePayload,
 } from './api/index.js';
-export { defaultChronixTheme } from './api/index.js';
+export { defaultChronixTheme, validateDrop, validateResize, validateSelect } from './api/index.js';
 
 export type {
   AxisHeaderCell,

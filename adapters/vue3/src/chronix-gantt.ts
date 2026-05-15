@@ -5,9 +5,12 @@ import { useGanttLayout } from './use-gantt-layout.js';
 import {
   useGanttPointer,
   type BarDropPayload,
+  type BarDropRejectedPayload,
   type BarProgressPayload,
   type BarResizePayload,
+  type BarResizeRejectedPayload,
   type SelectPayload,
+  type SelectRejectedPayload,
 } from './use-gantt-pointer.js';
 import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
 import type {
@@ -16,9 +19,13 @@ import type {
   BarSpec,
   ChronixTheme,
   CustomLinkMarker,
+  EventAllowFunc,
+  EventConstraint,
+  EventOverlapFunc,
   LinkMarker,
   LinkSpec,
   RowSpec,
+  SelectAllowFunc,
   SlotRegistry,
   TimeRange,
 } from '@chronixjs/gantt';
@@ -413,6 +420,44 @@ export const ChronixGantt = defineComponent({
       type: Array as PropType<readonly string[]>,
       default: () => [] as readonly string[],
     },
+    /**
+     * Phase 19: validation gate. When set, called on bar-drag and
+     * bar-resize commit; returning `false` aborts the commit and
+     * fires `'bar-drop-rejected'` / `'bar-resize-rejected'` instead
+     * of `'bar-drop'` / `'bar-resize'`. The bar visually reverts.
+     */
+    eventAllow: {
+      type: Function as PropType<EventAllowFunc | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 19: validation gate for calendar-range-select commits.
+     * Returning `false` aborts the commit; `'select-rejected'` fires.
+     */
+    selectAllow: {
+      type: Function as PropType<SelectAllowFunc | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 19: overlap policy. `true` (default) allows; `false`
+     * rejects any cross-row time-intersecting bar; a function
+     * `(stillBar, movingBar) => boolean` is called per intersecting
+     * cross-row pair. Same-row overlap is always permitted (bar-stack
+     * layout pass handles it).
+     */
+    eventOverlap: {
+      type: [Boolean, Function] as PropType<boolean | EventOverlapFunc | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 19: drag / resize destination constraint. Proposed range
+     * must sit inside `range`; if `rowIds` is set, proposed row must
+     * be in the whitelist. Otherwise commit is rejected.
+     */
+    eventConstraint: {
+      type: Object as PropType<EventConstraint | undefined>,
+      default: undefined,
+    },
   },
   emits: {
     'bar-drop': (_payload: BarDropPayload) => true,
@@ -426,6 +471,9 @@ export const ChronixGantt = defineComponent({
     'bar-dragstop': (_payload: BarDragStopPayload) => true,
     'bar-resizestart': (_payload: BarResizeStartPayload) => true,
     'bar-resizestop': (_payload: BarResizeStopPayload) => true,
+    'bar-drop-rejected': (_payload: BarDropRejectedPayload) => true,
+    'bar-resize-rejected': (_payload: BarResizeRejectedPayload) => true,
+    'select-rejected': (_payload: SelectRejectedPayload) => true,
   },
   setup(props, { emit }) {
     // Effective theme: merge consumer overrides over chronix defaults.
@@ -556,10 +604,19 @@ export const ChronixGantt = defineComponent({
       progressHandleSize: () => props.progressHandleSize,
       // 0 is treated as "no snap" by the commit layer — pass through verbatim.
       snapDurationMs: () => props.snapDurationMs,
+      // Phase 19: validation gate inputs.
+      bars: () => props.bars,
+      eventAllow: () => props.eventAllow,
+      selectAllow: () => props.selectAllow,
+      eventOverlap: () => props.eventOverlap,
+      eventConstraint: () => props.eventConstraint,
       onBarDrop: (p) => emit('bar-drop', p),
       onBarResize: (p) => emit('bar-resize', p),
       onSelect: (p) => emit('select', p),
       onBarProgress: (p) => emit('bar-progress', p),
+      onBarDropRejected: (p) => emit('bar-drop-rejected', p),
+      onBarResizeRejected: (p) => emit('bar-resize-rejected', p),
+      onSelectRejected: (p) => emit('select-rejected', p),
       onBarDragStart: ({ barId }) => {
         const payload = buildDragPayload(barId);
         if (payload) emit('bar-dragstart', payload);

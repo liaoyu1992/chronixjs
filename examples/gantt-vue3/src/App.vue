@@ -1,18 +1,28 @@
 <script setup lang="ts">
-import type { AxisRangePlanInput, BarSpec } from '@chronixjs/gantt';
+import type {
+  AxisRangePlanInput,
+  BarSpec,
+  EventAllowFunc,
+  EventConstraint,
+  EventOverlapFunc,
+  SelectAllowFunc,
+} from '@chronixjs/gantt';
 import { ChronixGantt, useGanttSelection } from '@chronixjs/gantt-vue3';
 import type {
   BarClickPayload,
   BarDragStartPayload,
   BarDragStopPayload,
   BarDropPayload,
+  BarDropRejectedPayload,
   BarProgressPayload,
   BarResizePayload,
+  BarResizeRejectedPayload,
   BarResizeStartPayload,
   BarResizeStopPayload,
   ColumnSpec,
   EmptyAreaClickPayload,
   SelectPayload,
+  SelectRejectedPayload,
 } from '@chronixjs/gantt-vue3';
 import { computed, ref } from 'vue';
 
@@ -84,7 +94,10 @@ interface DemoEvent {
     | 'bar-dragstart'
     | 'bar-dragstop'
     | 'bar-resizestart'
-    | 'bar-resizestop';
+    | 'bar-resizestop'
+    | 'bar-drop-rejected'
+    | 'bar-resize-rejected'
+    | 'select-rejected';
   readonly detail: string;
 }
 const events = ref<DemoEvent[]>([]);
@@ -95,6 +108,56 @@ let nextEventId = 0;
 // @bar-click + @empty-area-click. The composable owns the state; the
 // adapter is fully controlled via the prop.
 const selection = useGanttSelection();
+
+// Phase 19: 4 toggleable validators. Each defaults OFF so the demo's
+// baseline behavior matches pre-Phase-19 (every drag/resize/select
+// commits unconditionally). Flip a checkbox to see the gate fire.
+const useEventOverlap = ref(false);
+const useEventConstraint = ref(false);
+const useEventAllow = ref(false);
+const useSelectAllow = ref(false);
+
+// Sample predicate: reject any cross-row time-intersecting bar.
+const sampleEventOverlap: EventOverlapFunc | boolean = false;
+
+// Sample constraint: today only, weekdays' working hours (8:00..20:00).
+const sampleEventConstraint: EventConstraint = {
+  range: {
+    start: (() => {
+      const d = todayLocalMidnight();
+      d.setHours(8, 0, 0, 0);
+      return d;
+    })(),
+    end: (() => {
+      const d = todayLocalMidnight();
+      d.setHours(20, 0, 0, 0);
+      return d;
+    })(),
+  },
+};
+
+// Sample eventAllow: only allow drops/resizes whose start hour is >= 8.
+const sampleEventAllow: EventAllowFunc = (proposal) => proposal.range.start.getHours() >= 8;
+
+// Sample selectAllow: only allow ranges <= 4 hours wide.
+const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
+const sampleSelectAllow: SelectAllowFunc = (proposal) =>
+  proposal.range.end.getTime() - proposal.range.start.getTime() <= FOUR_HOURS_MS;
+
+// Computed validator props passed to <ChronixGantt>. Each is undefined
+// when the toggle is off so the validation gate stays inactive.
+const activeEventOverlap = computed<boolean | EventOverlapFunc | undefined>(() =>
+  useEventOverlap.value ? sampleEventOverlap : undefined,
+);
+const activeEventConstraint = computed<EventConstraint | undefined>(() =>
+  useEventConstraint.value ? sampleEventConstraint : undefined,
+);
+const activeEventAllow = computed<EventAllowFunc | undefined>(() =>
+  useEventAllow.value ? sampleEventAllow : undefined,
+);
+const activeSelectAllow = computed<SelectAllowFunc | undefined>(() =>
+  useSelectAllow.value ? sampleSelectAllow : undefined,
+);
 
 const axisInput = computed<AxisRangePlanInput>(() => ({
   viewId: viewId.value,
@@ -198,6 +261,27 @@ function onBarResizeStop(p: BarResizeStopPayload): void {
   pushEvent('bar-resizestop', `${p.barId} (${p.edge})`);
 }
 
+// Phase 19: rejection handlers. Mirror the commit handlers but skip
+// the local `bars` mutation (the commit was vetoed; nothing changed)
+// and log the failing predicate's reason.
+function onBarDropRejected(p: BarDropRejectedPayload): void {
+  pushEvent(
+    'bar-drop-rejected',
+    `${p.barId}: ${fmtRange(p.oldRange)} → ${fmtRange(p.attemptedRange)} blocked by ${p.reason}`,
+  );
+}
+
+function onBarResizeRejected(p: BarResizeRejectedPayload): void {
+  pushEvent(
+    'bar-resize-rejected',
+    `${p.barId} (${p.edge}): ${fmtRange(p.oldRange)} → ${fmtRange(p.attemptedRange)} blocked by ${p.reason}`,
+  );
+}
+
+function onSelectRejected(p: SelectRejectedPayload): void {
+  pushEvent('select-rejected', `${p.rowId}: ${fmtRange(p.attemptedRange)} blocked by ${p.reason}`);
+}
+
 function resetBars(): void {
   bars.value = initialBars.map((b) => ({ ...b }));
   events.value = [];
@@ -240,6 +324,25 @@ function resetBars(): void {
           </label>
           <button type="button" @click="resetBars">reset</button>
         </div>
+        <div class="cx-demo-validation-toggles" role="group" aria-label="validation gates">
+          <span class="cx-demo-validation-label">validation (Phase 19):</span>
+          <label title="Reject cross-row time-intersecting drops">
+            <input v-model="useEventOverlap" type="checkbox" />
+            eventOverlap: false
+          </label>
+          <label title="Constrain drag/resize destination to today 08:00–20:00">
+            <input v-model="useEventConstraint" type="checkbox" />
+            eventConstraint
+          </label>
+          <label title="Reject drops/resizes that start before 08:00">
+            <input v-model="useEventAllow" type="checkbox" />
+            eventAllow ≥ 8am
+          </label>
+          <label title="Reject range-selects wider than 4 hours">
+            <input v-model="useSelectAllow" type="checkbox" />
+            selectAllow ≤ 4h
+          </label>
+        </div>
       </header>
       <div class="cx-demo-svg-frame">
         <ChronixGantt
@@ -251,6 +354,10 @@ function resetBars(): void {
           :selected-bar-ids="selection.selectedBarIds.value"
           :editable="editable"
           :selectable="selectable"
+          :event-overlap="activeEventOverlap"
+          :event-constraint="activeEventConstraint"
+          :event-allow="activeEventAllow"
+          :select-allow="activeSelectAllow"
           @bar-drop="onBarDrop"
           @bar-resize="onBarResize"
           @select="onSelect"
@@ -261,6 +368,9 @@ function resetBars(): void {
           @bar-dragstop="onBarDragStop"
           @bar-resizestart="onBarResizeStart"
           @bar-resizestop="onBarResizeStop"
+          @bar-drop-rejected="onBarDropRejected"
+          @bar-resize-rejected="onBarResizeRejected"
+          @select-rejected="onSelectRejected"
         />
       </div>
     </main>

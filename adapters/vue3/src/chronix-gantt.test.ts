@@ -368,6 +368,189 @@ describe('<ChronixGantt> interactions', () => {
   });
 });
 
+describe('<ChronixGantt> validation gates (Phase 19)', () => {
+  it('bar-drag rejected by eventOverlap: false → onBarDrop not emitted, onBarDropRejected fires with reason "overlap"', async () => {
+    // b1 on r1 (8-12), b2 on r2 (9-13). Drag b1 right +60px (1 hour)
+    // so its new range becomes 9-13 on r1 — cross-row time intersect
+    // with b2 → reject.
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 9, 13)],
+        rows,
+        axisInput,
+        editable: true,
+        eventOverlap: false,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: cy, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+    const rejected = wrapper.emitted('bar-drop-rejected');
+    expect(rejected).toBeTruthy();
+    expect(rejected!).toHaveLength(1);
+    const payload = rejected![0]![0] as {
+      barId: string;
+      reason: string;
+      attemptedRange: { start: Date; end: Date };
+    };
+    expect(payload.barId).toBe('b1');
+    expect(payload.reason).toBe('overlap');
+    expect(payload.attemptedRange.start.getTime()).toBe(
+      new Date(todayMs + 9 * MS_PER_HOUR).getTime(),
+    );
+  });
+
+  it('bar-resize rejected by eventConstraint → onBarResize not emitted, onBarResizeRejected fires with reason "constraint"', async () => {
+    // b1 on r1 (8-12). Constraint window 8..12 — bar fits exactly at
+    // start. Resize end +60px (1 hour) → new range 8-13. range.end=13
+    // exceeds constraint.range.end=12 → reject.
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+        eventConstraint: {
+          range: {
+            start: new Date(todayMs + 8 * MS_PER_HOUR),
+            end: new Date(todayMs + 12 * MS_PER_HOUR),
+          },
+        },
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    // Click end-edge (x=720, default 8-px end zone [712..720]) + drag right +60.
+    await svg.trigger('pointerdown', { clientX: 715, clientY: cy, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 775, clientY: cy, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 775, clientY: cy, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-resize')).toBeFalsy();
+    const rejected = wrapper.emitted('bar-resize-rejected');
+    expect(rejected).toBeTruthy();
+    const payload = rejected![0]![0] as { barId: string; edge: string; reason: string };
+    expect(payload.barId).toBe('b1');
+    expect(payload.edge).toBe('end');
+    expect(payload.reason).toBe('constraint');
+  });
+
+  it('range-select rejected by selectAllow → onSelect not emitted, onSelectRejected fires with reason "allow"', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput,
+        selectable: true,
+        selectAllow: () => false,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    await svg.trigger('pointerdown', { clientX: 120, clientY: cy, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 300, clientY: cy, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 300, clientY: cy, pointerId: 1 });
+
+    expect(wrapper.emitted('select')).toBeFalsy();
+    const rejected = wrapper.emitted('select-rejected');
+    expect(rejected).toBeTruthy();
+    const payload = rejected![0]![0] as { rowId: string; reason: string };
+    expect(payload.rowId).toBe('r1');
+    expect(payload.reason).toBe('allow');
+  });
+
+  it('regression guard: with no validator props, commits go through as before', async () => {
+    // Same fixture as the existing "editable: pointerdown → drop"
+    // test but with two cross-row bars whose ranges would intersect
+    // after the drag — without `eventOverlap: false` the commit still
+    // fires. Confirms the validator path is opt-in.
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 9, 13)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: cy, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-drop')).toBeTruthy();
+    expect(wrapper.emitted('bar-drop-rejected')).toBeFalsy();
+  });
+
+  it('eventOverlap: true (explicit) → no rejection even with intersecting cross-row bars', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 9, 13)],
+        rows,
+        axisInput,
+        editable: true,
+        eventOverlap: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: cy, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-drop')).toBeTruthy();
+    expect(wrapper.emitted('bar-drop-rejected')).toBeFalsy();
+  });
+
+  it('progress-handle commit is never gated by eventConstraint (changing progress does not move the bar)', async () => {
+    // Constraint window deliberately incompatible with the bar's range
+    // (today-only at 0..1) — a drag or resize would be rejected. But a
+    // progress drag should commit because validators don't apply to
+    // progress.
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        editable: true,
+        eventConstraint: {
+          range: {
+            start: new Date(todayMs),
+            end: new Date(todayMs + MS_PER_HOUR),
+          },
+        },
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    // Progress-handle center for 50%: x = 480 + (240 × 0.5) = 600, y = bar center 23.
+    const handleX = 600;
+    const handleY = 23;
+    await svg.trigger('pointerdown', {
+      clientX: handleX,
+      clientY: handleY,
+      button: 0,
+      pointerId: 1,
+    });
+    await svg.trigger('pointermove', {
+      clientX: handleX + 60,
+      clientY: handleY,
+      pointerId: 1,
+    });
+    await svg.trigger('pointerup', {
+      clientX: handleX + 60,
+      clientY: handleY,
+      pointerId: 1,
+    });
+
+    expect(wrapper.emitted('bar-progress')).toBeTruthy();
+    expect(wrapper.emitted('bar-drop-rejected')).toBeFalsy();
+    expect(wrapper.emitted('bar-resize-rejected')).toBeFalsy();
+  });
+});
+
 describe('<ChronixGantt> axis ticks', () => {
   it('day view: renders 24 tick labels with zh-CN hour text "0时" … "23时"', () => {
     const wrapper = mount(ChronixGantt, {

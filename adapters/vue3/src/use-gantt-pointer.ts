@@ -2,15 +2,24 @@ import {
   defaultPointerCaptureSession,
   defaultPointerHitTester,
   defaultStripResolver,
+  validateDrop,
+  validateResize,
+  validateSelect,
   type AnyTransaction,
   type BarDragTransaction,
   type BarResizeTransaction,
+  type BarSpec,
   type CalendarRangeSelectTransaction,
+  type EventAllowFunc,
+  type EventConstraint,
+  type EventOverlapFunc,
   type PlacedBar,
   type PlannedAxis,
   type PointerCaptureConfig,
   type PointerHitResult,
   type ProgressHandleTransaction,
+  type RejectionReason,
+  type SelectAllowFunc,
   type SwimlaneStrip,
   type TimeRange,
 } from '@chronixjs/gantt';
@@ -94,6 +103,37 @@ export interface BarResizeStopCallback {
 }
 
 /**
+ * Phase 19: validation rejection payloads. Fired when the commit-time
+ * validator gate (`validateDrop` / `validateResize` / `validateSelect`)
+ * vetoes a commit. The corresponding success callback (`onBarDrop` /
+ * `onBarResize` / `onSelect`) does NOT fire — the bar visually reverts
+ * to its previous state and the host receives this rejection payload
+ * with the would-be values + the failing predicate's reason.
+ */
+export interface BarDropRejectedPayload {
+  readonly barId: string;
+  readonly oldRange: TimeRange;
+  readonly attemptedRange: TimeRange;
+  readonly oldRowId: string;
+  readonly attemptedRowId: string;
+  readonly reason: RejectionReason;
+}
+
+export interface BarResizeRejectedPayload {
+  readonly barId: string;
+  readonly edge: 'start' | 'end';
+  readonly oldRange: TimeRange;
+  readonly attemptedRange: TimeRange;
+  readonly reason: RejectionReason;
+}
+
+export interface SelectRejectedPayload {
+  readonly rowId: string;
+  readonly attemptedRange: TimeRange;
+  readonly reason: RejectionReason;
+}
+
+/**
  * Reactive inputs to the pointer-interaction composable. The composable
  * is DOM-free: the consumer converts native PointerEvent coords into the
  * timeline body's content space (post-scroll, origin at `PlacedBar.x` /
@@ -173,6 +213,42 @@ export interface UseGanttPointerInput {
   readonly onBarResizeStart?: (payload: BarResizeStartCallback) => void;
   /** Symmetric to `onBarDragStop` but for `bar-resize` transactions. */
   readonly onBarResizeStop?: (payload: BarResizeStopCallback) => void;
+  /**
+   * Phase 19: full bar list, consulted by the commit-time validator
+   * gate to evaluate `eventOverlap` against other bars. Optional —
+   * when omitted, overlap is skipped (effectively `eventOverlap: true`)
+   * and the gate only runs constraint + allow predicates.
+   */
+  readonly bars?: MaybeRefOrGetter<readonly BarSpec[]>;
+  /**
+   * `eventAllow(proposal, movingBar)` predicate. Runs on bar-drag +
+   * bar-resize commit. Return `false` to veto the commit; the bar
+   * reverts and `onBarDropRejected` / `onBarResizeRejected` fires.
+   */
+  readonly eventAllow?: MaybeRefOrGetter<EventAllowFunc | undefined>;
+  /**
+   * `selectAllow(proposal)` predicate. Runs on calendar-range-select
+   * commit. Return `false` to veto; `onSelectRejected` fires.
+   */
+  readonly selectAllow?: MaybeRefOrGetter<SelectAllowFunc | undefined>;
+  /**
+   * `eventOverlap` policy: `true` (default) allows all overlap;
+   * `false` rejects any cross-row time-intersecting bar; a function
+   * receives `(stillBar, movingBar)` and returns `false` to reject.
+   * Same-row overlap is always permitted (bar-stack layout handles it).
+   */
+  readonly eventOverlap?: MaybeRefOrGetter<boolean | EventOverlapFunc | undefined>;
+  /**
+   * Constrains drag / resize / select destinations to a time window
+   * + optional row whitelist. See `EventConstraint` for the shape.
+   */
+  readonly eventConstraint?: MaybeRefOrGetter<EventConstraint | undefined>;
+  /** Phase 19: fires when a `BarDragTransaction` commit is rejected. */
+  readonly onBarDropRejected?: (payload: BarDropRejectedPayload) => void;
+  /** Phase 19: fires when a `BarResizeTransaction` commit is rejected. */
+  readonly onBarResizeRejected?: (payload: BarResizeRejectedPayload) => void;
+  /** Phase 19: fires when a `CalendarRangeSelectTransaction` commit is rejected. */
+  readonly onSelectRejected?: (payload: SelectRejectedPayload) => void;
 }
 
 export interface UseGanttPointerOutput {
@@ -449,6 +525,62 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     // it to know which bar would have been clicked.
   }
 
+  /**
+   * Build a `ValidationContext` from the composable's reactive
+   * validator inputs. Each `MaybeRefOrGetter` is resolved via
+   * `toValue` so the host can pass static values, refs, or getters
+   * interchangeably. Fields that resolve to `undefined` are omitted
+   * to match `ValidationContext`'s optional-field shape under
+   * `exactOptionalPropertyTypes`.
+   */
+  function buildValidationContext() {
+    const bars = toValue(input.bars) ?? [];
+    const eventAllow = toValue(input.eventAllow);
+    const selectAllow = toValue(input.selectAllow);
+    const eventOverlap = toValue(input.eventOverlap);
+    const eventConstraint = toValue(input.eventConstraint);
+    return {
+      bars,
+      ...(eventAllow !== undefined ? { eventAllow } : {}),
+      ...(selectAllow !== undefined ? { selectAllow } : {}),
+      ...(eventOverlap !== undefined ? { eventOverlap } : {}),
+      ...(eventConstraint !== undefined ? { eventConstraint } : {}),
+    };
+  }
+
+  function runDropValidation(
+    barId: string,
+    proposedRange: TimeRange,
+    proposedRowId: string,
+  ): RejectionReason | null {
+    const ctx = buildValidationContext();
+    const movingBar = ctx.bars.find((b) => b.id === barId);
+    // No bars list, or movingBar absent: skip validation. Same default
+    // as omitting the prop entirely — keeps existing demos that don't
+    // pass `bars` to the composable working unchanged.
+    if (!movingBar) return null;
+    return validateDrop({ range: proposedRange, rowId: proposedRowId }, movingBar, ctx);
+  }
+
+  function runResizeValidation(
+    barId: string,
+    proposedRange: TimeRange,
+    currentRowId: string,
+  ): RejectionReason | null {
+    const ctx = buildValidationContext();
+    const movingBar = ctx.bars.find((b) => b.id === barId);
+    if (!movingBar) return null;
+    return validateResize({ range: proposedRange, rowId: currentRowId }, movingBar, ctx);
+  }
+
+  function runSelectValidation(
+    proposedRange: TimeRange,
+    rowId: string,
+  ): RejectionReason | null {
+    const ctx = buildValidationContext();
+    return validateSelect({ range: proposedRange, rowId }, ctx);
+  }
+
   function commitDrag(txn: BarDragTransaction, snapDurationMs: number | undefined): void {
     const barRanges = toValue(input.barRanges);
     const originalRange = barRanges.get(txn.barId);
@@ -468,6 +600,23 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     const dropY = txn.originPx.y + txn.deltaY;
     const resolvedRowId = defaultStripResolver.atY(dropY, toValue(input.strips));
     const newRowId = resolvedRowId ?? oldRowId;
+
+    // Phase 19: commit-time validation gate. When any validator vetoes,
+    // skip the success callback and fire the rejected callback instead.
+    // Bars list is optional; when omitted, overlap check is skipped.
+    const reason = runDropValidation(txn.barId, out.resolvedRange, newRowId);
+    if (reason !== null) {
+      input.onBarDropRejected?.({
+        barId: txn.barId,
+        oldRange: originalRange,
+        attemptedRange: out.resolvedRange,
+        oldRowId,
+        attemptedRowId: newRowId,
+        reason,
+      });
+      return;
+    }
+
     input.onBarDrop?.({
       barId: txn.barId,
       oldRange: originalRange,
@@ -487,6 +636,23 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       pxPerMs: pxPerMs(),
       ...(snapDurationMs !== undefined ? { snapDurationMs } : {}),
     });
+    // Phase 19: resize stays on the same row, so the proposal's rowId
+    // is the bar's current rowId. Skip validation if `bars` isn't
+    // supplied (preserves pre-Phase-19 behavior for tests that don't
+    // thread bars through the composable).
+    const barRowIds = toValue(input.barRowIds);
+    const currentRowId = barRowIds?.get(txn.barId) ?? '';
+    const reason = runResizeValidation(txn.barId, out.resolvedRange, currentRowId);
+    if (reason !== null) {
+      input.onBarResizeRejected?.({
+        barId: txn.barId,
+        edge: txn.edge,
+        oldRange: originalRange,
+        attemptedRange: out.resolvedRange,
+        reason,
+      });
+      return;
+    }
     input.onBarResize?.({
       barId: txn.barId,
       edge: txn.edge,
@@ -503,6 +669,17 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       txn,
       ...(snapDurationMs !== undefined ? { snapDurationMs } : {}),
     });
+    // Phase 19: validate range-select commit. `selectAllow` is the
+    // gate; `selectOverlap` / `selectConstraint` are parked.
+    const reason = runSelectValidation(out.resolvedRange, txn.rowId);
+    if (reason !== null) {
+      input.onSelectRejected?.({
+        rowId: txn.rowId,
+        attemptedRange: out.resolvedRange,
+        reason,
+      });
+      return;
+    }
     input.onSelect?.({ rowId: txn.rowId, range: out.resolvedRange });
   }
 

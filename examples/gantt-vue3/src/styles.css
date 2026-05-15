@@ -107,6 +107,28 @@ body {
   cursor: pointer;
 }
 
+.cx-demo-validation-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding-top: 8px;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.cx-demo-validation-toggles label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.cx-demo-validation-label {
+  font-weight: 600;
+  color: #1f2937;
+}
+
 .cx-demo-svg-frame {
   border: 1px solid #e5e7eb;
   border-radius: 6px;

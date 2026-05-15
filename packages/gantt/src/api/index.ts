@@ -12,3 +12,13 @@ export type {
   SelectPayload,
   ViewChangePayload,
 } from './gantt-options.js';
+export type {
+  DropProposal,
+  EventAllowFunc,
+  EventConstraint,
+  EventOverlapFunc,
+  RejectionReason,
+  SelectAllowFunc,
+  ValidationContext,
+} from './validation.js';
+export { validateDrop, validateResize, validateSelect } from './validation.js';
