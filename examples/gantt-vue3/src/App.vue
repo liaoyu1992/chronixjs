@@ -7,6 +7,7 @@ import type {
   EventConstraint,
   EventOverlapFunc,
   SelectAllowFunc,
+  TodayLineOption,
 } from '@chronixjs/gantt';
 import { ChronixGantt, useGanttSelection } from '@chronixjs/gantt-vue3';
 import type {
@@ -74,6 +75,11 @@ const DEMO_SCHEMA = {
   themedBars: bool(false, 'Override bar bg + border via component props'),
   umbrellaColor: bool(false, 'Use barColor umbrella prop (sets both fill + stroke)'),
   priorityCallback: bool(false, 'Per-priority bar background callback (high/medium/low)'),
+  // Phase 21 today line
+  todayLine: bool(
+    false,
+    'Show vertical today-line with k-ui defaults (red #ff6b6b, 2 px, dashed, 今日 tooltip)',
+  ),
 } as const;
 
 const cfg = useDemoConfig(DEMO_SCHEMA);
@@ -173,6 +179,19 @@ const activeBarBackgroundCallback = computed<BarColorFunc | undefined>(() => {
   if (isPriorityCallbackParity) return samplePriorityCallback;
   if (cfg.priorityCallback.value) return samplePriorityCallback;
   return undefined;
+});
+
+// Phase 21: parity mode auto-enables the today-line so cross-demo
+// screenshots match the parity-reference's default visible state
+// (its demo turns todayLine on by default). Standalone `?todayLine=true`
+// flag still works in non-parity mode for chronix users to see the
+// feature without flipping the parity dataset. Empty-object form
+// `{}` resolves to all chronix-defaults (#ff6b6b / 2 / dashed / 今日)
+// — matching k-ui's defaults byte-for-byte.
+const activeTodayLine = computed<TodayLineOption | false>(() => {
+  if (cfg.parity.value) return {};
+  if (cfg.todayLine.value) return {};
+  return false;
 });
 
 const axisInput = computed<AxisRangePlanInput>(() => ({
@@ -392,6 +411,7 @@ function resetBars(): void {
           :bar-background-color="activeBarBackgroundColor"
           :bar-border-color="activeBarBorderColor"
           :bar-background-color-callback="activeBarBackgroundCallback"
+          :today-line="activeTodayLine"
           @bar-drop="onBarDrop"
           @bar-resize="onBarResize"
           @select="onSelect"

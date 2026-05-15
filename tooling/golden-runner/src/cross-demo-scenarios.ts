@@ -290,6 +290,25 @@ export const CROSS_DEMO_SCENARIOS: readonly CrossDemoScenario[] = [
     urlQuery: 'priorityCallback=true',
     viewId: 'month',
   },
+
+  // ─── Phase 21: todayLine (2 scenarios) ──────────────────────────
+
+  {
+    id: 'vrt-week-todayLine',
+    kind: 'vrt',
+    description:
+      "Phase 21: todayLine on chronix's own sample data, week view. Tests the standalone (non-parity) opt-in path produces the line at the expected x.",
+    urlQuery: 'todayLine=true',
+    viewId: 'week',
+  },
+  {
+    id: 'vrt-view-day-todayLine',
+    kind: 'vrt',
+    description:
+      'Phase 21: todayLine × day view. Densest axis case — exercises the line position math at the per-hour tick density.',
+    urlQuery: 'todayLine=true',
+    viewId: 'day',
+  },
 ];
 
 /**

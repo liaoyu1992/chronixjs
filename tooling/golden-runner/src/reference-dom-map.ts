@@ -78,6 +78,16 @@ export const PROGRESS_TRIANGLE = '.gantt-event-progress-drag-triangle';
 export const progressTriangleByInstance = (instanceId: string): string =>
   `${PROGRESS_TRIANGLE}[data-instance-id="${instanceId}"]`;
 
+/**
+ * Today-line root element in the upstream demo (Phase 21 parity). The
+ * upstream renders ONE `<div class="gantt-timeline-today-line">` in
+ * the body wrapper at `left: <todayX>` absolute. Chronix's equivalent
+ * is `<line.cx-gantt-today-line data-today-line-side='body'>` in the
+ * body SVG with `x1=todayX`. Compare via getBoundingClientRect on the
+ * upstream div vs. `x1` attribute on the chronix line.
+ */
+export const TODAY_LINE = '.gantt-timeline-today-line';
+
 /** Start-edge resize handle (drags the bar's left edge). */
 export const RESIZER_START = '.gantt-event-resizer-start';
 

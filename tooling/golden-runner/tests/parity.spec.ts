@@ -15,7 +15,12 @@ import {
   hexToRgbString,
   loadBothDemos,
 } from '../src/parity-helpers.js';
-import { REF_ATTR_NAMES, RESOURCE_ROW, TIMELINE_BODY_WRAPPER } from '../src/reference-dom-map.js';
+import {
+  REF_ATTR_NAMES,
+  RESOURCE_ROW,
+  TIMELINE_BODY_WRAPPER,
+  TODAY_LINE,
+} from '../src/reference-dom-map.js';
 
 import type { BarSpec, RowSpec, ViewId } from '@chronixjs/gantt';
 import type { Locator, Page } from '@playwright/test';
@@ -677,6 +682,60 @@ test.describe('parity: chronix vs reference demo', () => {
  */
 
 test.describe('cross-demo parity (Phase 17 helper)', () => {
+  test('todayLine x-coordinate parity across both rendered demos (Phase 21)', async ({
+    browser,
+  }) => {
+    // Both demos render today-line by default in parity mode:
+    // - reference demo: option enabled by default in DemoApp.vue
+    // - chronix demo: parity flag (added by loadBothDemos via ?parity=true)
+    //   flips activeTodayLine to `{}` so the line renders with all
+    //   chronix-defaults (#ff6b6b / 2 / dashed / 今日). Both lines
+    //   should land at the same x relative to their respective body
+    //   wrappers, within 1 px.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'today-line-cross-demo',
+      viewId: 'day',
+    });
+    try {
+      // Reference side: bounding-box `left` of the today-line div,
+      // measured relative to the body wrapper's `left`.
+      const kuiX = await kuiPage.evaluate(
+        ({ todayLineSel, bodyWrapperSel }) => {
+          const line = document.querySelector(todayLineSel);
+          const body = document.querySelector(bodyWrapperSel);
+          if (!line || !body) return null;
+          const lr = line.getBoundingClientRect();
+          const br = body.getBoundingClientRect();
+          return lr.left - br.left;
+        },
+        { todayLineSel: TODAY_LINE, bodyWrapperSel: TIMELINE_BODY_WRAPPER },
+      );
+      // Chronix side: read `x1` attribute on the body-side line.
+      // Chronix x1 is already in body-SVG coordinates whose x=0 lines
+      // up with the body wrapper's left edge, so it's directly
+      // comparable to the reference's wrapper-relative `left`.
+      const chronixX = await chronixPage.evaluate(() => {
+        const line = document.querySelector(
+          'line.cx-gantt-today-line[data-today-line-side="body"]',
+        );
+        if (!line) return null;
+        const x1 = line.getAttribute('x1');
+        return x1 !== null ? Number.parseFloat(x1) : null;
+      });
+
+      expect(kuiX, 'reference demo todayLine missing').not.toBeNull();
+      expect(chronixX, 'chronix demo todayLine missing').not.toBeNull();
+      const delta = Math.abs(kuiX! - chronixX!);
+      console.warn(
+        `Phase 21 todayLine x parity: kui=${kuiX!.toFixed(2)} chronix=${chronixX!.toFixed(2)} Δ=${delta.toFixed(2)}px`,
+      );
+      expect(delta, 'todayLine x mismatch > 1 px').toBeLessThanOrEqual(1);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
   test('day-view bar X + width parity across both rendered demos', async ({ browser }) => {
     const { kuiPage, chronixPage, kuiChart, chronixChart } = await loadBothDemos(browser, {
       id: 'day-view-bars-cross-demo',

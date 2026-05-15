@@ -127,4 +127,21 @@ describe('useDemoConfig', () => {
       description: 'Enable drag + resize',
     });
   });
+
+  it('Phase 21: todayLine bool schema field round-trips through URL', async () => {
+    setUrl('?todayLine=true');
+    const cfg = useDemoConfig({
+      todayLine: bool(false, 'Show today-line'),
+    });
+    expect(cfg.todayLine.value).toBe(true);
+
+    cfg.todayLine.value = false;
+    await nextTick();
+    // false === default → key stripped from URL
+    expect(new URLSearchParams(window.location.search).has('todayLine')).toBe(false);
+
+    cfg.todayLine.value = true;
+    await nextTick();
+    expect(new URLSearchParams(window.location.search).get('todayLine')).toBe('true');
+  });
 });

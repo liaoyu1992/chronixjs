@@ -27,7 +27,14 @@ const envKey = mode === 'capture' ? 'CROSS_DEMO_CAPTURE' : 'CROSS_DEMO_RUN';
 const specFile =
   mode === 'capture' ? 'tests/cross-demo-capture.spec.ts' : 'tests/cross-demo.spec.ts';
 
-const child = spawn('playwright', ['test', specFile], {
+// Forward any positional args after `<capture|verify>` to playwright.
+// Useful for narrowing capture/verify to a subset, e.g.:
+//   node scripts/run-cross-demo.mjs capture --grep todayLine
+const extraArgs = process.argv.slice(3);
+
+// Use `pnpm exec` so the locally-installed playwright CLI resolves
+// without requiring it in PATH. Cross-platform via `shell: true`.
+const child = spawn('pnpm', ['exec', 'playwright', 'test', specFile, ...extraArgs], {
   stdio: 'inherit',
   shell: true,
   env: { ...process.env, [envKey]: 'true' },

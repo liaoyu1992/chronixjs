@@ -20,15 +20,15 @@ import {
 } from '../src/cross-demo-scenarios.js';
 
 test.describe('CROSS_DEMO_SCENARIOS — registry shape', () => {
-  test('has 25 entries total', () => {
-    expect(CROSS_DEMO_SCENARIOS).toHaveLength(25);
+  test('has 27 entries total (25 from Phase 20.7 + 2 from Phase 21)', () => {
+    expect(CROSS_DEMO_SCENARIOS).toHaveLength(27);
   });
 
-  test('splits 12 cross + 13 vrt per the design doc', () => {
+  test('splits 12 cross + 15 vrt (13 from Phase 20.7 + 2 Phase 21 todayLine)', () => {
     const cross = CROSS_DEMO_SCENARIOS.filter((s) => s.kind === 'cross');
     const vrt = CROSS_DEMO_SCENARIOS.filter((s) => s.kind === 'vrt');
     expect(cross).toHaveLength(12);
-    expect(vrt).toHaveLength(13);
+    expect(vrt).toHaveLength(15);
   });
 
   test('every scenario id is unique (case-sensitive)', () => {
@@ -126,7 +126,7 @@ test.describe('crossDemoBaselineRelPath', () => {
     expect(crossDemoBaselineRelPath(vrt)).toBe(`${CROSS_DEMO_BASELINE_DIR}/chronix/${vrt.id}.png`);
   });
 
-  test('all 25 paths are unique', () => {
+  test('all 27 paths are unique', () => {
     const paths = CROSS_DEMO_SCENARIOS.map(crossDemoBaselineRelPath);
     const unique = new Set(paths);
     expect(unique.size).toBe(paths.length);
