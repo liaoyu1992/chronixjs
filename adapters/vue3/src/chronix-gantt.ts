@@ -351,6 +351,12 @@ export const ChronixGantt = defineComponent({
       () => new Map(props.bars.map((b) => [b.id, b.range])),
     );
 
+    // Parallel map of barId → source rowId so the composable can
+    // populate `BarDropPayload.oldRowId` on a bar-drag commit.
+    const barRowIds = computed<ReadonlyMap<string, string>>(
+      () => new Map(props.bars.map((b) => [b.id, b.rowId])),
+    );
+
     // Per-bar overlay-group id (only bars that declared a
     // `pointerOverlayId`) and per-bar progress (0..100, only bars with a
     // `progress.value`). Empty maps when no bars opt in — the composable
@@ -407,6 +413,7 @@ export const ChronixGantt = defineComponent({
       strips,
       axis,
       barRanges,
+      barRowIds,
       overlayIdByBarId,
       barProgressById,
       editable: () => props.editable,

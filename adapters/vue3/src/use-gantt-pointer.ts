@@ -1,6 +1,7 @@
 import {
   defaultPointerCaptureSession,
   defaultPointerHitTester,
+  defaultStripResolver,
   type AnyTransaction,
   type BarDragTransaction,
   type BarResizeTransaction,
@@ -18,12 +19,20 @@ import { computed, ref, toValue, type ComputedRef, type MaybeRefOrGetter } from 
 /**
  * Commit payload emitted when a `BarDragTransaction` completes — sourced
  * by mapping the bar's recorded pointer delta through the axis pxPerMs
- * and applying it to the bar's original time range.
+ * and applying it to the bar's original time range, plus resolving the
+ * pointer's current y to a target strip's `rowId` for the cross-row case.
+ *
+ * `newRowId === oldRowId` when the pointer lands back on the source row,
+ * in an inter-strip gap, or outside the content area entirely — the
+ * fallback keeps consumer write-back logic uniform: `bar.rowId = p.newRowId`
+ * is always safe.
  */
 export interface BarDropPayload {
   readonly barId: string;
   readonly oldRange: TimeRange;
   readonly newRange: TimeRange;
+  readonly oldRowId: string;
+  readonly newRowId: string;
 }
 
 /** Commit payload for a `BarResizeTransaction`. */
@@ -69,6 +78,17 @@ export interface UseGanttPointerInput {
    * commit a drag / resize.
    */
   readonly barRanges: MaybeRefOrGetter<ReadonlyMap<string, TimeRange>>;
+  /**
+   * Map from `bar.id` to its source `rowId` (i.e. `BarSpec.rowId`).
+   * Used at bar-drag commit to populate `BarDropPayload.oldRowId` so
+   * consumers can detect row changes (`newRowId !== oldRowId`).
+   * Optional — when omitted, `oldRowId` falls back to the empty string
+   * and `newRowId` falls back to the resolved strip's rowId (or empty
+   * when out of strips). Production callers should always supply this
+   * map alongside `barRanges`; the optionality exists for narrow tests
+   * that don't exercise row changes.
+   */
+  readonly barRowIds?: MaybeRefOrGetter<ReadonlyMap<string, string>>;
   /** Allow bar drag + edge resize. Default false. */
   readonly editable?: MaybeRefOrGetter<boolean>;
   /** Allow calendar range-select on empty rows. Default false. */
@@ -133,6 +153,17 @@ export interface UseGanttPointerOutput {
   readonly activeTransaction: ComputedRef<AnyTransaction | null>;
   /** The result of the last `defaultPointerHitTester.test()` from `begin()`. */
   readonly lastHit: ComputedRef<PointerHitResult | null>;
+  /**
+   * The rowId the pointer is currently over during an active bar-drag
+   * transaction, or `null` when no bar-drag is in flight OR when the
+   * pointer is in an inter-strip gap / outside the content area.
+   *
+   * Consumers can wire this into the render path to snap the dragging
+   * bar's Y to the target strip (cross-row preview). The composable
+   * itself doesn't render anything — `projectedRowId` is a pure
+   * function of `activeTransaction` + `strips`.
+   */
+  readonly projectedRowId: ComputedRef<string | null>;
 }
 
 const REQUIRE_HIT: PointerCaptureConfig = { requireInitialHit: true };
@@ -316,7 +347,22 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       pxPerMs: pxPerMs(),
       ...(snapDurationMs !== undefined ? { snapDurationMs } : {}),
     });
-    input.onBarDrop?.({ barId: txn.barId, oldRange: originalRange, newRange: out.resolvedRange });
+    // Resolve the pointer's current y (origin + delta) to a target row.
+    // Falls back to the source row when the pointer lands in a gap or
+    // outside content — consumers see `newRowId === oldRowId` and treat
+    // it as a no-op row change.
+    const barRowIds = toValue(input.barRowIds);
+    const oldRowId = barRowIds?.get(txn.barId) ?? '';
+    const dropY = txn.originPx.y + txn.deltaY;
+    const resolvedRowId = defaultStripResolver.atY(dropY, toValue(input.strips));
+    const newRowId = resolvedRowId ?? oldRowId;
+    input.onBarDrop?.({
+      barId: txn.barId,
+      oldRange: originalRange,
+      newRange: out.resolvedRange,
+      oldRowId,
+      newRowId,
+    });
   }
 
   function commitResize(txn: BarResizeTransaction, snapDurationMs: number | undefined): void {
@@ -362,6 +408,17 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     lastHitResult.value = null;
   }
 
+  // Live projection of "which row is the pointer over right now" during
+  // a bar-drag transaction. Recomputed on every transaction-state /
+  // strips-list change so the adapter's render path can snap the bar's
+  // Y to the target strip mid-drag.
+  const projectedRowId = computed<string | null>(() => {
+    const txn = transaction.value;
+    if (txn?.kind !== 'bar-drag') return null;
+    const dropY = txn.originPx.y + txn.deltaY;
+    return defaultStripResolver.atY(dropY, toValue(input.strips));
+  });
+
   return {
     begin,
     advance,
@@ -369,5 +426,6 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     abort,
     activeTransaction: computed(() => transaction.value),
     lastHit: computed(() => lastHitResult.value),
+    projectedRowId,
   };
 }

@@ -74,11 +74,15 @@ function onBarDrop(p: BarDropPayload): void {
     const existing = bars.value[idx]!;
     bars.value = [
       ...bars.value.slice(0, idx),
-      { ...existing, range: p.newRange },
+      { ...existing, range: p.newRange, rowId: p.newRowId },
       ...bars.value.slice(idx + 1),
     ];
   }
-  pushEvent('bar-drop', `${p.barId}: ${fmtRange(p.oldRange)} → ${fmtRange(p.newRange)}`);
+  const rowSuffix = p.newRowId !== p.oldRowId ? ` [${p.oldRowId} → ${p.newRowId}]` : '';
+  pushEvent(
+    'bar-drop',
+    `${p.barId}: ${fmtRange(p.oldRange)} → ${fmtRange(p.newRange)}${rowSuffix}`,
+  );
 }
 
 function onBarResize(p: BarResizePayload): void {

@@ -568,3 +568,101 @@ describe('useGanttPointer — abort', () => {
     expect(onBarDrop).not.toHaveBeenCalled();
   });
 });
+
+describe('useGanttPointer — cross-row drag (Phase 9)', () => {
+  // r1 at y∈[0,40), r2 at y∈[40,80). Bar 'b1' lives in r1 (y=8), bar 'b2'
+  // lives in r2 (y=48). Strip-divider gap omitted for simpler arithmetic
+  // (rowSpacing=0 in this fixture; the resolver test file covers gap math).
+  const stripsForCrossRow: readonly SwimlaneStrip[] = [
+    { rowId: 'r1', y: 0, height: 40 },
+    { rowId: 'r2', y: 40, height: 40 },
+  ];
+  const placedBarsForCrossRow: readonly PlacedBar[] = [
+    { barId: 'b1', x: 480, y: 8, width: 240, height: 30 },
+  ];
+  const barRowIds = new Map<string, string>([['b1', 'r1']]);
+
+  it('projectedRowId is null outside a bar-drag transaction', () => {
+    const ptr = useGanttPointer({
+      placedBars: () => placedBarsForCrossRow,
+      strips: () => stripsForCrossRow,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      barRowIds: () => barRowIds,
+      editable: true,
+    });
+    expect(ptr.projectedRowId.value).toBeNull(); // idle
+    ptr.begin(100, 20); // miss (no bar at x=100)
+    expect(ptr.projectedRowId.value).toBeNull(); // no txn started
+  });
+
+  it('projectedRowId tracks the strip containing the pointer y mid-drag', () => {
+    const ptr = useGanttPointer({
+      placedBars: () => placedBarsForCrossRow,
+      strips: () => stripsForCrossRow,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      barRowIds: () => barRowIds,
+      editable: true,
+    });
+
+    // Begin a drag on b1 at content (600, 20) — pointer is inside r1.
+    ptr.begin(600, 20);
+    expect(ptr.activeTransaction.value?.kind).toBe('bar-drag');
+    expect(ptr.projectedRowId.value).toBe('r1');
+
+    // Pointer crosses into r2 (y >= 40). originPx.y was 20, deltaY 40
+    // puts pointer at 60 which is inside r2's [40, 80) range.
+    ptr.advance(600, 60);
+    expect(ptr.projectedRowId.value).toBe('r2');
+
+    // Pointer drags way below all content → null.
+    ptr.advance(600, 500);
+    expect(ptr.projectedRowId.value).toBeNull();
+
+    // Pointer drags back into r1 → r1.
+    ptr.advance(600, 25);
+    expect(ptr.projectedRowId.value).toBe('r1');
+  });
+
+  it('cross-row commit emits newRowId !== oldRowId; out-of-strip drop reverts to oldRowId', () => {
+    const onBarDrop = mockBarDrop();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBarsForCrossRow,
+      strips: () => stripsForCrossRow,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      barRowIds: () => barRowIds,
+      editable: true,
+      onBarDrop,
+    });
+
+    // Drag b1 from r1 down into r2 and drop.
+    ptr.begin(600, 20);
+    ptr.advance(600, 60); // inside r2
+    ptr.commit();
+    expect(onBarDrop).toHaveBeenCalledOnce();
+    const crossRowPayload = onBarDrop.mock.calls[0]![0];
+    expect(crossRowPayload.barId).toBe('b1');
+    expect(crossRowPayload.oldRowId).toBe('r1');
+    expect(crossRowPayload.newRowId).toBe('r2');
+
+    // Second drag: same row drop (still inside r1) → newRowId === oldRowId.
+    onBarDrop.mockClear();
+    ptr.begin(600, 20);
+    ptr.advance(610, 25); // still inside r1
+    ptr.commit();
+    const sameRowPayload = onBarDrop.mock.calls[0]![0];
+    expect(sameRowPayload.oldRowId).toBe('r1');
+    expect(sameRowPayload.newRowId).toBe('r1');
+
+    // Third drag: drop outside all strips (y=500) → newRowId reverts.
+    onBarDrop.mockClear();
+    ptr.begin(600, 20);
+    ptr.advance(600, 500); // outside all strips
+    ptr.commit();
+    const outOfStripPayload = onBarDrop.mock.calls[0]![0];
+    expect(outOfStripPayload.oldRowId).toBe('r1');
+    expect(outOfStripPayload.newRowId).toBe('r1'); // fallback
+  });
+});
