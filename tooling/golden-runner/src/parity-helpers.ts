@@ -38,7 +38,9 @@
  */
 
 import { CHART_SELECTOR, FROZEN_TIME_ISO, VIEWPORT } from './config.js';
+import { TIMELINE_BODY_WRAPPER } from './reference-dom-map.js';
 
+import type { CrossDemoScenario } from './cross-demo-scenarios.js';
 import type { Browser, BrowserContext, Locator, Page } from '@playwright/test';
 
 export const KUI_DEMO_URL = process.env['KUI_DEMO_URL'] ?? 'http://localhost:8701/';
@@ -1045,4 +1047,148 @@ export function formatSnapshotDiff(diff: SnapshotDiff): string {
   }
 
   return lines.length === 0 ? 'parity OK (no mismatches)' : lines.join('\n');
+}
+
+// ─── Phase 20.7: cross-demo screenshot capture ─────────────────────
+
+/**
+ * **Phase 20.7: page-chrome-hide CSS for the screenshot target.**
+ *
+ * Both demos have surrounding HTML chrome (page header, sidebar
+ * panel, parity-mode banner on chronix) that should NOT contribute
+ * to the captured rect. Injects source-specific CSS that hides the
+ * chrome AND forces the timeline-body wrapper to `width: max-content`
+ * so wider-than-viewport views (week ~8736 px, year ~24000 px)
+ * rasterize fully via `locator.screenshot()`.
+ *
+ * k-ui selectors are interpolated from `reference-dom-map.ts`
+ * exports so chronix source code never carries the literal upstream
+ * class names (enforced by `check-no-external-repo-refs.mjs`).
+ */
+async function hidePageChrome(page: Page, source: 'kui' | 'chronix'): Promise<void> {
+  if (source === 'chronix') {
+    await page.addStyleTag({
+      content: `
+        body { background: #ffffff !important; margin: 0 !important; }
+        .cx-demo-side, .cx-demo-header, .cx-demo-parity-banner { display: none !important; }
+        .cx-demo-app { display: block !important; width: auto !important; }
+        .cx-demo-main { padding: 0 !important; overflow: visible !important; }
+        .cx-demo-svg-frame { border: 0 !important; max-height: none !important; overflow: visible !important; width: max-content !important; }
+        .cx-gantt-wrapper { max-height: none !important; overflow: visible !important; width: max-content !important; }
+        svg.cx-gantt-body { overflow: visible !important; }
+      `,
+    });
+  } else {
+    // k-ui side. Selector source: `reference-dom-map.ts` exports.
+    // We deliberately do NOT name surrounding demo-shell classes
+    // here (k-ui demo's outer page chrome is not enumerated in
+    // reference-dom-map). Screenshotting the wrapper Locator
+    // directly already excludes anything outside its bounding box;
+    // the body bg + margin reset + wrapper `width: max-content` are
+    // enough.
+    await page.addStyleTag({
+      content: `
+        body { background: #ffffff !important; margin: 0 !important; }
+        ${TIMELINE_BODY_WRAPPER} { overflow: visible !important; width: max-content !important; }
+      `,
+    });
+  }
+}
+
+/**
+ * **Phase 20.7: open one demo and capture the timeline-body screenshot.**
+ *
+ * Targets the body-wrapper element (not the chart-root) so the
+ * sidebar — which has different widths in the two demos (k-ui
+ * resource panel ~288 px, chronix sidebar 240 px) — is excluded
+ * from the captured rect.
+ *
+ * Per-source URL composition:
+ * - `'kui'`: navigates to `KUI_DEMO_URL/` with no query flags. k-ui
+ *   demo doesn't yet expose Phase 20.6's URL-config layer; cross
+ *   scenarios with chronix-side URL flags rely on k-ui's default
+ *   rendering already matching what those flags produce in chronix
+ *   parity mode (e.g. `priorityCallback=true` in parity mode produces
+ *   the same palette k-ui ships by default). Errors loudly when
+ *   called for a `kind: 'vrt'` scenario (vrt has no k-ui side).
+ * - `'chronix'`: navigates to `CHRONIX_DEMO_URL/?<flags>`. For
+ *   `kind: 'cross'`, prepends `parity=true&` to put chronix into
+ *   k-ui-equivalent data state. For `kind: 'vrt'`, applies the
+ *   scenario's flags verbatim (no parity prepend).
+ *
+ * Side effects: opens a fresh `BrowserContext` per call, installs
+ * `FROZEN_TIME_ISO` clock BEFORE navigation, applies view-toggle
+ * click after page load, injects `hidePageChrome` CSS, then
+ * `locator.screenshot()` on the body wrapper. Context is closed in
+ * `finally` so callers don't leak browser resources.
+ *
+ * Returns the PNG buffer. Caller pixel-diffs via
+ * `expect(buffer).toMatchSnapshot(...)` against the appropriate
+ * baseline file resolved by `crossDemoBaselineRelPath(scenario)`.
+ */
+export async function captureCrossDemoScreenshot(
+  source: 'kui' | 'chronix',
+  browser: Browser,
+  scenario: CrossDemoScenario,
+): Promise<Buffer> {
+  if (source === 'kui' && scenario.kind !== 'cross') {
+    throw new Error(
+      `captureCrossDemoScreenshot: cannot capture k-ui side for scenario "${scenario.id}" (kind="${scenario.kind}"). VRT scenarios are chronix-only.`,
+    );
+  }
+
+  const baseURL = source === 'kui' ? KUI_DEMO_URL : CHRONIX_DEMO_URL;
+
+  // Compose the navigation path. k-ui has no URL config layer; chronix
+  // gets parity-prepended for cross scenarios, raw flags for vrt.
+  let urlPath = '/';
+  if (source === 'chronix') {
+    const flags =
+      scenario.kind === 'cross'
+        ? scenario.urlQuery.length > 0
+          ? `parity=true&${scenario.urlQuery}`
+          : 'parity=true'
+        : scenario.urlQuery;
+    if (flags.length > 0) urlPath = `/?${flags}`;
+  }
+
+  const bodySelector = source === 'kui' ? TIMELINE_BODY_WRAPPER : 'svg.cx-gantt-body';
+
+  const context: BrowserContext = await browser.newContext({
+    baseURL,
+    viewport: VIEWPORT,
+    deviceScaleFactor: 1,
+    timezoneId: 'Asia/Shanghai',
+    locale: 'zh-CN',
+  });
+  try {
+    const page = await context.newPage();
+
+    // Frozen clock BEFORE navigation so module-load `new Date()` calls
+    // in the demos see the frozen epoch.
+    await page.clock.install({ time: new Date(FROZEN_TIME_ISO) });
+    await page.goto(urlPath);
+
+    // Wait for body to mount (signal that initial layout ran).
+    const bodyLocator = page.locator(bodySelector);
+    await bodyLocator.waitFor({ state: 'visible' });
+    await page.waitForLoadState('networkidle');
+    await settle(page);
+
+    // Click view-toggle button. k-ui's toggle cluster lives inside
+    // the chart-root; chronix's is at the page level. Both share
+    // zh-CN labels via `VIEW_TOGGLE_LABEL`.
+    const toggleLabel = VIEW_TOGGLE_LABEL[scenario.viewId];
+    const toggleHost = source === 'kui' ? page.locator(CHART_SELECTOR) : page;
+    await toggleHost.getByRole('button', { name: toggleLabel, exact: true }).click();
+    await settle(page);
+
+    // Hide page chrome + expand wrapper to natural content width.
+    await hidePageChrome(page, source);
+    await settle(page);
+
+    return await bodyLocator.screenshot();
+  } finally {
+    await context.close();
+  }
 }
