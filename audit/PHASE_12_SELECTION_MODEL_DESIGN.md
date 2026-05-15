@@ -1,6 +1,14 @@
 # Phase 12 — Selection model (`bar-click` + controlled selection)
 
-**Status**: Approved (2026-05-15). Implementation in progress.
+**Status**: **DONE (2026-05-15)**. Landed as 3 commits: `320f6b4`
+(design doc) → `5025758` (Commit 1: useGanttSelection composable +
+payload types + 10 unit tests) → `5e644c2` (Commit 2: adapter
+click/selection wire-up + 7 SFC tests + demo wiring). +18 tests
+(+3 over plan — added a reactivity test in the composable + a
+zero-delta-with-editable case in the SFC tests + the empty-area-
+click test as a 7th adapter case); chronix vitest 340 → 358. 5
+VRT baselines re-verified idempotent — demo doesn't auto-select.
+See `audit/journal/2026-05-13.md` "Phase 12" section.
 
 ## Problem
 
