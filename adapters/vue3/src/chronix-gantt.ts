@@ -10,7 +10,15 @@ import {
   type SelectPayload,
 } from './use-gantt-pointer.js';
 
-import type { AxisRangePlanInput, BarSpec, LinkSpec, RowSpec, TimeRange } from '@chronixjs/gantt';
+import type {
+  AxisRangePlanInput,
+  BarSpec,
+  CustomLinkMarker,
+  LinkMarker,
+  LinkSpec,
+  RowSpec,
+  TimeRange,
+} from '@chronixjs/gantt';
 
 /**
  * Stroke width for dependency-line paths. Matches the parity-reference
@@ -18,6 +26,153 @@ import type { AxisRangePlanInput, BarSpec, LinkSpec, RowSpec, TimeRange } from '
  * add it when there's a concrete use case.
  */
 const LINK_STROKE_WIDTH = 1.5;
+
+/**
+ * Encode a color string into the suffix used in marker ids. Strips
+ * non-alphanumeric (e.g. `'#3788d8'` → `'3788d8'`, `'rgb(255, 0, 0)'`
+ * → `'rgb25500'`). Matches the parity reference's encoding.
+ */
+function markerColorId(color: string): string {
+  return color.replace(/[^a-zA-Z0-9]/g, '');
+}
+
+/** The 7 built-in marker shapes (excludes `'none'` which has no def). */
+const BUILTIN_MARKER_TYPES = [
+  'arrow',
+  'diamond',
+  'diamond-hollow',
+  'circle',
+  'circle-hollow',
+  'pointer',
+  'plus',
+] as const;
+
+type BuiltinMarkerType = (typeof BUILTIN_MARKER_TYPES)[number];
+
+/**
+ * One built-in `<marker>` def. Geometry ports verbatim from the
+ * parity-reference's `renderMarker` (horizontal direction only;
+ * chronix v0 emits forward-only paths, so all markers point right).
+ * Width / height fixed at 4.5; `markerUnits="strokeWidth"` scales with
+ * stroke; `overflow="visible"` keeps the shape from being clipped at
+ * its bounding box.
+ */
+function renderBuiltinMarker(
+  type: BuiltinMarkerType,
+  color: string,
+  colorId: string,
+): ReturnType<typeof h> {
+  const id = `cx-marker-${type}-${colorId}`;
+  const baseProps = {
+    id,
+    markerWidth: 4.5,
+    markerHeight: 4.5,
+    markerUnits: 'strokeWidth',
+    overflow: 'visible',
+  };
+  switch (type) {
+    case 'arrow':
+      return h('marker', { key: id, ...baseProps, refX: 4, refY: 2.25, orient: 'auto' }, [
+        h('polygon', { points: '0 0, 4.5 2.25, 0 4.5', fill: color }),
+      ]);
+    case 'diamond':
+      return h('marker', { key: id, ...baseProps, refX: 4.5, refY: 2.5, orient: 'auto' }, [
+        h('polygon', { points: '0 2.5, 2.5 0, 5 2.5, 2.5 5', fill: color }),
+      ]);
+    case 'diamond-hollow':
+      return h('marker', { key: id, ...baseProps, refX: 4.5, refY: 2.5, orient: 'auto' }, [
+        h('polygon', {
+          points: '0 2.5, 2.5 0, 5 2.5, 2.5 5',
+          fill: 'white',
+          stroke: color,
+          'stroke-width': 1.0,
+        }),
+      ]);
+    case 'circle':
+      return h('marker', { key: id, ...baseProps, refX: 5, refY: 3 }, [
+        h('circle', { cx: 3, cy: 3, r: 2.0, fill: color }),
+      ]);
+    case 'circle-hollow':
+      return h('marker', { key: id, ...baseProps, refX: 5.75, refY: 3 }, [
+        h('circle', {
+          cx: 3,
+          cy: 3,
+          r: 2.0,
+          fill: 'white',
+          stroke: color,
+          'stroke-width': 1.5,
+        }),
+      ]);
+    case 'pointer':
+      return h('marker', { key: id, ...baseProps, refX: 5, refY: 2.5, orient: 'auto' }, [
+        h('polygon', { points: '0 0, 6 2.5, 0 5, 1.5 2.5', fill: color }),
+      ]);
+    case 'plus':
+      return h('marker', { key: id, ...baseProps, refX: 4, refY: 2.5, orient: 'auto' }, [
+        h('path', {
+          d: 'M 2.5 0.5 L 2.5 2 L 4 2 L 4 3 L 2.5 3 L 2.5 4.5 L 1.5 4.5 L 1.5 3 L 0 3 L 0 2 L 1.5 2 L 1.5 0.5 Z',
+          fill: color,
+        }),
+      ]);
+    default: {
+      const _exhaustive: never = type;
+      throw new Error(`Unknown built-in marker type: ${String(_exhaustive)}`);
+    }
+  }
+}
+
+/**
+ * Render a user-defined marker shape. The custom marker is positioned
+ * at its viewBox origin and emits one child per `paths` entry. v0 uses
+ * the same `refX=4`, `refY=2.25`, `orient='auto'` as the built-in
+ * arrow — consumers who need a different refX can wrap the custom
+ * marker's paths to embed offsets. Marker id matches the built-in
+ * scheme: `cx-marker-${customMarker.id}-${colorId}` so `marker-end`
+ * URL resolution is uniform.
+ */
+function renderCustomMarker(
+  marker: CustomLinkMarker,
+  color: string,
+  colorId: string,
+): ReturnType<typeof h> {
+  const id = `cx-marker-${marker.id}-${colorId}`;
+  const baseProps = {
+    id,
+    viewBox: marker.viewBox,
+    markerWidth: 4.5,
+    markerHeight: 4.5,
+    markerUnits: 'strokeWidth',
+    overflow: 'visible',
+    refX: 4,
+    refY: 2.25,
+    orient: 'auto',
+  };
+  return h(
+    'marker',
+    { key: id, ...baseProps },
+    marker.paths.map((p, i) =>
+      h('path', {
+        key: `${id}-p${i}`,
+        d: p.d,
+        fill: p.fill ?? color,
+        stroke: p.stroke ?? 'none',
+        ...(p.strokeWidth !== undefined ? { 'stroke-width': p.strokeWidth } : {}),
+      }),
+    ),
+  );
+}
+
+/**
+ * Resolve a link's `marker-end` URL for a given color. Returns `null`
+ * for `'none'` so the caller omits the `marker-end` attribute entirely
+ * (an empty `url(...)` reference would suppress strokes in some browsers).
+ */
+function markerEndUrl(marker: LinkMarker | CustomLinkMarker, color: string): string | null {
+  if (marker === 'none') return null;
+  const colorId = markerColorId(color);
+  const markerKey = typeof marker === 'string' ? marker : marker.id;
+  return `url(#cx-marker-${markerKey}-${colorId})`;
+}
 
 /**
  * One sidebar column in the resource panel. The `key` indexes into
@@ -575,19 +730,60 @@ export const ChronixGantt = defineComponent({
       // Link paths render in a sibling group AFTER the bars group so
       // SVG paint order puts them on top. `pointer-events: none` keeps
       // bar drag / resize / progress-handle pointer events flowing
-      // through to the bars layer. Commit 1 emits bare paths with no
-      // arrowheads; Commit 2 wires `<defs>` markers + `marker-end`.
-      const linkPathNodes = routedLinks.value.map((routed) =>
-        h('path', {
+      // through to the bars layer. Markers attach via `marker-end`
+      // referencing a `<defs>` entry built below.
+      //
+      // Build the marker spec lookup keyed by link id so the path
+      // render step can pair `routed.color ?? defaultLinkColor` with
+      // the link's `marker` to form the marker-end URL.
+      const linkSpecById = new Map<string, LinkSpec>(props.links.map((l) => [l.id, l]));
+      const linkPathNodes = routedLinks.value.map((routed) => {
+        const color = routed.color ?? props.defaultLinkColor;
+        const spec = linkSpecById.get(routed.linkId);
+        // `spec` always exists for non-orphan routed links — orphans
+        // never make it into routedLinks. Defensive lookup keeps the
+        // type checker happy without a non-null assertion.
+        const markerEnd = spec ? markerEndUrl(spec.marker, color) : null;
+        return h('path', {
           key: routed.linkId,
           'data-link-id': routed.linkId,
           class: 'cx-gantt-link',
           d: routed.pathD,
-          stroke: routed.color ?? props.defaultLinkColor,
+          stroke: color,
           'stroke-width': LINK_STROKE_WIDTH,
           fill: 'none',
-        }),
-      );
+          ...(markerEnd !== null ? { 'marker-end': markerEnd } : {}),
+        });
+      });
+
+      // Build `<defs>` containing one `<marker>` per (markerType × color)
+      // pair plus one `<marker>` per (customMarkerId × color). Colors
+      // come from the chart-level default plus any per-link override
+      // present in routedLinks; built-in marker types are emitted in
+      // full so a `LinkSpec.marker` of any kind resolves to a def even
+      // if the demo currently uses only one. Custom markers in `links`
+      // get their own defs.
+      const usedColors = new Set<string>();
+      usedColors.add(props.defaultLinkColor);
+      for (const routed of routedLinks.value) {
+        if (routed.color !== undefined) usedColors.add(routed.color);
+      }
+      const customMarkerById = new Map<string, CustomLinkMarker>();
+      for (const link of props.links) {
+        if (typeof link.marker === 'object') {
+          customMarkerById.set(link.marker.id, link.marker);
+        }
+      }
+      const defsChildren: ReturnType<typeof h>[] = [];
+      for (const color of usedColors) {
+        const colorId = markerColorId(color);
+        for (const type of BUILTIN_MARKER_TYPES) {
+          defsChildren.push(renderBuiltinMarker(type, color, colorId));
+        }
+        for (const customMarker of customMarkerById.values()) {
+          defsChildren.push(renderCustomMarker(customMarker, color, colorId));
+        }
+      }
 
       const bodySvg = h(
         'svg',
@@ -603,6 +799,7 @@ export const ChronixGantt = defineComponent({
           onPointercancel,
         },
         [
+          h('defs', { class: 'cx-gantt-defs' }, defsChildren),
           h('g', { class: 'cx-gantt-bars' }, barChildren),
           h('g', { class: 'cx-gantt-links', 'pointer-events': 'none' }, linkPathNodes),
         ],

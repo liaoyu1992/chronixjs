@@ -178,3 +178,160 @@ describe('<ChronixGantt> link rendering — Commit 1: paths', () => {
     expect(linksGroup.getAttribute('pointer-events')).toBe('none');
   });
 });
+
+describe('<ChronixGantt> link rendering — Commit 2: markers + colorOverride', () => {
+  it('emits 7 built-in <marker> defs for the default color (id `cx-marker-<type>-3788d8`)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput },
+    });
+    const defs = wrapper.find('defs.cx-gantt-defs').element;
+    const builtinTypes = [
+      'arrow',
+      'diamond',
+      'diamond-hollow',
+      'circle',
+      'circle-hollow',
+      'pointer',
+      'plus',
+    ];
+    for (const type of builtinTypes) {
+      const id = `cx-marker-${type}-3788d8`;
+      expect(defs.querySelector(`marker#${CSS.escape(id)}`)).not.toBeNull();
+    }
+  });
+
+  it('custom marker → one <marker> def per usedColor × customMarkerId, containing the path(s)', () => {
+    const customHeart = {
+      id: 'heart',
+      viewBox: '0 0 10 10',
+      paths: [{ d: 'M 5 8 L 1 4 L 5 0 L 9 4 Z', fill: 'red' }],
+    } as const;
+    const links: readonly LinkSpec[] = [
+      { id: 'l-custom', fromBarId: 'b1', toBarId: 'b2', routing: 'square', marker: customHeart },
+    ];
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput, links },
+    });
+    const defs = wrapper.find('defs.cx-gantt-defs').element;
+    const customDef = defs.querySelector(`marker#${CSS.escape('cx-marker-heart-3788d8')}`);
+    expect(customDef).not.toBeNull();
+    // viewBox preserved from CustomLinkMarker spec, and the single path
+    // emitted with its `d` and explicit `fill`.
+    expect(customDef!.getAttribute('viewBox')).toBe('0 0 10 10');
+    const pathEl = customDef!.querySelector('path');
+    expect(pathEl).not.toBeNull();
+    expect(pathEl!.getAttribute('d')).toBe('M 5 8 L 1 4 L 5 0 L 9 4 Z');
+    expect(pathEl!.getAttribute('fill')).toBe('red');
+  });
+
+  it('<path>.marker-end references the marker matching the link.marker type and color', () => {
+    const links: readonly LinkSpec[] = [
+      { id: 'l-1', fromBarId: 'b1', toBarId: 'b2', routing: 'square', marker: 'diamond' },
+    ];
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput, links },
+    });
+    const path = wrapper.find('path.cx-gantt-link');
+    expect(path.attributes('marker-end')).toBe('url(#cx-marker-diamond-3788d8)');
+  });
+
+  it('marker: "none" → <path> has no marker-end attribute', () => {
+    const links: readonly LinkSpec[] = [
+      { id: 'l-none', fromBarId: 'b1', toBarId: 'b2', routing: 'square', marker: 'none' },
+    ];
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput, links },
+    });
+    const path = wrapper.find('path.cx-gantt-link');
+    expect(path.attributes('marker-end')).toBeUndefined();
+  });
+
+  it('colorOverride → <path>.stroke + marker-end both use that color, and a matching marker def exists', () => {
+    const links: readonly LinkSpec[] = [
+      {
+        id: 'l-red',
+        fromBarId: 'b1',
+        toBarId: 'b2',
+        routing: 'square',
+        marker: 'arrow',
+        colorOverride: '#ef4444',
+      },
+    ];
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput, links },
+    });
+    const path = wrapper.find('path.cx-gantt-link');
+    expect(path.attributes('stroke')).toBe('#ef4444');
+    expect(path.attributes('marker-end')).toBe('url(#cx-marker-arrow-ef4444)');
+    // Matching marker def exists in <defs>.
+    const defs = wrapper.find('defs.cx-gantt-defs').element;
+    expect(defs.querySelector(`marker#${CSS.escape('cx-marker-arrow-ef4444')}`)).not.toBeNull();
+  });
+
+  it('no colorOverride → <path>.stroke uses defaultLinkColor prop (default `#3788d8`)', () => {
+    const links: readonly LinkSpec[] = [
+      { id: 'l-1', fromBarId: 'b1', toBarId: 'b2', routing: 'square', marker: 'arrow' },
+    ];
+    const wrapper1 = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput, links },
+    });
+    expect(wrapper1.find('path.cx-gantt-link').attributes('stroke')).toBe('#3788d8');
+
+    const wrapper2 = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput, links, defaultLinkColor: '#10b981' },
+    });
+    const path2 = wrapper2.find('path.cx-gantt-link');
+    expect(path2.attributes('stroke')).toBe('#10b981');
+    expect(path2.attributes('marker-end')).toBe('url(#cx-marker-arrow-10b981)');
+  });
+
+  it('built-in `arrow` marker has polygon points `"0 0, 4.5 2.25, 0 4.5"` (verbatim parity)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput },
+    });
+    const arrowMarker = wrapper
+      .find('defs.cx-gantt-defs')
+      .element.querySelector(`marker#${CSS.escape('cx-marker-arrow-3788d8')}`);
+    expect(arrowMarker).not.toBeNull();
+    const polygon = arrowMarker!.querySelector('polygon');
+    expect(polygon).not.toBeNull();
+    expect(polygon!.getAttribute('points')).toBe('0 0, 4.5 2.25, 0 4.5');
+    expect(polygon!.getAttribute('fill')).toBe('#3788d8');
+  });
+
+  it('built-in `diamond-hollow` marker has fill="white" + stroke=color', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: twoBars, rows, axisInput },
+    });
+    const marker = wrapper
+      .find('defs.cx-gantt-defs')
+      .element.querySelector(`marker#${CSS.escape('cx-marker-diamond-hollow-3788d8')}`);
+    expect(marker).not.toBeNull();
+    const polygon = marker!.querySelector('polygon');
+    expect(polygon!.getAttribute('fill')).toBe('white');
+    expect(polygon!.getAttribute('stroke')).toBe('#3788d8');
+  });
+
+  it('multiple links sharing a color → only one <marker> def per (type, color) pair (set-based dedupe)', () => {
+    const bars3: readonly BarSpec[] = [
+      bar('b1', 'r1', 1, 4),
+      bar('b2', 'r2', 8, 12),
+      bar('b3', 'r1', 15, 18),
+    ];
+    const links: readonly LinkSpec[] = [
+      { id: 'l-1', fromBarId: 'b1', toBarId: 'b2', routing: 'square', marker: 'arrow' },
+      { id: 'l-2', fromBarId: 'b2', toBarId: 'b3', routing: 'square', marker: 'arrow' },
+      { id: 'l-3', fromBarId: 'b1', toBarId: 'b3', routing: 'square', marker: 'diamond' },
+    ];
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: bars3, rows, axisInput, links },
+    });
+    const defs = wrapper.find('defs.cx-gantt-defs').element;
+    // Exactly one arrow marker for the default color, not three.
+    const arrowMarkers = defs.querySelectorAll(`marker#${CSS.escape('cx-marker-arrow-3788d8')}`);
+    expect(arrowMarkers).toHaveLength(1);
+    // The 7 built-in markers × 1 color = 7 total marker nodes (no
+    // custom markers in this case).
+    expect(defs.querySelectorAll('marker')).toHaveLength(7);
+  });
+});
