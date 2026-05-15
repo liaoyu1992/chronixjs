@@ -1671,3 +1671,128 @@ describe('<ChronixGantt> slot registry (Phase 11)', () => {
     expect(wrapper.findAll('rect.cx-gantt-bar')).toHaveLength(1);
   });
 });
+
+describe('<ChronixGantt> selection model (Phase 12)', () => {
+  it("plain click on bar body emits 'bar-click' with { barId, sourceBar, jsEvent }", async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [bar('b1', 'r1', 8, 12)], rows, axisInput },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    // Pointerdown + pointerup at the same coords (no movement) inside
+    // bar 'b1' content bounds (x ∈ [480, 720], y ∈ [8, 38]).
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 600, clientY: 20, pointerId: 1 });
+
+    const emitted = wrapper.emitted('bar-click');
+    expect(emitted).toBeTruthy();
+    expect(emitted).toHaveLength(1);
+    const payload = emitted![0]![0] as { barId: string; sourceBar: { id: string } };
+    expect(payload.barId).toBe('b1');
+    expect(payload.sourceBar.id).toBe('b1');
+  });
+
+  it("'bar-click' does NOT fire after a non-zero-delta drag commit", async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [bar('b1', 'r1', 8, 12)], rows, axisInput, editable: true },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    // Real drag: pointerdown → move +60px → pointerup.
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: 20, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 660, clientY: 20, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-drop')).toBeTruthy();
+    expect(wrapper.emitted('bar-click')).toBeFalsy();
+  });
+
+  it("plain click on bar edge (resize zone) emits NEITHER 'bar-click' NOR 'bar-resize' for zero-delta", async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [bar('b1', 'r1', 8, 12)], rows, axisInput, editable: true },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    // Bar end edge at x=720; default 8-px end zone is [712, 720]. Click 715, no movement.
+    await svg.trigger('pointerdown', { clientX: 715, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 715, clientY: 20, pointerId: 1 });
+    // Zero-delta bar-resize aborts; click discrimination on hit.kind
+    // !== 'bar-body' also skips 'bar-click'.
+    expect(wrapper.emitted('bar-click')).toBeFalsy();
+    expect(wrapper.emitted('bar-resize')).toBeFalsy();
+  });
+
+  it("selectedBarIds prop applies '.cx-gantt-bar--selected' class to the matching default rect", () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 1, 4)],
+        rows,
+        axisInput,
+        selectedBarIds: ['b2'],
+      },
+    });
+    const b1 = wrapper.find('[data-bar-id="b1"]');
+    const b2 = wrapper.find('[data-bar-id="b2"]');
+    expect(b1.classes()).toContain('cx-gantt-bar');
+    expect(b1.classes()).not.toContain('cx-gantt-bar--selected');
+    expect(b2.classes()).toContain('cx-gantt-bar');
+    expect(b2.classes()).toContain('cx-gantt-bar--selected');
+  });
+
+  it('selectedBarIds propagates to BarSlotArgs.isSelected for the matching bar', () => {
+    const seen: { barId: string; isSelected: boolean }[] = [];
+    const registry = createSlotRegistry();
+    registry.register(BAR_SLOT_NAME, (ctx) => {
+      const args = ctx.args as unknown as BarSlotArgs;
+      seen.push({ barId: args.placedBar.barId, isSelected: args.isSelected });
+      return h('rect');
+    });
+    mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12), bar('b2', 'r2', 1, 4)],
+        rows,
+        axisInput,
+        selectedBarIds: ['b1'],
+        slotRegistry: registry,
+      },
+    });
+    expect(seen).toHaveLength(2);
+    const b1 = seen.find((s) => s.barId === 'b1');
+    const b2 = seen.find((s) => s.barId === 'b2');
+    expect(b1?.isSelected).toBe(true);
+    expect(b2?.isSelected).toBe(false);
+  });
+
+  it("plain click on empty row emits 'empty-area-click' with { rowId, jsEvent }", async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [], // empty so click on row hits empty-row, not bar-body
+        rows,
+        axisInput,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    // Click on row r1 (y=20).
+    await svg.trigger('pointerdown', { clientX: 200, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 200, clientY: 20, pointerId: 1 });
+
+    const emitted = wrapper.emitted('empty-area-click');
+    expect(emitted).toBeTruthy();
+    expect(emitted).toHaveLength(1);
+    const payload = emitted![0]![0] as { rowId: string | null };
+    expect(payload.rowId).toBe('r1');
+    // No bar-click (no bar at that position).
+    expect(wrapper.emitted('bar-click')).toBeFalsy();
+  });
+
+  it('zero-delta drag (click with editable=true) emits bar-click, not bar-drop', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [bar('b1', 'r1', 8, 12)], rows, axisInput, editable: true },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    // editable=true → pointerdown starts bar-drag. Pointerup with no
+    // movement = 0-delta → aborts the txn → click fires.
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 600, clientY: 20, pointerId: 1 });
+
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+    expect(wrapper.emitted('bar-click')).toBeTruthy();
+  });
+});

@@ -36,6 +36,15 @@ export interface BarSlotArgs {
   readonly renderHeight: number;
   readonly theme: ChronixTheme;
   readonly activeTransaction: AnyTransaction | null;
+  /**
+   * Whether this bar's id is in the adapter's `selectedBarIds` prop.
+   * Phase 12 addition — custom renderers can react visually (e.g.
+   * thicker stroke, glow, accent fill) when a bar is selected. The
+   * default `<rect>` path applies `.cx-gantt-bar--selected` class
+   * automatically; slot renderers own their visual representation
+   * and use this flag to drive their own selected-state styling.
+   */
+  readonly isSelected: boolean;
 }
 
 /**

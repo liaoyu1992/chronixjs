@@ -139,6 +139,15 @@ body {
   cursor: move;
 }
 
+/* Phase 12 selection state — accent stroke when the consumer's
+   `selectedBarIds` includes this bar. The class is added by the
+   adapter automatically on the default <rect>. Custom slot
+   renderers receive `BarSlotArgs.isSelected` and own their visual. */
+.cx-gantt-bar--selected {
+  stroke: #f59e0b;
+  stroke-width: 3;
+}
+
 .cx-demo-side h2 {
   font-size: 14px;
   font-weight: 600;

@@ -164,6 +164,14 @@ export interface UseGanttPointerOutput {
    * function of `activeTransaction` + `strips`.
    */
   readonly projectedRowId: ComputedRef<string | null>;
+  /**
+   * `true` if the most recent `commit()` finalized a transaction.
+   * Reset to `false` at the next `begin()`. Used by the adapter's
+   * click-vs-drag discrimination — a pointerup that committed any
+   * transaction (drag, resize, progress, range-select) should NOT
+   * also fire `'bar-click'`. Phase 12 addition.
+   */
+  readonly wasDragCommit: ComputedRef<boolean>;
 }
 
 const REQUIRE_HIT: PointerCaptureConfig = { requireInitialHit: true };
@@ -185,6 +193,11 @@ const ALLOW_MISS: PointerCaptureConfig = { requireInitialHit: false };
 export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOutput {
   const transaction = ref<AnyTransaction | null>(null);
   const lastHitResult = ref<PointerHitResult | null>(null);
+  // Set by `commit()`; reset by `begin()`. The adapter reads it during
+  // the pointerup handler to decide whether to also emit `'bar-click'`
+  // — a click that came AFTER a committed drag/resize/progress should
+  // not fire click. Phase 12.
+  const dragCommittedFlag = ref(false);
 
   function pxPerMs(): number {
     const a = toValue(input.axis);
@@ -237,6 +250,10 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   }
 
   function begin(contentX: number, contentY: number): void {
+    // Phase 12: reset the drag-committed flag at the start of every
+    // pointer interaction. The adapter checks this at pointerup to
+    // decide whether to also fire `'bar-click'`.
+    dragCommittedFlag.value = false;
     const overlayMap = toValue(input.overlayIdByBarId);
     const handleRects = progressHandleRectsByBarId.value;
     const hit = defaultPointerHitTester.test({
@@ -333,8 +350,13 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     else if (txn.kind === 'progress-handle') commitProgress(txn);
     else if (txn.kind === 'calendar-range-select') commitSelect(txn, snapDurationMs);
 
+    // Phase 12: mark that a commit fired so the adapter's pointerup
+    // handler suppresses the subsequent `'bar-click'` emit.
+    dragCommittedFlag.value = true;
     transaction.value = null;
-    lastHitResult.value = null;
+    // NOTE: lastHitResult is intentionally retained until the next
+    // begin() — the adapter's post-commit click decision still reads
+    // it to know which bar would have been clicked.
   }
 
   function commitDrag(txn: BarDragTransaction, snapDurationMs: number | undefined): void {
@@ -427,5 +449,6 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     activeTransaction: computed(() => transaction.value),
     lastHit: computed(() => lastHitResult.value),
     projectedRowId,
+    wasDragCommit: computed(() => dragCommittedFlag.value),
   };
 }

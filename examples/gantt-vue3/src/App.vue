@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { AxisRangePlanInput, BarSpec } from '@chronixjs/gantt';
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
+import { ChronixGantt, useGanttSelection } from '@chronixjs/gantt-vue3';
 import type {
+  BarClickPayload,
   BarDropPayload,
   BarProgressPayload,
   BarResizePayload,
   ColumnSpec,
+  EmptyAreaClickPayload,
   SelectPayload,
 } from '@chronixjs/gantt-vue3';
 import { computed, ref } from 'vue';
@@ -44,11 +46,23 @@ const viewId = ref<ViewId>('day');
 
 interface DemoEvent {
   readonly id: number;
-  readonly kind: 'bar-drop' | 'bar-resize' | 'select' | 'bar-progress';
+  readonly kind:
+    | 'bar-drop'
+    | 'bar-resize'
+    | 'select'
+    | 'bar-progress'
+    | 'bar-click'
+    | 'empty-area-click';
   readonly detail: string;
 }
 const events = ref<DemoEvent[]>([]);
 let nextEventId = 0;
+
+// Phase 12: selection helper. Default single + shift-toggle multi-select
+// with auto-clear-on-empty-click. Bound below as :selected-bar-ids +
+// @bar-click + @empty-area-click. The composable owns the state; the
+// adapter is fully controlled via the prop.
+const selection = useGanttSelection();
 
 const axisInput = computed<AxisRangePlanInput>(() => ({
   viewId: viewId.value,
@@ -103,6 +117,20 @@ function onBarResize(p: BarResizePayload): void {
 
 function onSelect(p: SelectPayload): void {
   pushEvent('select', `${p.rowId}: ${fmtRange(p.range)}`);
+}
+
+function onBarClick(p: BarClickPayload): void {
+  selection.handleBarClick(p);
+  const mode = p.jsEvent.shiftKey ? '+shift' : 'single';
+  pushEvent(
+    'bar-click',
+    `${p.barId} [${mode}] → selection: ${selection.selectedBarIds.value.join(', ') || '(none)'}`,
+  );
+}
+
+function onEmptyAreaClick(p: EmptyAreaClickPayload): void {
+  selection.handleEmptyAreaClick(p);
+  pushEvent('empty-area-click', `${p.rowId ?? '(outside)'} → selection cleared`);
 }
 
 function onBarProgress(p: BarProgressPayload): void {
@@ -165,12 +193,15 @@ function resetBars(): void {
           :axis-input="axisInput"
           :columns="columns"
           :links="sampleLinks"
+          :selected-bar-ids="selection.selectedBarIds.value"
           :editable="editable"
           :selectable="selectable"
           @bar-drop="onBarDrop"
           @bar-resize="onBarResize"
           @select="onSelect"
           @bar-progress="onBarProgress"
+          @bar-click="onBarClick"
+          @empty-area-click="onEmptyAreaClick"
         />
       </div>
     </main>

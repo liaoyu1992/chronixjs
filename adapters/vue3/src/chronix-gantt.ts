@@ -9,6 +9,7 @@ import {
   type BarResizePayload,
   type SelectPayload,
 } from './use-gantt-pointer.js';
+import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
 
 import type {
   AxisRangePlanInput,
@@ -342,6 +343,19 @@ export const ChronixGantt = defineComponent({
       type: Object as PropType<SlotRegistry | undefined>,
       default: undefined,
     },
+    /**
+     * Controlled selection: the bar ids the consumer considers
+     * currently selected. The default `<rect>` gets a
+     * `.cx-gantt-bar--selected` class for every selected bar, and
+     * the `BarSlotArgs.isSelected` flag passes through to custom
+     * slot renderers. The adapter never mutates this prop — listen
+     * for `'bar-click'` / `'empty-area-click'` and update the array
+     * upstream (manually or via `useGanttSelection()` helper).
+     */
+    selectedBarIds: {
+      type: Array as PropType<readonly string[]>,
+      default: () => [] as readonly string[],
+    },
   },
   emits: {
     'bar-drop': (_payload: BarDropPayload) => true,
@@ -349,6 +363,8 @@ export const ChronixGantt = defineComponent({
     select: (_payload: SelectPayload) => true,
     'bar-progress': (_payload: BarProgressPayload) => true,
     'link-orphan': (_linkId: string) => true,
+    'bar-click': (_payload: BarClickPayload) => true,
+    'empty-area-click': (_payload: EmptyAreaClickPayload) => true,
   },
   setup(props, { emit }) {
     // Effective theme: merge consumer overrides over chronix defaults.
@@ -385,6 +401,10 @@ export const ChronixGantt = defineComponent({
     // cross-row snap logic. Rebuilds whenever the layout passes
     // re-derive (axis switch, bar / row changes).
     const stripByRowId = computed(() => new Map(strips.value.map((s) => [s.rowId, s])));
+
+    // Selected-bar lookup for O(1) `isSelected` checks in the render
+    // path. Phase 12.
+    const selectedBarSet = computed(() => new Set(props.selectedBarIds));
 
     // Per-bar overlay-group id (only bars that declared a
     // `pointerOverlayId`) and per-bar progress (0..100, only bars with a
@@ -499,8 +519,43 @@ export const ChronixGantt = defineComponent({
     }
 
     function onPointerup(e: PointerEvent): void {
-      if (!pointer.activeTransaction.value) return;
-      pointer.commit();
+      // Phase 12 click-vs-drag discrimination:
+      //
+      // 1. If an active transaction exists, decide whether it's a real
+      //    drag/resize/progress/range-select or just a zero-delta pointerdown
+      //    that should be treated as a click. 0-delta `bar-drag` /
+      //    `bar-resize` / `calendar-range-select` aborts (no onBarDrop /
+      //    onBarResize / onSelect fires); `progress-handle` always commits
+      //    since reaching the handle hit zone is itself the intent.
+      // 2. After the transaction lifecycle resolves, check `wasDragCommit`
+      //    + the preserved `lastHit` to fire `'bar-click'` / `'empty-area-click'`.
+      const txn = pointer.activeTransaction.value;
+      const hit = pointer.lastHit.value;
+      if (txn) {
+        const isNoOpDrag =
+          (txn.kind === 'bar-drag' && txn.deltaX === 0 && txn.deltaY === 0) ||
+          (txn.kind === 'bar-resize' && txn.deltaX === 0) ||
+          (txn.kind === 'calendar-range-select' &&
+            txn.currentTime.getTime() === txn.anchorTime.getTime());
+        if (isNoOpDrag) {
+          pointer.abort();
+        } else {
+          pointer.commit();
+        }
+      }
+      // Click emit only fires when no transaction committed (so a real
+      // drag never doubles as a click). For 0-delta aborts the flag
+      // stays false so the click does fire — that's the intended path.
+      if (!pointer.wasDragCommit.value && hit) {
+        if (hit.kind === 'bar-body') {
+          const sourceBar = props.bars.find((b) => b.id === hit.barId);
+          if (sourceBar) {
+            emit('bar-click', { barId: hit.barId, sourceBar, jsEvent: e });
+          }
+        } else if (hit.kind === 'empty-row') {
+          emit('empty-area-click', { rowId: hit.rowId, jsEvent: e });
+        }
+      }
       bodySvgRef.value?.releasePointerCapture?.(e.pointerId);
     }
 
@@ -692,7 +747,9 @@ export const ChronixGantt = defineComponent({
         // Bar render: prefer a registered `'bar'` slot template when
         // present; fall back to the default `<rect class="cx-gantt-bar">`.
         // The slot template receives the same live geometry the default
-        // would use, plus the effective theme + in-flight transaction.
+        // would use, plus the effective theme + in-flight transaction +
+        // selection state.
+        const isSelected = selectedBarSet.value.has(bar.barId);
         const barTemplate = props.slotRegistry?.get(BAR_SLOT_NAME);
         const nodes: ReturnType<typeof h>[] = [];
         if (barTemplate) {
@@ -707,6 +764,7 @@ export const ChronixGantt = defineComponent({
               renderHeight: bar.height,
               theme: t,
               activeTransaction: activeTxn,
+              isSelected,
             };
             // `SlotContext.args` is typed `Readonly<Record<string, unknown>>`
             // because core can't know per-slot shapes — cast through
@@ -728,7 +786,7 @@ export const ChronixGantt = defineComponent({
             h('rect', {
               key: bar.barId,
               'data-bar-id': bar.barId,
-              class: 'cx-gantt-bar',
+              class: isSelected ? 'cx-gantt-bar cx-gantt-bar--selected' : 'cx-gantt-bar',
               x: renderX,
               y: renderY,
               width: renderWidth,
