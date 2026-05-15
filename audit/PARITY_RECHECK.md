@@ -193,7 +193,7 @@ K-ui's `CustomMarkerDef.render({ markerId, color, direction })` is a user-suppli
 
 ##### 10–11. Wrapper layout (sticky-header scroll plumbing) (🟡)
 
-K-ui has TWO independent scroll containers (`gantt-timeline-body-left` + `gantt-timeline-body-right`) with JS-coordinated vertical sync + horizontal `translateX` on header. Chronix has ONE scroll container with `position: sticky`. K-ui's two-container approach allows a horizontally-scrollable sidebar (multi-column resource panel wider than visible sidebar); chronix v0 doesn't. **Park** as a known limitation.
+K-ui has TWO independent scroll containers (`gantt-timeline-body-left` + `gantt-timeline-body-right`) with JS-coordinated vertical sync + horizontal `translateX` on header. Chronix has ONE scroll container with `position: sticky`. K-ui's two-container approach allows a horizontally-scrollable sidebar (multi-column resource panel wider than visible sidebar); chronix v0 doesn't. Surfaced visually in Phase 21 session (2026-05-16) — user observed k-ui's sidebar has its own scrollbar but chronix's wrapper has one combined scrollbar. **→ Tracked as Phase 23 (sidebar dual-scrollport architecture)**. Promoted from "Park" to "Planned" so the entry doesn't drift into forgotten state per `feedback_no_logic_drift_from_kui.md`. Scope sketch: split current single wrapper into two `overflow: auto` scrollports (sidebar + timeline body), add JS scroll-sync for vertical alignment, replace `position: sticky` header pinning with `translateX`-driven horizontal sync, capture new VRT baselines (cross-demo + chronix-VRT) for the scroll behavior. Estimated ~6-8h single session.
 
 ##### 14. Sidebar divider — RTL (🟡)
 
