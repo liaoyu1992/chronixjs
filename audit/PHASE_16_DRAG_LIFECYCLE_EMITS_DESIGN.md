@@ -1,6 +1,12 @@
 # Phase 16 — Drag / resize lifecycle emits (`bar-dragstart` / `bar-dragstop` / `bar-resizestart` / `bar-resizestop`)
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-15)**. Landed as 3 commits: `e53e6fa`
+(design doc) → `6594f70` (Commit 1: useGanttPointer lifecycle
+callbacks + 6 tests) → `30d16cd` (Commit 2: adapter emits + payload
+enrichment + 4 SFC tests + demo wiring). +10 vitest; chronix total
+364 → 374. 5 chronix VRT baselines re-verified idempotent (runtime-
+only change; no DOM). See `audit/journal/2026-05-13.md` "Phase 16"
+section.
 
 > Phase 15 numbering is intentionally skipped — the original Phase 13
 > note proposed Phase 15 as "`bar-dblclick` + `bar-contextmenu`", but
