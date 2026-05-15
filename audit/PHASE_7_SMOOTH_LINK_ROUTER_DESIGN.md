@@ -1,6 +1,6 @@
 # Phase 7 — Smooth LinkRouter (cubic Bézier routing)
 
-**Status**: **Approved (2026-05-15)**. Forward-only scope; reference's empirical control-point formula matched verbatim; link rendering in `<ChronixGantt>` parked. Implementation starting.
+**Status**: **DONE (2026-05-15)**. Landed as 2 commits: `975a2ad` (design doc), `b686dcd` (implementation + 6 new tests). 17 link-router tests pass; ci-check fully green. See `audit/journal/2026-05-13.md` "Phase 7" section for the post-mortem.
 
 ## Problem
 
