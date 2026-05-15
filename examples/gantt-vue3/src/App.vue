@@ -27,33 +27,58 @@ import type {
 } from '@chronixjs/gantt-vue3';
 import { computed, ref } from 'vue';
 
+import { bool, describeConfigSchema, enumOf, useDemoConfig } from './demo-config';
 import { sampleBars, sampleLinks, sampleRows, todayLocalMidnight } from './sample-data';
 import { sampleBarsParity, sampleRowsParity } from './sample-data-parity';
-
-/**
- * **Parity mode** toggle: load with `?parity=true` to swap the demo's
- * sample data for the k-ui-equivalent dataset (32 resources matching
- * k-ui's RESOURCES ids, 25 events with `event-N` ids matching
- * k-ui's events). Enables side-by-side cross-demo parity assertions
- * in `tooling/golden-runner/tests/parity.spec.ts`. See
- * `audit/PHASE_17_PARITY_INFRASTRUCTURE_DESIGN.md`.
- *
- * SSR-safe: `typeof window` check protects against `window` being
- * undefined at module-load in server-side build. Vite's dev / build
- * runs in the browser so the flag flips correctly there.
- */
-const isParityMode =
-  typeof window !== 'undefined' &&
-  new URLSearchParams(window.location.search).get('parity') === 'true';
-
-const initialBars = isParityMode ? sampleBarsParity : sampleBars;
-const initialRows = isParityMode ? sampleRowsParity : sampleRows;
-// Parity-mode hides the demo's dependency links (k-ui demo's links
-// don't map 1:1 to chronix LinkSpec shapes and styling parity is
-// parked); keep the demo's link rendering in default mode only.
-const initialLinks = isParityMode ? [] : sampleLinks;
+import {
+  PARITY_REFERENCE_COLOR,
+  THEMED_BAR_BACKGROUND,
+  THEMED_BAR_BORDER,
+  UMBRELLA_BAR_COLOR,
+  sampleEventAllow,
+  sampleEventConstraint,
+  sampleEventOverlap,
+  samplePriorityCallback,
+  sampleSelectAllow,
+} from './sample-callbacks';
 
 type ViewId = AxisRangePlanInput['viewId'];
+
+/**
+ * **Phase 20.6: demo config schema.**
+ *
+ * Every toggle in the demo is one entry here. Adding a new
+ * Phase-21+ toggle = 1 line (`newToggle: bool(false, '...')`)
+ * + bind it in the template + read it in the appropriate
+ * `computed` for `<ChronixGantt>` props. URL is source of
+ * truth: `?editable=false&priorityCallback=true&...`.
+ *
+ * The `<details>` panel at page bottom is auto-rendered from
+ * this schema (no hand-maintained URL docs).
+ */
+const DEMO_SCHEMA = {
+  view: enumOf<ViewId>(['day', 'week', 'month', 'season', 'halfYear', 'year'], 'day', 'Initial timeline view'),
+  editable: bool(true, 'Enable bar drag + edge resize'),
+  selectable: bool(true, 'Enable calendar range-select on empty rows'),
+  parity: bool(false, 'Swap demo data to k-ui-equivalent dataset (32 resources × 25 events)'),
+  // Phase 19 validators
+  eventOverlap: bool(false, 'Reject cross-row time-intersecting drops'),
+  eventConstraint: bool(false, 'Constrain drag/resize destination to today 08:00–20:00'),
+  eventAllow: bool(false, 'Reject drops/resizes whose start is before 08:00'),
+  selectAllow: bool(false, 'Reject range-selects wider than 4 hours'),
+  // Phase 20 bar styling
+  themedBars: bool(false, 'Override bar bg + border via component props'),
+  umbrellaColor: bool(false, 'Use barColor umbrella prop (sets both fill + stroke)'),
+  priorityCallback: bool(false, 'Per-priority bar background callback (high/medium/low)'),
+} as const;
+
+const cfg = useDemoConfig(DEMO_SCHEMA);
+
+const initialBars = cfg.parity.value ? sampleBarsParity : sampleBars;
+const initialRows = cfg.parity.value ? sampleRowsParity : sampleRows;
+// Parity-mode hides the demo's dependency links — k-ui's links don't
+// map 1:1 to chronix `LinkSpec` shapes and styling parity is parked.
+const initialLinks = cfg.parity.value ? [] : sampleLinks;
 
 const VIEW_TOGGLE: readonly { readonly id: ViewId; readonly label: string }[] = [
   { id: 'day', label: '日' },
@@ -67,21 +92,16 @@ const VIEW_TOGGLE: readonly { readonly id: ViewId; readonly label: string }[] = 
 // Resource-panel column descriptors. Three columns demonstrate
 // Phase 5.x's vGrouping rowspan merge: 地区 + 基地 are flagged
 // `group: true` so consecutive rows that share their value collapse
-// into one cell (海口 across the first three rows, 海口基地 across
-// the first two). 车间 is the leaf column with one cell per row.
+// into one cell.
 const columns: readonly ColumnSpec[] = [
   { key: 'region', label: '地区', width: 60, group: true },
   { key: 'base', label: '基地', width: 100, group: true },
   { key: 'name', label: '车间', width: 80 },
 ];
 
-// Reactive copy of the bar set — drag / resize results mutate this in
-// place so the demo shows a real end-to-end round-trip (commit →
-// re-layout → re-render).
+// Reactive copy of the bar set — drag / resize commits mutate this in
+// place so the demo shows a real end-to-end round-trip.
 const bars = ref<BarSpec[]>(initialBars.map((b) => ({ ...b })));
-const editable = ref(true);
-const selectable = ref(true);
-const viewId = ref<ViewId>('day');
 
 interface DemoEvent {
   readonly id: number;
@@ -105,118 +125,61 @@ const events = ref<DemoEvent[]>([]);
 let nextEventId = 0;
 
 // Phase 12: selection helper. Default single + shift-toggle multi-select
-// with auto-clear-on-empty-click. Bound below as :selected-bar-ids +
-// @bar-click + @empty-area-click. The composable owns the state; the
-// adapter is fully controlled via the prop.
+// with auto-clear-on-empty-click.
 const selection = useGanttSelection();
 
-// Phase 19: 4 toggleable validators. Each defaults OFF so the demo's
-// baseline behavior matches pre-Phase-19 (every drag/resize/select
-// commits unconditionally). Flip a checkbox to see the gate fire.
-const useEventOverlap = ref(false);
-const useEventConstraint = ref(false);
-const useEventAllow = ref(false);
-const useSelectAllow = ref(false);
+// `?priorityCallback=true` is wired in parity mode so the cross-demo
+// color parity test has matching colors. Independent from the
+// toggle UI (which is for default mode users to flip live).
+const isPriorityCallbackParity = cfg.priorityCallback.value && cfg.parity.value;
 
-// Sample predicate: reject any cross-row time-intersecting bar.
-const sampleEventOverlap: EventOverlapFunc | boolean = false;
+// ─── Computed validator + styling props passed to <ChronixGantt>. ───
+//
+// Each is `undefined` when the toggle is off so the gate stays
+// inactive. Parity mode pins specific styling values so the
+// cross-demo color parity tests have deterministic baselines.
 
-// Sample constraint: today only, weekdays' working hours (8:00..20:00).
-const sampleEventConstraint: EventConstraint = {
-  range: {
-    start: (() => {
-      const d = todayLocalMidnight();
-      d.setHours(8, 0, 0, 0);
-      return d;
-    })(),
-    end: (() => {
-      const d = todayLocalMidnight();
-      d.setHours(20, 0, 0, 0);
-      return d;
-    })(),
-  },
-};
-
-// Sample eventAllow: only allow drops/resizes whose start hour is >= 8.
-const sampleEventAllow: EventAllowFunc = (proposal) => proposal.range.start.getHours() >= 8;
-
-// Sample selectAllow: only allow ranges <= 4 hours wide.
-const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
-const sampleSelectAllow: SelectAllowFunc = (proposal) =>
-  proposal.range.end.getTime() - proposal.range.start.getTime() <= FOUR_HOURS_MS;
-
-// Computed validator props passed to <ChronixGantt>. Each is undefined
-// when the toggle is off so the validation gate stays inactive.
 const activeEventOverlap = computed<boolean | EventOverlapFunc | undefined>(() =>
-  useEventOverlap.value ? sampleEventOverlap : undefined,
+  cfg.eventOverlap.value ? sampleEventOverlap : undefined,
 );
 const activeEventConstraint = computed<EventConstraint | undefined>(() =>
-  useEventConstraint.value ? sampleEventConstraint : undefined,
+  cfg.eventConstraint.value ? sampleEventConstraint : undefined,
 );
 const activeEventAllow = computed<EventAllowFunc | undefined>(() =>
-  useEventAllow.value ? sampleEventAllow : undefined,
+  cfg.eventAllow.value ? sampleEventAllow : undefined,
 );
 const activeSelectAllow = computed<SelectAllowFunc | undefined>(() =>
-  useSelectAllow.value ? sampleSelectAllow : undefined,
+  cfg.selectAllow.value ? sampleSelectAllow : undefined,
 );
 
-// Phase 20: bar color pipeline toggles. Three opt-in toggles default
-// OFF so the baseline render is unchanged (theme defaults match the
-// prior `.cx-gantt-bar { fill }` CSS literals byte-for-byte).
-const useThemedBars = ref(false);
-const useUmbrellaColor = ref(false);
-const usePriorityCallback = ref(false);
-
-const PRIORITY_BACKGROUND: Record<string, string> = {
-  high: '#ef4444',
-  medium: '#f59e0b',
-  low: '#84cc16',
-};
-
-const samplePriorityCallback: BarColorFunc = (arg) => {
-  const priority = (arg.bar.extendedProps as { priority?: string } | undefined)?.priority;
-  return priority ? PRIORITY_BACKGROUND[priority] : undefined;
-};
-
-// `?priorityCallback=true` URL flag wires the same callback in parity
-// mode so the cross-demo color parity test has matching colors on
-// both sides. Independent from the toggle UI (which is for default
-// demo mode).
-const isPriorityCallbackParity =
-  typeof window !== 'undefined' &&
-  new URLSearchParams(window.location.search).get('priorityCallback') === 'true';
-
-// Parity mode pins specific component-prop defaults so the rendered
-// bar fill matches the reference's `eventBorderColor: '#3788d8'`
-// default. The reference demo's `eventBackgroundColor` is unset, so
-// k-ui uses the same color for both bg and border per its own
-// background-overrides-border umbrella semantic.
 const activeBarBackgroundColor = computed<string | undefined>(() => {
-  if (isParityMode) return '#3788d8';
-  if (useThemedBars.value) return '#10b981';
+  if (cfg.parity.value) return PARITY_REFERENCE_COLOR;
+  if (cfg.themedBars.value) return THEMED_BAR_BACKGROUND;
   return undefined;
 });
 const activeBarBorderColor = computed<string | undefined>(() => {
-  if (isParityMode) return '#3788d8';
-  if (useThemedBars.value) return '#047857';
+  if (cfg.parity.value) return PARITY_REFERENCE_COLOR;
+  if (cfg.themedBars.value) return THEMED_BAR_BORDER;
   return undefined;
 });
 const activeBarColor = computed<string | undefined>(() =>
-  useUmbrellaColor.value ? '#8b5cf6' : undefined,
+  cfg.umbrellaColor.value ? UMBRELLA_BAR_COLOR : undefined,
 );
 const activeBarBackgroundCallback = computed<BarColorFunc | undefined>(() => {
   if (isPriorityCallbackParity) return samplePriorityCallback;
-  if (usePriorityCallback.value) return samplePriorityCallback;
+  if (cfg.priorityCallback.value) return samplePriorityCallback;
   return undefined;
 });
 
 const axisInput = computed<AxisRangePlanInput>(() => ({
-  viewId: viewId.value,
+  viewId: cfg.view.value,
   anchorDate: todayLocalMidnight(),
   viewportWidth: 1440,
   locale: 'zh-CN',
   weekendsVisible: true,
 }));
+
+const schemaDocs = describeConfigSchema(DEMO_SCHEMA);
 
 function pushEvent(kind: DemoEvent['kind'], detail: string): void {
   events.value = [...events.value, { id: nextEventId++, kind, detail }].slice(-20);
@@ -312,9 +275,6 @@ function onBarResizeStop(p: BarResizeStopPayload): void {
   pushEvent('bar-resizestop', `${p.barId} (${p.edge})`);
 }
 
-// Phase 19: rejection handlers. Mirror the commit handlers but skip
-// the local `bars` mutation (the commit was vetoed; nothing changed)
-// and log the failing predicate's reason.
 function onBarDropRejected(p: BarDropRejectedPayload): void {
   pushEvent(
     'bar-drop-rejected',
@@ -343,7 +303,7 @@ function resetBars(): void {
 <template>
   <div class="cx-demo-app">
     <main class="cx-demo-main">
-      <div v-if="isParityMode" class="cx-demo-parity-banner" data-parity-mode="true">
+      <div v-if="cfg.parity.value" class="cx-demo-parity-banner" data-parity-mode="true">
         Parity mode active — sample data mirrors the parity-reference demo ({{
           initialBars.length
         }}
@@ -359,18 +319,18 @@ function resetBars(): void {
               :key="view.id"
               type="button"
               class="cx-demo-view-toggle-button"
-              :class="{ active: viewId === view.id }"
-              @click="viewId = view.id"
+              :class="{ active: cfg.view.value === view.id }"
+              @click="cfg.view.value = view.id"
             >
               {{ view.label }}
             </button>
           </div>
           <label>
-            <input v-model="editable" type="checkbox" />
+            <input v-model="cfg.editable.value" type="checkbox" />
             editable
           </label>
           <label>
-            <input v-model="selectable" type="checkbox" />
+            <input v-model="cfg.selectable.value" type="checkbox" />
             selectable
           </label>
           <button type="button" @click="resetBars">reset</button>
@@ -378,34 +338,34 @@ function resetBars(): void {
         <div class="cx-demo-validation-toggles" role="group" aria-label="validation gates">
           <span class="cx-demo-validation-label">validation (Phase 19):</span>
           <label title="Reject cross-row time-intersecting drops">
-            <input v-model="useEventOverlap" type="checkbox" />
+            <input v-model="cfg.eventOverlap.value" type="checkbox" />
             eventOverlap: false
           </label>
           <label title="Constrain drag/resize destination to today 08:00–20:00">
-            <input v-model="useEventConstraint" type="checkbox" />
+            <input v-model="cfg.eventConstraint.value" type="checkbox" />
             eventConstraint
           </label>
           <label title="Reject drops/resizes that start before 08:00">
-            <input v-model="useEventAllow" type="checkbox" />
+            <input v-model="cfg.eventAllow.value" type="checkbox" />
             eventAllow ≥ 8am
           </label>
           <label title="Reject range-selects wider than 4 hours">
-            <input v-model="useSelectAllow" type="checkbox" />
+            <input v-model="cfg.selectAllow.value" type="checkbox" />
             selectAllow ≤ 4h
           </label>
         </div>
         <div class="cx-demo-validation-toggles" role="group" aria-label="bar styling">
           <span class="cx-demo-validation-label">bar styling (Phase 20):</span>
           <label title="barBackgroundColor + barBorderColor at component level">
-            <input v-model="useThemedBars" type="checkbox" />
+            <input v-model="cfg.themedBars.value" type="checkbox" />
             themed bars
           </label>
           <label title="barColor umbrella sets both fill + stroke">
-            <input v-model="useUmbrellaColor" type="checkbox" />
+            <input v-model="cfg.umbrellaColor.value" type="checkbox" />
             umbrella color
           </label>
           <label title="barBackgroundColorCallback: per-priority colors via extendedProps">
-            <input v-model="usePriorityCallback" type="checkbox" />
+            <input v-model="cfg.priorityCallback.value" type="checkbox" />
             priority callback
           </label>
         </div>
@@ -418,8 +378,8 @@ function resetBars(): void {
           :columns="columns"
           :links="initialLinks"
           :selected-bar-ids="selection.selectedBarIds.value"
-          :editable="editable"
-          :selectable="selectable"
+          :editable="cfg.editable.value"
+          :selectable="cfg.selectable.value"
           :event-overlap="activeEventOverlap"
           :event-constraint="activeEventConstraint"
           :event-allow="activeEventAllow"
@@ -443,6 +403,29 @@ function resetBars(): void {
           @select-rejected="onSelectRejected"
         />
       </div>
+      <details class="cx-demo-url-schema">
+        <summary>URL flags ({{ schemaDocs.length }}) — shareable demo links</summary>
+        <table>
+          <thead>
+            <tr>
+              <th>flag</th>
+              <th>default</th>
+              <th>description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in schemaDocs" :key="row.key">
+              <td><code>?{{ row.key }}=…</code></td>
+              <td><code>{{ row.defaultValue }}</code></td>
+              <td>{{ row.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Toggle a checkbox → URL updates with non-default flags so the resulting
+          link is shareable + reload-safe. Reset to default → key strips from URL.
+        </p>
+      </details>
     </main>
     <aside class="cx-demo-side">
       <h2>events</h2>

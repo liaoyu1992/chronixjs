@@ -129,6 +129,57 @@ body {
   color: #1f2937;
 }
 
+/* Phase 20.6: URL schema reference panel — auto-rendered from the
+   demo's config schema. Shareable demo URLs encode every toggle so
+   testers can reproduce a state with one click. */
+.cx-demo-url-schema {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 12px;
+  color: #374151;
+}
+
+.cx-demo-url-schema summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.cx-demo-url-schema table {
+  margin-top: 8px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cx-demo-url-schema th,
+.cx-demo-url-schema td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+}
+
+.cx-demo-url-schema th {
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.cx-demo-url-schema code {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  background: #ffffff;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.cx-demo-url-schema p {
+  margin: 8px 0 0;
+  color: #6b7280;
+}
+
 .cx-demo-svg-frame {
   border: 1px solid #e5e7eb;
   border-radius: 6px;
