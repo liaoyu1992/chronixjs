@@ -16,11 +16,49 @@ import type { AxisRangePlanInput, BarSpec, RowSpec, TimeRange } from '@chronixjs
  * `RowSpec.columns` to read each row's cell value; `label` paints the
  * column header in the top-left pane; `width` is in CSS pixels and
  * contributes additively to the sidebar's total track width.
+ *
+ * When `group: true`, consecutive rows that share the same value in
+ * this column merge into a single cell with `rowspan=N` (vGrouping
+ * mode). Rows must be adjacent in the input order; rows with the same
+ * value but separated by a different-valued row don't merge. Columns
+ * without `group: true` always render one cell per row.
  */
 export interface ColumnSpec {
   readonly key: string;
   readonly label: string;
   readonly width: number;
+  readonly group?: boolean;
+}
+
+/**
+ * For each (column × row) position, decide whether the cell should
+ * render with a rowspan (N > 1, this is the first of a merged group),
+ * be skipped entirely (0, absorbed by an earlier row's rowspan), or
+ * render individually (1).
+ *
+ * Pure function — exported for unit testing the matrix shape
+ * independently of the render path.
+ */
+export function computeRowSpans(
+  rows: readonly RowSpec[],
+  columns: readonly ColumnSpec[],
+): number[][] {
+  return columns.map((col) => {
+    const spans = new Array<number>(rows.length).fill(1);
+    if (!col.group) return spans;
+    let r = 0;
+    while (r < rows.length) {
+      const value = rows[r]!.columns[col.key];
+      let endR = r;
+      while (endR + 1 < rows.length && rows[endR + 1]!.columns[col.key] === value) {
+        spans[endR + 1] = 0;
+        endR += 1;
+      }
+      spans[r] = endR - r + 1;
+      r = endR + 1;
+    }
+    return spans;
+  });
 }
 
 /**
@@ -493,9 +531,11 @@ export const ChronixGantt = defineComponent({
       );
 
       // Sidebar (top-left + bottom-left panes) — only when `columns` is
-      // populated. Track widths are summed into `sidebarWidth` for the
-      // grid's first column; cells inside each pane sub-grid by the
-      // same per-column widths so headers align with body rows.
+      // populated. The inner DOM is an HTML `<table>` so any column
+      // flagged `group: true` can use the native `rowspan` attribute to
+      // merge consecutive rows that share the same column value into
+      // one cell. `<colgroup>` shares per-column widths between header
+      // and body tables so vertical borders align across the panes.
       const cols = props.columns;
       const hasSidebar = cols.length > 0;
       let sidebarHeader: ReturnType<typeof h> | null = null;
@@ -503,7 +543,17 @@ export const ChronixGantt = defineComponent({
       let sidebarWidth = 0;
       if (hasSidebar) {
         sidebarWidth = cols.reduce((sum, c) => sum + c.width, 0);
-        const colTemplate = cols.map((c) => `${c.width}px`).join(' ');
+
+        const colGroup = h(
+          'colgroup',
+          null,
+          cols.map((c) => h('col', { key: c.key, style: { width: `${c.width}px` } })),
+        );
+        const tableStyle = {
+          borderCollapse: 'collapse',
+          tableLayout: 'fixed',
+          width: `${sidebarWidth}px`,
+        } as const;
 
         // sidebar-header pins to both top and left so the top-left
         // corner stays visible during any combination of horizontal +
@@ -515,111 +565,142 @@ export const ChronixGantt = defineComponent({
           {
             class: 'cx-gantt-sidebar-header',
             style: {
-              display: 'grid',
-              gridTemplateColumns: colTemplate,
-              height: `${totalHeaderBandHeight}px`,
-              boxSizing: 'border-box',
-              borderBottom: '1px solid #9ca3af',
-              background: '#ffffff',
               position: 'sticky',
               top: '0',
               left: '0',
               zIndex: 3,
+              background: '#ffffff',
+              borderBottom: '1px solid #9ca3af',
+              boxSizing: 'border-box',
             },
           },
-          cols.map((col) =>
+          [
             h(
-              'div',
+              'table',
               {
-                key: `cx-sidebar-col-${col.key}`,
-                class: 'cx-gantt-sidebar-header-cell',
-                'data-column-key': col.key,
-                style: {
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0 8px',
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: '#374151',
-                  borderRight: '1px solid #d1d5db',
-                  boxSizing: 'border-box',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                },
+                style: { ...tableStyle, height: `${totalHeaderBandHeight}px` },
+                cellpadding: 0,
+                cellspacing: 0,
               },
-              col.label,
+              [
+                colGroup,
+                h('thead', null, [
+                  h(
+                    'tr',
+                    { style: { height: `${totalHeaderBandHeight}px` } },
+                    cols.map((col) =>
+                      h(
+                        'th',
+                        {
+                          key: col.key,
+                          class: 'cx-gantt-sidebar-header-cell',
+                          'data-column-key': col.key,
+                          style: {
+                            padding: '0 8px',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: '#374151',
+                            borderRight: '1px solid #d1d5db',
+                            textAlign: 'center',
+                            boxSizing: 'border-box',
+                            overflow: 'hidden',
+                          },
+                        },
+                        col.label,
+                      ),
+                    ),
+                  ),
+                ]),
+              ],
             ),
-          ),
+          ],
         );
 
-        // One row per swimlane strip. Heights match strip heights;
-        // `gap: rowSpacing` between rows matches the body's strip-to-strip
-        // spacing so sidebar cells line up vertically with their bar rows.
+        // Body rows: one `<tr>` per swimlane strip. Each row's height
+        // bakes in `rowSpacing` (except the last) so the total table
+        // height equals the body's content height — a rowspan=N cell
+        // then spans exactly the same y-range as the corresponding N
+        // body strips + the (N-1) gaps between them.
         // sidebar-body pins to the left so it stays visible during
         // horizontal scroll; vertical scroll moves it together with the
         // body SVG (both share the wrapper's vertical scroll). `z-index: 1`
         // keeps it above the chart-body during paint without competing
         // with the headers.
         const rowsById = new Map(props.rows.map((r) => [r.id, r]));
+        const rowsForSpans = strips.value
+          .map((strip) => rowsById.get(strip.rowId))
+          .filter((r): r is RowSpec => r !== undefined);
+        const spansMatrix = computeRowSpans(rowsForSpans, cols);
         sidebarBody = h(
           'div',
           {
             class: 'cx-gantt-sidebar-body',
             style: {
-              display: 'flex',
-              flexDirection: 'column',
-              gap: `${props.rowSpacing}px`,
-              background: '#ffffff',
               position: 'sticky',
               left: '0',
               zIndex: 1,
+              background: '#ffffff',
             },
           },
-          strips.value.map((strip) => {
-            const row = rowsById.get(strip.rowId);
-            return h(
-              'div',
-              {
-                key: `cx-sidebar-row-${strip.rowId}`,
-                class: 'cx-gantt-sidebar-row',
-                'data-row-id': strip.rowId,
-                style: {
-                  display: 'grid',
-                  gridTemplateColumns: colTemplate,
-                  height: `${strip.height}px`,
-                  boxSizing: 'border-box',
-                  borderBottom: '1px solid #e5e7eb',
-                },
-              },
-              cols.map((col) => {
-                const value = row?.columns[col.key];
-                return h(
-                  'div',
-                  {
-                    key: `cx-sidebar-cell-${strip.rowId}-${col.key}`,
-                    class: 'cx-gantt-sidebar-cell',
-                    'data-row-id': strip.rowId,
-                    'data-column-key': col.key,
-                    style: {
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '0 8px',
-                      fontSize: '12px',
-                      color: '#1f2937',
-                      borderRight: '1px solid #e5e7eb',
-                      boxSizing: 'border-box',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+          [
+            h('table', { style: tableStyle, cellpadding: 0, cellspacing: 0 }, [
+              colGroup,
+              h(
+                'tbody',
+                null,
+                strips.value.map((strip, rowIdx) => {
+                  const row = rowsById.get(strip.rowId);
+                  const isLast = rowIdx === strips.value.length - 1;
+                  const trHeight = strip.height + (isLast ? 0 : props.rowSpacing);
+                  const cells = cols.flatMap((col, colIdx) => {
+                    const span = spansMatrix[colIdx]?.[rowIdx] ?? 1;
+                    // Absorbed cells emit nothing — the earlier row's
+                    // rowspan covers this column-row position.
+                    if (span === 0) return [];
+                    const value = row?.columns[col.key];
+                    const isMerged = span > 1;
+                    return [
+                      h(
+                        'td',
+                        {
+                          key: col.key,
+                          class: 'cx-gantt-sidebar-cell',
+                          'data-row-id': strip.rowId,
+                          'data-column-key': col.key,
+                          ...(isMerged ? { rowspan: span } : {}),
+                          style: {
+                            padding: '0 8px',
+                            fontSize: '12px',
+                            fontWeight: isMerged ? 600 : 400,
+                            color: '#1f2937',
+                            borderRight: '1px solid #e5e7eb',
+                            borderBottom: '1px solid #e5e7eb',
+                            verticalAlign: 'middle',
+                            textAlign: isMerged ? 'center' : 'left',
+                            boxSizing: 'border-box',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                          },
+                        },
+                        value === undefined ? '' : String(value),
+                      ),
+                    ];
+                  });
+                  return h(
+                    'tr',
+                    {
+                      key: strip.rowId,
+                      class: 'cx-gantt-sidebar-row',
+                      'data-row-id': strip.rowId,
+                      style: { height: `${trHeight}px` },
                     },
-                  },
-                  value === undefined ? '' : String(value),
-                );
-              }),
-            );
-          }),
+                    cells,
+                  );
+                }),
+              ),
+            ]),
+          ],
         );
       }
 

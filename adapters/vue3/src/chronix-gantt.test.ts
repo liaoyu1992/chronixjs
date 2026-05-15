@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 
-import { ChronixGantt } from './chronix-gantt.js';
+import { ChronixGantt, computeRowSpans } from './chronix-gantt.js';
 
 import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
 
@@ -1043,7 +1043,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     expect(cells[1]!.text()).toBe('');
   });
 
-  it('sidebar row heights match swimlane strip heights (defaultRowHeight=38)', () => {
+  it('sidebar `<tr>` heights bake rowSpacing into non-last rows so rowspan cells span the same y-range as body strips', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1053,13 +1053,14 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
       },
     });
     const sidebarRows = wrapper.findAll('.cx-gantt-sidebar-row');
-    for (const row of sidebarRows) {
-      const el = row.element as HTMLElement;
-      expect(el.style.height).toBe('38px');
-    }
+    // 2 strips. rowSpacing defaults to 1. Non-last row height = strip.height
+    // + rowSpacing = 38 + 1 = 39. Last row stays at strip.height = 38.
+    // Total table height = 39 + 38 = 77 = body strip-content total.
+    expect((sidebarRows[0]!.element as HTMLElement).style.height).toBe('39px');
+    expect((sidebarRows[1]!.element as HTMLElement).style.height).toBe('38px');
   });
 
-  it('sidebar header height matches the chart header band height (44 = 1 × 20 + 24)', () => {
+  it('sidebar header table height matches the chart header band height (44 = 1 × 20 + 24)', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1068,8 +1069,10 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
         columns: [{ key: 'region', label: '地区', width: 80 }],
       },
     });
-    const header = wrapper.find('.cx-gantt-sidebar-header').element as HTMLElement;
-    expect(header.style.height).toBe('44px');
+    // Height is on the inner `<table>` (the outer div carries only
+    // sticky positioning + border + background).
+    const headerTable = wrapper.find('.cx-gantt-sidebar-header table').element as HTMLTableElement;
+    expect(headerTable.style.height).toBe('44px');
   });
 
   it('wrapper switches to `display: grid` with a two-column track template when sidebar is rendered', () => {
@@ -1168,5 +1171,195 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     // axes scroll and the top-left corner of each pane overlaps.
     expect(Number(sh)).toBeGreaterThan(Number(ch));
     expect(Number(ch)).toBeGreaterThan(Number(sb));
+  });
+});
+
+describe('computeRowSpans', () => {
+  it('returns all-ones for columns without `group: true`', () => {
+    const rows: readonly RowSpec[] = [
+      { id: 'r1', columns: { region: '海口' } },
+      { id: 'r2', columns: { region: '海口' } },
+      { id: 'r3', columns: { region: '海口' } },
+    ];
+    const cols = [{ key: 'region', label: '地区', width: 80 }];
+    expect(computeRowSpans(rows, cols)).toEqual([[1, 1, 1]]);
+  });
+
+  it('merges consecutive rows with the same value into a leading rowspan and absorbs the rest as 0', () => {
+    const rows: readonly RowSpec[] = [
+      { id: 'r1', columns: { region: '海口' } },
+      { id: 'r2', columns: { region: '海口' } },
+      { id: 'r3', columns: { region: '海口' } },
+      { id: 'r4', columns: { region: '三亚' } },
+    ];
+    const cols = [{ key: 'region', label: '地区', width: 80, group: true }];
+    expect(computeRowSpans(rows, cols)).toEqual([[3, 0, 0, 1]]);
+  });
+
+  it('does not merge non-adjacent rows that share a value (sandwich pattern)', () => {
+    // 海口, 三亚, 海口 — the two 海口 rows are not adjacent, so they
+    // each render their own individual cell. No rowspan, no merge.
+    const rows: readonly RowSpec[] = [
+      { id: 'r1', columns: { region: '海口' } },
+      { id: 'r2', columns: { region: '三亚' } },
+      { id: 'r3', columns: { region: '海口' } },
+    ];
+    const cols = [{ key: 'region', label: '地区', width: 80, group: true }];
+    expect(computeRowSpans(rows, cols)).toEqual([[1, 1, 1]]);
+  });
+
+  it('emits an independent spans array per column (each column merges based on its own values)', () => {
+    const rows: readonly RowSpec[] = [
+      { id: 'r1', columns: { region: '海口', base: '海口基地' } },
+      { id: 'r2', columns: { region: '海口', base: '海口基地' } },
+      { id: 'r3', columns: { region: '海口', base: '空港基地' } },
+      { id: 'r4', columns: { region: '三亚', base: '三亚基地' } },
+    ];
+    const cols = [
+      { key: 'region', label: '地区', width: 80, group: true },
+      { key: 'base', label: '基地', width: 100, group: true },
+    ];
+    // region: 海口×3 + 三亚×1 → [3, 0, 0, 1]
+    // base:   海口基地×2 + 空港基地×1 + 三亚基地×1 → [2, 0, 1, 1]
+    expect(computeRowSpans(rows, cols)).toEqual([
+      [3, 0, 0, 1],
+      [2, 0, 1, 1],
+    ]);
+  });
+
+  it('treats `undefined` values as a distinct group (does not merge across missing keys)', () => {
+    const rows: readonly RowSpec[] = [
+      { id: 'r1', columns: { region: undefined } },
+      { id: 'r2', columns: { region: undefined } },
+      { id: 'r3', columns: { region: '海口' } },
+    ];
+    const cols = [{ key: 'region', label: '地区', width: 80, group: true }];
+    // Two undefined rows ARE adjacent and equal → merge as rowspan 2.
+    expect(computeRowSpans(rows, cols)).toEqual([[2, 0, 1]]);
+  });
+});
+
+describe('<ChronixGantt> sidebar vGrouping (rowspan merge)', () => {
+  // Three workshops in 海口, two in 三亚. The first two 海口 rows also
+  // share 海口基地; the third 海口 row sits in a different base. This
+  // exercises both region-level and base-level merges of different
+  // spans, plus a non-merge in the workshop (leaf) column.
+  const groupedRows: readonly RowSpec[] = [
+    { id: 'r1', columns: { region: '海口', base: '海口基地', name: '1车间' } },
+    { id: 'r2', columns: { region: '海口', base: '海口基地', name: '2车间' } },
+    { id: 'r3', columns: { region: '海口', base: '空港基地', name: '3车间' } },
+    { id: 'r4', columns: { region: '三亚', base: '三亚基地', name: '4车间' } },
+  ];
+  const groupedColumns = [
+    { key: 'region', label: '地区', width: 60, group: true },
+    { key: 'base', label: '基地', width: 100, group: true },
+    { key: 'name', label: '车间', width: 80 },
+  ];
+
+  it('renders one `<td rowspan>` per merged group at the FIRST row of the group', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
+    });
+    // Region 海口 starts at r1 with rowspan=3.
+    const r1Region = wrapper.find('[data-row-id="r1"][data-column-key="region"]');
+    expect(r1Region.exists()).toBe(true);
+    expect(r1Region.attributes('rowspan')).toBe('3');
+    expect(r1Region.text()).toBe('海口');
+    // Region 三亚 starts at r4 with rowspan=1 — no rowspan attribute emitted.
+    const r4Region = wrapper.find('[data-row-id="r4"][data-column-key="region"]');
+    expect(r4Region.attributes('rowspan')).toBeUndefined();
+    expect(r4Region.text()).toBe('三亚');
+  });
+
+  it('absorbed cells emit no DOM (only the leading row carries the rowspan cell)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
+    });
+    // r2 and r3 are absorbed in the region column — no region cell renders.
+    expect(wrapper.find('[data-row-id="r2"][data-column-key="region"]').exists()).toBe(false);
+    expect(wrapper.find('[data-row-id="r3"][data-column-key="region"]').exists()).toBe(false);
+    // r2 is also absorbed in the base column (海口基地 spans r1+r2).
+    expect(wrapper.find('[data-row-id="r2"][data-column-key="base"]').exists()).toBe(false);
+    // r3 IS the leading row of its own base (空港基地 rowspan=1) — cell renders.
+    expect(wrapper.find('[data-row-id="r3"][data-column-key="base"]').exists()).toBe(true);
+  });
+
+  it('merged cells render bold (font-weight: 600); individual cells render normal weight', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
+    });
+    const r1Region = wrapper.find('[data-row-id="r1"][data-column-key="region"]')
+      .element as HTMLTableCellElement;
+    expect(r1Region.style.fontWeight).toBe('600');
+    // Workshop column has no `group: true` → every cell is individual,
+    // normal weight.
+    const r1Name = wrapper.find('[data-row-id="r1"][data-column-key="name"]')
+      .element as HTMLTableCellElement;
+    expect(r1Name.style.fontWeight).toBe('400');
+  });
+
+  it('sidebar header is a `<table>` with a `<thead>` carrying one `<th>` per column', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
+    });
+    expect(wrapper.find('.cx-gantt-sidebar-header table thead tr').exists()).toBe(true);
+    const headerCells = wrapper.findAll('.cx-gantt-sidebar-header-cell');
+    expect(headerCells).toHaveLength(3);
+    expect(headerCells.map((c) => c.text())).toEqual(['地区', '基地', '车间']);
+  });
+
+  it('sidebar body is a `<table>` with a `<tbody>` carrying one `<tr>` per swimlane strip', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
+    });
+    const bodyRows = wrapper.findAll('.cx-gantt-sidebar-body table tbody tr');
+    expect(bodyRows).toHaveLength(4); // 4 rows = 4 strips
+    expect(bodyRows.map((r) => r.attributes('data-row-id'))).toEqual(['r1', 'r2', 'r3', 'r4']);
+  });
+
+  it('the `.cx-gantt-sidebar-body` div keeps its sticky-left positioning regardless of the new table inside', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
+    });
+    const body = wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement;
+    expect(body.style.position).toBe('sticky');
+    expect(body.style.left).toBe('0px');
+  });
+
+  it('header + body tables share the same per-column widths via matching `<colgroup>` entries', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
+    });
+    const headerCols = wrapper.findAll('.cx-gantt-sidebar-header colgroup col');
+    const bodyCols = wrapper.findAll('.cx-gantt-sidebar-body colgroup col');
+    expect(headerCols).toHaveLength(3);
+    expect(bodyCols).toHaveLength(3);
+    for (let i = 0; i < 3; i++) {
+      expect((headerCols[i]!.element as HTMLElement).style.width).toBe(
+        (bodyCols[i]!.element as HTMLElement).style.width,
+      );
+    }
+  });
+
+  it('a `columns` array where no entry has `group: true` renders one cell per row in every column (no merges)', () => {
+    // Same rows as the grouped test, but columns drop `group: true`
+    // entirely. Every cell should render individually — backward
+    // compatible with Phase 5 v0 behavior.
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: groupedRows,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 60 },
+          { key: 'base', label: '基地', width: 100 },
+          { key: 'name', label: '车间', width: 80 },
+        ],
+      },
+    });
+    // Every (row, col) intersection has a cell — 4 × 3 = 12 cells.
+    expect(wrapper.findAll('.cx-gantt-sidebar-cell')).toHaveLength(12);
+    // No rowspan attribute anywhere.
+    expect(wrapper.findAll('[rowspan]')).toHaveLength(0);
   });
 });
