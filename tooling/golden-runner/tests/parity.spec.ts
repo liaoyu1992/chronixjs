@@ -8,6 +8,12 @@ import { expect, test } from '@playwright/test';
 
 import { CHART_SELECTOR, FROZEN_TIME_ISO, VIEWPORT } from '../src/config.js';
 import { buildParityEvents } from '../src/parity-events.js';
+import {
+  diffBarsSnapshots,
+  extractBarsSnapshot,
+  formatParityDiff,
+  loadBothDemos,
+} from '../src/parity-helpers.js';
 import { REF_ATTR_NAMES, RESOURCE_ROW, TIMELINE_BODY_WRAPPER } from '../src/reference-dom-map.js';
 
 import type { BarSpec, RowSpec, ViewId } from '@chronixjs/gantt';
@@ -651,5 +657,71 @@ test.describe('parity: chronix vs reference demo', () => {
 
   test('year-view bar placement (x + y + width per event-id)', async ({ page }) => {
     assertBarPlacementParity(await runBarPlacementParity(page, 'year', '年'));
+  });
+});
+
+/**
+ * Cross-demo parity tests (Phase 17). Each test in this block opens
+ * BOTH demos in separate BrowserContexts (k-ui at port 8701, chronix
+ * at port 8702 with `?parity=true`), drives them with the same view,
+ * extracts observable bar geometry from each rendered DOM, and diffs
+ * via the parity-helper. This is the pattern future adapter / render
+ * / interaction phases should use for their parity assertions — see
+ * audit/PHASE_17_PARITY_INFRASTRUCTURE_DESIGN.md.
+ *
+ * Prerequisites: BOTH demos must be running before running this
+ * block. The default playwright config only runs against k-ui's URL
+ * (port 8701); chronix demo needs to be started separately in
+ * another terminal: `pnpm --filter @chronixjs/example-gantt-vue3 dev`.
+ */
+
+test.describe('cross-demo parity (Phase 17 helper)', () => {
+  test('day-view bar X + width parity across both rendered demos', async ({ browser }) => {
+    const { kuiPage, chronixPage, kuiChart, chronixChart } = await loadBothDemos(browser, {
+      id: 'day-view-bars-cross-demo',
+      viewId: 'day',
+    });
+    try {
+      const kuiSnap = await extractBarsSnapshot('kui', kuiChart);
+      const chronixSnap = await extractBarsSnapshot('chronix', chronixChart);
+
+      // Y / height excluded from v0: chronix renders rows in input
+      // order while k-ui re-sorts by baseName grouping. Cross-demo Y
+      // parity requires a chronix row-hierarchy sorter — parked.
+      // Height excluded for parallel reasoning (k-ui's per-row event
+      // stacking can produce different bar heights when bars overlap
+      // in time on the same resource; chronix's
+      // defaultBarStackHeightPass produces matching heights but Y
+      // offsets aren't yet aligned).
+      const diff = diffBarsSnapshots(kuiSnap, chronixSnap, {
+        x: 1,
+        width: 1,
+        y: Number.POSITIVE_INFINITY,
+        height: Number.POSITIVE_INFINITY,
+      });
+
+      console.warn(
+        `cross-demo parity diff (day-view bars):\n${formatParityDiff(diff)}\n` +
+          `k-ui bar count: ${kuiSnap.length}, chronix bar count: ${chronixSnap.length}`,
+      );
+
+      expect(diff.mismatches).toEqual([]);
+      // onlyInKui / onlyInChronix are tolerable in v0 — k-ui may
+      // render bars chronix has off-axis or vice versa; chronix's
+      // resource-hierarchy gap means some bars on grouped rows may
+      // collide with k-ui's row-merged display. The mismatches list
+      // is the hard check; onlyIn lists are warnings.
+      if (diff.onlyInKui.length > 0 || diff.onlyInChronix.length > 0) {
+        console.warn(
+          `cross-demo parity v0 caveat: ` +
+            `${diff.onlyInKui.length} bars only in k-ui, ` +
+            `${diff.onlyInChronix.length} only in chronix. ` +
+            `Acceptable in v0 — see PHASE_17 design doc for row-order gap.`,
+        );
+      }
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
   });
 });
