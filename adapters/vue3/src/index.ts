@@ -10,3 +10,11 @@ export type {
   UseGanttPointerOutput,
 } from './use-gantt-pointer.js';
 export { useGanttPointer } from './use-gantt-pointer.js';
+export type {
+  BarClickPayload,
+  EmptyAreaClickPayload,
+  SelectionChangePayload,
+  UseGanttSelectionConfig,
+  UseGanttSelectionOutput,
+} from './use-gantt-selection.js';
+export { useGanttSelection } from './use-gantt-selection.js';
