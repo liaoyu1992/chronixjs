@@ -1,10 +1,22 @@
-export { ChronixGantt, computeRowSpans, type ColumnSpec } from './chronix-gantt.js';
+export {
+  ChronixGantt,
+  computeRowSpans,
+  type BarDragStartPayload,
+  type BarDragStopPayload,
+  type BarResizeStartPayload,
+  type BarResizeStopPayload,
+  type ColumnSpec,
+} from './chronix-gantt.js';
 export type { UseGanttLayoutInput, UseGanttLayoutOutput } from './use-gantt-layout.js';
 export { useGanttLayout } from './use-gantt-layout.js';
 export type {
+  BarDragStartCallback,
+  BarDragStopCallback,
   BarDropPayload,
   BarProgressPayload,
   BarResizePayload,
+  BarResizeStartCallback,
+  BarResizeStopCallback,
   SelectPayload,
   UseGanttPointerInput,
   UseGanttPointerOutput,

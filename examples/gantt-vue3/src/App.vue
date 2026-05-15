@@ -3,9 +3,13 @@ import type { AxisRangePlanInput, BarSpec } from '@chronixjs/gantt';
 import { ChronixGantt, useGanttSelection } from '@chronixjs/gantt-vue3';
 import type {
   BarClickPayload,
+  BarDragStartPayload,
+  BarDragStopPayload,
   BarDropPayload,
   BarProgressPayload,
   BarResizePayload,
+  BarResizeStartPayload,
+  BarResizeStopPayload,
   ColumnSpec,
   EmptyAreaClickPayload,
   SelectPayload,
@@ -52,7 +56,11 @@ interface DemoEvent {
     | 'select'
     | 'bar-progress'
     | 'bar-click'
-    | 'empty-area-click';
+    | 'empty-area-click'
+    | 'bar-dragstart'
+    | 'bar-dragstop'
+    | 'bar-resizestart'
+    | 'bar-resizestop';
   readonly detail: string;
 }
 const events = ref<DemoEvent[]>([]);
@@ -150,6 +158,22 @@ function onBarProgress(p: BarProgressPayload): void {
   );
 }
 
+function onBarDragStart(p: BarDragStartPayload): void {
+  pushEvent('bar-dragstart', p.barId);
+}
+
+function onBarDragStop(p: BarDragStopPayload): void {
+  pushEvent('bar-dragstop', p.barId);
+}
+
+function onBarResizeStart(p: BarResizeStartPayload): void {
+  pushEvent('bar-resizestart', `${p.barId} (${p.edge})`);
+}
+
+function onBarResizeStop(p: BarResizeStopPayload): void {
+  pushEvent('bar-resizestop', `${p.barId} (${p.edge})`);
+}
+
 function resetBars(): void {
   bars.value = sampleBars.map((b) => ({ ...b }));
   events.value = [];
@@ -202,6 +226,10 @@ function resetBars(): void {
           @bar-progress="onBarProgress"
           @bar-click="onBarClick"
           @empty-area-click="onEmptyAreaClick"
+          @bar-dragstart="onBarDragStart"
+          @bar-dragstop="onBarDragStop"
+          @bar-resizestart="onBarResizeStart"
+          @bar-resizestop="onBarResizeStop"
         />
       </div>
     </main>

@@ -24,6 +24,46 @@ import type {
 } from '@chronixjs/gantt';
 
 /**
+ * Public payload for the `'bar-dragstart'` emit. Fires the first time
+ * a `bar-drag` transaction's pointer delta becomes non-zero after
+ * pointerdown — pure clicks (0-delta abort) leave it unfired so a
+ * click on a draggable bar emits `'bar-click'` only.
+ */
+export interface BarDragStartPayload {
+  readonly barId: string;
+  readonly sourceBar: BarSpec;
+  readonly jsEvent: PointerEvent;
+}
+
+/**
+ * Public payload for the `'bar-dragstop'` emit. Fires at pointerup
+ * (commit path, immediately BEFORE `'bar-drop'`) or pointercancel
+ * (abort path, with no following `'bar-drop'`). Only fires if
+ * `'bar-dragstart'` fired for the same transaction.
+ */
+export interface BarDragStopPayload {
+  readonly barId: string;
+  readonly sourceBar: BarSpec;
+  readonly jsEvent: PointerEvent;
+}
+
+/** Symmetric to `BarDragStartPayload` for the `bar-resize` lifecycle. */
+export interface BarResizeStartPayload {
+  readonly barId: string;
+  readonly sourceBar: BarSpec;
+  readonly edge: 'start' | 'end';
+  readonly jsEvent: PointerEvent;
+}
+
+/** Symmetric to `BarDragStopPayload` for the `bar-resize` lifecycle. */
+export interface BarResizeStopPayload {
+  readonly barId: string;
+  readonly sourceBar: BarSpec;
+  readonly edge: 'start' | 'end';
+  readonly jsEvent: PointerEvent;
+}
+
+/**
  * Minimum width (px) the sidebar area can shrink to during a divider
  * drag. Also serves as the maximum-end clamp: the sidebar can't grow
  * past `wrapperWidth − MIN_SIDEBAR_AREA_WIDTH` so the chart side
@@ -382,6 +422,10 @@ export const ChronixGantt = defineComponent({
     'link-orphan': (_linkId: string) => true,
     'bar-click': (_payload: BarClickPayload) => true,
     'empty-area-click': (_payload: EmptyAreaClickPayload) => true,
+    'bar-dragstart': (_payload: BarDragStartPayload) => true,
+    'bar-dragstop': (_payload: BarDragStopPayload) => true,
+    'bar-resizestart': (_payload: BarResizeStartPayload) => true,
+    'bar-resizestop': (_payload: BarResizeStopPayload) => true,
   },
   setup(props, { emit }) {
     // Effective theme: merge consumer overrides over chronix defaults.
@@ -474,6 +518,31 @@ export const ChronixGantt = defineComponent({
 
     const routedLinks = computed(() => routerOutput.value.routedLinks);
 
+    // Phase 16: most recent pointer event the body SVG saw. The pointer
+    // composable's lifecycle callbacks (onBarDragStart / onBarDragStop /
+    // onBarResize{Start,Stop}) don't carry a PointerEvent — they live
+    // in content-space — so the adapter captures it here at pointerdown
+    // / pointermove time and enriches the public emit payload at the
+    // callback site. setPointerCapture keeps the event stream pinned to
+    // the body SVG even when the cursor leaves it, so the captured
+    // event is always the most recent for the active gesture.
+    const lastJsEvent = ref<PointerEvent | null>(null);
+
+    // Helper: build the public payload at lifecycle-callback time. Looks
+    // up `sourceBar` from the live props and falls back to the previously
+    // captured `lastJsEvent`. Returns `null` if either piece is unavailable
+    // — the callback then silently skips the emit (defensive; production
+    // calls should always have both since the composable fires only from
+    // inside a real pointer gesture).
+    function buildDragPayload(
+      barId: string,
+    ): { barId: string; sourceBar: BarSpec; jsEvent: PointerEvent } | null {
+      const sourceBar = props.bars.find((b) => b.id === barId);
+      const jsEvent = lastJsEvent.value;
+      if (!sourceBar || !jsEvent) return null;
+      return { barId, sourceBar, jsEvent };
+    }
+
     const pointer = useGanttPointer({
       placedBars,
       strips,
@@ -491,6 +560,22 @@ export const ChronixGantt = defineComponent({
       onBarResize: (p) => emit('bar-resize', p),
       onSelect: (p) => emit('select', p),
       onBarProgress: (p) => emit('bar-progress', p),
+      onBarDragStart: ({ barId }) => {
+        const payload = buildDragPayload(barId);
+        if (payload) emit('bar-dragstart', payload);
+      },
+      onBarDragStop: ({ barId }) => {
+        const payload = buildDragPayload(barId);
+        if (payload) emit('bar-dragstop', payload);
+      },
+      onBarResizeStart: ({ barId, edge }) => {
+        const payload = buildDragPayload(barId);
+        if (payload) emit('bar-resizestart', { ...payload, edge });
+      },
+      onBarResizeStop: ({ barId, edge }) => {
+        const payload = buildDragPayload(barId);
+        if (payload) emit('bar-resizestop', { ...payload, edge });
+      },
     });
 
     // The body SVG owns pointer interactions. The header SVG has no
@@ -595,6 +680,10 @@ export const ChronixGantt = defineComponent({
       // SVG, geometrically above), but synthetic events from tests or
       // future layouts could violate that — keep the early-return.
       if (pos.y < 0) return;
+      // Phase 16: stash the event so the composable's lifecycle
+      // callbacks (which don't carry a PointerEvent) can attach it to
+      // their public emit payload.
+      lastJsEvent.value = e;
       pointer.begin(pos.x, pos.y);
       // If a transaction actually started, capture the pointer so move /
       // up events keep flowing even if the cursor leaves the SVG bounds.
@@ -607,6 +696,10 @@ export const ChronixGantt = defineComponent({
       if (!pointer.activeTransaction.value) return;
       const pos = toContentXY(e);
       if (!pos) return;
+      // Phase 16: refresh lastJsEvent so lazy-fire `'bar-dragstart'` —
+      // which happens during this `advance()` call — sees the live
+      // PointerEvent rather than the stale pointerdown one.
+      lastJsEvent.value = e;
       pointer.advance(pos.x, pos.y);
     }
 
@@ -623,6 +716,10 @@ export const ChronixGantt = defineComponent({
       //    + the preserved `lastHit` to fire `'bar-click'` / `'empty-area-click'`.
       const txn = pointer.activeTransaction.value;
       const hit = pointer.lastHit.value;
+      // Phase 16: refresh lastJsEvent so the imminent `commit()` /
+      // `abort()` — which fires `'bar-dragstop'` / `'bar-resizestop'` —
+      // emits with this pointerup event, not the most recent pointermove.
+      lastJsEvent.value = e;
       if (txn) {
         const isNoOpDrag =
           (txn.kind === 'bar-drag' && txn.deltaX === 0 && txn.deltaY === 0) ||
@@ -656,6 +753,10 @@ export const ChronixGantt = defineComponent({
       // Browser-initiated cancellation (touch interruption, focus stolen,
       // OS gesture). Drop the in-flight transaction without firing a
       // commit callback — the user's intent is lost, not finalized.
+      // Phase 16: refresh lastJsEvent so any `'bar-dragstop'` /
+      // `'bar-resizestop'` fired by `abort()` references the cancel
+      // event rather than the stale pointermove one.
+      lastJsEvent.value = e;
       pointer.abort();
       bodySvgRef.value?.releasePointerCapture?.(e.pointerId);
     }

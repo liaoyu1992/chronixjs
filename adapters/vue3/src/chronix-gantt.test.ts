@@ -1987,3 +1987,120 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
     expect((cols[3]!.element as HTMLElement).style.width).toBe('60px');
   });
 });
+
+describe('<ChronixGantt> drag/resize lifecycle emits (Phase 16)', () => {
+  it('drag bar body: emits bar-dragstart on first non-zero pointermove, bar-dragstop on pointerup, bar-drop after bar-dragstop', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
+    // No start yet — delta is still 0.
+    expect(wrapper.emitted('bar-dragstart')).toBeFalsy();
+    await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
+    // After the first non-zero advance, bar-dragstart should be emitted.
+    expect(wrapper.emitted('bar-dragstart')).toHaveLength(1);
+    const startPayload = wrapper.emitted('bar-dragstart')![0]![0] as {
+      barId: string;
+      sourceBar: { id: string };
+      jsEvent: { type: string };
+    };
+    expect(startPayload.barId).toBe('b1');
+    expect(startPayload.sourceBar.id).toBe('b1');
+    expect(startPayload.jsEvent.type).toBe('pointermove');
+    expect(wrapper.emitted('bar-dragstop')).toBeFalsy();
+
+    await svg.trigger('pointerup', { clientX: 660, clientY: cy, pointerId: 1 });
+    expect(wrapper.emitted('bar-dragstop')).toHaveLength(1);
+    const stopPayload = wrapper.emitted('bar-dragstop')![0]![0] as {
+      barId: string;
+      jsEvent: { type: string };
+    };
+    expect(stopPayload.barId).toBe('b1');
+    // The pointerup event is what stop carries (refreshed by onPointerup).
+    expect(stopPayload.jsEvent.type).toBe('pointerup');
+    expect(wrapper.emitted('bar-drop')).toHaveLength(1);
+  });
+
+  it('plain click on bar (0-delta): NO bar-dragstart / bar-dragstop emitted; bar-click still fires', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    // editable=true → pointerdown starts bar-drag; pointerup with no
+    // pointermove keeps delta at 0 → adapter aborts, lifecycle latch
+    // never tripped, so no dragstart / dragstop fire.
+    await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 600, clientY: cy, pointerId: 1 });
+    expect(wrapper.emitted('bar-dragstart')).toBeFalsy();
+    expect(wrapper.emitted('bar-dragstop')).toBeFalsy();
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+    // Phase 12 click discrimination still fires bar-click.
+    expect(wrapper.emitted('bar-click')).toHaveLength(1);
+  });
+
+  it('drag bar end-edge: emits bar-resizestart with edge:end, bar-resizestop on pointerup, bar-resize after bar-resizestop', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    // End-edge zone is [712, 720] (edgeZoneWidth=8). Click 715, drag +60.
+    await svg.trigger('pointerdown', { clientX: 715, clientY: cy, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 775, clientY: cy, pointerId: 1 });
+    expect(wrapper.emitted('bar-resizestart')).toHaveLength(1);
+    const startPayload = wrapper.emitted('bar-resizestart')![0]![0] as {
+      barId: string;
+      edge: string;
+      sourceBar: { id: string };
+    };
+    expect(startPayload.barId).toBe('b1');
+    expect(startPayload.edge).toBe('end');
+    expect(startPayload.sourceBar.id).toBe('b1');
+
+    await svg.trigger('pointerup', { clientX: 775, clientY: cy, pointerId: 1 });
+    expect(wrapper.emitted('bar-resizestop')).toHaveLength(1);
+    const stopPayload = wrapper.emitted('bar-resizestop')![0]![0] as {
+      barId: string;
+      edge: string;
+    };
+    expect(stopPayload.edge).toBe('end');
+    expect(wrapper.emitted('bar-resize')).toHaveLength(1);
+  });
+
+  it('pointercancel mid-drag: bar-dragstart fires (drag was confirmed), bar-dragstop fires (regardless of valid mutation), bar-drop does NOT fire', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        editable: true,
+      },
+    });
+    const svg = wrapper.find('svg.cx-gantt-body');
+    const cy = 20;
+    await svg.trigger('pointerdown', { clientX: 600, clientY: cy, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 660, clientY: cy, pointerId: 1 });
+    expect(wrapper.emitted('bar-dragstart')).toHaveLength(1);
+    await svg.trigger('pointercancel', { clientX: 660, clientY: cy, pointerId: 1 });
+    expect(wrapper.emitted('bar-dragstop')).toHaveLength(1);
+    expect(wrapper.emitted('bar-drop')).toBeFalsy();
+  });
+});
