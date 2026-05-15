@@ -23,12 +23,16 @@ const VIEW_TOGGLE: readonly { readonly id: ViewId; readonly label: string }[] = 
   { id: 'year', label: '年' },
 ];
 
-// Resource-panel column descriptors. The sample rows populate
-// `{ name: '车间 A' }` etc., so a single column keyed `name` is enough
-// to demonstrate the sidebar. Width sums into the wrapper's grid track
-// for the left column (`120px auto`). Multi-column / tree-grouping
-// scenarios are parked — see audit/PHASE_5_RESOURCE_AREA_DESIGN.md.
-const columns: readonly ColumnSpec[] = [{ key: 'name', label: '车间', width: 120 }];
+// Resource-panel column descriptors. Three columns demonstrate
+// Phase 5.x's vGrouping rowspan merge: 地区 + 基地 are flagged
+// `group: true` so consecutive rows that share their value collapse
+// into one cell (海口 across the first three rows, 海口基地 across
+// the first two). 车间 is the leaf column with one cell per row.
+const columns: readonly ColumnSpec[] = [
+  { key: 'region', label: '地区', width: 60, group: true },
+  { key: 'base', label: '基地', width: 100, group: true },
+  { key: 'name', label: '车间', width: 80 },
+];
 
 // Reactive copy of the bar set — drag / resize results mutate this in
 // place so the demo shows a real end-to-end round-trip (commit →

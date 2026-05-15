@@ -69,10 +69,14 @@ function multiDayBar(
 }
 
 export const sampleRows: readonly RowSpec[] = [
-  { id: 'workshop-a', columns: { name: '车间 A' } },
-  { id: 'workshop-b', columns: { name: '车间 B' } },
-  { id: 'workshop-c', columns: { name: '车间 C' } },
-  { id: 'workshop-d', columns: { name: '车间 D' } },
+  // Region + base columns share values across consecutive rows so the
+  // sidebar's vGrouping (rowspan merge) is visible: 海口 spans rows
+  // 1–3 in the region column; 海口基地 spans rows 1–2 in the base
+  // column. Name is the leaf column — one cell per row.
+  { id: 'workshop-a', columns: { region: '海口', base: '海口基地', name: '车间 A' } },
+  { id: 'workshop-b', columns: { region: '海口', base: '海口基地', name: '车间 B' } },
+  { id: 'workshop-c', columns: { region: '海口', base: '空港基地', name: '车间 C' } },
+  { id: 'workshop-d', columns: { region: '三亚', base: '三亚基地', name: '车间 D' } },
 ];
 
 export const sampleBars: readonly BarSpec[] = [
