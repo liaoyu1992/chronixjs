@@ -1,6 +1,19 @@
 # Phase 21 — todayLine (nowIndicator deferred indefinitely)
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)**. Landed as 4 commits: `55e7c97`
+(design doc, 372 lines) → `9cde7e0` (audit-only side commit promoting
+sidebar dual-scrollport drift to Phase 23) → `6959592` (Commit 1: API
+
+- theme tokens + adapter render + 8 SFC tests, ~360 LOC) → `3ba2f49`
+  (Commit 2: demo flag + 2 vrt scenarios + cross-demo parity assertion
+- 2 baselines, ~139 LOC). vitest 436 → 445 (+9); parity assertions 27
+  → 28 (+1 today-line cross-demo, **day-1 pixel-perfect: kui=480.00
+  chronix=480.00 Δ=0.00**); cross-demo scenarios 25 → 27 (gate 27/27 =
+  15 vrt real-green + 12 cross test.fail-passing pending Phase 20.7.1).
+  `/phase-close` walked 7/7 green. See `audit/journal/2026-05-13.md`
+  "Phase 21" section for the infrastructure ROI assessment (partial:
+  demo + cross-demo infrastructure delivered; DOM parity single-element
+  extractor still missing).
 
 ## Problem
 
