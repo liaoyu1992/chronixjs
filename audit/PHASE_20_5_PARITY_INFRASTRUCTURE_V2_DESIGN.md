@@ -1,6 +1,12 @@
 # Phase 20.5 — Parity infrastructure v2 (computed-style + per-channel snapshot helpers)
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)**. Landed as 2 commits: `e93a746`
+(design doc, 381 lines) → `003e73a` (implementation: parity-helpers
+expansion + 17 unit tests). 17 new unit tests pass; existing 27
+parity assertions + 5 chronix VRT baselines + 6 k-ui parity goldens
+unchanged. Cumulative vitest 426 → 443. `/phase-close` gate walked
+6/6 green before status flip. See `audit/journal/2026-05-13.md`
+"Phase 20.5 + 20.6" section.
 
 ## Problem
 
@@ -38,17 +44,17 @@ This phase is **infrastructure**, not a k-ui feature port. There's no
 k-ui surface to enumerate. The catalog instead lists each DOM channel
 that current + future parity tests need to extract:
 
-| Channel | Current state | This phase ports |
-| ------- | ------------- | ---------------- |
-| Bar geometry (x, y, w, h) | ✅ `extractBarsSnapshot` (Phase 17) | Stays; refactored to share core |
-| Bar fill | ✅ `extractBarsSnapshot.fill` (Phase 20) | Stays; generalized to optional `computedStyle` field set |
-| Tick labels (text + position) | 🟡 per-test ad-hoc (`extractRenderedTickRects`) | ✅ port → `extractTicksSnapshot` |
-| Header cell labels (text + position + width) | 🟡 per-test ad-hoc DOM walker | ✅ port → `extractHeaderCellsSnapshot` |
-| Sidebar rows + columns | ❌ no extraction yet | ✅ port → `extractSidebarSnapshot` |
-| Computed style (fill / stroke / font / cursor / etc.) | 🟡 only `fill` extracted | ✅ port → optional `computedStyle: readonly (keyof CSSStyleDeclaration)[]` parameter per extractor |
-| Per-channel diff (set-equality / position-tolerance / style-equality) | 🟡 `diffBarsSnapshots` does bars only | ✅ port → generic `diffSnapshots(kui, chronix, schema)` with per-field tolerance |
-| Interaction recording (pointer gestures captured + replayed) | 🟡 1 manual recording at `tooling/golden-runner/recordings/progress-handle-drag/` | ⏸️ parked v2.x — adds with Phase 22 toolbar (first phase that needs button-click parity) |
-| VRT scenario matrix (`(viewId × scenarioFlag)` combinations) | 🟡 5 baselines manually captured | ⏸️ parked — adds with Phase 21 todayLine (first phase that needs multiple flag combinations) |
+| Channel                                                               | Current state                                                                     | This phase ports                                                                                   |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Bar geometry (x, y, w, h)                                             | ✅ `extractBarsSnapshot` (Phase 17)                                               | Stays; refactored to share core                                                                    |
+| Bar fill                                                              | ✅ `extractBarsSnapshot.fill` (Phase 20)                                          | Stays; generalized to optional `computedStyle` field set                                           |
+| Tick labels (text + position)                                         | 🟡 per-test ad-hoc (`extractRenderedTickRects`)                                   | ✅ port → `extractTicksSnapshot`                                                                   |
+| Header cell labels (text + position + width)                          | 🟡 per-test ad-hoc DOM walker                                                     | ✅ port → `extractHeaderCellsSnapshot`                                                             |
+| Sidebar rows + columns                                                | ❌ no extraction yet                                                              | ✅ port → `extractSidebarSnapshot`                                                                 |
+| Computed style (fill / stroke / font / cursor / etc.)                 | 🟡 only `fill` extracted                                                          | ✅ port → optional `computedStyle: readonly (keyof CSSStyleDeclaration)[]` parameter per extractor |
+| Per-channel diff (set-equality / position-tolerance / style-equality) | 🟡 `diffBarsSnapshots` does bars only                                             | ✅ port → generic `diffSnapshots(kui, chronix, schema)` with per-field tolerance                   |
+| Interaction recording (pointer gestures captured + replayed)          | 🟡 1 manual recording at `tooling/golden-runner/recordings/progress-handle-drag/` | ⏸️ parked v2.x — adds with Phase 22 toolbar (first phase that needs button-click parity)           |
+| VRT scenario matrix (`(viewId × scenarioFlag)` combinations)          | 🟡 5 baselines manually captured                                                  | ⏸️ parked — adds with Phase 21 todayLine (first phase that needs multiple flag combinations)       |
 
 ## Approach
 
@@ -78,9 +84,8 @@ export type ComputedStyleKey =
   | 'visibility'
   | 'display'
   | 'transform'
-  | 'transition'
-  // ... expanded as future phases need more
-  ;
+  | 'transition';
+// ... expanded as future phases need more
 
 export interface SnapshotOptions {
   /** Which computed-style keys to capture. Empty = no style extraction. */
@@ -215,7 +220,11 @@ export function diffBarsSnapshots(
   // Adapt to new generic diff under the hood; preserve the legacy
   // ParityDiff return shape so existing parity.spec.ts tests don't
   // need to change.
-  const generic = diffSnapshots(kui as DomElementSnapshot[], chronix as DomElementSnapshot[], adaptTolerance(tolerance));
+  const generic = diffSnapshots(
+    kui as DomElementSnapshot[],
+    chronix as DomElementSnapshot[],
+    adaptTolerance(tolerance),
+  );
   return adaptDiff(generic);
 }
 ```
@@ -224,6 +233,7 @@ export function diffBarsSnapshots(
 
 All existing 27 parity assertions continue to pass without
 modification because:
+
 - `extractBarsSnapshot` default-call shape is unchanged
 - `diffBarsSnapshots` signature + return shape is unchanged
 - `hexToRgbString` is unchanged
@@ -362,7 +372,7 @@ them against live demos.
    in PRs as needed.
 
 4. **Approve `SnapshotTolerance.style` as a per-key map with `'exact' |
-   'skip' | number` values**? Most style values are non-numeric strings
+'skip' | number` values**? Most style values are non-numeric strings
    (colors, cursor names, font families) where the only sensible
    tolerance is exact equality; the few numeric ones (font-size,
    stroke-width) might want per-pixel tolerance. Recommended: yes,
@@ -377,5 +387,6 @@ them against live demos.
    discipline? Recommended: yes.
 
 Reply **按照推荐继续** to accept all defaults (defer recording-replay
-+ VRT matrix, generic snapshot shape, string-literal style keys,
-per-key style tolerance, preserve legacy types, single-commit impl).
+
+- VRT matrix, generic snapshot shape, string-literal style keys,
+  per-key style tolerance, preserve legacy types, single-commit impl).

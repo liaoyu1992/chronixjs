@@ -355,7 +355,7 @@ export function extractBarsSnapshot(
         const target = resolveColoredTarget(el);
         const cs = window.getComputedStyle(target);
         const map: Record<string, string> = {};
-        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? "";
+        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? '';
         return map;
       };
       const out: {
@@ -433,7 +433,7 @@ export function extractTicksSnapshot(
       const readStyleMap = (el: Element): Record<string, string> => {
         const cs = window.getComputedStyle(el);
         const map: Record<string, string> = {};
-        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? "";
+        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? '';
         return map;
       };
       // Collect `(text, element)` pairs honoring source-specific
@@ -547,7 +547,7 @@ export function extractHeaderCellsSnapshot(
       const readStyleMap = (el: Element): Record<string, string> => {
         const cs = window.getComputedStyle(el);
         const map: Record<string, string> = {};
-        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? "";
+        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? '';
         return map;
       };
       const pairs: { text: string; el: Element }[] = [];
@@ -649,7 +649,7 @@ export function extractSidebarSnapshot(
       const readStyleMap = (el: Element): Record<string, string> => {
         const cs = window.getComputedStyle(el);
         const map: Record<string, string> = {};
-        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? "";
+        for (const k of skList) map[k] = (cs as unknown as Record<string, string>)[k] ?? '';
         return map;
       };
       const out: {
@@ -885,7 +885,9 @@ export interface SnapshotDiff {
   readonly onlyInChronix: readonly string[];
 }
 
-const DEFAULT_SNAPSHOT_TOLERANCE: Required<Pick<SnapshotTolerance, 'x' | 'y' | 'width' | 'height' | 'text'>> = {
+const DEFAULT_SNAPSHOT_TOLERANCE: Required<
+  Pick<SnapshotTolerance, 'x' | 'y' | 'width' | 'height' | 'text'>
+> = {
   x: 1,
   y: 1,
   width: 1,

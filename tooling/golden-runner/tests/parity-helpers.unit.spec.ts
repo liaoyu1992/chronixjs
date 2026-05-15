@@ -44,10 +44,7 @@ test.describe('hexToRgbString', () => {
 });
 
 test.describe('diffSnapshots — generic per-channel diff', () => {
-  function elem(
-    id: string,
-    overrides: Partial<DomElementSnapshot> = {},
-  ): DomElementSnapshot {
+  function elem(id: string, overrides: Partial<DomElementSnapshot> = {}): DomElementSnapshot {
     return {
       id,
       x: 0,
@@ -140,10 +137,7 @@ test.describe('diffSnapshots — generic per-channel diff', () => {
 });
 
 test.describe('diffBarsSnapshots — legacy adapter preserves pre-Phase-20.5 behavior', () => {
-  function bar(
-    id: string,
-    overrides: Partial<DomBarSnapshot> = {},
-  ): DomBarSnapshot {
+  function bar(id: string, overrides: Partial<DomBarSnapshot> = {}): DomBarSnapshot {
     return {
       id,
       x: 0,

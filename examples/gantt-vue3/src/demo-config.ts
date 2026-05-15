@@ -100,6 +100,7 @@ export function enumOf<T extends string>(
  * the input echo (useful for the URL-doc panel) and `resetAll`
  * resets every field to its default + strips the query string.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ConfigRefs<S extends Readonly<Record<string, ConfigField<any>>>> = {
   readonly [K in keyof S]: Ref<S[K] extends ConfigField<infer T> ? T : never>;
 } & {
@@ -126,11 +127,11 @@ function readSearchParams(): URLSearchParams {
 function writeSearchParams(params: URLSearchParams): void {
   if (typeof window === 'undefined') return;
   const qs = params.toString();
-  const newUrl =
-    window.location.pathname + (qs.length > 0 ? `?${qs}` : '') + window.location.hash;
+  const newUrl = window.location.pathname + (qs.length > 0 ? `?${qs}` : '') + window.location.hash;
   window.history.replaceState(null, '', newUrl);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useDemoConfig<S extends Readonly<Record<string, ConfigField<any>>>>(
   schema: S,
 ): ConfigRefs<S> {
@@ -186,15 +187,30 @@ export function useDemoConfig<S extends Readonly<Record<string, ConfigField<any>
  * Render-helper for the URL-schema `<details>` panel below the
  * chart. Returns one human-readable line per schema field.
  */
-export function describeConfigSchema<
-  S extends Readonly<Record<string, ConfigField<any>>>,
->(schema: S): readonly { key: string; defaultValue: string; description: string }[] {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function describeConfigSchema<S extends Readonly<Record<string, ConfigField<any>>>>(
+  schema: S,
+): readonly { key: string; defaultValue: string; description: string }[] {
   return Object.keys(schema).map((key) => {
     const field = schema[key]!;
-    const def = field.default;
+    // `field.default` is typed `any` due to the variance bypass on
+    // ConfigField<any>. Cast through unknown + narrow to known
+    // primitive types so the rendered string is always meaningful
+    // (no `[object Object]` from a non-primitive default).
+    const def: unknown = field.default;
+    let defaultValue: string;
+    if (def === undefined) {
+      defaultValue = '(unset)';
+    } else if (typeof def === 'string' || typeof def === 'number' || typeof def === 'boolean') {
+      defaultValue = String(def);
+    } else {
+      // Schema fields only declare primitive defaults today; fall
+      // back to JSON.stringify if a future field uses an object.
+      defaultValue = JSON.stringify(def);
+    }
     return {
       key,
-      defaultValue: def === undefined ? '(unset)' : String(def),
+      defaultValue,
       description: field.description ?? '',
     };
   });

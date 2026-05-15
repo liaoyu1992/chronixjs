@@ -2,14 +2,15 @@
 
 **Status**: **DONE (2026-05-16)**. Landed as 2 commits: `1dadef3`
 (design doc, 582 lines) → `e2ab288` (implementation: core resolver
-+ 14 unit tests + adapter wiring + 6 SFC tests + demo + parity
-helper extension + 2 cross-demo color tests). 240/240
-chronix-gantt vitest (+14), 186/186 adapter vitest (+6), total
-426/426 (was 406 at Phase 19 close). 27/27 parity assertions (was
-25; +2 cross-demo bar fill parity assertions). 5/5 chronix VRT
-baselines pass unchanged. `/phase-close` gate walked 6/6 green
-before status flip. See `audit/journal/2026-05-13.md` "Phase 20"
-section.
+
+- 14 unit tests + adapter wiring + 6 SFC tests + demo + parity
+  helper extension + 2 cross-demo color tests). 240/240
+  chronix-gantt vitest (+14), 186/186 adapter vitest (+6), total
+  426/426 (was 406 at Phase 19 close). 27/27 parity assertions (was
+  25; +2 cross-demo bar fill parity assertions). 5/5 chronix VRT
+  baselines pass unchanged. `/phase-close` gate walked 6/6 green
+  before status flip. See `audit/journal/2026-05-13.md` "Phase 20"
+  section.
 
 ## Problem
 

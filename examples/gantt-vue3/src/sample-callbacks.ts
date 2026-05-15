@@ -1,3 +1,5 @@
+import { todayLocalMidnight } from './sample-data.js';
+
 import type {
   BarColorFunc,
   EventAllowFunc,
@@ -5,8 +7,6 @@ import type {
   EventOverlapFunc,
   SelectAllowFunc,
 } from '@chronixjs/gantt';
-
-import { todayLocalMidnight } from './sample-data.js';
 
 /**
  * **Phase 20.6: sample predicate / callback domain code.**
@@ -53,8 +53,7 @@ export const sampleEventConstraint: EventConstraint = {
 };
 
 /** Sample `eventAllow`: only allow drops / resizes whose start is at 08:00 or later. */
-export const sampleEventAllow: EventAllowFunc = (proposal) =>
-  proposal.range.start.getHours() >= 8;
+export const sampleEventAllow: EventAllowFunc = (proposal) => proposal.range.start.getHours() >= 8;
 
 const FOUR_HOURS_MS = 4 * 60 * 60 * 1000;
 

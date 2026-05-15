@@ -1,14 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
 
-import {
-  bool,
-  describeConfigSchema,
-  enumOf,
-  num,
-  str,
-  useDemoConfig,
-} from './demo-config.js';
+import { bool, describeConfigSchema, enumOf, num, str, useDemoConfig } from './demo-config.js';
 
 /**
  * Reset the simulated URL between tests. happy-dom provides a

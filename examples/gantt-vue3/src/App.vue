@@ -57,7 +57,11 @@ type ViewId = AxisRangePlanInput['viewId'];
  * this schema (no hand-maintained URL docs).
  */
 const DEMO_SCHEMA = {
-  view: enumOf<ViewId>(['day', 'week', 'month', 'season', 'halfYear', 'year'], 'day', 'Initial timeline view'),
+  view: enumOf<ViewId>(
+    ['day', 'week', 'month', 'season', 'halfYear', 'year'],
+    'day',
+    'Initial timeline view',
+  ),
   editable: bool(true, 'Enable bar drag + edge resize'),
   selectable: bool(true, 'Enable calendar range-select on empty rows'),
   parity: bool(false, 'Swap demo data to k-ui-equivalent dataset (32 resources × 25 events)'),
@@ -415,15 +419,19 @@ function resetBars(): void {
           </thead>
           <tbody>
             <tr v-for="row in schemaDocs" :key="row.key">
-              <td><code>?{{ row.key }}=…</code></td>
-              <td><code>{{ row.defaultValue }}</code></td>
+              <td>
+                <code>?{{ row.key }}=…</code>
+              </td>
+              <td>
+                <code>{{ row.defaultValue }}</code>
+              </td>
               <td>{{ row.description }}</td>
             </tr>
           </tbody>
         </table>
         <p>
-          Toggle a checkbox → URL updates with non-default flags so the resulting
-          link is shareable + reload-safe. Reset to default → key strips from URL.
+          Toggle a checkbox → URL updates with non-default flags so the resulting link is shareable
+          + reload-safe. Reset to default → key strips from URL.
         </p>
       </details>
     </main>
