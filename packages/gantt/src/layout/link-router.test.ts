@@ -142,13 +142,84 @@ describe('defaultLinkRouter — edge cases', () => {
   });
 });
 
-describe('defaultLinkRouter — unimplemented routing', () => {
-  it('throws on smooth routing', () => {
+describe('defaultLinkRouter — smooth routing', () => {
+  it('same-row forward link: emits a straight `M` + `L` line (no `C`)', () => {
+    // b1 right-edge mid = (100, 10). b2 left-edge mid = (200, 10) —
+    // same y. Reference's setSmoothPoints collapses this to a direct
+    // horizontal line; no curve needed.
+    const out = defaultLinkRouter.route({
+      links: [link('l1', 'b1', 'b2', 'smooth')],
+      placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 0, 80, 20)],
+    });
+
+    expect(out.routedLinks).toHaveLength(1);
+    const path = out.routedLinks[0]!.pathD;
+    expect(path).toBe('M 100 10 L 200 10');
+    expect(path).not.toContain('C ');
+  });
+
+  it('cross-row forward link: emits a cubic Bézier `C` + horizontal `L` ending at the target', () => {
+    // b1 right-edge mid = (100, 10). b2 left-edge mid = (200, 60).
+    // midX = (100 + 200) / 2 = 150.
+    // beforeTargetX = 200 - 20 = 180 (default gap).
+    // Expected:
+    //   M 100 10 C 150 10 170 60 180 60 L 200 60
+    const out = defaultLinkRouter.route({
+      links: [link('l1', 'b1', 'b2', 'smooth')],
+      placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 50, 80, 20)],
+    });
+
+    expect(out.routedLinks).toHaveLength(1);
+    expect(out.routedLinks[0]!.pathD).toBe('M 100 10 C 150 10 170 60 180 60 L 200 60');
+  });
+
+  it('cross-row smooth link: `smoothBeforeTargetGapPx` override shifts the pre-target landing point', () => {
+    // Same geometry as above, but with gap = 40 instead of default 20.
+    // beforeTargetX = 200 - 40 = 160.
+    // Second control point = beforeTargetX - 10 = 150.
+    // Expected:
+    //   M 100 10 C 150 10 150 60 160 60 L 200 60
+    const out = defaultLinkRouter.route({
+      links: [link('l1', 'b1', 'b2', 'smooth')],
+      placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 50, 80, 20)],
+      smoothBeforeTargetGapPx: 40,
+    });
+
+    expect(out.routedLinks[0]!.pathD).toBe('M 100 10 C 150 10 150 60 160 60 L 200 60');
+  });
+
+  it('smooth link marker still points right (0°) — both routings end with a horizontal `L` segment', () => {
+    const out = defaultLinkRouter.route({
+      links: [link('l1', 'b1', 'b2', 'smooth')],
+      placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 50, 80, 20)],
+    });
+    const marker = out.routedLinks[0]!.marker;
+    expect(marker.x).toBe(200);
+    expect(marker.y).toBe(60);
+    expect(marker.angleDeg).toBe(0);
+  });
+
+  it('smooth degenerate (source and target identically positioned): emits a self-loop `M` + `L`', () => {
+    // Edge case: two bars share the exact same anchor (same row, same x).
+    // Same-row branch triggers, emits `M from L to` with from === to.
+    // Doesn't throw; doesn't infinite-loop.
+    const out = defaultLinkRouter.route({
+      links: [link('l1', 'b1', 'b2', 'smooth')],
+      placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 100, 0, 80, 20)],
+    });
+    expect(out.routedLinks[0]!.pathD).toBe('M 100 10 L 100 10');
+  });
+
+  it('backward smooth link (target left of source) throws with "backward" in the error so the parked branch is identifiable', () => {
+    // b1 at x=200..280. b2 at x=10..100. Predecessor sits AFTER successor
+    // chronologically — backward link. Reference handles this via a
+    // compound C+S detour the chronix demo doesn't exercise; chronix
+    // throws so consumers get a clear pointer at the parked branch.
     expect(() =>
       defaultLinkRouter.route({
         links: [link('l1', 'b1', 'b2', 'smooth')],
-        placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 50, 80, 20)],
+        placedBars: [bar('b1', 200, 0, 80, 20), bar('b2', 10, 50, 90, 20)],
       }),
-    ).toThrow(/'smooth' not yet implemented/);
+    ).toThrow(/'smooth' routing for backward links not yet implemented/);
   });
 });

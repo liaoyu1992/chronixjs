@@ -213,6 +213,13 @@ export interface LinkRouterInput {
   readonly placedBars: readonly PlacedBar[];
   /** Pixels of horizontal extension from a bar before turning. Default 12. */
   readonly elbowNubPx?: number;
+  /**
+   * Smooth routing only: pixel gap from the target's left edge to the
+   * Bézier curve's pre-landing point. The final straight `L` segment
+   * uses this length so the marker enters the target horizontally.
+   * Default 20 — matches the reference's empirical value.
+   */
+  readonly smoothBeforeTargetGapPx?: number;
 }
 
 export interface LinkRouterOutput {
