@@ -1,1 +1,29 @@
+#!/usr/bin/env sh
+# Phase 20.7 prep — auto-fix prettier on staged files BEFORE the
+# banned-identifier scanner + before any other gate runs.
+#
+# Eliminates the "/phase-close catches prettier failure → fix →
+# retry ci-check" loop that hit 4× across Phase 18-20-20.5-20.6.
+# Each retry was ~3-5 min of ci-check wall-clock; multiplied over
+# the ~25-30 sessions remaining for 2.0, this saves ~2-3 hours of
+# pure wait time.
+#
+# Behavior:
+# - List staged files (post-add, pre-commit)
+# - Filter to formats prettier understands (matches the globs used
+#   by `pnpm format:check` at the root package)
+# - Run prettier --write; on parse error, abort the commit
+# - Re-stage the auto-fixed files so the commit picks up the new
+#   formatting (otherwise we'd have a clean diff vs the committed
+#   state but a dirty diff vs the on-disk state)
+# - Continue to the banned-identifier scanner
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR | \
+  grep -E '\.(ts|tsx|js|jsx|cjs|mjs|vue|json|md|css|scss|html)$' || true)
+
+if [ -n "$STAGED" ]; then
+  echo "$STAGED" | xargs pnpm exec prettier --write --log-level=warn || exit 1
+  echo "$STAGED" | xargs git add
+fi
+
 node scripts/check-banned-names.mjs
