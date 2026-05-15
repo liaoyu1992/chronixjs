@@ -1,6 +1,6 @@
 import { BAR_SLOT_NAME, createSlotRegistry, defaultChronixTheme } from '@chronixjs/gantt';
 import { mount } from '@vue/test-utils';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { h } from 'vue';
 
 import { ChronixGantt, computeRowSpans } from './chronix-gantt.js';
@@ -1156,7 +1156,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     expect(headerTable.style.height).toBe('44px');
   });
 
-  it('wrapper switches to `display: grid` with a two-column track template when sidebar is rendered', () => {
+  it('wrapper switches to `display: grid` with a three-column track template (sidebar | divider | chart) when sidebar is rendered', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1170,10 +1170,10 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     });
     const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
     expect(root.style.display).toBe('grid');
-    // sidebarWidth = 80 + 120 = 200; right track is `auto` so the grid's
-    // intrinsic width grows with the chart and overflow:auto on the
-    // wrapper engages horizontal scroll.
-    expect(root.style.gridTemplateColumns).toBe('200px auto');
+    // sidebarWidth = 80 + 120 = 200; middle track is the 8-px divider
+    // (Phase 14); right track is `auto` so the grid's intrinsic width
+    // grows with the chart and overflow:auto engages horizontal scroll.
+    expect(root.style.gridTemplateColumns).toBe('200px 8px auto');
   });
 
   it('wrapper stays as a non-grid block when `columns` is omitted', () => {
@@ -1794,5 +1794,196 @@ describe('<ChronixGantt> selection model (Phase 12)', () => {
 
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
     expect(wrapper.emitted('bar-click')).toBeTruthy();
+  });
+});
+
+describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
+  const rowsWithNames: readonly RowSpec[] = [
+    { id: 'r1', columns: { region: '海口', vehicle: '车间 A' } },
+    { id: 'r2', columns: { region: '海口', vehicle: '车间 B' } },
+  ];
+
+  it('renders a divider element with `col-resize` cursor when the sidebar is present', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'vehicle', label: '车间', width: 120 },
+        ],
+      },
+    });
+    const divider = wrapper.find('.cx-gantt-sidebar-divider');
+    expect(divider.exists()).toBe(true);
+    expect((divider.element as HTMLElement).style.cursor).toBe('col-resize');
+    // Sticky-left to the natural sidebar boundary (200 = 80 + 120) so
+    // the divider remains visible during horizontal scroll.
+    expect((divider.element as HTMLElement).style.left).toBe('200px');
+  });
+
+  it('renders no divider when `columns` is omitted (no-sidebar branch is unchanged)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows: rowsWithNames, axisInput },
+    });
+    expect(wrapper.find('.cx-gantt-sidebar-divider').exists()).toBe(false);
+  });
+
+  it('drag updates wrapper `gridTemplateColumns` to the new sidebar width', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'vehicle', label: '车间', width: 120 },
+        ],
+      },
+    });
+    // Stub the wrapper's getBoundingClientRect so the MAX clamp has a
+    // realistic viewport width. happy-dom returns zero by default,
+    // which would collapse maxWidth to MIN.
+    const wrapperEl = wrapper.find('.cx-gantt-wrapper').element;
+    vi.spyOn(wrapperEl, 'getBoundingClientRect').mockReturnValue({
+      width: 1000,
+      height: 600,
+      top: 0,
+      left: 0,
+      right: 1000,
+      bottom: 600,
+      x: 0,
+      y: 0,
+      toJSON() {
+        return {};
+      },
+    });
+
+    const divider = wrapper.find('.cx-gantt-sidebar-divider');
+    await divider.trigger('pointerdown', { clientX: 200, button: 0, pointerId: 1 });
+    // Drag right 50px → sidebar grows from 200 → 250.
+    await divider.trigger('pointermove', { clientX: 250, pointerId: 1 });
+    await divider.trigger('pointerup', { clientX: 250, pointerId: 1 });
+
+    const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
+    expect(root.style.gridTemplateColumns).toBe('250px 8px auto');
+  });
+
+  it('MIN clamp prevents the sidebar from shrinking below 40px (chronix MIN)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'vehicle', label: '车间', width: 120 },
+        ],
+      },
+    });
+    const wrapperEl = wrapper.find('.cx-gantt-wrapper').element;
+    vi.spyOn(wrapperEl, 'getBoundingClientRect').mockReturnValue({
+      width: 1000,
+      height: 600,
+      top: 0,
+      left: 0,
+      right: 1000,
+      bottom: 600,
+      x: 0,
+      y: 0,
+      toJSON() {
+        return {};
+      },
+    });
+
+    const divider = wrapper.find('.cx-gantt-sidebar-divider');
+    // Drag far to the left: 200 − 500 = -300 → clamps to MIN = 40.
+    await divider.trigger('pointerdown', { clientX: 200, button: 0, pointerId: 1 });
+    await divider.trigger('pointermove', { clientX: -300, pointerId: 1 });
+
+    const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
+    expect(root.style.gridTemplateColumns).toBe('40px 8px auto');
+  });
+
+  it('MAX clamp prevents the sidebar from growing past `wrapperWidth − MIN`', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'vehicle', label: '车间', width: 120 },
+        ],
+      },
+    });
+    const wrapperEl = wrapper.find('.cx-gantt-wrapper').element;
+    vi.spyOn(wrapperEl, 'getBoundingClientRect').mockReturnValue({
+      width: 1000,
+      height: 600,
+      top: 0,
+      left: 0,
+      right: 1000,
+      bottom: 600,
+      x: 0,
+      y: 0,
+      toJSON() {
+        return {};
+      },
+    });
+
+    const divider = wrapper.find('.cx-gantt-sidebar-divider');
+    // Drag far to the right: 200 + 5000 = 5200 → clamps to wrapperWidth
+    // − MIN = 1000 − 40 = 960.
+    await divider.trigger('pointerdown', { clientX: 200, button: 0, pointerId: 1 });
+    await divider.trigger('pointermove', { clientX: 5200, pointerId: 1 });
+
+    const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
+    expect(root.style.gridTemplateColumns).toBe('960px 8px auto');
+  });
+
+  it('column cells scale proportionally during drag (each `<col>` width = colSpec.width × scale)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows: rowsWithNames,
+        axisInput,
+        columns: [
+          { key: 'region', label: '地区', width: 80 },
+          { key: 'vehicle', label: '车间', width: 120 },
+        ],
+      },
+    });
+    const wrapperEl = wrapper.find('.cx-gantt-wrapper').element;
+    vi.spyOn(wrapperEl, 'getBoundingClientRect').mockReturnValue({
+      width: 1000,
+      height: 600,
+      top: 0,
+      left: 0,
+      right: 1000,
+      bottom: 600,
+      x: 0,
+      y: 0,
+      toJSON() {
+        return {};
+      },
+    });
+
+    // Drag the sidebar from baseSum=200 down to override=100. Scale =
+    // 100 / 200 = 0.5. So region <col>'s width = 80 × 0.5 = 40px and
+    // vehicle's = 120 × 0.5 = 60px. Both <colgroup>s (header + body)
+    // pick up the new widths.
+    const divider = wrapper.find('.cx-gantt-sidebar-divider');
+    await divider.trigger('pointerdown', { clientX: 200, button: 0, pointerId: 1 });
+    await divider.trigger('pointermove', { clientX: 100, pointerId: 1 });
+
+    const cols = wrapper.findAll('colgroup > col');
+    // Two colgroups (header table + body table) × two columns = 4 <col>.
+    expect(cols).toHaveLength(4);
+    expect((cols[0]!.element as HTMLElement).style.width).toBe('40px');
+    expect((cols[1]!.element as HTMLElement).style.width).toBe('60px');
+    expect((cols[2]!.element as HTMLElement).style.width).toBe('40px');
+    expect((cols[3]!.element as HTMLElement).style.width).toBe('60px');
   });
 });

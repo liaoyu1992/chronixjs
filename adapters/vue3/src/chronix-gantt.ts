@@ -10,7 +10,6 @@ import {
   type SelectPayload,
 } from './use-gantt-pointer.js';
 import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
-
 import type {
   AxisRangePlanInput,
   BarSlotArgs,
@@ -23,6 +22,24 @@ import type {
   SlotRegistry,
   TimeRange,
 } from '@chronixjs/gantt';
+
+/**
+ * Minimum width (px) the sidebar area can shrink to during a divider
+ * drag. Also serves as the maximum-end clamp: the sidebar can't grow
+ * past `wrapperWidth − MIN_SIDEBAR_AREA_WIDTH` so the chart side
+ * keeps at least the same slack visible. Chosen to leave ~24px of
+ * text-width budget after the cell's ~16px horizontal padding so a
+ * minimum-width column still renders one character.
+ */
+const MIN_SIDEBAR_AREA_WIDTH = 40;
+
+/**
+ * Width (px) of the divider grid track. The visible 1px line is
+ * centered inside this track via CSS, so the hit zone is a few px
+ * wider on either side of the line — easier to grab without pixel
+ * precision. 8 matches mainstream window-manager divider sizing.
+ */
+const SIDEBAR_DIVIDER_WIDTH = 8;
 
 /**
  * Encode a color string into the suffix used in marker ids. Strips
@@ -480,6 +497,81 @@ export const ChronixGantt = defineComponent({
     // handlers — axis-row clicks reach no listener and silently no-op.
     const bodySvgRef = ref<SVGSVGElement | null>(null);
 
+    // Wrapper + divider refs power the Phase 14 sidebar-resize affordance.
+    // The wrapper's bounding-rect width caps the divider drag at the
+    // right edge; the divider's own ref receives pointer capture so a
+    // drag keeps tracking the cursor even when it leaves the 8-px hit
+    // zone. Both stay null until the corresponding DOM nodes mount.
+    const wrapperRef = ref<HTMLDivElement | null>(null);
+    const dividerRef = ref<HTMLDivElement | null>(null);
+
+    // Sidebar resize state. `sidebarWidthOverride` is null until the user
+    // grabs the divider; once set, it takes precedence over the natural
+    // sum of `ColumnSpec.width`. Prop changes don't reset the override —
+    // consumer-driven width changes are absorbed into the base, the
+    // user's drag offset stays additive across the session.
+    const sidebarWidthOverride = ref<number | null>(null);
+    // Snapshots taken at pointerdown so pointermove can compute the
+    // delta against a stable baseline — reading `effectiveSidebarWidth`
+    // mid-drag would double-count the in-flight override mutation.
+    const dividerDragStartWidth = ref<number | null>(null);
+    const dividerDragStartClientX = ref<number | null>(null);
+
+    const sidebarBaseWidth = computed<number>(() =>
+      props.columns.reduce((sum, c) => sum + c.width, 0),
+    );
+    const effectiveSidebarWidth = computed<number>(
+      () => sidebarWidthOverride.value ?? sidebarBaseWidth.value,
+    );
+    // Per-column scale factor: each col's render width = colSpec.width *
+    // sidebarScale so the user-supplied column ratios are preserved
+    // across drags. Falls back to 1 when there are no columns (the
+    // no-sidebar branch never reads this, but keep the computed safe).
+    const sidebarScale = computed<number>(() => {
+      const base = sidebarBaseWidth.value;
+      if (base === 0) return 1;
+      return effectiveSidebarWidth.value / base;
+    });
+
+    function onDividerPointerdown(e: PointerEvent): void {
+      if (e.button !== 0) return;
+      dividerDragStartWidth.value = effectiveSidebarWidth.value;
+      dividerDragStartClientX.value = e.clientX;
+      dividerRef.value?.setPointerCapture?.(e.pointerId);
+      // Suppress the browser's default text-selection / drag-image so
+      // the drag feels native. Pointerdown is the safest place to call
+      // preventDefault — pointermove preventDefault is too late to stop
+      // the initial selection.
+      e.preventDefault();
+    }
+
+    function onDividerPointermove(e: PointerEvent): void {
+      if (dividerDragStartWidth.value === null) return;
+      if (dividerDragStartClientX.value === null) return;
+      const wrapperWidth = wrapperRef.value?.getBoundingClientRect().width ?? 0;
+      const maxWidth = Math.max(MIN_SIDEBAR_AREA_WIDTH, wrapperWidth - MIN_SIDEBAR_AREA_WIDTH);
+      const proposed = dividerDragStartWidth.value + (e.clientX - dividerDragStartClientX.value);
+      sidebarWidthOverride.value = Math.max(MIN_SIDEBAR_AREA_WIDTH, Math.min(maxWidth, proposed));
+    }
+
+    function onDividerPointerup(e: PointerEvent): void {
+      if (dividerDragStartWidth.value === null) return;
+      dividerDragStartWidth.value = null;
+      dividerDragStartClientX.value = null;
+      dividerRef.value?.releasePointerCapture?.(e.pointerId);
+    }
+
+    function onDividerPointercancel(e: PointerEvent): void {
+      // Browser-initiated cancel (touch interruption, OS gesture). The
+      // current override stays — a cancel doesn't revert the in-flight
+      // width; reverting would lose progress that the user expressed.
+      // Just reset the drag-snapshot refs so the next pointerdown starts
+      // clean.
+      dividerDragStartWidth.value = null;
+      dividerDragStartClientX.value = null;
+      dividerRef.value?.releasePointerCapture?.(e.pointerId);
+    }
+
     // Body SVG's origin (y=0) is content-y 0: the bar group sits directly
     // inside the body SVG with no translate, so `e.clientY - bodyRect.top`
     // already lives in content-space. The header band is a separate SVG
@@ -577,6 +669,11 @@ export const ChronixGantt = defineComponent({
       const totalWidth = contentSize.value.width;
       const bodyHeight = contentSize.value.height;
       const t = theme.value;
+      // Hoisted so headerSvg / bodySvg can stamp explicit gridColumn /
+      // gridRow when the wrapper is a 3-column grid (Phase 14). The
+      // sidebar render block below redeclares `cols`/`hasSidebar` from
+      // the same props; both point at the same evaluation.
+      const hasSidebar = props.columns.length > 0;
 
       // Outer header rows (e.g. month bands above day ticks). One <rect>
       // per cell as the band background + a centered <text> for the label.
@@ -681,6 +778,10 @@ export const ChronixGantt = defineComponent({
             top: '0',
             zIndex: 2,
             background: t.headerBackground,
+            // Phase 14: explicit grid placement so the divider track
+            // (gridColumn 2) doesn't displace this pane to column 2 via
+            // auto-placement. No-op when the wrapper isn't a grid.
+            ...(hasSidebar ? { gridColumn: '3', gridRow: '1' } : {}),
           },
         },
         [
@@ -947,7 +1048,12 @@ export const ChronixGantt = defineComponent({
           class: 'cx-gantt-body',
           width: totalWidth,
           height: bodyHeight,
-          style: { display: 'block', background: t.chartBackground },
+          style: {
+            display: 'block',
+            background: t.chartBackground,
+            // Phase 14: explicit grid placement skips the divider track.
+            ...(hasSidebar ? { gridColumn: '3', gridRow: '2' } : {}),
+          },
           onPointerdown,
           onPointermove,
           onPointerup,
@@ -967,18 +1073,30 @@ export const ChronixGantt = defineComponent({
       // one cell. `<colgroup>` shares per-column widths between header
       // and body tables so vertical borders align across the panes.
       const cols = props.columns;
-      const hasSidebar = cols.length > 0;
       let sidebarHeader: ReturnType<typeof h> | null = null;
       let sidebarBody: ReturnType<typeof h> | null = null;
+      let divider: ReturnType<typeof h> | null = null;
       let sidebarWidth = 0;
       if (hasSidebar) {
-        sidebarWidth = cols.reduce((sum, c) => sum + c.width, 0);
+        // Effective area width = user override (if drag has happened)
+        // or the natural sum of `ColumnSpec.width`. The col-width
+        // scale factor (effective / base) is applied uniformly to
+        // every <col> so border alignment stays exact at any width.
+        sidebarWidth = effectiveSidebarWidth.value;
+        const scale = sidebarScale.value;
 
-        const colGroup = h(
-          'colgroup',
-          null,
-          cols.map((c) => h('col', { key: c.key, style: { width: `${c.width}px` } })),
-        );
+        // Build two distinct `<colgroup>` vnodes — one per sidebar
+        // table. Reusing a single vnode in two tree positions triggers
+        // Vue's "same vnode reference" patch short-circuit, so a state-
+        // change rerender ends up patching only one DOM location and
+        // the other stays stale (e.g. col widths reactive to the
+        // Phase 14 divider drag wouldn't propagate to both tables).
+        const buildColGroup = () =>
+          h(
+            'colgroup',
+            null,
+            cols.map((c) => h('col', { key: c.key, style: { width: `${c.width * scale}px` } })),
+          );
         const tableStyle = {
           borderCollapse: 'collapse',
           tableLayout: 'fixed',
@@ -1002,6 +1120,10 @@ export const ChronixGantt = defineComponent({
               background: t.sidebarBackground,
               borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
               boxSizing: 'border-box',
+              // Phase 14: explicit grid placement (column 1 of 3,
+              // header row).
+              gridColumn: '1',
+              gridRow: '1',
             },
           },
           [
@@ -1013,7 +1135,7 @@ export const ChronixGantt = defineComponent({
                 cellspacing: 0,
               },
               [
-                colGroup,
+                buildColGroup(),
                 h('thead', null, [
                   h(
                     'tr',
@@ -1070,11 +1192,15 @@ export const ChronixGantt = defineComponent({
               left: '0',
               zIndex: 1,
               background: t.sidebarBackground,
+              // Phase 14: explicit grid placement (column 1 of 3,
+              // body row).
+              gridColumn: '1',
+              gridRow: '2',
             },
           },
           [
             h('table', { style: tableStyle, cellpadding: 0, cellspacing: 0 }, [
-              colGroup,
+              buildColGroup(),
               h(
                 'tbody',
                 null,
@@ -1135,29 +1261,61 @@ export const ChronixGantt = defineComponent({
       }
 
       // Wrapper geometry depends on whether the sidebar is rendered.
-      // Without a sidebar: a block div with one child column (header + body
-      // stacked) — same as Phase 4.5. With a sidebar: a 2×2 CSS grid
-      // (sidebar-header | chart-header / sidebar-body | chart-body). The
-      // right column track is `auto` (NOT `1fr`) so the grid's intrinsic
-      // width = sidebarWidth + max(content) — the wrapper's `overflow: auto`
-      // then sees the chart's natural width and engages horizontal scroll
-      // exactly as it did pre-sidebar. Consumers cap the wrapper's height
-      // (e.g. `max-height: 70vh`) to engage the vertical scroll for sticky.
+      // Without a sidebar: a block div with one child column (header +
+      // body stacked) — same as Phase 4.5. With a sidebar: a 2×3 CSS
+      // grid (sidebar | divider | chart) so the user can grab the
+      // boundary between sidebar and chart and drag it to resize. The
+      // divider track is a fixed SIDEBAR_DIVIDER_WIDTH px column that
+      // spans both header + body rows; the right column track is
+      // `auto` (NOT `1fr`) so the grid's intrinsic width = sidebar +
+      // divider + max(content), preserving the existing
+      // overflow-driven horizontal scroll behavior.
+      if (hasSidebar) {
+        divider = h('div', {
+          ref: dividerRef,
+          class: 'cx-gantt-sidebar-divider',
+          'data-cx-divider': 'sidebar',
+          style: {
+            gridColumn: '2',
+            gridRow: '1 / 3',
+            cursor: 'col-resize',
+            // Divider sits above the panes so the cursor change wins
+            // over the sidebar / chart background hover styling.
+            zIndex: 4,
+            // Sticky-left so the divider stays visible during horizontal
+            // scroll of the chart area — matches the sidebar-body's
+            // sticky-left plane.
+            position: 'sticky',
+            left: `${sidebarWidth}px`,
+            top: '0',
+            background: 'transparent',
+            userSelect: 'none',
+            touchAction: 'none',
+          },
+          onPointerdown: onDividerPointerdown,
+          onPointermove: onDividerPointermove,
+          onPointerup: onDividerPointerup,
+          onPointercancel: onDividerPointercancel,
+        });
+      }
       const wrapperStyle: Record<string, string> = hasSidebar
         ? {
             overflow: 'auto',
             display: 'grid',
-            gridTemplateColumns: `${sidebarWidth}px auto`,
+            gridTemplateColumns: `${sidebarWidth}px ${SIDEBAR_DIVIDER_WIDTH}px auto`,
           }
         : { overflow: 'auto' };
       return h(
         'div',
         {
+          ref: wrapperRef,
           class: 'cx-gantt-wrapper',
           'data-axis-view': a.viewId,
           style: wrapperStyle,
         },
-        hasSidebar ? [sidebarHeader, headerSvg, sidebarBody, bodySvg] : [headerSvg, bodySvg],
+        hasSidebar
+          ? [sidebarHeader, headerSvg, sidebarBody, bodySvg, divider]
+          : [headerSvg, bodySvg],
       );
     };
   },
