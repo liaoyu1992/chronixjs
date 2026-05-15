@@ -1,4 +1,5 @@
-import { computed, defineComponent, h, ref, type PropType } from 'vue';
+import { defaultLinkRouter } from '@chronixjs/gantt';
+import { computed, defineComponent, h, ref, watchEffect, type PropType } from 'vue';
 
 import { useGanttLayout } from './use-gantt-layout.js';
 import {
@@ -9,7 +10,14 @@ import {
   type SelectPayload,
 } from './use-gantt-pointer.js';
 
-import type { AxisRangePlanInput, BarSpec, RowSpec, TimeRange } from '@chronixjs/gantt';
+import type { AxisRangePlanInput, BarSpec, LinkSpec, RowSpec, TimeRange } from '@chronixjs/gantt';
+
+/**
+ * Stroke width for dependency-line paths. Matches the parity-reference
+ * verbatim. Not a prop in v0 — consumers who need a different width can
+ * add it when there's a concrete use case.
+ */
+const LINK_STROKE_WIDTH = 1.5;
 
 /**
  * One sidebar column in the resource panel. The `key` indexes into
@@ -146,12 +154,30 @@ export const ChronixGantt = defineComponent({
       type: Array as PropType<readonly ColumnSpec[]>,
       default: () => [] as readonly ColumnSpec[],
     },
+    /**
+     * Dependency links between bars. Each link is routed by
+     * `defaultLinkRouter` and rendered as an SVG `<path>` in a sibling
+     * group above the bars. Links whose `fromBarId` / `toBarId` don't
+     * resolve to a placed bar are silently dropped from rendering and
+     * surfaced via the `link-orphan` event + a one-off `console.warn`.
+     */
+    links: {
+      type: Array as PropType<readonly LinkSpec[]>,
+      default: () => [] as readonly LinkSpec[],
+    },
+    /**
+     * Chart-level default stroke color for dependency lines. Each link
+     * can override via `LinkSpec.colorOverride`. Default `'#3788d8'`
+     * matches the parity reference's `dependencyLineColor`.
+     */
+    defaultLinkColor: { type: String, default: '#3788d8' },
   },
   emits: {
     'bar-drop': (_payload: BarDropPayload) => true,
     'bar-resize': (_payload: BarResizePayload) => true,
     select: (_payload: SelectPayload) => true,
     'bar-progress': (_payload: BarProgressPayload) => true,
+    'link-orphan': (_linkId: string) => true,
   },
   setup(props, { emit }) {
     const { axis, strips, placedBars, contentSize } = useGanttLayout({
@@ -188,6 +214,38 @@ export const ChronixGantt = defineComponent({
       }
       return m;
     });
+
+    // Route dependency links through the layout pass. Re-derives when
+    // `links` or `placedBars` change (drag/resize/view-switch). Orphans
+    // (a link referencing a bar id not in `placedBars`) drop from the
+    // rendered output here, NOT later in render — keeps the render
+    // function pure of side effects. Orphan emission is wired through a
+    // separate watch so the side effect happens once per layout pass.
+    const routerOutput = computed(() =>
+      defaultLinkRouter.route({
+        links: props.links,
+        placedBars: placedBars.value,
+      }),
+    );
+
+    // Track orphan ids we've already warned about so console.warn fires
+    // at most once per id per component instance. The set lives across
+    // re-derivations — if a link transitions from resolved to orphan
+    // (because the user deleted the target bar), we want to warn once.
+    const warnedOrphanIds = new Set<string>();
+    watchEffect(() => {
+      for (const orphanId of routerOutput.value.orphanLinkIds) {
+        emit('link-orphan', orphanId);
+        if (!warnedOrphanIds.has(orphanId)) {
+          warnedOrphanIds.add(orphanId);
+          console.warn(
+            `[chronix] Link "${orphanId}" references unknown bar(s); dropped from render.`,
+          );
+        }
+      }
+    });
+
+    const routedLinks = computed(() => routerOutput.value.routedLinks);
 
     const pointer = useGanttPointer({
       placedBars,
@@ -514,6 +572,23 @@ export const ChronixGantt = defineComponent({
         return nodes;
       });
 
+      // Link paths render in a sibling group AFTER the bars group so
+      // SVG paint order puts them on top. `pointer-events: none` keeps
+      // bar drag / resize / progress-handle pointer events flowing
+      // through to the bars layer. Commit 1 emits bare paths with no
+      // arrowheads; Commit 2 wires `<defs>` markers + `marker-end`.
+      const linkPathNodes = routedLinks.value.map((routed) =>
+        h('path', {
+          key: routed.linkId,
+          'data-link-id': routed.linkId,
+          class: 'cx-gantt-link',
+          d: routed.pathD,
+          stroke: routed.color ?? props.defaultLinkColor,
+          'stroke-width': LINK_STROKE_WIDTH,
+          fill: 'none',
+        }),
+      );
+
       const bodySvg = h(
         'svg',
         {
@@ -527,7 +602,10 @@ export const ChronixGantt = defineComponent({
           onPointerup,
           onPointercancel,
         },
-        [h('g', { class: 'cx-gantt-bars' }, barChildren)],
+        [
+          h('g', { class: 'cx-gantt-bars' }, barChildren),
+          h('g', { class: 'cx-gantt-links', 'pointer-events': 'none' }, linkPathNodes),
+        ],
       );
 
       // Sidebar (top-left + bottom-left panes) — only when `columns` is
