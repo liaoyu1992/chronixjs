@@ -56,6 +56,7 @@ export {
 } from './interaction/index.js';
 
 export type {
+  BarSlotArgs,
   IRCanvas,
   PointerOverlayGroup,
   SlotContext,
@@ -63,6 +64,7 @@ export type {
   SlotRenderer,
   SlotTemplate,
 } from './render/index.js';
+export { BAR_SLOT_NAME, createSlotRegistry } from './render/index.js';
 
 export type {
   BarClickPayload,
