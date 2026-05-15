@@ -310,7 +310,91 @@ Severity legend (relative to "L2 parity for the current demo"):
 | **P3**   | `MIN_SIDEBAR_AREA_WIDTH=40` vs k-ui 30 — documented intentional (chronix cell padding)                      | Batch 4 #14              |
 | **P3**   | VirtualizedPaneLayout overscan + visible-strip-range — chronix-only forward-design                          | Batch 2 #11+12           |
 
-### Roadmap implications
+### Disposition register (audit-sweep 2026-05-16, post-Phase-21)
+
+The original recheck (2026-05-15) classified items by severity (P0/P1/P2/P3) but used the single word **"Park"** for everything not currently being worked on — collapsing three semantically distinct states (will fix on the roadmap / will fix only if asked / won't fix by design) into one ambiguous bucket. Per `feedback_no_logic_drift_from_kui.md`, parked items without explicit follow-up timing risk drifting into forgotten state.
+
+This register classifies every P0/P1/P2/P3 entry above into one of four explicit dispositions:
+
+- **DONE (Phase X)** — landed since the original recheck.
+- **Planned (Phase X)** — assigned a phase number; on the roadmap.
+- **Defer-indefinite** — no current plan; revisit only if a user reports a concrete blocker. Each entry names the condition that would re-prioritize it.
+- **Reject** — deliberate chronix divergence; documented and not planned to change. Each entry names the rationale.
+
+#### P0 — demo parity / visible drift
+
+| Item                                                                                                        | Disposition          | Rationale / trigger                                                                                                                                                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `weekendsVisible` not read by axis-range-planner                                                            | **DONE Phase 18**    | Filter implemented in `planWeekView` + `planMonthBandedAxis` with parity assertion.                                                                                                                                                                 |
+| View-switch toolbar absent (`headerToolbar` / `today` / nav)                                                | **Planned Phase 22** | First phase needing button-click recording-replay parity (see Phase 20.5 catalog).                                                                                                                                                                  |
+| `eventColor` family (4 options + 3 callbacks)                                                               | **DONE Phase 20**    | Bar color pipeline landed with parity assertions.                                                                                                                                                                                                   |
+| `todayLine` rendering                                                                                       | **DONE Phase 21**    | Pixel-perfect Δ=0.00 day-1 cross-demo parity.                                                                                                                                                                                                       |
+| `nowIndicator` + 4 render hooks                                                                             | **Reject**           | User direction (Phase 21 session): static todayLine alone covers visible default parity; 5-min setTimeout machinery + tab-visibility + custom render hooks not worth the complexity. Revisit only if a user explicitly requests live "now" updates. |
+| Validation callbacks (`eventAllow` / `selectAllow` / `eventOverlap` / `eventConstraint`)                    | **DONE Phase 19**    | All 4 wired with cross-demo color parity in Phase 19.                                                                                                                                                                                               |
+| `eventDataTransform`                                                                                        | **Defer-indefinite** | Chronix's `BarSpec` is the native shape; the demo uses it directly. Re-prioritize if a real consumer needs to drop the k-ui demo's event shape into chronix without manual re-mapping.                                                              |
+| Imperative event CRUD on handle (`addEvent` / `removeEvent` / `getEvents`)                                  | **Planned Phase 24** | Bundled with handle imperative API (next-gen `GanttHandle`).                                                                                                                                                                                        |
+| `scrollToTime` + nav API (`prev` / `next` / `today` / `gotoDate`)                                           | **Planned Phase 24** | Part of the Phase 24 handle imperative API bundle.                                                                                                                                                                                                  |
+| `dependencyLineColor` / `useLineEventColor` / `onLine` callback                                             | **Defer-indefinite** | Phase 20 bar-color pipeline covers most demo visible parity; link styling is uncritical. Re-prioritize if a user reports link color drift.                                                                                                          |
+| `businessHours`                                                                                             | **Defer-indefinite** | Large scope (work-day calendaring + render layer + interaction filtering); no consumer demand. Re-prioritize if a user needs business-hour shading.                                                                                                 |
+| Recurring events + event sources (URL / function / JSON feed)                                               | **Defer-indefinite** | Massive scope; not in demo. Re-prioritize if a user needs ical-style recurrence or remote data sources.                                                                                                                                             |
+| Resource hierarchy expand/collapse + resource CRUD + resource emits                                         | **Defer-indefinite** | Chronix's `RowSpec.columns` covers flat hierarchy. Tree-hierarchy expand/collapse is large. Re-prioritize if a user reports a multi-level resource tree need.                                                                                       |
+| DOM lifecycle hooks (`eventDidMount` / `eventWillUnmount` / 13 other `*DidMount` / `*WillUnmount` families) | **Defer-indefinite** | Chronix's slot registry pattern + `BarSlotArgs` covers most use cases. Re-prioritize if a consumer needs imperative DOM access at mount/unmount points.                                                                                             |
+| `datesSet` / `viewDidMount` / `viewWillUnmount` / `windowResize` / `loading` emits                          | **Defer-indefinite** | Some bundled with Phase 24 (view-change); others tied to features not yet planned (loading state, viewWillUnmount). Re-prioritize per emit on user demand.                                                                                          |
+| `unselect` emit + range `select()` / `unselect()` imperative                                                | **Defer-indefinite** | Phase 12 selection model covers the demo; imperative select/unselect parked. Re-prioritize if a consumer needs programmatic selection control.                                                                                                      |
+| `direction: 'ltr'                                                                                           | 'rtl'` RTL           | **Defer-indefinite**                                                                                                                                                                                                                                | Tied to upstream's wider RTL infrastructure. Re-prioritize if a Hebrew/Arabic-locale consumer reports a need. |
+
+#### P1 — affects parity for hosts toggling features the demo doesn't currently exercise
+
+| Item                                                          | Disposition          | Rationale / trigger                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Square link nub geometry 12 vs 20 px                          | **Defer-indefinite** | Demo uses `smooth` routing; square's cosmetic divergence isn't visible. Re-prioritize if a consumer renders square dependency lines.                                                                                                                       |
+| Square link backward routing back-tracks through source       | **Defer-indefinite** | Demo doesn't exercise backward links. Re-prioritize if a consumer constructs circular dependencies with square routing.                                                                                                                                    |
+| Smooth link backward routing throws                           | **Defer-indefinite** | Demo doesn't exercise. Re-prioritize on first user report of a smooth-backward exception.                                                                                                                                                                  |
+| Drag-distance gate (chronix 0-delta vs k-ui 5-px Pythagorean) | **Planned Phase 25** | Small additive `dragMinDistance` option on `useGanttPointer` with default 5. Standalone single-session phase.                                                                                                                                              |
+| Bar-resize cross-over policy (chronix allows, k-ui rejects)   | **Defer-indefinite** | Chronix's caller-policy delegation is more flexible. Re-prioritize if a consumer reports visual chaos from inverted ranges.                                                                                                                                |
+| Built-in vertical-direction marker variants absent            | **Defer-indefinite** | Link router never emits vertical-approach paths today. Re-prioritize if a future router change introduces them.                                                                                                                                            |
+| Custom marker shape — data vs callback                        | **Defer-indefinite** | Chronix's `CustomLinkMarker` data shape covers most cases. Re-prioritize if a consumer needs per-call `refX`/`refY`/`direction` customization.                                                                                                             |
+| Sidebar divider — RTL multiplier                              | **Defer-indefinite** | Tied to the global RTL deferral.                                                                                                                                                                                                                           |
+| Bar `tabIndex={0}` / keyboard focus                           | **Reject**           | Phase 13 (keyboard nav) was explicitly SKIPPED per parity discipline (chronix uses a different a11y model — focus is consumer-controlled via slot registry, not a global tabIndex). Won't add a default `tabIndex={0}` unless the a11y model is rewritten. |
+
+#### P2 — DOM-shape / architectural divergence; same observable output today
+
+| Item                                                      | Disposition          | Rationale / trigger                                                                                                                                                                              |
+| --------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| Day-view extra date header row                            | **Defer-indefinite** | Visual nit; chronix's render is arguably more informative. Re-prioritize if a user reports it as visual drift.                                                                                   |
+| Day/week label-vs-slot collapse (24 ticks vs 48 slots)    | **Defer-indefinite** | No observable drift today (`pxPerMs` ratio is identical). Re-prioritize if a 30-minute-granularity feature needs `slotDurationMs ≠ tickDurationMs`.                                              |
+| Marker `<defs>` exhaustive emit (7 builtins × usedColors) | **Defer-indefinite** | DOM-size overhead only, no pixel diff. Re-prioritize if a future render-perf audit flags it.                                                                                                     |
+| Wrapper one-scroll vs k-ui's two-scroll architecture      | **Planned Phase 23** | Allocated this session (commit `9cde7e0`). ~6-8h scope: dual `overflow: auto` scrollports + JS scroll-sync + `translateX` header pinning.                                                        |
+| Selection toggle modifier: `shiftKey` vs `ctrlKey         |                      | metaKey`                                                                                                                                                                                         | **Reject** | Phase 12 documented this as intentional. Most macOS apps use shift-for-range-select; chronix follows that convention. |
+| Live drag geometry: chronix in-place vs k-ui mirror       | **Reject**           | Architectural choice — chronix's in-place mutation is simpler + matches its single-source-of-truth render approach. Revisit only if a feature requires "show old + new position simultaneously". |
+| Bar slot ctx surface narrower                             | **Defer-indefinite** | Phase 22+ may expand `BarSlotArgs` if the toolbar / live-mirror surface requires additional flags. Re-prioritize per consumer request.                                                           |
+| VirtualizedPaneLayout computed but not wired into render  | **Defer-indefinite** | Forward-design. Re-prioritize if a 10k+-bar performance test materializes.                                                                                                                       |
+
+#### P3 — chronix-only feature with no k-ui counterpart
+
+| Item                                                 | Disposition                   | Rationale                                                                                                     |
+| ---------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `link-orphan` emit                                   | **Reject** (chronix-additive) | Chronix surfaces orphan link ids so consumers can react; k-ui silently drops. Useful debugging signal; keep.  |
+| `bar-progress` emit                                  | **Reject** (chronix-additive) | First-class chronix event for progress drags; k-ui handles via DOM hooks. Keep.                               |
+| `MIN_SIDEBAR_AREA_WIDTH=40` vs k-ui 30               | **Reject** (chronix-padding)  | Chronix uses larger cell padding so the 40-px floor preserves readable column labels. Documented intentional. |
+| VirtualizedPaneLayout overscan + visible-strip-range | **Reject** (chronix-additive) | Forward-design for future virtualization; no k-ui counterpart by design. Keep.                                |
+
+#### Counts (audit-sweep tally)
+
+- **DONE since recheck**: 4 (weekendsVisible, eventColor family, validation callbacks, todayLine).
+- **Planned with phase number**: 4 (Phase 22 toolbar, Phase 23 dual-scrollport, Phase 24 imperative API + nav, Phase 25 drag-distance gate).
+- **Reject (by-design)**: 8 (nowIndicator, bar tabIndex, selection modifier, live-drag mirror, link-orphan, bar-progress, MIN_SIDEBAR floor, VirtualizedPane overscan).
+- **Defer-indefinite (revisit on demand)**: 21 (the rest).
+
+Of the 17 P0 items in the original recheck: 4 DONE, 3 Planned (Phase 22 + 24×2), 1 Reject (nowIndicator), 9 Defer-indefinite. **The remaining demo-parity gap is 3 phases (22 + 23 + 24)**, not the 17 originally feared.
+
+### Roadmap implications (historical — superseded 2026-05-16)
+
+**⚠ This section was the original recheck's roadmap framing. The
+Disposition register above supersedes it. Phase numbers 17-21 named
+here are NOT the phases that actually landed (the actual Phase 17-21
+were parity-helpers / weekendsVisible / validation / eventColor /
+todayLine respectively). Kept for historical reference.**
 
 If "全量对齐 k-ui" is the goal, the **17 P0 items + 9 P1 items = 26
 items**. Each is roughly a phase-sized piece of work; conservatively
