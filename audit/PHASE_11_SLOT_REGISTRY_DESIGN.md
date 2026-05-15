@@ -1,6 +1,13 @@
 # Phase 11 — Custom bar renderers via `SlotRegistry`
 
-**Status**: Approved (2026-05-15). Implementation in progress.
+**Status**: **DONE (2026-05-15)**. Landed as 3 commits: `479b3b0`
+(design doc) → `5f51845` (Commit 1: core createSlotRegistry +
+BarSlotArgs) → `bcc0309` (Commit 2: adapter consumes slotRegistry).
++12 tests (2 over plan — added a `multi-slot independence` + an
+`opaque return type` case to round out registry coverage); chronix
+vitest 328 → 340. 5 VRT baselines re-verified idempotent —
+default-rect rendering is pixel-identical. See
+`audit/journal/2026-05-13.md` "Phase 11" section.
 
 ## Problem
 
