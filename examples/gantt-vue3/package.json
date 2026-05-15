@@ -17,6 +17,7 @@
   "dependencies": {
     "@chronixjs/gantt": "workspace:*",
     "@chronixjs/gantt-vue3": "workspace:*",
+    "@chronixjs/golden-runner": "workspace:*",
     "vue": "^3.5.0"
   },
   "devDependencies": {

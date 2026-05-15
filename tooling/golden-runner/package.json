@@ -5,6 +5,9 @@
   "description": "Playwright-driven visual + interaction golden capture for the chronix parity oracle",
   "license": "MIT",
   "type": "module",
+  "exports": {
+    "./parity-events": "./src/parity-events.ts"
+  },
   "scripts": {
     "capture": "playwright test --update-snapshots",
     "verify": "playwright test",

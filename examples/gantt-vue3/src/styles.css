@@ -65,6 +65,29 @@ body {
   margin-bottom: 16px;
 }
 
+/* Phase 17 parity-mode banner — only visible when the demo loads
+   with `?parity=true`. Signals that sample data has been swapped for
+   the cross-demo parity dataset. Generic styling (no logo, no
+   colors that would interfere with VRT screenshots in default mode
+   since the banner is only rendered conditionally). */
+.cx-demo-parity-banner {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  color: #78350f;
+  font-size: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+
+.cx-demo-parity-banner code {
+  background: #fde68a;
+  border-radius: 2px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  padding: 1px 4px;
+}
+
 .cx-demo-header h1 {
   font-size: 16px;
   font-weight: 600;

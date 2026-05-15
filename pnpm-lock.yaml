@@ -84,6 +84,9 @@ importers:
       '@chronixjs/gantt-vue3':
         specifier: workspace:*
         version: link:../../adapters/vue3
+      '@chronixjs/golden-runner':
+        specifier: workspace:*
+        version: link:../../tooling/golden-runner
       vue:
         specifier: ^3.5.0
         version: 3.5.34(typescript@5.9.3)

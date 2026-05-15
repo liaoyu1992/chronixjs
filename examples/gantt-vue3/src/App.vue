@@ -17,6 +17,30 @@ import type {
 import { computed, ref } from 'vue';
 
 import { sampleBars, sampleLinks, sampleRows, todayLocalMidnight } from './sample-data';
+import { sampleBarsParity, sampleRowsParity } from './sample-data-parity';
+
+/**
+ * **Parity mode** toggle: load with `?parity=true` to swap the demo's
+ * sample data for the k-ui-equivalent dataset (32 resources matching
+ * k-ui's RESOURCES ids, 25 events with `event-N` ids matching
+ * k-ui's events). Enables side-by-side cross-demo parity assertions
+ * in `tooling/golden-runner/tests/parity.spec.ts`. See
+ * `audit/PHASE_17_PARITY_INFRASTRUCTURE_DESIGN.md`.
+ *
+ * SSR-safe: `typeof window` check protects against `window` being
+ * undefined at module-load in server-side build. Vite's dev / build
+ * runs in the browser so the flag flips correctly there.
+ */
+const isParityMode =
+  typeof window !== 'undefined' &&
+  new URLSearchParams(window.location.search).get('parity') === 'true';
+
+const initialBars = isParityMode ? sampleBarsParity : sampleBars;
+const initialRows = isParityMode ? sampleRowsParity : sampleRows;
+// Parity-mode hides the demo's dependency links (k-ui demo's links
+// don't map 1:1 to chronix LinkSpec shapes and styling parity is
+// parked); keep the demo's link rendering in default mode only.
+const initialLinks = isParityMode ? [] : sampleLinks;
 
 type ViewId = AxisRangePlanInput['viewId'];
 
@@ -43,7 +67,7 @@ const columns: readonly ColumnSpec[] = [
 // Reactive copy of the bar set — drag / resize results mutate this in
 // place so the demo shows a real end-to-end round-trip (commit →
 // re-layout → re-render).
-const bars = ref<BarSpec[]>(sampleBars.map((b) => ({ ...b })));
+const bars = ref<BarSpec[]>(initialBars.map((b) => ({ ...b })));
 const editable = ref(true);
 const selectable = ref(true);
 const viewId = ref<ViewId>('day');
@@ -175,7 +199,7 @@ function onBarResizeStop(p: BarResizeStopPayload): void {
 }
 
 function resetBars(): void {
-  bars.value = sampleBars.map((b) => ({ ...b }));
+  bars.value = initialBars.map((b) => ({ ...b }));
   events.value = [];
   nextEventId = 0;
 }
@@ -184,6 +208,13 @@ function resetBars(): void {
 <template>
   <div class="cx-demo-app">
     <main class="cx-demo-main">
+      <div v-if="isParityMode" class="cx-demo-parity-banner" data-parity-mode="true">
+        Parity mode active — sample data mirrors the parity-reference demo ({{
+          initialBars.length
+        }}
+        bars × {{ initialRows.length }} rows). See
+        <code>audit/PHASE_17_PARITY_INFRASTRUCTURE_DESIGN.md</code>.
+      </div>
       <header class="cx-demo-header">
         <h1>@chronixjs/gantt-vue3 demo</h1>
         <div class="cx-demo-config">
@@ -213,10 +244,10 @@ function resetBars(): void {
       <div class="cx-demo-svg-frame">
         <ChronixGantt
           :bars="bars"
-          :rows="sampleRows"
+          :rows="initialRows"
           :axis-input="axisInput"
           :columns="columns"
-          :links="sampleLinks"
+          :links="initialLinks"
           :selected-bar-ids="selection.selectedBarIds.value"
           :editable="editable"
           :selectable="selectable"
@@ -250,7 +281,7 @@ function resetBars(): void {
         Drag a bar body to move, drag a bar edge to resize, or drag an empty row to select a range.
       </div>
       <footer class="cx-demo-footer">
-        <code>{{ bars.length }}</code> bars across <code>{{ sampleRows.length }}</code> rows. Day
+        <code>{{ bars.length }}</code> bars across <code>{{ initialRows.length }}</code> rows. Day
         axis from local midnight.
         <br />
         Commit events update the bar state in place — drag, then drag again to see the new baseline.
