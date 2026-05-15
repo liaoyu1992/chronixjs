@@ -1,6 +1,6 @@
 # Phase 5.x — vGrouping (rowSpan merge for sidebar columns)
 
-**Status**: **A approved (2026-05-15)**. Narrowed scope confirmed (3 catalog items done, 8 stay parked with demo-evidence rationale). Default answers to all three open questions accepted (mirror reference's region/base/workshop value style; bold weight 600 on merged cells). Implementation pending; will land as 2 commits with a browser-verify pause between them.
+**Status**: **DONE (2026-05-15)**. Landed as 3 commits: `ef4b301` (design doc), `e3362dc` (rowspan + table DOM + 13 tests), `969884e` (demo wiring + VRT rebaseline). Browser-verified: merged cells span the correct y-range, individual cells align with their bar rows, bold-vs-normal weight contrast matches the reference visually.
 
 ## Problem
 

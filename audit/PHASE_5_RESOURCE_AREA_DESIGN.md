@@ -210,12 +210,12 @@ drops are the failure mode this catalog exists to prevent.
 
 | #   | k-ui behavior                                                                                                                             | chronix v0                                                                                         | Disposition                                                                                                                                                                                              |
 | --- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Multi-column table with `<colgroup>` + `<tbody>`                                                                                          | `<div class="cx-gantt-sidebar-body">` with CSS grid per row                                        | ✅ done — different DOM (div+grid vs table), same visual outcome                                                                                                                                         |
+| 1   | Multi-column table with `<colgroup>` + `<tbody>`                                                                                          | actual `<table>` with `<colgroup>` + `<thead>` + `<tbody>` (switched in Phase 5.x for rowspan)     | ✅ done — Phase 5.x adopted the reference's exact DOM shape                                                                                                                                              |
 | 2   | Per-column pixel widths or `auto`                                                                                                         | `ColumnSpec.width: number` (px only)                                                               | ✅ done for fixed widths; ❌ auto-width rejected (consumers compute and pass exact widths; keeps the layout deterministic for VRT)                                                                       |
-| 3   | `rowSpan`-based group cells (parent value merged across N consecutive child rows)                                                         | flat list, every row renders every cell                                                            | ⏸️ parked — Phase 5.x "tree-grouping". Needs a pre-pass to walk rows and emit rowSpan counts; demo currently uses flat rows so user-visible parity unaffected                                            |
+| 3   | `rowSpan`-based group cells (parent value merged across N consecutive child rows)                                                         | `computeRowSpans()` pre-pass + `<td rowspan=N>` on the leading row; absorbed rows emit no DOM      | ✅ done — Phase 5.x (commit `e3362dc`)                                                                                                                                                                   |
 | 4   | Expand/collapse state for groups (`expandedGroups: Set<string>`)                                                                          | n/a (no groups yet)                                                                                | ⏸️ parked — lands with #3                                                                                                                                                                                |
 | 5   | Standalone group row mode (group nodes become `<tr colSpan=N>`)                                                                           | n/a                                                                                                | ⏸️ parked — lands with #3                                                                                                                                                                                |
-| 6   | vGrouping mode (groups as rowSpan-merged columns vs separate rows)                                                                        | n/a                                                                                                | ⏸️ parked — lands with #3                                                                                                                                                                                |
+| 6   | vGrouping mode (groups as rowSpan-merged columns vs separate rows)                                                                        | `ColumnSpec.group?: boolean` toggles the merge; reference auto-detects via any `group: true` col   | ✅ done — Phase 5.x (commit `e3362dc`)                                                                                                                                                                   |
 | 7   | Custom cell content callback `colSpec.cellContent(resource)`                                                                              | v0 hard-codes `String(row.columns[key])`                                                           | ⏸️ parked — Phase 5.y "custom renderers". Needs `ColumnSpec.cellContent?: (row: RowSpec) => VNode \| string`                                                                                             |
 | 8   | Custom group-cell content `colSpec.groupCellContent(groupValue)`                                                                          | n/a                                                                                                | ⏸️ parked — lands with #3 + #7                                                                                                                                                                           |
 | 9   | Custom header content `colSpec.headerContent` + classNames + lifecycle hooks                                                              | v0 hard-codes `String(colSpec.label)`                                                              | ⏸️ parked — Phase 5.y "custom renderers" (covers header + cell)                                                                                                                                          |
@@ -227,7 +227,7 @@ drops are the failure mode this catalog exists to prevent.
 | 15  | Click-to-expand on resource rows (`onClick: toggleResource`)                                                                              | n/a                                                                                                | ⏸️ parked — lands with #3                                                                                                                                                                                |
 | 16  | `resourceLabelContent` prop (component-level cell override)                                                                               | n/a                                                                                                | ⏸️ parked — Phase 5.y                                                                                                                                                                                    |
 | 17  | Per-row pixel height matching body strips                                                                                                 | `<div style="height: ${strip.height}px">` per row, plus `gap: rowSpacing` between rows             | ✅ done                                                                                                                                                                                                  |
-| 18  | Bold styling for group rows / group cells                                                                                                 | n/a (no groups)                                                                                    | ⏸️ parked — lands with #3                                                                                                                                                                                |
+| 18  | Bold styling for group rows / group cells                                                                                                 | inline `font-weight: 600` on cells whose rowspan > 1; leaf cells stay at 400                       | ✅ done — Phase 5.x (commit `e3362dc`). Standalone group rows (parked at #5) still owe their bold variant                                                                                                |
 | 19  | Background color via CSS variable `--gantt-neutral-bg-color`                                                                              | inline `background: #ffffff`                                                                       | ⏸️ parked — Phase 5.z "theme tokens". Hardcoded white for v0; consumer override requires `!important`                                                                                                    |
 | 20  | Inner-cell "sticky cushion" (`gantt-datagrid-cell-cushion gantt-sticky` keeps group labels visible within their rowSpan area)             | n/a                                                                                                | ⏸️ parked — lands with #3                                                                                                                                                                                |
 | 21  | State CSS classes (`gantt-resource-group-expanded`, `-collapsed`, `-has-children`)                                                        | n/a                                                                                                | ⏸️ parked — lands with #3                                                                                                                                                                                |
@@ -238,20 +238,28 @@ drops are the failure mode this catalog exists to prevent.
 | 26  | Resource list outer wrapper (`gantt-resource-list-outer`)                                                                                 | wrapper's grid track holds the sidebar; no extra outer div in chronix                              | ❌ rejected — chronix's wrapper grid is the structural equivalent; an outer div would be vestigial                                                                                                       |
 | 27  | `tableLayout: 'fixed'` vs `'auto'` switch when `sharedLayout` is set                                                                      | CSS grid handles this implicitly — `gridTemplateColumns` of pixel values = fixed-layout equivalent | ✅ done — different mechanism, same outcome                                                                                                                                                              |
 
-**Summary of v0 deltas to flag at PR review:**
+**Summary of catalog state (updated after Phase 5.x lands):**
 
-- Tree-grouping (#3-6, #8, #13-15, #18, #20, #21, #24) is parked as a
-  cohesive set — they all depend on a tree pre-pass that doesn't
-  exist yet. Demo currently uses flat rows so users see no missing
-  visual.
-- Custom renderers (#7, #9, #11, #12, #16) are parked as a second
-  cohesive set — pattern is the same `ColumnSpec.cellContent?` / etc.
-  Lands as one phase. Demo's `String(row.columns[key])` works for the
-  current flat sample data.
-- Theming (#19) and resizable columns (#23) are independent parks.
+- ✅ Done (11 items): #1, #2 (fixed-width slice), #3, #6, #10, #17, #18,
+  #22 (chronix-equivalent attrs), #25, #27, plus the new rowspan-merge
+  itself. Phase 5 v0 closed 8 items; Phase 5.x added #3, #6, #18, and
+  upgraded #1 from "different DOM, same outcome" to "actual `<table>`".
+- ⏸️ Tree-grouping leftovers (#4, #5, #8, #13, #14, #15, #20, #21, #24)
+  — 9 items that depend on a tree pre-pass and/or expand/collapse
+  state. None are exercised by the reference's vue3 demo, so they
+  stay parked behind explicit observation: "no demo-side parity
+  evidence". See `audit/PHASE_5_X_VGROUPING_DESIGN.md` for the
+  evidence trace.
+- ⏸️ Custom renderers (#7, #9, #11, #12, #16) — Phase 5.y. Pattern is
+  the same `ColumnSpec.cellContent?` / etc.; demo's `String(...)`
+  works for current data.
+- ⏸️ Theming (#19) and resizable columns (#23) — independent parks.
+- ❌ Rejected (2 items): #2 auto-width and #22 `data-row-index`.
 
-These three groupings are the agenda for a future "Phase 5.x sidebar
-parity" pass once the v0 sticky scaffolding lands.
+Standing agenda for catalog-driven future work: Phase 5.y (custom
+renderers), Phase 5.z (theme tokens), Phase 5.w (resizable columns),
+and a possible follow-on for the parked tree-grouping leftovers IF a
+future consumer demo exercises any of them.
 
 ## Open questions for the user
 
