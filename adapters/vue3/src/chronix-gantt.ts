@@ -1,4 +1,9 @@
-import { BAR_SLOT_NAME, defaultChronixTheme, defaultLinkRouter } from '@chronixjs/gantt';
+import {
+  BAR_SLOT_NAME,
+  defaultChronixTheme,
+  defaultLinkRouter,
+  resolveBarStyle,
+} from '@chronixjs/gantt';
 import { computed, defineComponent, h, ref, watchEffect, type PropType } from 'vue';
 
 import { useGanttLayout } from './use-gantt-layout.js';
@@ -15,6 +20,7 @@ import {
 import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
 import type {
   AxisRangePlanInput,
+  BarColorFunc,
   BarSlotArgs,
   BarSpec,
   ChronixTheme,
@@ -456,6 +462,58 @@ export const ChronixGantt = defineComponent({
      */
     eventConstraint: {
       type: Object as PropType<EventConstraint | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 20: umbrella bar color. When set and the specific bar
+     * background/border props aren't, applies to both. Specific
+     * props win when both are set.
+     */
+    barColor: {
+      type: String as PropType<string | undefined>,
+      default: undefined,
+    },
+    /** Phase 20: bar fill at the component level. */
+    barBackgroundColor: {
+      type: String as PropType<string | undefined>,
+      default: undefined,
+    },
+    /** Phase 20: bar stroke at the component level. */
+    barBorderColor: {
+      type: String as PropType<string | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 20: bar text color at the component level. Default
+     * render's `<rect>` has no text child; this token flows to
+     * `BarSlotArgs.resolvedTextColor` for custom slot renderers.
+     * Does NOT override `theme.progressLabel` — the progress
+     * label stays styled by its dedicated theme token to keep
+     * its dark-on-translucent-green default readable.
+     */
+    barTextColor: {
+      type: String as PropType<string | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 20: per-bar background callback. Runs after theme +
+     * component prop + `BarSpec.style` cascade. Receives
+     * `BarStyleArg` with the cascaded defaults; returning a
+     * color string overrides; returning `undefined` defers to
+     * the cascaded default.
+     */
+    barBackgroundColorCallback: {
+      type: Function as PropType<BarColorFunc | undefined>,
+      default: undefined,
+    },
+    /** Phase 20: per-bar border callback (same cascade). */
+    barBorderColorCallback: {
+      type: Function as PropType<BarColorFunc | undefined>,
+      default: undefined,
+    },
+    /** Phase 20: per-bar text callback (same cascade). */
+    barTextColorCallback: {
+      type: Function as PropType<BarColorFunc | undefined>,
       default: undefined,
     },
   },
@@ -1007,12 +1065,49 @@ export const ChronixGantt = defineComponent({
         // present; fall back to the default `<rect class="cx-gantt-bar">`.
         // The slot template receives the same live geometry the default
         // would use, plus the effective theme + in-flight transaction +
-        // selection state.
+        // selection state + Phase 20 resolved colors.
         const isSelected = selectedBarSet.value.has(bar.barId);
         const barTemplate = props.slotRegistry?.get(BAR_SLOT_NAME);
+        const sourceBar = props.bars.find((b) => b.id === bar.barId);
+        // Phase 20: resolve bar colors through the cascade. When no
+        // source bar exists (placed-bar orphan, defensive), fall back
+        // to theme defaults so the inline `fill=` always has a value.
+        const resolvedStyle = sourceBar
+          ? resolveBarStyle({
+              bar: sourceBar,
+              placedBar: bar,
+              isSelected,
+              activeTransaction: activeTxn,
+              themeBackgroundColor: t.barBackgroundColor,
+              themeBorderColor: t.barBorderColor,
+              themeTextColor: t.barTextColor,
+              ...(props.barColor !== undefined ? { barColor: props.barColor } : {}),
+              ...(props.barBackgroundColor !== undefined
+                ? { barBackgroundColor: props.barBackgroundColor }
+                : {}),
+              ...(props.barBorderColor !== undefined
+                ? { barBorderColor: props.barBorderColor }
+                : {}),
+              ...(props.barTextColor !== undefined
+                ? { barTextColor: props.barTextColor }
+                : {}),
+              ...(props.barBackgroundColorCallback
+                ? { barBackgroundColorCallback: props.barBackgroundColorCallback }
+                : {}),
+              ...(props.barBorderColorCallback
+                ? { barBorderColorCallback: props.barBorderColorCallback }
+                : {}),
+              ...(props.barTextColorCallback
+                ? { barTextColorCallback: props.barTextColorCallback }
+                : {}),
+            })
+          : {
+              backgroundColor: t.barBackgroundColor,
+              borderColor: t.barBorderColor,
+              textColor: t.barTextColor,
+            };
         const nodes: ReturnType<typeof h>[] = [];
         if (barTemplate) {
-          const sourceBar = props.bars.find((b) => b.id === bar.barId);
           if (sourceBar) {
             const slotArgs: BarSlotArgs = {
               placedBar: bar,
@@ -1024,6 +1119,9 @@ export const ChronixGantt = defineComponent({
               theme: t,
               activeTransaction: activeTxn,
               isSelected,
+              resolvedBackgroundColor: resolvedStyle.backgroundColor,
+              resolvedBorderColor: resolvedStyle.borderColor,
+              resolvedTextColor: resolvedStyle.textColor,
             };
             // `SlotContext.args` is typed `Readonly<Record<string, unknown>>`
             // because core can't know per-slot shapes — cast through
@@ -1050,6 +1148,12 @@ export const ChronixGantt = defineComponent({
               y: renderY,
               width: renderWidth,
               height: bar.height,
+              // Phase 20: bar fill / stroke flow from the resolver,
+              // not from CSS. Default render's fill / stroke override
+              // the `.cx-gantt-bar` CSS class via inline-attribute
+              // precedence (inline > class).
+              fill: resolvedStyle.backgroundColor,
+              stroke: resolvedStyle.borderColor,
             }),
           );
         }
@@ -1066,7 +1170,8 @@ export const ChronixGantt = defineComponent({
         // back and the render falls through to the persisted path.
         const sourceProgress = barProgressById.value.get(bar.barId);
         const overlayId = overlayIdByBarId.value.get(bar.barId);
-        const sourceBar = props.bars.find((b) => b.id === bar.barId);
+        // sourceBar lookup moved up (Phase 20) for the bar-color
+        // resolver; reuse it here.
         if (sourceProgress !== undefined && overlayId !== undefined) {
           const displayedProgress =
             activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId

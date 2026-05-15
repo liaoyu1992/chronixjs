@@ -68,9 +68,11 @@ export { BAR_SLOT_NAME, createSlotRegistry } from './render/index.js';
 
 export type {
   BarClickPayload,
+  BarColorFunc,
   BarDropPayload,
   BarResizePayload,
   BarsSetPayload,
+  BarStyleArg,
   ChronixTheme,
   DropProposal,
   EventAllowFunc,
@@ -81,12 +83,20 @@ export type {
   GanttOptions,
   ProgressChangePayload,
   RejectionReason,
+  ResolvedBarStyle,
+  ResolveBarStyleInput,
   SelectAllowFunc,
   SelectPayload,
   ValidationContext,
   ViewChangePayload,
 } from './api/index.js';
-export { defaultChronixTheme, validateDrop, validateResize, validateSelect } from './api/index.js';
+export {
+  defaultChronixTheme,
+  resolveBarStyle,
+  validateDrop,
+  validateResize,
+  validateSelect,
+} from './api/index.js';
 
 export type {
   AxisHeaderCell,

@@ -551,6 +551,105 @@ describe('<ChronixGantt> validation gates (Phase 19)', () => {
   });
 });
 
+describe('<ChronixGantt> bar color pipeline (Phase 20)', () => {
+  it('default bar <rect> has inline fill + stroke matching theme defaults', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [bar('b1', 'r1', 8, 12)], rows, axisInput },
+    });
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(rect.attributes('fill')).toBe(defaultChronixTheme.barBackgroundColor);
+    expect(rect.attributes('stroke')).toBe(defaultChronixTheme.barBorderColor);
+    // .cx-gantt-bar class is still present for non-color hooks (rx, ry, cursor).
+    expect(rect.classes()).toContain('cx-gantt-bar');
+  });
+
+  it('barBackgroundColor prop overrides theme; border inherits via background-overrides-border umbrella', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        barBackgroundColor: '#10b981',
+      },
+    });
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(rect.attributes('fill')).toBe('#10b981');
+    expect(rect.attributes('stroke')).toBe('#10b981');
+  });
+
+  it('BarSpec.style.backgroundColor overrides the component-prop layer', () => {
+    const styledBar: BarSpec = {
+      ...bar('b1', 'r1', 8, 12),
+      style: { backgroundColor: '#ef4444' },
+    };
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [styledBar],
+        rows,
+        axisInput,
+        barBackgroundColor: '#10b981',
+      },
+    });
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(rect.attributes('fill')).toBe('#ef4444');
+  });
+
+  it('barBackgroundColorCallback overrides BarSpec.style and receives BarStyleArg with cascaded default', () => {
+    const callback = vi.fn<(arg: { defaultBackgroundColor: string }) => string | undefined>(
+      () => '#f59e0b',
+    );
+    const styledBar: BarSpec = {
+      ...bar('b1', 'r1', 8, 12),
+      style: { backgroundColor: '#ef4444' },
+    };
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [styledBar],
+        rows,
+        axisInput,
+        barBackgroundColorCallback: callback,
+      },
+    });
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(rect.attributes('fill')).toBe('#f59e0b');
+    expect(callback).toHaveBeenCalled();
+    expect(callback.mock.calls[0]?.[0]?.defaultBackgroundColor).toBe('#ef4444');
+  });
+
+  it('barColor umbrella prop sets both fill and stroke when specific props are absent', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('b1', 'r1', 8, 12)],
+        rows,
+        axisInput,
+        barColor: '#8b5cf6',
+      },
+    });
+    const rect = wrapper.find('[data-bar-id="b1"]');
+    expect(rect.attributes('fill')).toBe('#8b5cf6');
+    expect(rect.attributes('stroke')).toBe('#8b5cf6');
+  });
+
+  it('progress label fill stays at theme.progressLabel regardless of barTextColor (separate token)', () => {
+    // Progress label color is intentionally NOT driven by the bar
+    // text color cascade — it has its own dedicated theme token so
+    // the default dark-green-on-translucent-green readability stays
+    // intact. `barTextColor` flows to `BarSlotArgs.resolvedTextColor`
+    // for custom renderers but does NOT override the progress label.
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [progressBar('b1', 'r1', 8, 12, 50)],
+        rows,
+        axisInput,
+        barTextColor: '#ff0000',
+      },
+    });
+    const label = wrapper.find('.cx-gantt-progress-label');
+    expect(label.exists()).toBe(true);
+    expect(label.attributes('fill')).toBe(defaultChronixTheme.progressLabel);
+  });
+});
+
 describe('<ChronixGantt> axis ticks', () => {
   it('day view: renders 24 tick labels with zh-CN hour text "0时" … "23时"', () => {
     const wrapper = mount(ChronixGantt, {

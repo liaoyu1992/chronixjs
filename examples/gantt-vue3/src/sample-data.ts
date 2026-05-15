@@ -79,16 +79,31 @@ export const sampleRows: readonly RowSpec[] = [
   { id: 'workshop-d', columns: { region: '三亚', base: '三亚基地', name: '车间 D' } },
 ];
 
+// Phase 20: a few bars get `extendedProps.priority` so the demo's
+// bar-color callback toggle has something meaningful to switch on.
+// `extendedProps` is the BarSpec slot for user-supplied opaque
+// payload — chronix never inspects it.
+const HIGH_PRIORITY = { priority: 'high' } as const;
+const MEDIUM_PRIORITY = { priority: 'medium' } as const;
+const LOW_PRIORITY = { priority: 'low' } as const;
+
+function withPriority<T extends BarSpec>(
+  b: T,
+  priority: typeof HIGH_PRIORITY | typeof MEDIUM_PRIORITY | typeof LOW_PRIORITY,
+): T {
+  return { ...b, extendedProps: priority };
+}
+
 export const sampleBars: readonly BarSpec[] = [
   // Today's hour-scale bars — day view shows these in detail.
   barAt('bar-1', 'workshop-a', 1, 5, '设备维护 - 起点'),
-  barAt('bar-2', 'workshop-a', 8, 12, '系统检查', 50),
+  withPriority(barAt('bar-2', 'workshop-a', 8, 12, '系统检查', 50), HIGH_PRIORITY),
   barAt('bar-3', 'workshop-a', 15, 22, '夜间检修'),
   barAt('bar-4', 'workshop-b', 2, 7, '日常巡检'),
-  barAt('bar-5', 'workshop-b', 10, 18, '主要维护', 25),
+  withPriority(barAt('bar-5', 'workshop-b', 10, 18, '主要维护', 25), MEDIUM_PRIORITY),
   barAt('bar-6', 'workshop-c', 6, 14, '部件更换'),
   barAt('bar-7', 'workshop-c', 16, 20, '验证测试'),
-  barAt('bar-8', 'workshop-d', 4, 11, '综合检修', 80),
+  withPriority(barAt('bar-8', 'workshop-d', 4, 11, '综合检修', 80), LOW_PRIORITY),
 
   // Multi-day bars — fill week / month / season / halfYear / year views.
   // Offsets chosen to land each bar in a distinct stretch of the wider

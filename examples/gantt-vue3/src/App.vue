@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type {
   AxisRangePlanInput,
+  BarColorFunc,
   BarSpec,
   EventAllowFunc,
   EventConstraint,
@@ -158,6 +159,56 @@ const activeEventAllow = computed<EventAllowFunc | undefined>(() =>
 const activeSelectAllow = computed<SelectAllowFunc | undefined>(() =>
   useSelectAllow.value ? sampleSelectAllow : undefined,
 );
+
+// Phase 20: bar color pipeline toggles. Three opt-in toggles default
+// OFF so the baseline render is unchanged (theme defaults match the
+// prior `.cx-gantt-bar { fill }` CSS literals byte-for-byte).
+const useThemedBars = ref(false);
+const useUmbrellaColor = ref(false);
+const usePriorityCallback = ref(false);
+
+const PRIORITY_BACKGROUND: Record<string, string> = {
+  high: '#ef4444',
+  medium: '#f59e0b',
+  low: '#84cc16',
+};
+
+const samplePriorityCallback: BarColorFunc = (arg) => {
+  const priority = (arg.bar.extendedProps as { priority?: string } | undefined)?.priority;
+  return priority ? PRIORITY_BACKGROUND[priority] : undefined;
+};
+
+// `?priorityCallback=true` URL flag wires the same callback in parity
+// mode so the cross-demo color parity test has matching colors on
+// both sides. Independent from the toggle UI (which is for default
+// demo mode).
+const isPriorityCallbackParity =
+  typeof window !== 'undefined' &&
+  new URLSearchParams(window.location.search).get('priorityCallback') === 'true';
+
+// Parity mode pins specific component-prop defaults so the rendered
+// bar fill matches the reference's `eventBorderColor: '#3788d8'`
+// default. The reference demo's `eventBackgroundColor` is unset, so
+// k-ui uses the same color for both bg and border per its own
+// background-overrides-border umbrella semantic.
+const activeBarBackgroundColor = computed<string | undefined>(() => {
+  if (isParityMode) return '#3788d8';
+  if (useThemedBars.value) return '#10b981';
+  return undefined;
+});
+const activeBarBorderColor = computed<string | undefined>(() => {
+  if (isParityMode) return '#3788d8';
+  if (useThemedBars.value) return '#047857';
+  return undefined;
+});
+const activeBarColor = computed<string | undefined>(() =>
+  useUmbrellaColor.value ? '#8b5cf6' : undefined,
+);
+const activeBarBackgroundCallback = computed<BarColorFunc | undefined>(() => {
+  if (isPriorityCallbackParity) return samplePriorityCallback;
+  if (usePriorityCallback.value) return samplePriorityCallback;
+  return undefined;
+});
 
 const axisInput = computed<AxisRangePlanInput>(() => ({
   viewId: viewId.value,
@@ -343,6 +394,21 @@ function resetBars(): void {
             selectAllow ≤ 4h
           </label>
         </div>
+        <div class="cx-demo-validation-toggles" role="group" aria-label="bar styling">
+          <span class="cx-demo-validation-label">bar styling (Phase 20):</span>
+          <label title="barBackgroundColor + barBorderColor at component level">
+            <input v-model="useThemedBars" type="checkbox" />
+            themed bars
+          </label>
+          <label title="barColor umbrella sets both fill + stroke">
+            <input v-model="useUmbrellaColor" type="checkbox" />
+            umbrella color
+          </label>
+          <label title="barBackgroundColorCallback: per-priority colors via extendedProps">
+            <input v-model="usePriorityCallback" type="checkbox" />
+            priority callback
+          </label>
+        </div>
       </header>
       <div class="cx-demo-svg-frame">
         <ChronixGantt
@@ -358,6 +424,10 @@ function resetBars(): void {
           :event-constraint="activeEventConstraint"
           :event-allow="activeEventAllow"
           :select-allow="activeSelectAllow"
+          :bar-color="activeBarColor"
+          :bar-background-color="activeBarBackgroundColor"
+          :bar-border-color="activeBarBorderColor"
+          :bar-background-color-callback="activeBarBackgroundCallback"
           @bar-drop="onBarDrop"
           @bar-resize="onBarResize"
           @select="onSelect"

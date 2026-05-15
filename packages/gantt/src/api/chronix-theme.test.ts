@@ -42,6 +42,10 @@ const EXPECTED_TOKEN_KEYS: readonly (keyof ChronixTheme)[] = [
   'sidebarBodyFontSize',
   'progressLabelFontSize',
   'progressLabelFontWeight',
+  // Bar fill / stroke (Phase 20)
+  'barBackgroundColor',
+  'barBorderColor',
+  'barTextColor',
 ];
 
 describe('defaultChronixTheme', () => {
@@ -76,6 +80,9 @@ describe('defaultChronixTheme', () => {
       'sidebarBodyCellLabel',
       'sidebarBodyCellBorder',
       'linkDefaultColor',
+      'barBackgroundColor',
+      'barBorderColor',
+      'barTextColor',
     ];
     for (const key of stringKeys) {
       expect(typeof defaultChronixTheme[key]).toBe('string');

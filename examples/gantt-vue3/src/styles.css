@@ -175,9 +175,11 @@ body {
   max-height: 70vh;
 }
 
+/* Phase 20: bar fill / stroke moved to theme tokens (applied inline
+   by <ChronixGantt>). Non-color hooks (border-radius, cursor) stay
+   in CSS — they're style-only and don't participate in the
+   per-bar color cascade. */
 .cx-gantt-bar {
-  fill: #3b82f6;
-  stroke: #1e40af;
   stroke-width: 1;
   rx: 3;
   ry: 3;

@@ -45,6 +45,18 @@ export interface BarSlotArgs {
    * and use this flag to drive their own selected-state styling.
    */
   readonly isSelected: boolean;
+  /**
+   * Phase 20: resolved background color from the bar-color
+   * cascade (theme → component prop → `BarSpec.style` → callback).
+   * Custom slot renderers should consume this rather than reading
+   * `theme.barBackgroundColor` directly so they pick up per-bar
+   * style overrides + callback outputs automatically.
+   */
+  readonly resolvedBackgroundColor: string;
+  /** Phase 20: resolved border color (same cascade). */
+  readonly resolvedBorderColor: string;
+  /** Phase 20: resolved text color (same cascade). */
+  readonly resolvedTextColor: string;
 }
 
 /**

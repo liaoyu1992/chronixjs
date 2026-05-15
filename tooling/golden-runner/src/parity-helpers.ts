@@ -166,6 +166,35 @@ export interface DomBarSnapshot {
   readonly y: number;
   readonly width: number;
   readonly height: number;
+  /**
+   * Phase 20: computed `fill` from the bar's primary colored rect.
+   * Returned in CSS `rgb(R, G, B)` form (the browser-normalized
+   * shape from `getComputedStyle`). Chronix's `<rect data-bar-id>`
+   * carries inline `fill=`; k-ui's `<g data-event-id>` wraps an
+   * inner `<rect>` whose fill is the bar color. Helper transparently
+   * walks one child level when the bar element itself isn't a rect.
+   */
+  readonly fill: string;
+}
+
+/**
+ * Phase 20: normalize a `#rrggbb` hex string to the `rgb(R, G, B)`
+ * shape `getComputedStyle().fill` returns. Used by cross-demo color
+ * parity tests so a chronix `barBackgroundColor: '#3788d8'` prop
+ * can be asserted against the browser-computed `rgb(55, 136, 216)`.
+ *
+ * Returns `null` for inputs that don't match `#rrggbb` (callers
+ * compare normalized values directly so an unparseable expected
+ * input fails the test loudly).
+ */
+export function hexToRgbString(hex: string): string | null {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return null;
+  const h = m[1]!;
+  const r = Number.parseInt(h.slice(0, 2), 16);
+  const g = Number.parseInt(h.slice(2, 4), 16);
+  const b = Number.parseInt(h.slice(4, 6), 16);
+  return `rgb(${r}, ${g}, ${b})`;
 }
 
 /**
@@ -206,12 +235,28 @@ export function extractBarsSnapshot(
       const bodyEl = document.querySelector(bodySel);
       const bodyRect = bodyEl?.getBoundingClientRect();
       if (!bodyRect) return [];
+      // Phase 20: read computed `fill` from the bar's colored rect.
+      // chronix's `[data-bar-id]` IS a `<rect>` with inline `fill=`;
+      // k-ui's `[data-event-id]` is a `<g>` wrapping a child rect
+      // whose fill is the bar color. Walk one child level when the
+      // bar element itself isn't a rect. `getComputedStyle` returns
+      // the painted color in normalized `rgb(R, G, B)` form so
+      // inline-attribute vs CSS-class resolution doesn't matter.
+      const readFill = (el: Element): string => {
+        let target: Element = el;
+        if (target.tagName.toLowerCase() !== 'rect') {
+          const innerRect = target.querySelector('rect');
+          if (innerRect) target = innerRect;
+        }
+        return window.getComputedStyle(target).fill;
+      };
       const out: {
         id: string;
         x: number;
         y: number;
         width: number;
         height: number;
+        fill: string;
       }[] = [];
       document.querySelectorAll<SVGElement>(`[${attr}]`).forEach((el) => {
         const id = el.getAttribute(attr) ?? '';
@@ -223,6 +268,7 @@ export function extractBarsSnapshot(
           y: Math.round((r.top - bodyRect.top) * 100) / 100,
           width: Math.round(r.width * 100) / 100,
           height: Math.round(r.height * 100) / 100,
+          fill: readFill(el),
         });
       });
       // Dedupe by id, widest wins — k-ui bars may have inner-overlay

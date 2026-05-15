@@ -87,6 +87,25 @@ export interface ChronixTheme {
   readonly progressLabelFontSize: number;
   /** Font weight for the progress label. */
   readonly progressLabelFontWeight: number;
+
+  // ----- Bar fill / stroke (Phase 20) -----
+  /**
+   * Bar fill color when no component prop, `BarSpec.style`, or
+   * callback override resolves. Phase 20 moves bar fills from CSS
+   * (`.cx-gantt-bar { fill }`) to this theme token so the bar-color
+   * pipeline can override the value at runtime via the cascade.
+   */
+  readonly barBackgroundColor: string;
+  /** Bar stroke color (same cascade as `barBackgroundColor`). */
+  readonly barBorderColor: string;
+  /**
+   * Bar text color — applied to the progress label and surfaced to
+   * custom slot renderers via `BarSlotArgs.resolvedTextColor`. The
+   * default `<rect>` render has no `<text>` child of its own, so
+   * this token's visible effect is on progress text + custom slot
+   * output.
+   */
+  readonly barTextColor: string;
 }
 
 /**
@@ -136,4 +155,10 @@ export const defaultChronixTheme: ChronixTheme = {
   sidebarBodyFontSize: 12,
   progressLabelFontSize: 11,
   progressLabelFontWeight: 600,
+
+  // Bar fill / stroke — match the prior `.cx-gantt-bar` CSS literals
+  // byte-for-byte so the no-override render is pixel-identical.
+  barBackgroundColor: '#3b82f6',
+  barBorderColor: '#1e40af',
+  barTextColor: '#ffffff',
 };
