@@ -1,6 +1,14 @@
 # Phase 9 — Cross-row bar drag (rowId resolution on Y-cross)
 
-**Status**: Approved (2026-05-15). Implementation in progress.
+**Status**: **DONE (2026-05-15)**. Landed as 4 commits: `5349922`
+(design doc) → `fe64db2` (Commit 1: core `defaultStripResolver`) →
+`c560404` (Commit 2: composable + BarDropPayload + demo wiring) →
+`8b02b39` (Commit 3: adapter snap-render + SFC tests). +13 tests
+total (1 over budget — added a 7th `rowSpacing=0` resolver case
+for completeness); chronix vitest 307 → 320. See
+`audit/journal/2026-05-13.md` "Phase 9" section for the
+post-mortem including the stale-dist gotcha that briefly hid the
+demo wiring during browser verify.
 
 ## Problem
 
