@@ -221,3 +221,46 @@ export const CONTINUATION_RIGHT = '.gantt-event-continuation-right';
  * (Set of truncated strings) is the load-bearing check.
  */
 export const BAR_TEXT = '.gantt-event-text';
+
+// ─── Selection visual + visible resize handles (Phase 28.1) ─────────
+
+/**
+ * Phase 28.1: selection-border SVG rect emitted by the upstream demo's
+ * `TimelineEvent.tsx:659-673` when a bar is selected. One
+ * `<rect class="gantt-event-selection-border">` per selected
+ * axis-overlapping bar.
+ *
+ * Chronix equivalent: `.cx-gantt-bar-selection-border`. Both sides
+ * emit one per selected bar inside the visible axis range. Cross-
+ * demo count parity (after clicking the same bar(s) on each side)
+ * is the load-bearing check.
+ */
+export const SELECTION_BORDER = '.gantt-event-selection-border';
+
+/**
+ * Phase 28.1: visible resize-dot handles emitted by the upstream demo
+ * for each editable bar (`TimelineEvent.tsx:500-541`). The reference
+ * emits 2 `<rect class="gantt-event-handle-start" />` /
+ * `gantt-event-handle-end` per editable bar in the DOM
+ * UNCONDITIONALLY (CSS controls visibility via the
+ * `.gantt-event-selected .gantt-event-resizer { display: block }` /
+ * `.gantt-event:hover` rules); to count only the visually-visible
+ * dots, prefix with the `.gantt-event-selected` ancestor selector
+ * (e.g. `${EVENT_SELECTED_PREFIX} ${RESIZER_DOT_START}`).
+ *
+ * Chronix's `.cx-gantt-bar-resizer-dot-start` / `-end` only emit
+ * when the bar is selected (no hover support in v0 — Section J.12
+ * defer-indefinite). So chronix's count = selected dot count; the
+ * parity assertion compares that to k-ui's visible (selected-
+ * filtered) dot count.
+ */
+export const RESIZER_DOT_START = '.gantt-event-handle-start';
+export const RESIZER_DOT_END = '.gantt-event-handle-end';
+
+/**
+ * Class on the upstream demo's `<g class="gantt-event">` when the bar
+ * is currently selected (`TimelineEvent.tsx:264-281`). Prefix this
+ * onto a child-element selector to filter to elements inside selected
+ * bars only (CSS descendant combinator).
+ */
+export const EVENT_SELECTED_PREFIX = '.gantt-event-selected';

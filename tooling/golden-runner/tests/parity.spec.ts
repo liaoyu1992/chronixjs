@@ -25,6 +25,8 @@ import {
   GRID_VLINE_DASHED,
   GRID_VLINE_WEEK,
   REF_ATTR_NAMES,
+  RESIZER_END,
+  RESIZER_START,
   RESOURCE_ROW,
   TIMELINE_BODY_WRAPPER,
   TODAY_CELL_BODY,
@@ -1957,4 +1959,126 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       await chronixPage.context().close();
     }
   });
+
+  test('phase28.1-resizer-zone count parity (week view, no selection)', async ({ browser }) => {
+    // Phase 28.1: edge resize zones emit unconditionally for every
+    // editable axis-overlapping bar — independent of selection state.
+    // K-ui emits 2 transparent rects (`gantt-event-resizer-start` +
+    // `-end`) per editable bar in `TimelineEvent.tsx:437-497`; chronix
+    // emits 2 `cx-gantt-bar-resizer-{start,end}` rects per editable
+    // axis-overlapping bar. Counts should match across views without
+    // any selection plumbing because the gate is `editable + axis-
+    // overlap` on both sides.
+    //
+    // Important: k-ui's visible dot handles (lines 500-541) ALSO
+    // carry the `gantt-event-resizer-start` / `-end` class as a
+    // secondary class alongside `gantt-event-handle`, so a naive
+    // `.gantt-event-resizer-start` selector double-counts (edge zone
+    // + dot). Filter via `:not(.gantt-event-handle)` to count edge
+    // zones only on the k-ui side; chronix's chronix-specific
+    // selectors are already non-overlapping (`cx-gantt-bar-resizer-
+    // start` vs `cx-gantt-bar-resizer-dot-start`).
+    //
+    // Week view shows all parity-fixture bars at their natural axis
+    // overlap, so this is the load-bearing exact-equality case.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase28.1-resizer-zone-count-week',
+      viewId: 'week',
+    });
+    try {
+      const kuiCounts = await kuiPage.evaluate(
+        ({ startSel, endSel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return { start: 0, end: 0 };
+          // Filter out dot rects (which also carry the resizer-start /
+          // resizer-end class) via the `gantt-event-handle` negation.
+          return {
+            start: body.querySelectorAll(`${startSel}:not(.gantt-event-handle)`).length,
+            end: body.querySelectorAll(`${endSel}:not(.gantt-event-handle)`).length,
+          };
+        },
+        { startSel: RESIZER_START, endSel: RESIZER_END, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCounts = await chronixPage.evaluate(() => ({
+        start: document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-resizer-start').length,
+        end: document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-resizer-end').length,
+      }));
+      console.warn(
+        `Phase 28.1 resizer-zone count (week): kui=${kuiCounts.start}/${kuiCounts.end} chronix=${chronixCounts.start}/${chronixCounts.end}`,
+      );
+      expect(kuiCounts.start, 'kui resizer-start count > 0').toBeGreaterThan(0);
+      expect(chronixCounts.start, 'chronix resizer-start count > 0').toBeGreaterThan(0);
+      expect(chronixCounts.start).toBe(kuiCounts.start);
+      expect(chronixCounts.end).toBe(kuiCounts.end);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase28.1-resizer-zone count parity respects axis-overlap (day view)', async ({
+    browser,
+  }) => {
+    // Phase 28.1: day view's 24-hour axis is narrow — many parity-
+    // fixture bars (multi-day ranges) lie partly or wholly outside
+    // the axis. Chronix's `selectionHasAxisOverlap` gate suppresses
+    // resize-zone emission for off-axis bars; k-ui's `TimelineEvent`
+    // doesn't mount at all for off-axis bars (same mount-vs-no-mount
+    // semantics adopted from the third-consecutive-phase finding —
+    // see Phase 27 / 28.2 journal entries).
+    //
+    // If chronix dropped the gate (or k-ui changed its mount rule),
+    // the count would diverge. The exact-equality requirement catches
+    // either drift direction.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase28.1-resizer-zone-count-day',
+      viewId: 'day',
+    });
+    try {
+      const kuiStart = await kuiPage.evaluate(
+        ({ sel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          // Filter out dot rects (which also carry the resizer-start
+          // class) so the count is edge zones only — see week-view
+          // test for the rationale.
+          return body.querySelectorAll(`${sel}:not(.gantt-event-handle)`).length;
+        },
+        { sel: RESIZER_START, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixStart = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-resizer-start').length,
+      );
+      console.warn(
+        `Phase 28.1 resizer-zone axis-overlap (day): kui=${kuiStart} chronix=${chronixStart}`,
+      );
+      expect(chronixStart).toBe(kuiStart);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  // Phase 28.1 architectural divergence: cross-demo selection-state
+  // parity (clicking a bar to make selection-border + dots appear on
+  // both sides and counting) is NOT asserted because the parity
+  // reference's selection model only fires on touch-and-drag — the
+  // upstream's `EventDragging.handleDragStart` gates `SELECT_EVENT`
+  // dispatch on `ev.isTouch && eventInstanceId !== eventSelection`.
+  // Mouse click on a bar dispatches `UNSELECT_EVENT` instead, never
+  // `SELECT_EVENT`. The parity-reference demo additionally wires
+  // `eventClick` to a delete-confirm dialog. So a Playwright
+  // `.click()` cannot put the parity-reference side into a selected
+  // state without either (a) touch-emulating a drag (mutates bar
+  // geometry) or (b) modifying the parity-oracle demo to expose
+  // imperative selection. Both are out of scope for Phase 28.1.
+  //
+  // Chronix-side correctness of selection-border + resize-dot
+  // emission (axis-overlap gate, theme tokens, triangle-aware dot
+  // positioning) is pinned by 16 adapter unit tests in
+  // `adapters/vue3/src/chronix-gantt-selection.test.ts`. The
+  // resize-zone count-parity tests above exercise the editable +
+  // axis-overlap branch — the same gate that drives selection-border
+  // and dots emission on the chronix side — so a regression in that
+  // gate would surface via the resize-zone assertions.
 });
