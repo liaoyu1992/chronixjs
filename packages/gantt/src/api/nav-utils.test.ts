@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { formatToolbarTitle, nextAnchor, prevAnchor, todayAnchor } from './nav-utils.js';
+import {
+  applyIncrement,
+  formatToolbarTitle,
+  nextAnchor,
+  prevAnchor,
+  todayAnchor,
+} from './nav-utils.js';
 
 import type { AxisRangePlanInput } from '../layout/types.js';
 
@@ -87,6 +93,70 @@ describe('todayAnchor', () => {
     expect(today.getMinutes()).toBe(0);
     expect(today.getSeconds()).toBe(0);
     expect(today.getMilliseconds()).toBe(0);
+  });
+});
+
+describe('applyIncrement', () => {
+  const base = new Date(2026, 4, 16); // 2026-05-16 (Saturday)
+
+  it('shifts by days (positive)', () => {
+    expect(applyIncrement(base, { days: 5 }).toDateString()).toBe(
+      new Date(2026, 4, 21).toDateString(),
+    );
+  });
+
+  it('shifts by days (negative)', () => {
+    expect(applyIncrement(base, { days: -3 }).toDateString()).toBe(
+      new Date(2026, 4, 13).toDateString(),
+    );
+  });
+
+  it('shifts by weeks (multiplied to days)', () => {
+    expect(applyIncrement(base, { weeks: 2 }).toDateString()).toBe(
+      new Date(2026, 4, 30).toDateString(),
+    );
+    expect(applyIncrement(base, { weeks: -1 }).toDateString()).toBe(
+      new Date(2026, 4, 9).toDateString(),
+    );
+  });
+
+  it('shifts by months (calendar-month, JS-native rollover on month-end)', () => {
+    expect(applyIncrement(new Date(2026, 0, 15), { months: 1 }).toDateString()).toBe(
+      new Date(2026, 1, 15).toDateString(),
+    );
+    // Jan 31 + 1mo → Feb 31 → Mar 3 (non-leap 2026)
+    const rolled = applyIncrement(new Date(2026, 0, 31), { months: 1 });
+    expect(rolled.getMonth()).toBe(2);
+    expect(rolled.getDate()).toBeGreaterThanOrEqual(2);
+    expect(rolled.getDate()).toBeLessThanOrEqual(3);
+  });
+
+  it('shifts by years (calendar-year)', () => {
+    expect(applyIncrement(base, { years: 1 }).toDateString()).toBe(
+      new Date(2027, 4, 16).toDateString(),
+    );
+    expect(applyIncrement(base, { years: -2 }).toDateString()).toBe(
+      new Date(2024, 4, 16).toDateString(),
+    );
+  });
+
+  it('combines years + months + weeks + days in canonical order (years → months → weeks → days)', () => {
+    // 2026-05-16 + 1y + 2mo - 1wk + 3d → 2027-07-16 - 7d + 3d → 2027-07-12
+    expect(applyIncrement(base, { years: 1, months: 2, weeks: -1, days: 3 }).toDateString()).toBe(
+      new Date(2027, 6, 12).toDateString(),
+    );
+  });
+
+  it('returns an identical date when delta has all zero / undefined fields', () => {
+    expect(applyIncrement(base, {}).toDateString()).toBe(base.toDateString());
+    expect(applyIncrement(base, { days: 0, weeks: 0 }).toDateString()).toBe(base.toDateString());
+  });
+
+  it('does not mutate the input date', () => {
+    const input = new Date(2026, 4, 16);
+    const before = input.getTime();
+    applyIncrement(input, { years: 1, months: -3, days: 12 });
+    expect(input.getTime()).toBe(before);
   });
 });
 

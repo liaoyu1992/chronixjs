@@ -1,6 +1,21 @@
 import type { AxisRangePlanInput, ViewId } from '../layout/types.js';
 
 /**
+ * Calendar-unit deltas accepted by `applyIncrement`. All fields are
+ * optional integers (positive or negative). Multiple fields combine —
+ * `{ months: 1, days: -3 }` shifts one month forward then three days
+ * back. Order of application is years → months → weeks → days so the
+ * calendar-month / leap-year semantics happen before sub-month motion,
+ * matching `Date.setMonth` / `Date.setFullYear` conventions.
+ */
+export interface IncrementDelta {
+  readonly days?: number;
+  readonly weeks?: number;
+  readonly months?: number;
+  readonly years?: number;
+}
+
+/**
  * Return the new anchor date one period earlier than `current` for
  * the given `viewId`. "Period" is per-view: day = ±1 day, week = ±7
  * days, month = ±1 calendar month, season = ±3 calendar months,
@@ -30,6 +45,27 @@ export function nextAnchor(viewId: ViewId, current: Date): Date {
 export function todayAnchor(): Date {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+/**
+ * Apply a calendar-unit delta to an anchor date. Used by the imperative
+ * `GanttHandle.incrementDate` method (Phase 24) and any caller that
+ * needs k-ui-`incrementDate`-equivalent semantics without the broader
+ * `DurationInput` string grammar.
+ *
+ * Order of application is years → months → weeks → days. `Date.setMonth`
+ * / `setFullYear` apply first, so a Jan 31 + `{ months: 1 }` lands on
+ * Mar 3 (non-leap) via JS rollover — same behavior as `nextAnchor`'s
+ * month branch. `weeks` is multiplied to days (no separate week-anchor
+ * snapping). Input date is not mutated.
+ */
+export function applyIncrement(anchor: Date, delta: IncrementDelta): Date {
+  const next = new Date(anchor.getTime());
+  if (delta.years) next.setFullYear(next.getFullYear() + delta.years);
+  if (delta.months) next.setMonth(next.getMonth() + delta.months);
+  const dayShift = (delta.weeks ?? 0) * 7 + (delta.days ?? 0);
+  if (dayShift) next.setDate(next.getDate() + dayShift);
+  return next;
 }
 
 function shiftAnchor(viewId: ViewId, current: Date, direction: -1 | 1): Date {

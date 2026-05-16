@@ -39,4 +39,11 @@ export type {
   ToolbarWidgetKind,
 } from './toolbar-types.js';
 export { parseToolbar } from './parse-toolbar.js';
-export { formatToolbarTitle, nextAnchor, prevAnchor, todayAnchor } from './nav-utils.js';
+export type { IncrementDelta } from './nav-utils.js';
+export {
+  applyIncrement,
+  formatToolbarTitle,
+  nextAnchor,
+  prevAnchor,
+  todayAnchor,
+} from './nav-utils.js';
