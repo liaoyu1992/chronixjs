@@ -510,6 +510,59 @@ The cluster rows fold many k-ui items by canonical name; for completeness the au
 - **Reject (by-design)**: 8 + audit-sweep adds (`now`, `themeSystem`, all-day cluster, k-ui-internal `_*` listeners) = ~12.
 - **Defer-indefinite (revisit on demand)**: 21 + ~22 cluster rows from audit-sweep + ~7 individuals = ~50 total cluster/individual entries covering ~170 underlying k-ui items.
 
+### Render-layer code-level sweep additions (2026-05-16 evening, post-audit-sweep)
+
+See [`RENDER_LAYER_GAP_SWEEP_2026-05-16.md`](RENDER_LAYER_GAP_SWEEP_2026-05-16.md) for full per-item enumeration. The earlier 2026-05-16 sweep enumerated Options-level surface (props / callbacks / type args / demo wiring); this addendum covers internal render code — every SVG element, CSS class, render branch, interaction handler, animation, and timer k-ui implements but does NOT expose as an Option.
+
+Trigger: 2026-05-16 user spotted that vertical/horizontal grid lines, event continuation triangles, render callbacks for links/progress/events, and progress-triangle position are all part of k-ui's normal demo render but completely absent from chronix AND from every audit doc.
+
+#### Phase numbers added by this addendum
+
+| Phase          | Title                                              | Bundled items                                                                                                                                                                                                                                                                                               | Status                                               |
+| -------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **Phase 26**   | Grid lines                                         | H.1 (`gantt-grid-vline` + dashed sub-slot + week-emphasis), H.2 (`gantt-grid-hline` DPR-snapped), I.2 week-start emphasis, theme tokens (`gridLineColor`, `gridLineWeekStartColor`, `gridLineSubSlotColor`, `gridLineRowRuleColor`)                                                                         | **Planned**                                          |
+| **Phase 27**   | Event continuation indicators (overflow triangles) | H.6 (`gantt-event-continuation-left/right` polygons), `isStart`/`isEnd`/`isClippedStart`/`isClippedEnd` flag propagation through `PlacedBar`                                                                                                                                                                | **Planned** ⭐ user-flagged 2026-05-16               |
+| **Phase 28.1** | Selection overlay + visible resize handle          | H.5 (`gantt-event-selection-border` SVG rect + `:before/:after` pseudo overlay + darker selected bg), H.9 (transparent edge zones DOM emission + visible dot when selected), theme tokens (`eventSelectedOverlayColor`, `eventResizerThickness`, `eventResizerDotTotalWidth`, `eventResizerDotBorderWidth`) | **Planned**                                          |
+| **Phase 28.2** | Bar text auto-render + render-callback expansion   | H.7 (auto title text + truncation + width thresholds), L.4 (`eventClassNames` callback), L.5 (`eventFontSize` + `eventFontWeight` callbacks), M.4 (`onLine` callback + `useLineEventColor`), M.6 (link slot in slotRegistry)                                                                                | **Planned** ⭐ user-flagged 2026-05-16               |
+| **Phase 28.3** | Progress drag handle position (conditional)        | H.8 — port k-ui geometry (triangle BELOW bar) vs keep chronix geometry (square INSIDE bar). **User decision required**.                                                                                                                                                                                     | **Pending user decision** ⭐ user-flagged 2026-05-16 |
+| **Phase 29**   | Per-day / per-slot CSS class system                | I.5 + N.1 (`cx-gantt-day-{dayId}` / `-today` / `-past` / `-future` / `-disabled` / `-other` + slot equivalents), N.2 header cell slot/callback                                                                                                                                                              | **Planned**                                          |
+
+#### Defer-indefinite additions
+
+| Item                                                                                                                        | Source | Trigger to re-prioritize                                                          |
+| --------------------------------------------------------------------------------------------------------------------------- | ------ | --------------------------------------------------------------------------------- |
+| `--gantt-highlight-color` for date-selection-rect visual feedback                                                           | O.1    | Consumer asks for visible select-rect during drag                                 |
+| AutoScroller (edge-proximity auto-scroll during drag, edgeThreshold/maxVelocity, requestAnimationFrame loop)                | K.7    | Consumer reports needing to manually scroll during long-bar drags                 |
+| OffsetTracker caching + HitDragging hit cache (per-droppable rect tracking)                                                 | K.9    | Profiling shows pointermove is slow with many bars / nested scroll containers     |
+| Progress drag throttling (0.5% gate or 16ms setTimeout)                                                                     | K.9    | Profiling shows progress drag is bottleneck                                       |
+| Validation visual feedback during drag (constraint+overlap checks during drag → `disableCursor` + mirror hide on rejection) | J.6    | Consumer reports rejection without visual cue                                     |
+| `data-event-hover` attribute toggle + cursor change on bar hover                                                            | J.12   | Consumer asks for chronix-side hover class injection (CSS `:hover` already works) |
+| `isPrimaryMouseButton` (`button===0 && !ctrlKey`) check                                                                     | J.9    | Consumer reports ctrl+click being treated as drag                                 |
+| `clipPath` per header cell text + truncation `<title>` tooltip                                                              | H.11   | Header text overflows visually in consumer scenarios                              |
+| Dashed-dot today-line style (SVG `<pattern>`)                                                                               | H.11   | Consumer requests dashed-dot style (currently solid/dashed/dotted supported)      |
+| Drag-revert animation (`dragRevertDuration` CSS transition on rejection)                                                    | H.4    | Consumer reports jarring instant revert                                           |
+| ARIA role/aria-label/aria-selected on bars                                                                                  | L.3    | Bundle with Phase 13 keyboard nav when unblocked                                  |
+| Link drag-to-create + link hover/click emits                                                                                | J.6    | Consumer asks for link-creation UI                                                |
+
+#### Reject (chronix-by-design) backfills
+
+| Item                                                      | Source | Rationale                                                                |
+| --------------------------------------------------------- | ------ | ------------------------------------------------------------------------ |
+| Mirror elements (`gantt-event-mirror` cloned SVG/HTML)    | H.4    | Already in P2 register — chronix uses in-place mutation (architectural). |
+| NowTimer setInterval cadence + visibility pause + refresh | K.1    | Already in P0 register — `nowIndicator` rejected (Phase 21 decision).    |
+| `rerenderDelay` debounce                                  | K.5    | Vue 3 reactivity batches inherently.                                     |
+| Print mode `_beforeprint` / `_afterprint` listeners       | K.6    | k-ui-internal `_*`-prefixed listeners (already in cluster reject row).   |
+
+#### Counts after render-layer sweep
+
+- **Planned with phase number**: previous 6 + **5-6 new phases (26, 27, 28.1, 28.2, 29, conditional 28.3)** = 11-12 total.
+- **Defer-indefinite (revisit on demand)**: previous ~50 entries + **12 new individual items** = ~62 total.
+- **Reject (by-design)**: previous ~12 + **4 backfills (most already rejected at cluster level; confirming individually)** = ~16.
+
+**Estimated new scope**: 33-42 hours across 4-5 new phases (Phase 26-29). Roughly doubles the remaining roadmap (from ~18h to ~51-60h).
+
+**Discipline implication**: per `feedback_chronix_parity_discipline.md`, each new phase needs its own design doc + parity assertion + /phase-close before DONE. Per `feedback_quality_acceleration.md`, each runs single-session no-batch.
+
 ### Roadmap implications (historical — superseded 2026-05-16)
 
 **⚠ This section was the original recheck's roadmap framing. The
