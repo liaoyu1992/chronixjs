@@ -154,4 +154,35 @@ describe('useGanttLayout', () => {
     // applied to each row, overriding `defaultRowHeight`. So 38, not 64.
     expect(strips.value.every((s) => s.height === 38)).toBe(true);
   });
+
+  it('Phase 30: threads levelByBarId from stack-height pass into placement pass — overlapping same-row bars get distinct Y', () => {
+    // Three bars all on r1 with mutually overlapping time windows.
+    // Greedy interval coloring (sort by start, then end) → b1 level 0,
+    // b2 level 1, b3 level 2.
+    const bars: readonly BarSpec[] = [
+      bar('b1', 'r1', 0, 5),
+      bar('b2', 'r1', 1, 6),
+      bar('b3', 'r1', 2, 7),
+    ];
+    const { placedBars } = useGanttLayout({
+      bars: () => bars,
+      rows: () => rowsBase,
+      axisInput: () => makeDayAxis(),
+      barHeight: 30,
+      barVerticalPadding: 8,
+      barStackSpacing: 10,
+    });
+
+    const byId = new Map(placedBars.value.map((p) => [p.barId, p]));
+    const ys = ['b1', 'b2', 'b3'].map((id) => byId.get(id)?.y);
+
+    // All three Y values must be distinct (the bug was all-equal Y).
+    expect(new Set(ys).size).toBe(3);
+
+    // Specifically: level 0 → y = strip.y + padding = 0 + 8 = 8;
+    // level 1 → 8 + 40 = 48; level 2 → 8 + 80 = 88.
+    expect(byId.get('b1')?.y).toBe(8);
+    expect(byId.get('b2')?.y).toBe(48);
+    expect(byId.get('b3')?.y).toBe(88);
+  });
 });
