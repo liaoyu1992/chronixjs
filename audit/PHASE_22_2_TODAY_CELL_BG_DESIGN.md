@@ -1,6 +1,6 @@
 # Phase 22.2 — todayLine default-ON + todayBgColor
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)**. Landed as 3 commits: `59c34f3` (design doc, 169 lines) + `8d92b79` (Commit 1: core + adapter + 6 SFC tests, 228 lines) + `ffdb965` (Commit 2: demo default-ON + parity assertion + 15 VRT re-baselines + audit corrections, 134 LOC + 15 PNGs). Cumulative vitest 483 → 489. Parity assertions 31 → 32 (todayCellBg cross-demo: kui x=2496 w=1248 chronix x=2496 w=1248 Δ=0.00 — pixel-perfect). KUI_SURFACE_BASELINE 359 → 361 items (audit-sweep class-attribution correction). `/phase-close` walked all 7 gates green. **Closes user's two original visible-parity gaps from the 2026-05-16 session** (`todayLine` default-OFF in demo + missing `todayBgColor`). Side outcome: corrected audit-sweep's `.gantt-day-today` mis-attribution. See `audit/journal/2026-05-13.md` "Phase 22.2" section.
 
 ## Problem
 
