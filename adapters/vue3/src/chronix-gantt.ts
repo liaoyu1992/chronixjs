@@ -268,6 +268,40 @@ function markerEndUrl(marker: LinkMarker | CustomLinkMarker, color: string): str
 }
 
 /**
+ * Phase 26: snap a horizontal grid line's y coordinate to the device
+ * pixel grid so a 1-px stroke renders as a single device row at any
+ * `devicePixelRatio` (100% / 125% / 150% OS scaling) and any
+ * fractional CSS row height.
+ *
+ * Algorithm: round `y * dpr` to the nearest device pixel, then add
+ * half a device pixel so the stroke (which extends 0.5 px above and
+ * below the y coordinate) lands on integer device rows. Clamps to
+ * `[margin, drawableHeight - margin]` so a line at the body's bottom
+ * edge stays inside the SVG bounding box without anti-aliasing.
+ *
+ * Ported verbatim from the parity reference's `GanttView.snapHorizontalGridLineY`
+ * — keeps stroke weight identical under any zoom transform when paired
+ * with `vector-effect="non-scaling-stroke"`.
+ */
+function snapHorizontalGridLineY(lineY: number, drawableHeight: number): number {
+  let y = lineY;
+  if (y >= drawableHeight) y = drawableHeight - 1;
+  const dpr =
+    typeof window !== 'undefined' &&
+    typeof window.devicePixelRatio === 'number' &&
+    Number.isFinite(window.devicePixelRatio) &&
+    window.devicePixelRatio > 0
+      ? window.devicePixelRatio
+      : 1;
+  let yCrisp = (Math.round(y * dpr) + 0.5) / dpr;
+  const margin = 0.5 / dpr;
+  const maxY = drawableHeight - margin;
+  if (yCrisp < margin) yCrisp = margin;
+  if (yCrisp > maxY) yCrisp = maxY;
+  return yCrisp;
+}
+
+/**
  * One sidebar column in the resource panel. The `key` indexes into
  * `RowSpec.columns` to read each row's cell value; `label` paints the
  * column header in the top-left pane; `width` is in CSS pixels and
@@ -1788,6 +1822,115 @@ export const ChronixGantt = defineComponent({
             })
           : null;
 
+      // Phase 26: body grid lines. Renders BETWEEN today-cell tint and
+      // today-line so the SVG paint order reads tint → grid → today-line
+      // → bars → links — matches the parity reference's layering.
+      //
+      // Vertical lines: one per axis tick.
+      //   - Cell-boundary slot (tick.x is the start of an outer header
+      //     cell, e.g. month boundary in season view, day boundary in
+      //     week view): solid 1-px <rect> with class
+      //     `cx-gantt-grid-vline`. When the boundary also falls on a
+      //     Monday at 00:00 (ISO week start), it picks up the additional
+      //     class `cx-gantt-grid-vline-week` + the darker
+      //     `gridLineWeekStartColor` fill.
+      //   - Non-cell-boundary slot (sub-slot divider, e.g. each hour
+      //     within a day in week view): dashed 1-px <line> with
+      //     `stroke-dasharray="2,2"` and class
+      //     `cx-gantt-grid-vline cx-gantt-grid-vline-dashed`.
+      // Plus one closing solid vline at `axis.totalWidth - 1` so the
+      // rightmost cell visually closes its right edge.
+      //
+      // Horizontal lines: one per strip's bottom edge. Y is snapped to
+      // the device pixel grid via `snapHorizontalGridLineY` so 1-px
+      // strokes stay single-weight under fractional row heights and
+      // non-1 device pixel ratios.
+      //
+      // Week-start derivation is inline (`tick.time.getDay() === 1 && tick.time.getHours() === 0`)
+      // — see Phase 26 design doc for why no `AxisTick.isWeekStart`
+      // field was added.
+      const boundaryXSet = new Set<number>();
+      for (const cell of a.headerRows[0]?.cells ?? []) {
+        boundaryXSet.add(cell.x);
+      }
+      const gridChildren: VNode[] = [];
+      for (const tick of a.ticks) {
+        const isBoundary = boundaryXSet.has(tick.x);
+        if (isBoundary) {
+          const isWeekStart = tick.time.getDay() === 1 && tick.time.getHours() === 0;
+          gridChildren.push(
+            h('rect', {
+              key: `grid-vline-${tick.x}`,
+              class: isWeekStart
+                ? 'cx-gantt-grid-vline cx-gantt-grid-vline-week'
+                : 'cx-gantt-grid-vline',
+              x: tick.x - 1,
+              y: 0,
+              width: 1,
+              height: bodyHeight,
+              fill: isWeekStart ? t.gridLineWeekStartColor : t.gridLineColor,
+              'pointer-events': 'none',
+            }),
+          );
+        } else {
+          gridChildren.push(
+            h('line', {
+              key: `grid-vline-${tick.x}`,
+              class: 'cx-gantt-grid-vline cx-gantt-grid-vline-dashed',
+              x1: tick.x - 1,
+              y1: 0,
+              x2: tick.x - 1,
+              y2: bodyHeight,
+              stroke: t.gridLineColor,
+              'stroke-width': 1,
+              'stroke-dasharray': '2,2',
+              'pointer-events': 'none',
+            }),
+          );
+        }
+      }
+      // Right-edge closing vline — matches the parity reference's
+      // `includeRightEdge` branch so the rightmost cell visually closes.
+      // Skipped when the axis is empty (totalWidth 0) to avoid a stray
+      // line at x=-1 in degenerate fixtures.
+      if (a.totalWidth > 0) {
+        gridChildren.push(
+          h('rect', {
+            key: 'grid-vline-right-edge',
+            class: 'cx-gantt-grid-vline',
+            x: a.totalWidth - 1,
+            y: 0,
+            width: 1,
+            height: bodyHeight,
+            fill: t.gridLineColor,
+            'pointer-events': 'none',
+          }),
+        );
+      }
+      for (let i = 0; i < strips.value.length; i += 1) {
+        const strip = strips.value[i]!;
+        const lineY = strip.y + strip.height;
+        const yCrisp = snapHorizontalGridLineY(lineY, bodyHeight);
+        gridChildren.push(
+          h('line', {
+            key: `grid-hline-${i}`,
+            class: 'cx-gantt-grid-hline',
+            x1: 0,
+            y1: yCrisp,
+            x2: a.totalWidth,
+            y2: yCrisp,
+            stroke: t.gridLineRowRuleColor,
+            'stroke-width': 1,
+            'vector-effect': 'non-scaling-stroke',
+            'pointer-events': 'none',
+          }),
+        );
+      }
+      const gridGroupNode =
+        gridChildren.length > 0
+          ? h('g', { class: 'cx-gantt-grid', 'pointer-events': 'none' }, gridChildren)
+          : null;
+
       // Phase 21: today-line under bars. Drawn BEFORE the bars group so
       // bars paint on top (matches parity-reference behavior where the
       // line sits below bar bodies but above the bg). Tooltip widget
@@ -1831,6 +1974,7 @@ export const ChronixGantt = defineComponent({
         [
           h('defs', { class: 'cx-gantt-defs' }, defsChildren),
           ...(todayCellBodyNode ? [todayCellBodyNode] : []),
+          ...(gridGroupNode ? [gridGroupNode] : []),
           ...(todayLineBodyNode ? [todayLineBodyNode] : []),
           h('g', { class: 'cx-gantt-bars' }, barChildren),
           h('g', { class: 'cx-gantt-links', 'pointer-events': 'none' }, linkPathNodes),
