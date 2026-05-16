@@ -65,21 +65,31 @@ export const defaultBarPlacementPass: BarPlacementPass = {
       // to level 0 if the map says otherwise.
       const level = levelByBarId?.get(bar.id) ?? 0;
       const offsetPerLevel = (explicitBarHeight ?? height) + stackSpacing;
+      // Phase 27: continuation flags.
+      // - Bars overlapping the axis range get the natural derivation
+      //   from `bar.range` vs axis bounds.
+      // - Bars entirely OUTSIDE the axis range (start past the right
+      //   edge OR end before the left edge) get isStart=true,
+      //   isEnd=true — they have no rendered segment in this view
+      //   and shouldn't trigger continuation indicators.
+      //   The parity reference's `TimelineEvent` doesn't mount for
+      //   bars without a visible segment; chronix mounts the rect
+      //   off-screen but suppresses the triangles to match the
+      //   parity reference's visible output.
+      // - Convention for the overlapping case: a bar whose start
+      //   sits AT axisStartMs (`startMs === axisStartMs`) is "starts
+      //   at axis" (isStart=true) — only bars genuinely before the
+      //   axis get `!isStart`. Same for end: ending exactly at
+      //   axisEndMs has isEnd=true.
+      const hasAxisOverlap = startMs < axisEndMs && endMs > axisStartMs;
       placedBars.push({
         barId: bar.id,
         x: (startMs - axisStartMs) * pxPerMs,
         y: strip.y + padding + level * offsetPerLevel,
         width: (endMs - startMs) * pxPerMs,
         height,
-        // Phase 27: continuation flags. A bar whose start sits AT
-        // axisStartMs (`startMs === axisStartMs`) is considered
-        // "starts at axis" (isStart=true) — only bars genuinely
-        // before the axis get `!isStart`. Same convention for end:
-        // a bar ending exactly at axisEndMs has isEnd=true (its
-        // last tick coincides with the axis's first hidden slot,
-        // not "extends past").
-        isStart: startMs >= axisStartMs,
-        isEnd: endMs <= axisEndMs,
+        isStart: hasAxisOverlap ? startMs >= axisStartMs : true,
+        isEnd: hasAxisOverlap ? endMs <= axisEndMs : true,
       });
     }
 

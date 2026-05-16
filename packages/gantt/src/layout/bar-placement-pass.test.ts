@@ -371,4 +371,32 @@ describe('defaultBarPlacementPass — Phase 27 continuation flags', () => {
     expect(placedBars[0]?.isStart).toBe(false);
     expect(placedBars[0]?.isEnd).toBe(false);
   });
+
+  it('bar entirely BEFORE axis range (yesterday) → both isStart && isEnd are true (no continuation indicator)', () => {
+    // Bar starts AND ends before axisStartMs (2026-05-13T00:00:00).
+    // It has no visible segment in the parity reference; chronix
+    // matches by flagging both isStart=true && isEnd=true so the
+    // adapter render skips both triangles.
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('before-axis', 'r1', '2026-05-10T08:00:00', '2026-05-12T20:00:00')],
+      axis: dayAxis,
+      strips: stripsLayout.strips,
+    });
+
+    expect(placedBars[0]?.isStart).toBe(true);
+    expect(placedBars[0]?.isEnd).toBe(true);
+  });
+
+  it('bar entirely AFTER axis range (next week) → both isStart && isEnd are true (no continuation indicator)', () => {
+    // Bar starts AND ends after the day-view's next-day midnight end.
+    // Same suppression rule as before-axis.
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('after-axis', 'r1', '2026-05-20T08:00:00', '2026-05-21T17:00:00')],
+      axis: dayAxis,
+      strips: stripsLayout.strips,
+    });
+
+    expect(placedBars[0]?.isStart).toBe(true);
+    expect(placedBars[0]?.isEnd).toBe(true);
+  });
 });

@@ -189,3 +189,20 @@ export const GRID_VLINE_WEEK = '.gantt-grid-vline-week';
  * `snapHorizontalGridLineY` (ported into chronix verbatim).
  */
 export const GRID_HLINE = '.gantt-grid-hline';
+
+// ─── Continuation indicators (Phase 27) ─────────────────────────────
+
+/**
+ * Phase 27: per-bar continuation triangle indicators emitted by the
+ * upstream demo's `TimelineEvent.tsx` when a bar's calendar range
+ * extends past the axis bounds. Left-pointing triangle for bars
+ * whose start sits before the axis start (`!isEventStart`);
+ * right-pointing for bars whose end sits past the axis end
+ * (`!isEventEnd`).
+ *
+ * Chronix equivalents prefixed with `cx-` (`cx-gantt-bar-continuation-left`
+ * / `-right`). Counts must match across the two demos at the same
+ * view + parity-mode setting — the load-bearing parity check.
+ */
+export const CONTINUATION_LEFT = '.gantt-event-continuation-left';
+export const CONTINUATION_RIGHT = '.gantt-event-continuation-right';

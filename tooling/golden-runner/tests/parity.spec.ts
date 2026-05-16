@@ -17,6 +17,8 @@ import {
   loadBothDemos,
 } from '../src/parity-helpers.js';
 import {
+  CONTINUATION_LEFT,
+  CONTINUATION_RIGHT,
   GRID_HLINE,
   GRID_VLINE,
   GRID_VLINE_DASHED,
@@ -1712,6 +1714,137 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       expect(kuiCount, 'kui hline count > 0').toBeGreaterThan(0);
       expect(chronixCount, 'chronix hline count > 0').toBeGreaterThan(0);
       expect(chronixCount).toBe(kuiCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase27-continuation-left count parity (day view)', async ({ browser }) => {
+    // Phase 27: bars whose calendar range starts before the axis range
+    // get a left-pointing continuation triangle. Day view is the
+    // narrowest axis (24h) so the most bars trigger triangles — the
+    // load-bearing assertion for the formula. Both sides should emit
+    // the same number of left indicators on the same demo data.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase27-continuation-left-day',
+      viewId: 'day',
+    });
+    try {
+      const kuiCount = await kuiPage.evaluate(
+        ({ sel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(sel).length;
+        },
+        { sel: CONTINUATION_LEFT, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCount = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-continuation-left').length,
+      );
+      console.warn(
+        `Phase 27 continuation-left count (day): kui=${kuiCount} chronix=${chronixCount}`,
+      );
+      expect(chronixCount).toBe(kuiCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase27-continuation-right count parity (day view)', async ({ browser }) => {
+    // Right indicator: bars whose calendar range ends past the axis
+    // end. Day view; same parity-mode dataset; counts must match.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase27-continuation-right-day',
+      viewId: 'day',
+    });
+    try {
+      const kuiCount = await kuiPage.evaluate(
+        ({ sel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(sel).length;
+        },
+        { sel: CONTINUATION_RIGHT, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCount = await chronixPage.evaluate(
+        () =>
+          document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-continuation-right').length,
+      );
+      console.warn(
+        `Phase 27 continuation-right count (day): kui=${kuiCount} chronix=${chronixCount}`,
+      );
+      expect(chronixCount).toBe(kuiCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase27-continuation-left count parity (week view)', async ({ browser }) => {
+    // Week view exercises a different bar subset (multi-week bars
+    // crossing the Monday boundary; bars starting before this Mon
+    // 00:00). Same demo data + parity dataset → same triangle count.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase27-continuation-left-week',
+      viewId: 'week',
+    });
+    try {
+      const kuiCount = await kuiPage.evaluate(
+        ({ sel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(sel).length;
+        },
+        { sel: CONTINUATION_LEFT, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCount = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-continuation-left').length,
+      );
+      console.warn(
+        `Phase 27 continuation-left count (week): kui=${kuiCount} chronix=${chronixCount}`,
+      );
+      expect(chronixCount).toBe(kuiCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase27-continuation total count parity (month view)', async ({ browser }) => {
+    // Month view (30-day axis) catches MORE bars fully — far fewer
+    // triangles than day view. The "no-triangles-on-fully-contained-
+    // bars" regression: chronix's total triangle count <= k-ui's
+    // (chronix's isEnd convention is `bar.end <= axisEndMs`, which
+    // matches k-ui's seg.isEnd semantics on calendar-day-resolution
+    // views without surprise off-by-one).
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase27-continuation-total-month',
+      viewId: 'month',
+    });
+    try {
+      const kuiTotal = await kuiPage.evaluate(
+        ({ leftSel, rightSel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(leftSel).length + body.querySelectorAll(rightSel).length;
+        },
+        {
+          leftSel: CONTINUATION_LEFT,
+          rightSel: CONTINUATION_RIGHT,
+          bodySel: TIMELINE_BODY_WRAPPER,
+        },
+      );
+      const chronixTotal = await chronixPage.evaluate(
+        () =>
+          document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-continuation-indicator')
+            .length,
+      );
+      console.warn(
+        `Phase 27 continuation total count (month): kui=${kuiTotal} chronix=${chronixTotal}`,
+      );
+      expect(chronixTotal).toBe(kuiTotal);
     } finally {
       await kuiPage.context().close();
       await chronixPage.context().close();
