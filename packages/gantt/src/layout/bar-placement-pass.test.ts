@@ -302,3 +302,73 @@ describe('defaultBarPlacementPass — stack-level Y placement (Phase 30)', () =>
     expect(placedBars[0]?.y).toBe(8);
   });
 });
+
+describe('defaultBarPlacementPass — Phase 27 continuation flags', () => {
+  // Day-view axis spans 2026-05-13T00:00 → 2026-05-14T00:00 (24h).
+  // Bars whose range fits inside that window get isStart=true && isEnd=true;
+  // bars starting before midnight get !isStart; bars ending past next
+  // midnight get !isEnd. A bar spanning the entire axis window from
+  // before-to-after gets BOTH !isStart && !isEnd.
+
+  it('bar starting AT axis start (00:00) → isStart=true', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('at-start', 'r1', '2026-05-13T00:00:00', '2026-05-13T03:00:00')],
+      axis: dayAxis,
+      strips: stripsLayout.strips,
+    });
+
+    expect(placedBars[0]?.isStart).toBe(true);
+  });
+
+  it('bar starting before axis start (yesterday) → isStart=false', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('before-start', 'r1', '2026-05-12T20:00:00', '2026-05-13T03:00:00')],
+      axis: dayAxis,
+      strips: stripsLayout.strips,
+    });
+
+    expect(placedBars[0]?.isStart).toBe(false);
+  });
+
+  it('bar ending AT axis end (next-day midnight) → isEnd=true', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('at-end', 'r1', '2026-05-13T20:00:00', '2026-05-14T00:00:00')],
+      axis: dayAxis,
+      strips: stripsLayout.strips,
+    });
+
+    expect(placedBars[0]?.isEnd).toBe(true);
+  });
+
+  it('bar ending past axis end (tomorrow) → isEnd=false', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('past-end', 'r1', '2026-05-13T20:00:00', '2026-05-14T05:00:00')],
+      axis: dayAxis,
+      strips: stripsLayout.strips,
+    });
+
+    expect(placedBars[0]?.isEnd).toBe(false);
+  });
+
+  it('bar fully contained inside axis range → both isStart && isEnd are true', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('contained', 'r1', '2026-05-13T03:00:00', '2026-05-13T15:00:00')],
+      axis: dayAxis,
+      strips: stripsLayout.strips,
+    });
+
+    expect(placedBars[0]?.isStart).toBe(true);
+    expect(placedBars[0]?.isEnd).toBe(true);
+  });
+
+  it('bar spanning the entire axis from before to after → BOTH isStart=false && isEnd=false', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('span-all', 'r1', '2026-05-10T00:00:00', '2026-05-20T00:00:00')],
+      axis: dayAxis,
+      strips: stripsLayout.strips,
+    });
+
+    expect(placedBars[0]?.isStart).toBe(false);
+    expect(placedBars[0]?.isEnd).toBe(false);
+  });
+});

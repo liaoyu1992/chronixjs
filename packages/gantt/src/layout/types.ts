@@ -125,6 +125,25 @@ export interface PlacedBar {
   readonly width: number;
   /** Logical-pixel height — strip height minus vertical padding (top + bottom). */
   readonly height: number;
+  /**
+   * Phase 27: `true` when the bar's `range.start` falls AT OR AFTER
+   * the axis's first tick time. `false` when the bar started before
+   * the axis range — render layer emits a left-pointing continuation
+   * triangle in that case.
+   *
+   * Tracks the bar's calendar range vs the axis's time range only;
+   * does NOT account for scroll-viewport clipping (that's a separate
+   * `isClippedStart` concern deferred until wrapper scroll-state
+   * tracking lands).
+   */
+  readonly isStart: boolean;
+  /**
+   * Phase 27: `true` when the bar's `range.end` falls AT OR BEFORE
+   * the axis end (`axis.ticks[0].time + axis.slotCount × axis.slotDurationMs`).
+   * `false` when the bar extends past the axis range — render layer
+   * emits a right-pointing continuation triangle in that case.
+   */
+  readonly isEnd: boolean;
 }
 
 /**

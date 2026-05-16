@@ -19,7 +19,7 @@ function bar(id: string, opts: Partial<Pick<BarSpec, 'style' | 'extendedProps'>>
 }
 
 function placed(id: string): PlacedBar {
-  return { barId: id, x: 0, y: 0, width: 240, height: 30 };
+  return { barId: id, x: 0, y: 0, width: 240, height: 30, isStart: true, isEnd: true };
 }
 
 /**

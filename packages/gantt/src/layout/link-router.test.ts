@@ -11,6 +11,8 @@ const bar = (id: string, x: number, y: number, w: number, h: number): PlacedBar 
   y,
   width: w,
   height: h,
+  isStart: true,
+  isEnd: true,
 });
 
 const link = (

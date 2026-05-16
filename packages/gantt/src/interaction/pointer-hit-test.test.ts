@@ -12,11 +12,11 @@ const strips: SwimlaneStrip[] = [
 
 const bars: PlacedBar[] = [
   // r1: bar spanning [100, 300] x [8, 38] — wide enough for a body zone
-  { barId: 'b1', x: 100, y: 8, width: 200, height: 30 },
+  { barId: 'b1', x: 100, y: 8, width: 200, height: 30, isStart: true, isEnd: true },
   // r2: bar spanning [200, 210] x [48, 78] — only 10px wide, edges overlap
-  { barId: 'b2-narrow', x: 200, y: 48, width: 10, height: 30 },
+  { barId: 'b2-narrow', x: 200, y: 48, width: 10, height: 30, isStart: true, isEnd: true },
   // r3: bar spanning [50, 250] x [88, 118]
-  { barId: 'b3', x: 50, y: 88, width: 200, height: 30 },
+  { barId: 'b3', x: 50, y: 88, width: 200, height: 30, isStart: true, isEnd: true },
 ];
 
 describe('defaultPointerHitTester — bar body / edge zones', () => {
@@ -186,8 +186,8 @@ describe('defaultPointerHitTester — empty-row fallback', () => {
 describe('defaultPointerHitTester — z-order and overlap', () => {
   it('later-in-array bar wins on overlap (paint order top-most)', () => {
     const stacked: PlacedBar[] = [
-      { barId: 'bottom', x: 0, y: 0, width: 100, height: 30 },
-      { barId: 'top', x: 0, y: 0, width: 100, height: 30 },
+      { barId: 'bottom', x: 0, y: 0, width: 100, height: 30, isStart: true, isEnd: true },
+      { barId: 'top', x: 0, y: 0, width: 100, height: 30, isStart: true, isEnd: true },
     ];
     const oneStrip: SwimlaneStrip[] = [{ rowId: 'r1', y: 0, height: 30 }];
     const result = defaultPointerHitTester.test({
@@ -258,7 +258,9 @@ describe('defaultPointerHitTester — overlay-id pass-through', () => {
 describe('defaultPointerHitTester — progress-handle zone', () => {
   // bar 'b1' at x ∈ [100, 300], y ∈ [8, 38]. Handle rect centered at the
   // 50%-progress point: handleX = 100 + 0.5 × 200 = 200. Box 12×12 centered.
-  const handleCentered: PlacedBar[] = [{ barId: 'b1', x: 100, y: 8, width: 200, height: 30 }];
+  const handleCentered: PlacedBar[] = [
+    { barId: 'b1', x: 100, y: 8, width: 200, height: 30, isStart: true, isEnd: true },
+  ];
   const oneStrip: SwimlaneStrip[] = [{ rowId: 'r1', y: 0, height: 40 }];
   const progressHandleByBarId = new Map([['b1', { x: 194, y: 17, width: 12, height: 12 }]]);
 
@@ -378,7 +380,9 @@ describe('defaultPointerHitTester — degenerate inputs', () => {
   it('zero-width bar is never a body hit; both edges collapse to a single point', () => {
     // bar.width = 0 → width < 2 × edgeZoneWidth, so split at center (= 0).
     // relX = 0 is NOT < width/2 (= 0), so end wins.
-    const zeroBars: PlacedBar[] = [{ barId: 'z', x: 100, y: 0, width: 0, height: 30 }];
+    const zeroBars: PlacedBar[] = [
+      { barId: 'z', x: 100, y: 0, width: 0, height: 30, isStart: true, isEnd: true },
+    ];
     const oneStrip: SwimlaneStrip[] = [{ rowId: 'r1', y: 0, height: 30 }];
     const exact = defaultPointerHitTester.test({
       contentX: 100,

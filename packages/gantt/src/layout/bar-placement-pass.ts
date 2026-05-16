@@ -20,6 +20,13 @@ export const defaultBarPlacementPass: BarPlacementPass = {
     const explicitBarHeight = input.barHeight;
     const axisStartMs = input.axis.ticks[0]?.time.getTime() ?? 0;
     const pxPerMs = input.axis.slotWidth / input.axis.slotDurationMs;
+    // Phase 27: axis end in calendar time. Derived from
+    // `slotCount × slotDurationMs` so it stays correct for views with
+    // discontinuous tick times (e.g. `weekendsVisible: false`, where
+    // ticks skip Sat/Sun but the dense-packed axis still covers a
+    // calendar span equal to slotCount visible days). Used to
+    // populate per-bar `isStart` / `isEnd` flags.
+    const axisEndMs = axisStartMs + input.axis.slotCount * input.axis.slotDurationMs;
     // Phase 30: per-bar stack-level offset. When `levelByBarId` is
     // omitted (or a bar is absent from the map), the bar lands on
     // level 0 — same Y as pre-Phase-30. The offset per level is
@@ -64,6 +71,15 @@ export const defaultBarPlacementPass: BarPlacementPass = {
         y: strip.y + padding + level * offsetPerLevel,
         width: (endMs - startMs) * pxPerMs,
         height,
+        // Phase 27: continuation flags. A bar whose start sits AT
+        // axisStartMs (`startMs === axisStartMs`) is considered
+        // "starts at axis" (isStart=true) — only bars genuinely
+        // before the axis get `!isStart`. Same convention for end:
+        // a bar ending exactly at axisEndMs has isEnd=true (its
+        // last tick coincides with the axis's first hidden slot,
+        // not "extends past").
+        isStart: startMs >= axisStartMs,
+        isEnd: endMs <= axisEndMs,
       });
     }
 
