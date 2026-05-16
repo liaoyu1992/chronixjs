@@ -1,6 +1,6 @@
 # Phase 22 — Toolbar / view-switch buttons
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)**. Landed as 3 commits: `7e12b47` (design doc, 544 lines), `7935b74` (Commit 1: core toolbar types + parser + nav-utils + theme tokens + adapter render + 38 vitest, ~980 LOC), `099cb5a` (Commit 2: demo wiring + `extractToolbarSnapshot` + 3 parity assertions + 15 VRT re-baselines, ~286 LOC). Cumulative vitest 445 → 483, parity assertions 28 → 31, cross-demo 27/27 green after 15 chronix-self baseline re-captures for `.cx-gantt-root` wrapper's 1-pixel layout shift. `/phase-close` skill walked all 7 gates (6 standard + 6.5 cross-demo-verify) green before status flip. See `audit/journal/2026-05-13.md` "Phase 22" section.
 
 ## Problem
 

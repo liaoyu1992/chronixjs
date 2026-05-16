@@ -326,7 +326,7 @@ This register classifies every P0/P1/P2/P3 entry above into one of four explicit
 | Item                                                                                                        | Disposition          | Rationale / trigger                                                                                                                                                                                                                                 |
 | ----------------------------------------------------------------------------------------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | `weekendsVisible` not read by axis-range-planner                                                            | **DONE Phase 18**    | Filter implemented in `planWeekView` + `planMonthBandedAxis` with parity assertion.                                                                                                                                                                 |
-| View-switch toolbar absent (`headerToolbar` / `today` / nav)                                                | **Planned Phase 22** | First phase needing button-click recording-replay parity (see Phase 20.5 catalog).                                                                                                                                                                  |
+| View-switch toolbar absent (`headerToolbar` / `today` / nav)                                                | **DONE Phase 22**    | Data-driven `headerToolbar` prop with k-ui-parity string DSL, controlled-prop `v-model:axis-input` pathway, 3 cross-demo parity assertions (button set / pressed state / title presence) green. Click recording-replay infra parked to Phase 22.1.  |
 | `eventColor` family (4 options + 3 callbacks)                                                               | **DONE Phase 20**    | Bar color pipeline landed with parity assertions.                                                                                                                                                                                                   |
 | `todayLine` rendering                                                                                       | **DONE Phase 21**    | Pixel-perfect Δ=0.00 day-1 cross-demo parity.                                                                                                                                                                                                       |
 | `nowIndicator` + 4 render hooks                                                                             | **Reject**           | User direction (Phase 21 session): static todayLine alone covers visible default parity; 5-min setTimeout machinery + tab-visibility + custom render hooks not worth the complexity. Revisit only if a user explicitly requests live "now" updates. |
@@ -381,12 +381,12 @@ This register classifies every P0/P1/P2/P3 entry above into one of four explicit
 
 #### Counts (audit-sweep tally)
 
-- **DONE since recheck**: 4 (weekendsVisible, eventColor family, validation callbacks, todayLine).
-- **Planned with phase number**: 4 (Phase 22 toolbar, Phase 23 dual-scrollport, Phase 24 imperative API + nav, Phase 25 drag-distance gate).
+- **DONE since recheck**: 5 (weekendsVisible, eventColor family, validation callbacks, todayLine, toolbar).
+- **Planned with phase number**: 4 (Phase 22.1 toolbar click recording-replay, Phase 23 dual-scrollport, Phase 24 imperative API + nav, Phase 25 drag-distance gate).
 - **Reject (by-design)**: 8 (nowIndicator, bar tabIndex, selection modifier, live-drag mirror, link-orphan, bar-progress, MIN_SIDEBAR floor, VirtualizedPane overscan).
 - **Defer-indefinite (revisit on demand)**: 21 (the rest).
 
-Of the 17 P0 items in the original recheck: 4 DONE, 3 Planned (Phase 22 + 24×2), 1 Reject (nowIndicator), 9 Defer-indefinite. **The remaining demo-parity gap is 3 phases (22 + 23 + 24)**, not the 17 originally feared.
+Of the 17 P0 items in the original recheck: 5 DONE, 2 Planned (Phase 24×2 — event CRUD + nav imperative API), 1 Reject (nowIndicator), 9 Defer-indefinite. **The remaining demo-parity gap is 2 phases (23 + 24)**, plus the 22.1 follow-up for recording-replay infra and Phase 25 for the drag-distance gate.
 
 ### Roadmap implications (historical — superseded 2026-05-16)
 
