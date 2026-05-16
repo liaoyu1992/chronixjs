@@ -1456,4 +1456,110 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       await chronixPage.context().close();
     }
   });
+
+  test('phase30-stacking — same-row overlapping bars get distinct Y on chronix side', async ({
+    browser,
+  }) => {
+    // Phase 30 closes the pipeline-integrity gap where same-row time-
+    // overlapping bars all rendered at strip.y + padding (level info
+    // computed by BarStackHeightPass but discarded before placement).
+    // After: BarPlacementPass consumes levelByBarId and assigns
+    // y = strip.y + padding + level * (barHeight + spacing).
+    //
+    // Default-mode chronix demo gained a `workshop-stack` row with 3
+    // time-overlapping bars (bar-stack-1: 0-10h, bar-stack-2: 5-15h,
+    // bar-stack-3: 8-18h). All pair-wise overlap → greedy interval
+    // coloring assigns levels 0/1/2 → 3 distinct Y.
+    //
+    // Chronix-side assertion only: k-ui's stacking has been working
+    // upstream (the user's screenshot showed `待排` row rendering 3+
+    // stacked bars correctly). Phase 30's job is to make chronix
+    // catch up. Per the design doc's tolerance (±2px), assert distinct
+    // Y values; per-bar level math is unit-tested in
+    // bar-placement-pass.test.ts and use-gantt-layout.test.ts.
+    // Default mode (not parity) because `workshop-stack` row + its
+    // 3 overlap bars only exist in chronix's default sample-data.
+    // Parity-mode dataset (`?parity=true`) is upstream-shared with
+    // k-ui via @chronixjs/golden-runner/parity-events and intentionally
+    // untouched by Phase 30.
+    const chronixContext = await browser.newContext({
+      baseURL: 'http://localhost:8702',
+      viewport: { width: 1280, height: 800 },
+      timezoneId: 'Asia/Shanghai',
+      locale: 'zh-CN',
+    });
+    const chronixPage = await chronixContext.newPage();
+    try {
+      await chronixPage.goto('/');
+      await chronixPage.locator('svg.cx-gantt-body').waitFor({ state: 'visible' });
+      await chronixPage.waitForLoadState('networkidle');
+      const ys = await chronixPage.evaluate(() => {
+        const ids = ['bar-stack-1', 'bar-stack-2', 'bar-stack-3'];
+        return ids.map((id) => {
+          const el = document.querySelector<SVGRectElement>(`[data-bar-id='${id}']`);
+          return el ? Number(el.getAttribute('y') ?? '0') : NaN;
+        });
+      });
+
+      console.warn(`Phase 30 stacking Y on chronix workshop-stack row: [${ys.join(', ')}]`);
+
+      expect(
+        ys.every((y) => Number.isFinite(y)),
+        'all 3 bars must render',
+      ).toBe(true);
+      // Three distinct Y values — the original bug had all 3 share Y.
+      expect(new Set(ys).size, 'expected 3 distinct Y values').toBe(3);
+      // Ascending by stack level: bar-stack-1 (level 0, lowest Y)
+      // < bar-stack-2 (level 1) < bar-stack-3 (level 2).
+      expect(ys[0]).toBeLessThan(ys[1]!);
+      expect(ys[1]).toBeLessThan(ys[2]!);
+      // Stack spacing = barHeight (30) + barStackSpacing (10) = 40px per level.
+      // ±2 tolerance for sub-pixel rounding.
+      expect(Math.abs(ys[1]! - ys[0]! - 40)).toBeLessThanOrEqual(2);
+      expect(Math.abs(ys[2]! - ys[1]! - 40)).toBeLessThanOrEqual(2);
+    } finally {
+      await chronixContext.close();
+    }
+  });
+
+  test('phase30-stacking regression — non-overlapping bars still share Y baseline', async ({
+    browser,
+  }) => {
+    // Regression: existing rows (workshop-a, workshop-b, etc.) have
+    // non-overlapping bars per row in default mode. After Phase 30,
+    // these should still all sit at the same Y on their respective
+    // rows (level 0 for every bar) — the bug fix only touches per-row
+    // Y for overlapping bars. Default-mode chronix-only loader (same
+    // reason as the stacking assertion above).
+    const chronixContext = await browser.newContext({
+      baseURL: 'http://localhost:8702',
+      viewport: { width: 1280, height: 800 },
+      timezoneId: 'Asia/Shanghai',
+      locale: 'zh-CN',
+    });
+    const chronixPage = await chronixContext.newPage();
+    try {
+      await chronixPage.goto('/');
+      await chronixPage.locator('svg.cx-gantt-body').waitFor({ state: 'visible' });
+      await chronixPage.waitForLoadState('networkidle');
+      const workshopAYs = await chronixPage.evaluate(() => {
+        // workshop-a holds bar-1, bar-2, bar-3 — all on same row, all
+        // non-overlapping (1-5h, 8-12h, 15-22h). All three should share Y.
+        return ['bar-1', 'bar-2', 'bar-3'].map((id) => {
+          const el = document.querySelector<SVGRectElement>(`[data-bar-id='${id}']`);
+          return el ? Number(el.getAttribute('y') ?? '0') : NaN;
+        });
+      });
+
+      console.warn(
+        `Phase 30 regression Y on workshop-a non-overlapping bars: [${workshopAYs.join(', ')}]`,
+      );
+
+      expect(workshopAYs.every((y) => Number.isFinite(y))).toBe(true);
+      // All three non-overlapping bars on same row → all level 0 → identical Y.
+      expect(new Set(workshopAYs).size).toBe(1);
+    } finally {
+      await chronixContext.close();
+    }
+  });
 });

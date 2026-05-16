@@ -77,6 +77,11 @@ export const sampleRows: readonly RowSpec[] = [
   { id: 'workshop-b', columns: { region: '海口', base: '海口基地', name: '车间 B' } },
   { id: 'workshop-c', columns: { region: '海口', base: '空港基地', name: '车间 C' } },
   { id: 'workshop-d', columns: { region: '三亚', base: '三亚基地', name: '车间 D' } },
+  // Phase 30: dedicated row exercising same-row time-overlap stacking.
+  // Before Phase 30 chronix collapsed all overlapping bars to identical
+  // Y (one rendered, others hidden). After: each gets its own stack level
+  // and renders at a distinct Y within the row.
+  { id: 'workshop-stack', columns: { region: '三亚', base: '三亚基地', name: '待排' } },
 ];
 
 // Phase 20: a few bars get `extendedProps.priority` so the demo's
@@ -116,6 +121,16 @@ export const sampleBars: readonly BarSpec[] = [
   multiDayBar('bar-14', 'workshop-b', 120, 60, '下半年项目 - 工艺改造'),
   multiDayBar('bar-15', 'workshop-c', 210, 45, '年末交付 - 客户验收'),
   multiDayBar('bar-16', 'workshop-d', 300, 30, '次年初规划', 5),
+
+  // Phase 30: 3 same-row time-overlapping bars on the dedicated stacking
+  // row. Sorted-by-start order is bar-stack-1, bar-stack-2, bar-stack-3;
+  // all three pair-wise overlap (0-10 ∩ 5-15 ∩ 8-18 are non-empty), so
+  // greedy interval coloring assigns levels 0 / 1 / 2 respectively and
+  // each renders at a distinct Y on a row tall enough for 3 stacked
+  // tracks (BarStackHeightPass expands row height automatically).
+  barAt('bar-stack-1', 'workshop-stack', 0, 10, '待排任务 A'),
+  barAt('bar-stack-2', 'workshop-stack', 5, 15, '待排任务 B'),
+  barAt('bar-stack-3', 'workshop-stack', 8, 18, '待排任务 C'),
 ];
 
 /**
