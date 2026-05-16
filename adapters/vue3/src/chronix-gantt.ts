@@ -1826,20 +1826,19 @@ export const ChronixGantt = defineComponent({
       // today-line so the SVG paint order reads tint → grid → today-line
       // → bars → links — matches the parity reference's layering.
       //
-      // Vertical lines: one per axis tick.
-      //   - Cell-boundary slot (tick.x is the start of an outer header
-      //     cell, e.g. month boundary in season view, day boundary in
-      //     week view): solid 1-px <rect> with class
-      //     `cx-gantt-grid-vline`. When the boundary also falls on a
-      //     Monday at 00:00 (ISO week start), it picks up the additional
-      //     class `cx-gantt-grid-vline-week` + the darker
-      //     `gridLineWeekStartColor` fill.
-      //   - Non-cell-boundary slot (sub-slot divider, e.g. each hour
-      //     within a day in week view): dashed 1-px <line> with
-      //     `stroke-dasharray="2,2"` and class
-      //     `cx-gantt-grid-vline cx-gantt-grid-vline-dashed`.
-      // Plus one closing solid vline at `axis.totalWidth - 1` so the
-      // rightmost cell visually closes its right edge.
+      // Vertical lines: one solid 1-px <rect class="cx-gantt-grid-vline">
+      // per axis tick. Every tick is treated as a cell-boundary because
+      // chronix's `PlannedAxis.ticks` IS the innermost cell row — there
+      // are no sub-tick subdivisions in the v0 view set. (The parity
+      // reference also emits one solid boundary per tick in its default
+      // demo for the same reason; its `gantt-grid-vline-dashed` branch
+      // is dead code unless a host configures `slotDuration < cell
+      // duration`, which neither side exposes today.) When the tick
+      // falls on Monday at 00:00 (ISO week start), the rect picks up
+      // the additional class `cx-gantt-grid-vline-week` and the darker
+      // `gridLineWeekStartColor` fill. Plus one closing solid vline at
+      // `axis.totalWidth - 1` so the rightmost cell visually closes
+      // its right edge.
       //
       // Horizontal lines: one per strip's bottom edge. Y is snapped to
       // the device pixel grid via `snapHorizontalGridLineY` so 1-px
@@ -1849,45 +1848,23 @@ export const ChronixGantt = defineComponent({
       // Week-start derivation is inline (`tick.time.getDay() === 1 && tick.time.getHours() === 0`)
       // — see Phase 26 design doc for why no `AxisTick.isWeekStart`
       // field was added.
-      const boundaryXSet = new Set<number>();
-      for (const cell of a.headerRows[0]?.cells ?? []) {
-        boundaryXSet.add(cell.x);
-      }
       const gridChildren: VNode[] = [];
       for (const tick of a.ticks) {
-        const isBoundary = boundaryXSet.has(tick.x);
-        if (isBoundary) {
-          const isWeekStart = tick.time.getDay() === 1 && tick.time.getHours() === 0;
-          gridChildren.push(
-            h('rect', {
-              key: `grid-vline-${tick.x}`,
-              class: isWeekStart
-                ? 'cx-gantt-grid-vline cx-gantt-grid-vline-week'
-                : 'cx-gantt-grid-vline',
-              x: tick.x - 1,
-              y: 0,
-              width: 1,
-              height: bodyHeight,
-              fill: isWeekStart ? t.gridLineWeekStartColor : t.gridLineColor,
-              'pointer-events': 'none',
-            }),
-          );
-        } else {
-          gridChildren.push(
-            h('line', {
-              key: `grid-vline-${tick.x}`,
-              class: 'cx-gantt-grid-vline cx-gantt-grid-vline-dashed',
-              x1: tick.x - 1,
-              y1: 0,
-              x2: tick.x - 1,
-              y2: bodyHeight,
-              stroke: t.gridLineColor,
-              'stroke-width': 1,
-              'stroke-dasharray': '2,2',
-              'pointer-events': 'none',
-            }),
-          );
-        }
+        const isWeekStart = tick.time.getDay() === 1 && tick.time.getHours() === 0;
+        gridChildren.push(
+          h('rect', {
+            key: `grid-vline-${tick.x}`,
+            class: isWeekStart
+              ? 'cx-gantt-grid-vline cx-gantt-grid-vline-week'
+              : 'cx-gantt-grid-vline',
+            x: tick.x - 1,
+            y: 0,
+            width: 1,
+            height: bodyHeight,
+            fill: isWeekStart ? t.gridLineWeekStartColor : t.gridLineColor,
+            'pointer-events': 'none',
+          }),
+        );
       }
       // Right-edge closing vline — matches the parity reference's
       // `includeRightEdge` branch so the rightmost cell visually closes.

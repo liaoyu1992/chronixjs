@@ -158,3 +158,34 @@ export const TOOLBAR_TITLE = '.gantt-toolbar-title';
  * inside `extractToolbarSnapshot`.
  */
 export const TOOLBAR_BUTTON_CLASS_PATTERN = /(?:^|\s)gantt-(\w+)-button(?:\s|$)/;
+
+// ─── Grid lines (Phase 26) ─────────────────────────────────────────
+
+/**
+ * Phase 26: vertical grid lines emitted by the upstream demo per axis
+ * tick. The reference's `GanttView.appendVerticalSlotSeparators` emits:
+ *
+ * - **Cell-boundary slot** (e.g. day boundary in week view, month
+ *   boundary in season view): solid `<rect class="gantt-grid-vline">`.
+ *   When the boundary also falls on a Monday-00:00 (ISO week start),
+ *   the rect picks up `gantt-grid-vline-week` and a darker fill.
+ * - **Non-cell-boundary slot** (sub-slot dividers, e.g. each hour
+ *   within a day in week view): dashed `<line class="gantt-grid-vline
+ *   gantt-grid-vline-dashed">` with `stroke-dasharray="2,2"`.
+ *
+ * Chronix equivalents prefixed with `cx-`. Counts must match across
+ * the two demos at the same view / `weekendsVisible` setting — that's
+ * the load-bearing parity check, since per-tick x-parity is already
+ * covered by `extractTicksSnapshot` (Phase 20.5).
+ */
+export const GRID_VLINE = '.gantt-grid-vline';
+export const GRID_VLINE_DASHED = '.gantt-grid-vline-dashed';
+export const GRID_VLINE_WEEK = '.gantt-grid-vline-week';
+
+/**
+ * Phase 26: horizontal row-bottom line emitted by the upstream demo's
+ * `GanttView.renderGridLines`. One `<line class="gantt-grid-hline">`
+ * per row's bottom edge, y snapped to the device pixel grid via
+ * `snapHorizontalGridLineY` (ported into chronix verbatim).
+ */
+export const GRID_HLINE = '.gantt-grid-hline';

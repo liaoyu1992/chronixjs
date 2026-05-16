@@ -17,6 +17,10 @@ import {
   loadBothDemos,
 } from '../src/parity-helpers.js';
 import {
+  GRID_HLINE,
+  GRID_VLINE,
+  GRID_VLINE_DASHED,
+  GRID_VLINE_WEEK,
   REF_ATTR_NAMES,
   RESOURCE_ROW,
   TIMELINE_BODY_WRAPPER,
@@ -1560,6 +1564,157 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       expect(new Set(workshopAYs).size).toBe(1);
     } finally {
       await chronixContext.close();
+    }
+  });
+
+  test('phase26-vline total count parity (week view)', async ({ browser }) => {
+    // Phase 26: chronix gained body grid lines. Week view exercises the
+    // distinctive combination of cell-boundary vlines (1 per day = 7) +
+    // sub-slot dashed vlines (23 per day × 7 = 161) + 1 right-edge
+    // closing solid vline. Total per side: 7 + 161 + 1 = 169.
+    //
+    // K-ui's body grid emits the SAME structure for week view (every
+    // hourly tick → either solid boundary or dashed sub-slot), so
+    // total vline count should match within 0 (exact).
+    //
+    // Per-vline x-parity is implied: chronix vlines are at
+    // `tick.x - 1`, k-ui's are at `x - 1` against the same axis x's
+    // already validated by `extractTicksSnapshot` (Phase 20.5).
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase26-vline-count-week',
+      viewId: 'week',
+    });
+    try {
+      const kuiCount = await kuiPage.evaluate(
+        ({ vlineSel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(vlineSel).length;
+        },
+        { vlineSel: GRID_VLINE, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCount = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-grid-vline').length,
+      );
+      console.warn(`Phase 26 vline count (week): kui=${kuiCount} chronix=${chronixCount}`);
+      expect(kuiCount, 'kui vline count > 0').toBeGreaterThan(0);
+      expect(chronixCount, 'chronix vline count > 0').toBeGreaterThan(0);
+      expect(chronixCount).toBe(kuiCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase26-vline cell-boundary count parity (week view)', async ({ browser }) => {
+    // Phase 26: solid cell-boundary vlines only (excluding dashed sub-
+    // slot variants). Week view: 7 day boundaries + 1 right-edge
+    // closing = 8 solid vlines per side. The :not(.gantt-grid-vline-
+    // dashed) filter is the structural test that "solid means boundary,
+    // dashed means sub-slot" hasn't drifted on either side.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase26-vline-boundary-count-week',
+      viewId: 'week',
+    });
+    try {
+      const kuiSolidCount = await kuiPage.evaluate(
+        ({ vlineSel, dashedSel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(`${vlineSel}:not(${dashedSel})`).length;
+        },
+        { vlineSel: GRID_VLINE, dashedSel: GRID_VLINE_DASHED, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixSolidCount = await chronixPage.evaluate(
+        () =>
+          document.querySelectorAll(
+            'svg.cx-gantt-body .cx-gantt-grid-vline:not(.cx-gantt-grid-vline-dashed)',
+          ).length,
+      );
+      console.warn(
+        `Phase 26 vline cell-boundary count (week): kui=${kuiSolidCount} chronix=${chronixSolidCount}`,
+      );
+      expect(kuiSolidCount).toBeGreaterThan(0);
+      expect(chronixSolidCount).toBeGreaterThan(0);
+      expect(chronixSolidCount).toBe(kuiSolidCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase26-vline week-start emphasis count parity (season view)', async ({ browser }) => {
+    // Phase 26: week-start emphasis (`-week` class) on cell-boundary
+    // vlines that also fall on Monday-00:00. Season view is the
+    // canonical exerciser because:
+    //   - month-boundary vlines exist (3 month starts: May/Jun/Jul)
+    //   - some month starts fall on Monday (e.g. 2026-06-01 is Mon)
+    //   - others don't (May 1 Fri, Jul 1 Wed)
+    // So at the FROZEN_TIME_ISO anchor (2026-05-13), exactly 1 of 3
+    // month boundaries gets `-week`. Both sides should agree on the
+    // count.
+    //
+    // Important: assertion is "counts match", not "count > 0" —
+    // the bug we're guarding against is divergence (chronix derives
+    // week-start one way, k-ui another). Even count=0 must match
+    // count=0 (e.g. if anchor + view combo has no Monday month-starts).
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase26-vline-week-count-season',
+      viewId: 'season',
+    });
+    try {
+      const kuiWeekCount = await kuiPage.evaluate(
+        ({ weekSel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(weekSel).length;
+        },
+        { weekSel: GRID_VLINE_WEEK, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixWeekCount = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-grid-vline-week').length,
+      );
+      console.warn(
+        `Phase 26 vline week-start count (season): kui=${kuiWeekCount} chronix=${chronixWeekCount}`,
+      );
+      expect(chronixWeekCount).toBe(kuiWeekCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase26-hline row-bottom count parity (month view)', async ({ browser }) => {
+    // Phase 26: horizontal row-bottom lines. Chronix emits one
+    // `.cx-gantt-grid-hline` per strip; k-ui emits one
+    // `.gantt-grid-hline` per row. Both sides should have the same
+    // number of body rows (parity-mode dataset is shared via
+    // @chronixjs/golden-runner/parity-events). Month view chosen
+    // because it has > 1 row visible (so a 0-vs-0 false-positive
+    // can't pass).
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase26-hline-count-month',
+      viewId: 'month',
+    });
+    try {
+      const kuiCount = await kuiPage.evaluate(
+        ({ hlineSel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(hlineSel).length;
+        },
+        { hlineSel: GRID_HLINE, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCount = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-grid-hline').length,
+      );
+      console.warn(`Phase 26 hline count (month): kui=${kuiCount} chronix=${chronixCount}`);
+      expect(kuiCount, 'kui hline count > 0').toBeGreaterThan(0);
+      expect(chronixCount, 'chronix hline count > 0').toBeGreaterThan(0);
+      expect(chronixCount).toBe(kuiCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
     }
   });
 });

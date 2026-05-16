@@ -78,49 +78,49 @@ describe('<ChronixGantt> body grid lines — Phase 26', () => {
     expect(wrapper.findAll('.cx-gantt-grid-hline')).toHaveLength(0);
   });
 
-  it('emits one `.cx-gantt-grid-vline` cell-boundary line per outer-header-cell start (day view → 1 boundary + 1 right edge)', () => {
-    // Day view headerRows = [{ cells: [{ x: 0, width: totalWidth, label }] }]
-    // → boundaryXSet = { 0 } → exactly 1 solid boundary vline at x=0,
-    // plus 1 right-edge closing vline. Other 23 ticks render as dashed
-    // sub-slot lines.
+  it('emits one solid `.cx-gantt-grid-vline` rect per axis tick + 1 right-edge close (day view → 24 + 1 = 25)', () => {
+    // Day view: 24 hourly ticks. Every tick is a cell-boundary
+    // (chronix's `axis.ticks` IS the innermost cell row — no sub-tick
+    // subdivisions). Each tick → one solid rect. Plus the right-edge
+    // closing vline at totalWidth - 1.
     const wrapper = mount(ChronixGantt, {
       props: { bars, rows, axisInput: makeAxisInput('day') },
     });
     const solidBoundaries = wrapper.findAll('rect.cx-gantt-grid-vline');
-    // 1 cell-boundary (x=0) + 1 right-edge closing = 2 solid rects.
-    expect(solidBoundaries).toHaveLength(2);
+    expect(solidBoundaries).toHaveLength(25);
   });
 
-  it('emits `.cx-gantt-grid-vline-dashed` at every non-cell-boundary slot (day view → 23 sub-hour dashed lines)', () => {
-    // Day view: 24 hourly ticks; 1 cell-boundary at x=0; 23 non-boundary
-    // → 23 dashed sub-slot lines.
+  it('emits no `.cx-gantt-grid-vline-dashed` lines (chronix has no sub-tick subdivisions in v0)', () => {
+    // The dashed sub-slot branch in the parity reference fires only
+    // when a host configures `slotDuration < cell duration`. Chronix
+    // doesn't expose that knob in v0, so the rendered DOM never
+    // contains dashed grid lines. This test pins that contract — if
+    // a future phase adds sub-slot rendering it should also update
+    // this assertion.
     const wrapper = mount(ChronixGantt, {
       props: { bars, rows, axisInput: makeAxisInput('day') },
     });
-    const dashedLines = wrapper.findAll('line.cx-gantt-grid-vline-dashed');
-    expect(dashedLines).toHaveLength(23);
-    // Verify the dashed-stroke attribute is present.
-    expect(dashedLines[0]!.attributes('stroke-dasharray')).toBe('2,2');
+    expect(wrapper.findAll('line.cx-gantt-grid-vline-dashed')).toHaveLength(0);
   });
 
-  it('emits `.cx-gantt-grid-vline-week` at Monday-midnight ticks (season view)', () => {
+  it('emits `.cx-gantt-grid-vline-week` at every Monday-00:00 tick (season view)', () => {
     // Season view (3 months from start-of-anchor-month = 2026-05-01)
-    // covers May/Jun/Jul 2026. Mondays in that span at midnight:
-    // 2026-05-04, 05-11, 05-18, 05-25, 06-01, 06-08, 06-15, 06-22, 06-29,
-    // 07-06, 07-13, 07-20, 07-27 → 13 Mondays.
+    // covers May/Jun/Jul 2026. Day-resolution ticks land at midnight
+    // each day. Mondays in that span at 00:00:
+    //   2026-05-04, 05-11, 05-18, 05-25,
+    //   06-01, 06-08, 06-15, 06-22, 06-29,
+    //   07-06, 07-13, 07-20, 07-27
+    // → 13 Mondays. Each picks up `cx-gantt-grid-vline-week`.
     //
-    // BUT only ticks that are ALSO cell-boundaries (month-start in
-    // season view) pick up the week-week class — k-ui's logic and
-    // chronix's are both gated by `isBoundary` before checking week-start.
-    // Month boundaries in season view: May 1 (Fri), Jun 1 (Mon),
-    // Jul 1 (Wed) → exactly 1 month-boundary tick that's also Monday-00:00.
-    // Result: 1 `cx-gantt-grid-vline-week` (Jun 1 2026 is the only
-    // month-start that falls on Monday in this span).
+    // (Pre-fix: chronix gated week emphasis on cellBoundary set
+    // derived from headerRows[0] cells → only month-boundary Mondays
+    // got the class → 1. The parity reference treats every tick as
+    // a boundary, so chronix matches by doing the same.)
     const wrapper = mount(ChronixGantt, {
       props: { bars, rows, axisInput: makeAxisInput('season') },
     });
     const weekStarts = wrapper.findAll('rect.cx-gantt-grid-vline-week');
-    expect(weekStarts).toHaveLength(1);
+    expect(weekStarts).toHaveLength(13);
     // Week-emphasis fill matches the theme default.
     expect(weekStarts[0]!.attributes('fill')).toBe('#bbb');
   });
