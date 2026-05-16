@@ -2,9 +2,14 @@ import {
   BAR_SLOT_NAME,
   defaultChronixTheme,
   defaultLinkRouter,
+  formatToolbarTitle,
+  nextAnchor,
+  parseToolbar,
+  prevAnchor,
   resolveBarStyle,
+  todayAnchor,
 } from '@chronixjs/gantt';
-import { computed, defineComponent, h, ref, watchEffect, type PropType } from 'vue';
+import { computed, defineComponent, h, ref, watchEffect, type PropType, type VNode } from 'vue';
 
 import { useGanttLayout } from './use-gantt-layout.js';
 import {
@@ -17,6 +22,7 @@ import {
   type SelectPayload,
   type SelectRejectedPayload,
 } from './use-gantt-pointer.js';
+
 import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
 import type {
   AxisRangePlanInput,
@@ -35,7 +41,18 @@ import type {
   SlotRegistry,
   TimeRange,
   TodayLineOption,
+  ToolbarInput,
+  ToolbarModel,
+  ToolbarWidget,
+  ViewId,
 } from '@chronixjs/gantt';
+
+/**
+ * The six built-in chronix view ids the toolbar parser uses to
+ * resolve view-name widgets. Module-level so the computed toolbar
+ * model doesn't re-allocate per render.
+ */
+const ALL_VIEW_IDS: readonly ViewId[] = ['day', 'week', 'month', 'season', 'halfYear', 'year'];
 
 /**
  * Public payload for the `'bar-dragstart'` emit. Fires the first time
@@ -527,6 +544,21 @@ export const ChronixGantt = defineComponent({
       type: [Boolean, Object] as PropType<TodayLineOption | boolean>,
       default: false,
     },
+    /**
+     * Phase 22: toolbar config. Accepts the k-ui-parity string DSL
+     * (`{ left, center, right }` / `{ start, center, end }`) or
+     * `false` (default) to hide the toolbar entirely.
+     *
+     * Widget names: `'title'`, any of the six `ViewId`s, and
+     * `'prev'` / `'next'` / `'today'`. View buttons emit
+     * `update:axisInput` with a new `viewId`; nav buttons emit
+     * with a new `anchorDate`. Wire `v-model:axis-input` to pick
+     * up both.
+     */
+    headerToolbar: {
+      type: [Object, Boolean] as PropType<ToolbarInput | false>,
+      default: false as const,
+    },
   },
   emits: {
     'bar-drop': (_payload: BarDropPayload) => true,
@@ -543,6 +575,7 @@ export const ChronixGantt = defineComponent({
     'bar-drop-rejected': (_payload: BarDropRejectedPayload) => true,
     'bar-resize-rejected': (_payload: BarResizeRejectedPayload) => true,
     'select-rejected': (_payload: SelectRejectedPayload) => true,
+    'update:axisInput': (_next: AxisRangePlanInput) => true,
   },
   setup(props, { emit }) {
     // Effective theme: merge consumer overrides over chronix defaults.
@@ -552,6 +585,44 @@ export const ChronixGantt = defineComponent({
       ...defaultChronixTheme,
       ...props.theme,
     }));
+
+    // Phase 22 toolbar: parse the string DSL into a widget model
+    // every time `headerToolbar` or the active view changes.
+    // `pressed` state flips reactively as the consumer's
+    // v-model:axis-input round-trips a new viewId.
+    const toolbarModel = computed<ToolbarModel | null>(() => {
+      const input = props.headerToolbar;
+      if (input === false || input === undefined) return null;
+      return parseToolbar(input, {
+        viewIds: ALL_VIEW_IDS,
+        activeViewId: props.axisInput.viewId,
+      });
+    });
+    const toolbarTitleText = computed(() => formatToolbarTitle(props.axisInput));
+
+    function onToolbarWidgetClick(widget: ToolbarWidget): void {
+      const current = props.axisInput;
+      if (widget.kind === 'view') {
+        emit('update:axisInput', {
+          ...current,
+          viewId: widget.buttonName as ViewId,
+        });
+        return;
+      }
+      if (widget.kind === 'nav') {
+        let nextDate: Date;
+        if (widget.buttonName === 'prev') {
+          nextDate = prevAnchor(current.viewId, current.anchorDate);
+        } else if (widget.buttonName === 'next') {
+          nextDate = nextAnchor(current.viewId, current.anchorDate);
+        } else {
+          // 'today'
+          nextDate = todayAnchor();
+        }
+        emit('update:axisInput', { ...current, anchorDate: nextDate });
+      }
+      // kind === 'title' — non-interactive
+    }
 
     const { axis, strips, placedBars, contentSize } = useGanttLayout({
       bars: () => props.bars,
@@ -1724,7 +1795,7 @@ export const ChronixGantt = defineComponent({
             gridTemplateColumns: `${sidebarWidth}px ${SIDEBAR_DIVIDER_WIDTH}px auto`,
           }
         : { overflow: 'auto' };
-      return h(
+      const chartWrapper = h(
         'div',
         {
           ref: wrapperRef,
@@ -1736,6 +1807,162 @@ export const ChronixGantt = defineComponent({
           ? [sidebarHeader, headerSvg, sidebarBody, bodySvg, divider]
           : [headerSvg, bodySvg],
       );
+
+      // Phase 22: when `headerToolbar` is configured, prepend the
+      // toolbar above the chart wrapper inside a parent root. When
+      // disabled (default), return the chart wrapper directly — keeps
+      // existing consumers' DOM-shape stable.
+      const tm = toolbarModel.value;
+      if (!tm) return chartWrapper;
+      return h('div', { class: 'cx-gantt-root' }, [
+        renderToolbar(tm, toolbarTitleText.value, t, onToolbarWidgetClick),
+        chartWrapper,
+      ]);
     };
   },
 });
+
+/** Inline SVG icon for `prev` / `next` toolbar nav buttons. Matches
+ * the reference `Toolbar.tsx` polyline shape so visual parity holds. */
+function renderToolbarIcon(kind: 'prev' | 'next'): VNode {
+  const points = kind === 'prev' ? '15 18 9 12 15 6' : '9 18 15 12 9 6';
+  return h(
+    'svg',
+    {
+      viewBox: '0 0 24 24',
+      width: 14,
+      height: 14,
+      fill: 'none',
+      stroke: 'currentColor',
+      'stroke-width': 2,
+      'stroke-linecap': 'round',
+      'stroke-linejoin': 'round',
+      'aria-hidden': 'true',
+    },
+    [h('polyline', { points })],
+  );
+}
+
+function renderToolbarButton(
+  widget: ToolbarWidget,
+  themeTokens: ChronixTheme,
+  onClick: (widget: ToolbarWidget) => void,
+): VNode {
+  const style: Record<string, string> = {
+    background: widget.isPressed ? themeTokens.toolbarButtonBgActive : themeTokens.toolbarButtonBg,
+    color: widget.isPressed ? '#ffffff' : themeTokens.toolbarButtonColor,
+    border: `1px solid ${themeTokens.toolbarButtonBorder}`,
+    padding: '4px 10px',
+    cursor: 'pointer',
+    fontSize: '12px',
+    lineHeight: '1.4',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: '32px',
+  };
+  return h(
+    'button',
+    {
+      type: 'button',
+      class: `cx-gantt-${widget.buttonName}-button`,
+      'data-button-name': widget.buttonName,
+      'data-button-kind': widget.kind,
+      'aria-pressed': widget.isPressed ? 'true' : 'false',
+      style,
+      onClick: () => onClick(widget),
+    },
+    widget.iconSvg ? [renderToolbarIcon(widget.iconSvg)] : widget.labelText,
+  );
+}
+
+function renderToolbarWidgetGroup(
+  group: readonly ToolbarWidget[],
+  titleText: string,
+  themeTokens: ChronixTheme,
+  onClick: (widget: ToolbarWidget) => void,
+): VNode | null {
+  if (group.length === 0) return null;
+  const children: VNode[] = group.map((widget) => {
+    if (widget.kind === 'title') {
+      return h(
+        'h2',
+        {
+          class: 'cx-gantt-toolbar-title',
+          'data-button-name': 'title',
+          'data-button-kind': 'title',
+          style: {
+            margin: '0',
+            fontSize: '14px',
+            fontWeight: '600',
+            color: themeTokens.toolbarTitleColor,
+          },
+        },
+        titleText,
+      );
+    }
+    return renderToolbarButton(widget, themeTokens, onClick);
+  });
+  if (children.length === 1) return children[0]!;
+  return h(
+    'div',
+    {
+      class: 'cx-gantt-button-group',
+      style: { display: 'inline-flex', gap: '0', alignItems: 'center' },
+    },
+    children,
+  );
+}
+
+function renderToolbarSection(
+  section: readonly (readonly ToolbarWidget[])[],
+  titleText: string,
+  themeTokens: ChronixTheme,
+  onClick: (widget: ToolbarWidget) => void,
+): VNode {
+  const groups = section
+    .map((g) => renderToolbarWidgetGroup(g, titleText, themeTokens, onClick))
+    .filter((node): node is VNode => node !== null);
+  return h(
+    'div',
+    {
+      class: 'cx-gantt-toolbar-chunk',
+      style: { display: 'inline-flex', gap: '8px', alignItems: 'center' },
+    },
+    groups,
+  );
+}
+
+/**
+ * Render the Phase 22 toolbar above the chart. Three sections
+ * (`start`, `center`, `end`); k-ui-parity class names with `cx-`
+ * prefix so the parity extractor can pair them. Click delegates
+ * back to `onClick` — `setup()` translates each widget to an
+ * `update:axisInput` emit via `prev/next/today/changeView` math.
+ */
+function renderToolbar(
+  model: ToolbarModel,
+  titleText: string,
+  themeTokens: ChronixTheme,
+  onClick: (widget: ToolbarWidget) => void,
+): VNode {
+  return h(
+    'div',
+    {
+      class: 'cx-gantt-toolbar',
+      style: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '8px 12px',
+        background: themeTokens.toolbarBg,
+        borderBottom: `1px solid ${themeTokens.toolbarButtonBorder}`,
+      },
+    },
+    [
+      renderToolbarSection(model.sectionWidgets.start, titleText, themeTokens, onClick),
+      renderToolbarSection(model.sectionWidgets.center, titleText, themeTokens, onClick),
+      renderToolbarSection(model.sectionWidgets.end, titleText, themeTokens, onClick),
+    ],
+  );
+}

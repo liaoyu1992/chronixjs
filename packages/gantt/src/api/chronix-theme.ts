@@ -121,6 +121,20 @@ export interface ChronixTheme {
    * (matches parity-reference behavior where one color drives both).
    */
   readonly todayLineTooltipBg: string;
+
+  // ----- Toolbar (Phase 22) -----
+  /** `.cx-gantt-toolbar` background fill. */
+  readonly toolbarBg: string;
+  /** Resting `.cx-gantt-*-button` background. */
+  readonly toolbarButtonBg: string;
+  /** Active / pressed button background (`aria-pressed='true'`). */
+  readonly toolbarButtonBgActive: string;
+  /** Button border / divider color. */
+  readonly toolbarButtonBorder: string;
+  /** Button text + icon color. */
+  readonly toolbarButtonColor: string;
+  /** `.cx-gantt-toolbar-title` text color. */
+  readonly toolbarTitleColor: string;
 }
 
 /**
@@ -181,4 +195,15 @@ export const defaultChronixTheme: ChronixTheme = {
   // tomato red so the no-prop-override render matches.
   todayLineColor: '#ff6b6b',
   todayLineTooltipBg: '#ff6b6b',
+
+  // Toolbar — Phase 22. Match the neutral grayscale palette the
+  // surrounding chrome (sidebar, header band) already uses; active
+  // button picks up the bar-blue accent so the pressed view is
+  // discoverable at a glance.
+  toolbarBg: '#ffffff',
+  toolbarButtonBg: '#f9fafb',
+  toolbarButtonBgActive: '#3b82f6',
+  toolbarButtonBorder: '#d1d5db',
+  toolbarButtonColor: '#374151',
+  toolbarTitleColor: '#111827',
 };

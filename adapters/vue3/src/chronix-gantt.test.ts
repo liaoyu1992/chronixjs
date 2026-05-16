@@ -2503,3 +2503,138 @@ describe('<ChronixGantt> — Phase 21 todayLine', () => {
     expect(tooltipRect.attributes('fill')).toBe('#cc11dd');
   });
 });
+
+describe('Phase 22 toolbar', () => {
+  const DEMO_TOOLBAR = {
+    left: 'prev,next today',
+    center: 'title',
+    right: 'day,week,month,season,halfYear,year',
+  } as const;
+
+  it('renders no toolbar root and no parent wrapper when headerToolbar is false (default)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput },
+    });
+    expect(wrapper.find('div.cx-gantt-toolbar').exists()).toBe(false);
+    expect(wrapper.find('div.cx-gantt-root').exists()).toBe(false);
+    // chart wrapper is still the immediate render root
+    expect(wrapper.find('div.cx-gantt-wrapper').exists()).toBe(true);
+  });
+
+  it('wraps the chart in cx-gantt-root and prepends cx-gantt-toolbar when headerToolbar is configured', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR },
+    });
+    const root = wrapper.find('div.cx-gantt-root');
+    expect(root.exists()).toBe(true);
+    expect(root.find('div.cx-gantt-toolbar').exists()).toBe(true);
+    expect(root.find('div.cx-gantt-wrapper').exists()).toBe(true);
+  });
+
+  it('renders all 9 demo buttons (3 nav + 6 view) plus the title widget with k-ui-parity class names', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR },
+    });
+    for (const name of [
+      'prev',
+      'next',
+      'today',
+      'day',
+      'week',
+      'month',
+      'season',
+      'halfYear',
+      'year',
+    ]) {
+      const btn = wrapper.find(`button.cx-gantt-${name}-button`);
+      expect(btn.exists(), `cx-gantt-${name}-button missing`).toBe(true);
+      expect(btn.attributes('data-button-name')).toBe(name);
+    }
+    expect(wrapper.find('h2.cx-gantt-toolbar-title').exists()).toBe(true);
+  });
+
+  it('marks the active view button as aria-pressed=true and the others as false', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR }, // axisInput.viewId = 'day'
+    });
+    expect(wrapper.find('button.cx-gantt-day-button').attributes('aria-pressed')).toBe('true');
+    expect(wrapper.find('button.cx-gantt-week-button').attributes('aria-pressed')).toBe('false');
+    expect(wrapper.find('button.cx-gantt-month-button').attributes('aria-pressed')).toBe('false');
+  });
+
+  it('emits update:axisInput with a new viewId when a view button is clicked', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR },
+    });
+    await wrapper.find('button.cx-gantt-week-button').trigger('click');
+    const emitted = wrapper.emitted('update:axisInput');
+    expect(emitted).toBeTruthy();
+    expect(emitted![0]![0]).toMatchObject({ viewId: 'week' });
+    // anchorDate is preserved
+    expect((emitted![0]![0] as AxisRangePlanInput).anchorDate.getTime()).toBe(
+      axisInput.anchorDate.getTime(),
+    );
+  });
+
+  it('emits update:axisInput with the next anchorDate when next is clicked', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR }, // day view → ±1 day
+    });
+    await wrapper.find('button.cx-gantt-next-button').trigger('click');
+    const emitted = wrapper.emitted('update:axisInput')!;
+    expect((emitted[0]![0] as AxisRangePlanInput).viewId).toBe('day');
+    expect((emitted[0]![0] as AxisRangePlanInput).anchorDate.getDate()).toBe(
+      axisInput.anchorDate.getDate() + 1,
+    );
+  });
+
+  it('emits update:axisInput with the previous anchorDate when prev is clicked', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR },
+    });
+    await wrapper.find('button.cx-gantt-prev-button').trigger('click');
+    const emitted = wrapper.emitted('update:axisInput')!;
+    expect((emitted[0]![0] as AxisRangePlanInput).anchorDate.getDate()).toBe(
+      axisInput.anchorDate.getDate() - 1,
+    );
+  });
+
+  it('emits update:axisInput with a local-midnight Date when today is clicked', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR },
+    });
+    await wrapper.find('button.cx-gantt-today-button').trigger('click');
+    const emitted = wrapper.emitted('update:axisInput')!;
+    const next = (emitted[0]![0] as AxisRangePlanInput).anchorDate;
+    expect(next.getHours()).toBe(0);
+    expect(next.getMinutes()).toBe(0);
+    expect(next.getSeconds()).toBe(0);
+  });
+
+  it('does not emit when the title widget is clicked (non-interactive)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR },
+    });
+    await wrapper.find('h2.cx-gantt-toolbar-title').trigger('click');
+    expect(wrapper.emitted('update:axisInput')).toBeUndefined();
+  });
+
+  it('updates the pressed button when axisInput.viewId changes (reactive controlled-prop)', async () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR },
+    });
+    expect(wrapper.find('button.cx-gantt-day-button').attributes('aria-pressed')).toBe('true');
+    await wrapper.setProps({
+      axisInput: { ...axisInput, viewId: 'month' },
+    });
+    expect(wrapper.find('button.cx-gantt-day-button').attributes('aria-pressed')).toBe('false');
+    expect(wrapper.find('button.cx-gantt-month-button').attributes('aria-pressed')).toBe('true');
+  });
+
+  it('renders the title formatted per the current viewId (day → YYYY-MM-DD)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, headerToolbar: DEMO_TOOLBAR },
+    });
+    expect(wrapper.find('h2.cx-gantt-toolbar-title').text()).toBe('2026-05-13');
+  });
+});
