@@ -81,6 +81,7 @@ export type {
   GanttEventMap,
   GanttHandle,
   GanttOptions,
+  IncrementDelta,
   ParseToolbarOptions,
   ProgressChangePayload,
   RejectionReason,
@@ -98,6 +99,7 @@ export type {
   ViewChangePayload,
 } from './api/index.js';
 export {
+  applyIncrement,
   defaultChronixTheme,
   formatToolbarTitle,
   nextAnchor,

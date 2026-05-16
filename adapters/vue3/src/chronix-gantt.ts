@@ -1,5 +1,6 @@
 import {
   BAR_SLOT_NAME,
+  applyIncrement,
   defaultChronixTheme,
   defaultLinkRouter,
   formatToolbarTitle,
@@ -29,13 +30,19 @@ import type {
   BarColorFunc,
   BarSlotArgs,
   BarSpec,
+  BarTable,
   ChronixTheme,
   CustomLinkMarker,
   EventAllowFunc,
   EventConstraint,
   EventOverlapFunc,
+  GanttEventMap,
+  GanttHandle,
+  IncrementDelta,
   LinkMarker,
   LinkSpec,
+  LinkTable,
+  RowDataSource,
   RowSpec,
   SelectAllowFunc,
   SlotRegistry,
@@ -593,7 +600,7 @@ export const ChronixGantt = defineComponent({
     'select-rejected': (_payload: SelectRejectedPayload) => true,
     'update:axisInput': (_next: AxisRangePlanInput) => true,
   },
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     // Effective theme: merge consumer overrides over chronix defaults.
     // Reactive — a `theme` prop change triggers re-render with the new
     // tokens applied through every callsite below.
@@ -601,6 +608,25 @@ export const ChronixGantt = defineComponent({
       ...defaultChronixTheme,
       ...props.theme,
     }));
+
+    // Phase 24: subscribe-listener registry. Every adapter `emit(name, payload)`
+    // also notifies any handle.subscribe() listeners registered for the same
+    // event. Map<EventName, Set<Listener>> — listeners are weak per
+    // subscription; the returned unsubscribe function removes them.
+    type EmitListener = (payload: unknown) => void;
+    const listenerRegistry = new Map<string, Set<EmitListener>>();
+    // Vue emit's parameter type is the union of all defined emit names;
+    // `string` is structurally assignable, but TS narrows via overload
+    // resolution which the generic `K extends string` defeats. The
+    // double-cast through `unknown` is the standard escape hatch and
+    // safer than typing each callsite individually because the runtime
+    // emit() accepts any string identifier without validation.
+    type EmitFn = (name: string, payload: unknown) => void;
+    const emitUnchecked = emit as unknown as EmitFn;
+    function emitToBoth<K extends string>(name: K, payload: unknown): void {
+      emitUnchecked(name, payload);
+      listenerRegistry.get(name)?.forEach((listener) => listener(payload));
+    }
 
     // Phase 22 toolbar: parse the string DSL into a widget model
     // every time `headerToolbar` or the active view changes.
@@ -619,7 +645,7 @@ export const ChronixGantt = defineComponent({
     function onToolbarWidgetClick(widget: ToolbarWidget): void {
       const current = props.axisInput;
       if (widget.kind === 'view') {
-        emit('update:axisInput', {
+        emitToBoth('update:axisInput', {
           ...current,
           viewId: widget.buttonName as ViewId,
         });
@@ -635,7 +661,7 @@ export const ChronixGantt = defineComponent({
           // 'today'
           nextDate = todayAnchor();
         }
-        emit('update:axisInput', { ...current, anchorDate: nextDate });
+        emitToBoth('update:axisInput', { ...current, anchorDate: nextDate });
       }
       // kind === 'title' — non-interactive
     }
@@ -811,7 +837,7 @@ export const ChronixGantt = defineComponent({
     const warnedOrphanIds = new Set<string>();
     watchEffect(() => {
       for (const orphanId of routerOutput.value.orphanLinkIds) {
-        emit('link-orphan', orphanId);
+        emitToBoth('link-orphan', orphanId);
         if (!warnedOrphanIds.has(orphanId)) {
           warnedOrphanIds.add(orphanId);
           console.warn(
@@ -867,28 +893,28 @@ export const ChronixGantt = defineComponent({
       selectAllow: () => props.selectAllow,
       eventOverlap: () => props.eventOverlap,
       eventConstraint: () => props.eventConstraint,
-      onBarDrop: (p) => emit('bar-drop', p),
-      onBarResize: (p) => emit('bar-resize', p),
-      onSelect: (p) => emit('select', p),
-      onBarProgress: (p) => emit('bar-progress', p),
-      onBarDropRejected: (p) => emit('bar-drop-rejected', p),
-      onBarResizeRejected: (p) => emit('bar-resize-rejected', p),
-      onSelectRejected: (p) => emit('select-rejected', p),
+      onBarDrop: (p) => emitToBoth('bar-drop', p),
+      onBarResize: (p) => emitToBoth('bar-resize', p),
+      onSelect: (p) => emitToBoth('select', p),
+      onBarProgress: (p) => emitToBoth('bar-progress', p),
+      onBarDropRejected: (p) => emitToBoth('bar-drop-rejected', p),
+      onBarResizeRejected: (p) => emitToBoth('bar-resize-rejected', p),
+      onSelectRejected: (p) => emitToBoth('select-rejected', p),
       onBarDragStart: ({ barId }) => {
         const payload = buildDragPayload(barId);
-        if (payload) emit('bar-dragstart', payload);
+        if (payload) emitToBoth('bar-dragstart', payload);
       },
       onBarDragStop: ({ barId }) => {
         const payload = buildDragPayload(barId);
-        if (payload) emit('bar-dragstop', payload);
+        if (payload) emitToBoth('bar-dragstop', payload);
       },
       onBarResizeStart: ({ barId, edge }) => {
         const payload = buildDragPayload(barId);
-        if (payload) emit('bar-resizestart', { ...payload, edge });
+        if (payload) emitToBoth('bar-resizestart', { ...payload, edge });
       },
       onBarResizeStop: ({ barId, edge }) => {
         const payload = buildDragPayload(barId);
-        if (payload) emit('bar-resizestop', { ...payload, edge });
+        if (payload) emitToBoth('bar-resizestop', { ...payload, edge });
       },
     });
 
@@ -1053,10 +1079,10 @@ export const ChronixGantt = defineComponent({
         if (hit.kind === 'bar-body') {
           const sourceBar = props.bars.find((b) => b.id === hit.barId);
           if (sourceBar) {
-            emit('bar-click', { barId: hit.barId, sourceBar, jsEvent: e });
+            emitToBoth('bar-click', { barId: hit.barId, sourceBar, jsEvent: e });
           }
         } else if (hit.kind === 'empty-row') {
-          emit('empty-area-click', { rowId: hit.rowId, jsEvent: e });
+          emitToBoth('empty-area-click', { rowId: hit.rowId, jsEvent: e });
         }
       }
       bodySvgRef.value?.releasePointerCapture?.(e.pointerId);
@@ -1074,6 +1100,156 @@ export const ChronixGantt = defineComponent({
       pointer.abort();
       bodySvgRef.value?.releasePointerCapture?.(e.pointerId);
     }
+
+    // Phase 24: imperative handle. Compute-and-emit pathway — `next()` /
+    // `prev()` / `changeView()` / etc. all emit `update:axisInput` with
+    // the new shape so the consumer's `v-model:axis-input` round-trips.
+    // Same channel as the Phase 22 toolbar; no internal state.
+    //
+    // `scrollToDate` is the documented exception: writes
+    // `wrapperRef.scrollLeft` directly using the current axis to map
+    // `date` → x. Pure DOM side-effect.
+    //
+    // `subscribe` registers into `listenerRegistry`; `emitToBoth` (defined
+    // at the top of setup) notifies every listener registered for that
+    // event alongside Vue's emit. Returns an unsubscribe function.
+    //
+    // `getBarTable` / `getRowDataSource` / `getLinkTable` are typed-only
+    // since Phase 4 but were never wired by any adapter. Phase 24 ships
+    // minimal wrappers around the reactive props so the handle interface
+    // is honored. Tables read live from `props.{bars,rows,links}` —
+    // values reflect the latest reactive snapshot each call.
+    const barTable: BarTable = {
+      get bars() {
+        return props.bars;
+      },
+      get inFlightTransaction() {
+        return pointer.activeTransaction.value;
+      },
+      getById: (id: string): BarSpec | undefined => props.bars.find((b) => b.id === id),
+      listByRow: (rowId: string): readonly BarSpec[] =>
+        props.bars
+          .filter((b) => b.rowId === rowId)
+          .slice()
+          .sort((a, b) => a.range.start.getTime() - b.range.start.getTime()),
+      listInRange: (range: TimeRange): readonly BarSpec[] =>
+        props.bars
+          .filter(
+            (b) =>
+              b.range.start.getTime() < range.end.getTime() &&
+              b.range.end.getTime() > range.start.getTime(),
+          )
+          .slice()
+          .sort((a, b) => a.range.start.getTime() - b.range.start.getTime()),
+    };
+    const rowDataSource: RowDataSource = {
+      get rows() {
+        return props.rows;
+      },
+      getById: (id: string): RowSpec | undefined => props.rows.find((r) => r.id === id),
+      listChildren: (parentId: string | null): readonly RowSpec[] =>
+        props.rows.filter((r) => (r.parentId ?? null) === parentId),
+      // No expand/collapse state in v0 — every row is always expanded.
+      // When tree-collapse lands (deferred per PARITY_RECHECK), this
+      // becomes reactive.
+      isExpanded: (): boolean => true,
+    };
+    const linkTable: LinkTable = {
+      get links() {
+        return props.links;
+      },
+      getById: (id: string): LinkSpec | undefined => props.links.find((l) => l.id === id),
+      listFrom: (fromBarId: string): readonly LinkSpec[] =>
+        props.links.filter((l) => l.fromBarId === fromBarId),
+      listTo: (toBarId: string): readonly LinkSpec[] =>
+        props.links.filter((l) => l.toBarId === toBarId),
+    };
+
+    function scrollToDateImpl(date: Date): void {
+      const a = axis.value;
+      const axisStartMs = a.ticks[0]?.time.getTime() ?? 0;
+      const pxPerMs = a.slotWidth / a.slotDurationMs;
+      const x = pxPerMs * (date.getTime() - axisStartMs);
+      const wrapper = wrapperRef.value;
+      if (wrapper) wrapper.scrollLeft = x;
+    }
+
+    const handle: GanttHandle = {
+      changeView(viewId: ViewId): void {
+        emitToBoth('update:axisInput', { ...props.axisInput, viewId });
+      },
+      prev(): void {
+        const current = props.axisInput;
+        emitToBoth('update:axisInput', {
+          ...current,
+          anchorDate: prevAnchor(current.viewId, current.anchorDate),
+        });
+      },
+      next(): void {
+        const current = props.axisInput;
+        emitToBoth('update:axisInput', {
+          ...current,
+          anchorDate: nextAnchor(current.viewId, current.anchorDate),
+        });
+      },
+      today(): void {
+        emitToBoth('update:axisInput', { ...props.axisInput, anchorDate: todayAnchor() });
+      },
+      gotoDate(date: Date): void {
+        emitToBoth('update:axisInput', { ...props.axisInput, anchorDate: date });
+      },
+      incrementDate(delta: IncrementDelta): void {
+        const current = props.axisInput;
+        emitToBoth('update:axisInput', {
+          ...current,
+          anchorDate: applyIncrement(current.anchorDate, delta),
+        });
+      },
+      getDate(): Date {
+        return props.axisInput.anchorDate;
+      },
+      zoomTo(date: Date, viewId?: ViewId): void {
+        emitToBoth('update:axisInput', {
+          ...props.axisInput,
+          anchorDate: date,
+          viewId: viewId ?? props.axisInput.viewId,
+        });
+      },
+      scrollToDate(date: Date): void {
+        scrollToDateImpl(date);
+      },
+      getBarById(id: string): BarSpec | undefined {
+        return props.bars.find((b) => b.id === id);
+      },
+      getBars(): readonly BarSpec[] {
+        return props.bars;
+      },
+      getBarTable(): BarTable {
+        return barTable;
+      },
+      getRowDataSource(): RowDataSource {
+        return rowDataSource;
+      },
+      getLinkTable(): LinkTable {
+        return linkTable;
+      },
+      subscribe<K extends keyof GanttEventMap>(
+        event: K,
+        listener: (payload: GanttEventMap[K]) => void,
+      ): () => void {
+        const key = String(event);
+        const existing = listenerRegistry.get(key);
+        const set = existing ?? new Set<EmitListener>();
+        if (!existing) listenerRegistry.set(key, set);
+        const typedListener = listener as EmitListener;
+        set.add(typedListener);
+        return () => {
+          set.delete(typedListener);
+          if (set.size === 0) listenerRegistry.delete(key);
+        };
+      },
+    };
+    expose(handle);
 
     return () => {
       const a = axis.value;

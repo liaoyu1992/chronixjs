@@ -1,5 +1,6 @@
 import type { BarSpec, LinkSpec, RowSpec, TimeRange } from '../ir/index.js';
 import type { SlotTemplate } from '../render/index.js';
+import type { AxisRangePlanInput } from '../layout/types.js';
 
 /** Payload for the `bar-drop` event — fired after a `BarDragTransaction` commits. */
 export interface BarDropPayload {
@@ -60,6 +61,15 @@ export interface GanttEventMap {
   select: SelectPayload;
   'view-change': ViewChangePayload;
   'bars-set': BarsSetPayload;
+  /**
+   * Phase 22 toolbar + Phase 24 imperative handle: the canonical
+   * controlled-prop emit. Toolbar widget clicks AND
+   * `handle.{prev,next,today,gotoDate,incrementDate,changeView,zoomTo}`
+   * all funnel through this channel. Consumer wires `v-model:axis-input`
+   * to round-trip into a new render. Subscribers via `handle.subscribe`
+   * receive the same payload the prop binding does.
+   */
+  'update:axisInput': AxisRangePlanInput;
 }
 
 /**
