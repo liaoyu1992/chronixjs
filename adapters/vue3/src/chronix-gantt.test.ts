@@ -2504,6 +2504,78 @@ describe('<ChronixGantt> — Phase 21 todayLine', () => {
   });
 });
 
+describe('Phase 22.2 todayCellBg', () => {
+  it('renders no today-cell rect when prop is false (default)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput },
+    });
+    expect(wrapper.find('rect.cx-gantt-today-cell').exists()).toBe(false);
+  });
+
+  it('renders today-cell rects in BOTH body + header SVG when todayCellBg is true', () => {
+    const todayAxisInput: AxisRangePlanInput = {
+      ...axisInput,
+      anchorDate: new Date(),
+    };
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput: todayAxisInput, todayCellBg: true },
+    });
+    const bodyCell = wrapper.find('rect.cx-gantt-today-cell[data-today-cell-side="body"]');
+    const headerCell = wrapper.find('rect.cx-gantt-today-cell[data-today-cell-side="header"]');
+    expect(bodyCell.exists()).toBe(true);
+    expect(headerCell.exists()).toBe(true);
+  });
+
+  it('honors TodayCellBgOption.color prop override (overrides theme default)', () => {
+    const todayAxisInput: AxisRangePlanInput = { ...axisInput, anchorDate: new Date() };
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput: todayAxisInput,
+        todayCellBg: { color: 'rgba(100, 200, 50, 0.4)' },
+      },
+    });
+    const bodyCell = wrapper.find('rect.cx-gantt-today-cell[data-today-cell-side="body"]');
+    expect(bodyCell.attributes('fill')).toBe('rgba(100, 200, 50, 0.4)');
+  });
+
+  it('falls back to theme.todayCellBgColor when color is unset', () => {
+    const todayAxisInput: AxisRangePlanInput = { ...axisInput, anchorDate: new Date() };
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [],
+        rows,
+        axisInput: todayAxisInput,
+        todayCellBg: {},
+        theme: { todayCellBgColor: 'rgba(50, 100, 200, 0.25)' },
+      },
+    });
+    const bodyCell = wrapper.find('rect.cx-gantt-today-cell[data-today-cell-side="body"]');
+    expect(bodyCell.attributes('fill')).toBe('rgba(50, 100, 200, 0.25)');
+  });
+
+  it('uses default theme color rgba(255, 220, 40, .15) when no overrides set', () => {
+    const todayAxisInput: AxisRangePlanInput = { ...axisInput, anchorDate: new Date() };
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput: todayAxisInput, todayCellBg: true },
+    });
+    const bodyCell = wrapper.find('rect.cx-gantt-today-cell[data-today-cell-side="body"]');
+    expect(bodyCell.attributes('fill')).toBe('rgba(255, 220, 40, .15)');
+  });
+
+  it('renders no rect when today is outside the axis range (far-past anchor)', () => {
+    const farPastAxisInput: AxisRangePlanInput = {
+      ...axisInput,
+      anchorDate: new Date(2020, 0, 1),
+    };
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput: farPastAxisInput, todayCellBg: true },
+    });
+    expect(wrapper.find('rect.cx-gantt-today-cell').exists()).toBe(false);
+  });
+});
+
 describe('Phase 22 toolbar', () => {
   const DEMO_TOOLBAR = {
     left: 'prev,next today',

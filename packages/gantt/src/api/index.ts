@@ -17,6 +17,7 @@ export type {
   GanttOptions,
   ProgressChangePayload,
   SelectPayload,
+  TodayCellBgOption,
   TodayLineOption,
   ViewChangePayload,
 } from './gantt-options.js';

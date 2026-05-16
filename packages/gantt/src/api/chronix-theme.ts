@@ -122,6 +122,17 @@ export interface ChronixTheme {
    */
   readonly todayLineTooltipBg: string;
 
+  // ----- Today cell background (Phase 22.2) -----
+  /**
+   * Fill color for the today-column background tint. A translucent
+   * rect spans the full chart height at today's day-slot position,
+   * rendered behind the bars + tick labels. Used when the per-prop
+   * `TodayCellBgOption.color` is unset. Default
+   * `'rgba(255, 220, 40, .15)'` matches the parity-reference's
+   * `--gantt-today-bg-color` CSS variable byte-for-byte.
+   */
+  readonly todayCellBgColor: string;
+
   // ----- Toolbar (Phase 22) -----
   /** `.cx-gantt-toolbar` background fill. */
   readonly toolbarBg: string;
@@ -195,6 +206,11 @@ export const defaultChronixTheme: ChronixTheme = {
   // tomato red so the no-prop-override render matches.
   todayLineColor: '#ff6b6b',
   todayLineTooltipBg: '#ff6b6b',
+
+  // Today cell bg — Phase 22.2. Soft yellow matching the parity-
+  // reference's `--gantt-today-bg-color` so the no-prop render is
+  // pixel-identical to the upstream demo's today-column tint.
+  todayCellBgColor: 'rgba(255, 220, 40, .15)',
 
   // Toolbar — Phase 22. Match the neutral grayscale palette the
   // surrounding chrome (sidebar, header band) already uses; active

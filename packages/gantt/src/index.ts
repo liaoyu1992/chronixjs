@@ -88,6 +88,7 @@ export type {
   ResolveBarStyleInput,
   SelectAllowFunc,
   SelectPayload,
+  TodayCellBgOption,
   TodayLineOption,
   ToolbarInput,
   ToolbarModel,

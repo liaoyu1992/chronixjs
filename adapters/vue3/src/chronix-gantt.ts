@@ -40,6 +40,7 @@ import type {
   SelectAllowFunc,
   SlotRegistry,
   TimeRange,
+  TodayCellBgOption,
   TodayLineOption,
   ToolbarInput,
   ToolbarModel,
@@ -545,6 +546,21 @@ export const ChronixGantt = defineComponent({
       default: false,
     },
     /**
+     * Phase 22.2: today-column background tint. `false` or omitted =
+     * hide (default); `true` = enable with all defaults (parity
+     * yellow `rgba(255, 220, 40, .15)` from theme); `{ color: '#abc' }`
+     * for per-mount override. See `TodayCellBgOption`.
+     *
+     * Renders a `<rect class="cx-gantt-today-cell">` in body + header
+     * SVGs spanning today's one-day slot. Pixel-aligned with the bars
+     * (reuses the same `(t - axisStart) × pxPerMs` math). Behind the
+     * bars + tick labels so they remain readable on top.
+     */
+    todayCellBg: {
+      type: [Boolean, Object] as PropType<TodayCellBgOption | boolean>,
+      default: false,
+    },
+    /**
      * Phase 22: toolbar config. Accepts the k-ui-parity string DSL
      * (`{ left, center, right }` / `{ start, center, end }`) or
      * `false` (default) to hide the toolbar entirely.
@@ -726,6 +742,53 @@ export const ChronixGantt = defineComponent({
         dasharray,
         tooltip: config.tooltip ?? '今日',
       };
+    });
+
+    /**
+     * Phase 22.2: resolved today-cell background tint state. Returns
+     * `null` when the prop is `false` / omitted, or when today's
+     * day-slot doesn't intersect the axis range (week showing a
+     * different week, today filtered by `weekendsVisible=false`, etc).
+     *
+     * Cell start is today's local midnight (NOT `Date.now()` — the
+     * tint spans the entire calendar day regardless of the current
+     * minute). Width is `MS_PER_DAY × pxPerMs` so it covers exactly
+     * one day-slot in every view (day-view = full chart width;
+     * week/month/season/halfYear/year = one slot).
+     *
+     * Clamped to axis bounds (`x ∈ [0, totalWidth]`) so the rect
+     * never bleeds outside the chart edges even when today straddles
+     * the visible-range boundary.
+     */
+    const resolvedTodayCellBg = computed<{
+      x: number;
+      width: number;
+      color: string;
+    } | null>(() => {
+      const opt = props.todayCellBg;
+      if (opt === false || opt === undefined) return null;
+      const config: TodayCellBgOption = opt === true ? {} : opt;
+
+      const a = axis.value;
+      if (a.ticks.length === 0) return null;
+      const axisStartMs = a.ticks[0]!.time.getTime();
+      const pxPerMs = a.slotWidth / a.slotDurationMs;
+      const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+      const tm = new Date();
+      tm.setHours(0, 0, 0, 0);
+      const todayMidnightMs = tm.getTime();
+      const cellStartX = (todayMidnightMs - axisStartMs) * pxPerMs;
+      const cellWidth = MS_PER_DAY * pxPerMs;
+
+      if (cellStartX + cellWidth <= 0 || cellStartX >= a.totalWidth) return null;
+
+      const x = Math.max(0, cellStartX);
+      const width = Math.min(cellStartX + cellWidth, a.totalWidth) - x;
+
+      const t = theme.value;
+      const color = config.color ?? t.todayCellBgColor;
+      return { x, width, color };
     });
 
     // Route dependency links through the layout pass. Re-derives when
@@ -1130,6 +1193,28 @@ export const ChronixGantt = defineComponent({
       // text-measurement step). `pointer-events: none` on both line
       // and tooltip so they don't intercept clicks on header tick
       // labels underneath.
+      // Phase 22.2: today-cell tint also paints across the header
+      // band so the column reads as a single tinted strip through
+      // both header and body. Same x/width as the body-side rect;
+      // height covers the entire header band (header rows + axis
+      // tick row). Inserted into the header SVG AFTER `headerRows`
+      // (so cell-band backgrounds for outer months / weeks paint
+      // first) but BEFORE the axis tick labels (so labels render
+      // legibly on top of the tint).
+      const todayCellHeaderNode =
+        resolvedTodayCellBg.value !== null
+          ? h('rect', {
+              class: 'cx-gantt-today-cell',
+              'data-today-cell-side': 'header',
+              x: resolvedTodayCellBg.value.x,
+              y: 0,
+              width: resolvedTodayCellBg.value.width,
+              height: totalHeaderBandHeight,
+              fill: resolvedTodayCellBg.value.color,
+              'pointer-events': 'none',
+            })
+          : null;
+
       const headerExtras: ReturnType<typeof h>[] = [];
       if (resolvedTodayLine.value !== null) {
         const tl = resolvedTodayLine.value;
@@ -1207,6 +1292,7 @@ export const ChronixGantt = defineComponent({
         },
         [
           h('g', { class: 'cx-gantt-header-rows' }, headerRowChildren),
+          ...(todayCellHeaderNode ? [todayCellHeaderNode] : []),
           h(
             'g',
             {
@@ -1508,6 +1594,24 @@ export const ChronixGantt = defineComponent({
         }
       }
 
+      // Phase 22.2: today-cell background tint, deepest layer in the
+      // body SVG (z-order behind everything except the chart bg fill).
+      // Bars + links + today-line all paint on top so visual contrast
+      // is preserved.
+      const todayCellBodyNode =
+        resolvedTodayCellBg.value !== null
+          ? h('rect', {
+              class: 'cx-gantt-today-cell',
+              'data-today-cell-side': 'body',
+              x: resolvedTodayCellBg.value.x,
+              y: 0,
+              width: resolvedTodayCellBg.value.width,
+              height: bodyHeight,
+              fill: resolvedTodayCellBg.value.color,
+              'pointer-events': 'none',
+            })
+          : null;
+
       // Phase 21: today-line under bars. Drawn BEFORE the bars group so
       // bars paint on top (matches parity-reference behavior where the
       // line sits below bar bodies but above the bg). Tooltip widget
@@ -1550,6 +1654,7 @@ export const ChronixGantt = defineComponent({
         },
         [
           h('defs', { class: 'cx-gantt-defs' }, defsChildren),
+          ...(todayCellBodyNode ? [todayCellBodyNode] : []),
           ...(todayLineBodyNode ? [todayLineBodyNode] : []),
           h('g', { class: 'cx-gantt-bars' }, barChildren),
           h('g', { class: 'cx-gantt-links', 'pointer-events': 'none' }, linkPathNodes),
