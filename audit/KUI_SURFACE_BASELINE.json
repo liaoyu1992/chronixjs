@@ -350,6 +350,8 @@
       ".gantt-bg-event",
       ".gantt-non-business",
       ".gantt-day-today",
+      ".gantt-today-highlight",
+      ".gantt-timeline-header-cell-today",
       ".gantt-now-indicator-line",
       ".gantt-day-disabled",
       ".gantt-day-past",

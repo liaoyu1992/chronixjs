@@ -7,6 +7,7 @@ import type {
   EventConstraint,
   EventOverlapFunc,
   SelectAllowFunc,
+  TodayCellBgOption,
   TodayLineOption,
 } from '@chronixjs/gantt';
 import { ChronixGantt, useGanttSelection } from '@chronixjs/gantt-vue3';
@@ -75,11 +76,13 @@ const DEMO_SCHEMA = {
   themedBars: bool(false, 'Override bar bg + border via component props'),
   umbrellaColor: bool(false, 'Use barColor umbrella prop (sets both fill + stroke)'),
   priorityCallback: bool(false, 'Per-priority bar background callback (high/medium/low)'),
-  // Phase 21 today line
+  // Phase 21 today line (default ON Phase 22.2, matching parity-reference's visible default)
   todayLine: bool(
-    false,
+    true,
     'Show vertical today-line with k-ui defaults (red #ff6b6b, 2 px, dashed, 今日 tooltip)',
   ),
+  // Phase 22.2 today cell bg (default ON matching parity-reference's `todayBgColor`)
+  todayCellBg: bool(true, 'Show today-column background tint (rgba(255, 220, 40, .15))'),
 } as const;
 
 const cfg = useDemoConfig(DEMO_SCHEMA);
@@ -182,6 +185,16 @@ const activeBarBackgroundCallback = computed<BarColorFunc | undefined>(() => {
 const activeTodayLine = computed<TodayLineOption | false>(() => {
   if (cfg.parity.value) return {};
   if (cfg.todayLine.value) return {};
+  return false;
+});
+
+// Phase 22.2: parity mode auto-enables today-cell-bg so cross-demo
+// screenshots match the parity-reference's default visible state.
+// Standalone `?todayCellBg=true` flag still works for chronix-only
+// users to opt in without flipping the parity dataset.
+const activeTodayCellBg = computed<TodayCellBgOption | false>(() => {
+  if (cfg.parity.value) return {};
+  if (cfg.todayCellBg.value) return {};
   return false;
 });
 
@@ -415,6 +428,7 @@ function resetBars(): void {
           :bar-border-color="activeBarBorderColor"
           :bar-background-color-callback="activeBarBackgroundCallback"
           :today-line="activeTodayLine"
+          :today-cell-bg="activeTodayCellBg"
           :header-toolbar="HEADER_TOOLBAR"
           @update:axis-input="onUpdateAxisInput"
           @bar-drop="onBarDrop"

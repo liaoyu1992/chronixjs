@@ -20,6 +20,7 @@ import {
   REF_ATTR_NAMES,
   RESOURCE_ROW,
   TIMELINE_BODY_WRAPPER,
+  TODAY_CELL_BODY,
   TODAY_LINE,
 } from '../src/reference-dom-map.js';
 
@@ -731,6 +732,85 @@ test.describe('cross-demo parity (Phase 17 helper)', () => {
         `Phase 21 todayLine x parity: kui=${kuiX!.toFixed(2)} chronix=${chronixX!.toFixed(2)} Δ=${delta.toFixed(2)}px`,
       );
       expect(delta, 'todayLine x mismatch > 1 px').toBeLessThanOrEqual(1);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('todayCellBg x-coordinate + width parity across both rendered demos (Phase 22.2)', async ({
+    browser,
+  }) => {
+    // Both demos render today-cell-bg by default in parity mode:
+    // - reference demo: `todayBgColor: 'rgba(255, 220, 40, .15)'` wired
+    //   in demo schedulerOptions; applied via .gantt-day-today CSS class
+    //   on today's day-header cell
+    // - chronix demo: parity flag flips activeTodayCellBg to `{}` so
+    //   the <rect class="cx-gantt-today-cell"> renders with theme
+    //   default color (same rgba). Cell start x + width should match
+    //   (within 1 px) on body-side. Week view chosen because today is
+    //   a single day-slot (distinct from day-view where today IS the
+    //   whole chart and width=totalWidth).
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'today-cell-bg-cross-demo',
+      viewId: 'week',
+    });
+    try {
+      // Reference: `.gantt-day-today` is the marker class. Look for
+      // the body-side day-cell (NOT the header text cell — body cell
+      // covers the column span we care about). The wrapper rect's
+      // `left` minus body-wrapper `left` gives wrapper-relative x;
+      // `width` is the cell width.
+      const kuiCellRect = await kuiPage.evaluate(
+        ({ bodyWrapperSel, cellSel }) => {
+          // k-ui paints ONE `.gantt-today-highlight` rect PER
+          // hourly slot of today PER row (24 rects per row in
+          // week view). Chronix paints ONE rect spanning the
+          // whole day. Compare the union extent: minimum left +
+          // maximum right across all kui rects gives the visible
+          // today-DAY span comparable to chronix's single-rect
+          // bbox.
+          const body = document.querySelector(bodyWrapperSel);
+          if (!body) return null;
+          const rects = body.querySelectorAll(cellSel);
+          if (rects.length === 0) return null;
+          let minLeft = Number.POSITIVE_INFINITY;
+          let maxRight = Number.NEGATIVE_INFINITY;
+          rects.forEach((r) => {
+            const bb = r.getBoundingClientRect();
+            if (bb.left < minLeft) minLeft = bb.left;
+            if (bb.right > maxRight) maxRight = bb.right;
+          });
+          const br = body.getBoundingClientRect();
+          return { x: minLeft - br.left, width: maxRight - minLeft };
+        },
+        { bodyWrapperSel: TIMELINE_BODY_WRAPPER, cellSel: TODAY_CELL_BODY },
+      );
+      // Chronix: read x + width attrs from the body-side rect.
+      const chronixCellRect = await chronixPage.evaluate(() => {
+        const rect = document.querySelector(
+          'rect.cx-gantt-today-cell[data-today-cell-side="body"]',
+        );
+        if (!rect) return null;
+        const x = rect.getAttribute('x');
+        const width = rect.getAttribute('width');
+        return x !== null && width !== null
+          ? { x: Number.parseFloat(x), width: Number.parseFloat(width) }
+          : null;
+      });
+
+      expect(kuiCellRect, 'reference demo today-cell missing').not.toBeNull();
+      expect(chronixCellRect, 'chronix demo today-cell missing').not.toBeNull();
+      const xDelta = Math.abs(kuiCellRect!.x - chronixCellRect!.x);
+      const widthDelta = Math.abs(kuiCellRect!.width - chronixCellRect!.width);
+      console.warn(
+        `Phase 22.2 todayCellBg parity (week view): ` +
+          `kui x=${kuiCellRect!.x.toFixed(2)} w=${kuiCellRect!.width.toFixed(2)} ` +
+          `chronix x=${chronixCellRect!.x.toFixed(2)} w=${chronixCellRect!.width.toFixed(2)} ` +
+          `Δx=${xDelta.toFixed(2)} Δw=${widthDelta.toFixed(2)}`,
+      );
+      expect(xDelta, 'today-cell x mismatch > 1 px').toBeLessThanOrEqual(1);
+      expect(widthDelta, 'today-cell width mismatch > 1 px').toBeLessThanOrEqual(1);
     } finally {
       await kuiPage.context().close();
       await chronixPage.context().close();

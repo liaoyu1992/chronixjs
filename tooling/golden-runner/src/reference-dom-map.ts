@@ -88,6 +88,32 @@ export const progressTriangleByInstance = (instanceId: string): string =>
  */
 export const TODAY_LINE = '.gantt-timeline-today-line';
 
+/**
+ * Phase 22.2: today-column background tint (parity-reference's
+ * `todayBgColor` / `--gantt-today-bg-color` CSS variable). The
+ * reference emits TWO distinct elements (different render passes):
+ *
+ * - **Body-side**: `<rect class="gantt-today-highlight">` inside the
+ *   timeline body SVG layer (`GanttView.tsx:952-961`). One rect per
+ *   visible slot row when `options.fillTodaySlotHighlight` is true.
+ *   Position: `(x, y, slotWidth, segmentHeight)` per slot.
+ * - **Header-side**: `<rect class="gantt-timeline-header-cell-today">`
+ *   inside the header SVG layer (`GanttView.tsx:527-535`). One per
+ *   today-spanning header cell across all header rows.
+ *
+ * Chronix's equivalent is a single `<rect class="cx-gantt-today-cell"
+ * data-today-cell-side='body|header'>` rect per side spanning today's
+ * full one-day slot (vs k-ui's per-row stack). The cross-demo parity
+ * assertion compares the FIRST body-side rect on each side for x +
+ * width.
+ *
+ * NOT to be confused with `.gantt-day-today`, which is a different
+ * CSS class for month-view day cells (`date-rendering.ts:40`); not
+ * present in timeline views the chronix demo exercises.
+ */
+export const TODAY_CELL_BODY = '.gantt-today-highlight';
+export const TODAY_CELL_HEADER = '.gantt-timeline-header-cell-today';
+
 /** Start-edge resize handle (drags the bar's left edge). */
 export const RESIZER_START = '.gantt-event-resizer-start';
 
