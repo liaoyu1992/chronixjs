@@ -268,6 +268,16 @@ function markerEndUrl(marker: LinkMarker | CustomLinkMarker, color: string): str
 }
 
 /**
+ * Phase 27: continuation triangle geometry. `TRIANGLE_SIZE` is the
+ * half-base (so total base height is 12px; apex-to-base distance is
+ * 6px). `TRIANGLE_MARGIN` insets the apex from the bar's edge so the
+ * triangle sits inside the bar body rather than flush with the edge.
+ * Match the parity reference's geometry verbatim for visual parity.
+ */
+const TRIANGLE_SIZE = 6;
+const TRIANGLE_MARGIN = 1;
+
+/**
  * Phase 26: snap a horizontal grid line's y coordinate to the device
  * pixel grid so a 1-px stroke renders as a single device row at any
  * `devicePixelRatio` (100% / 125% / 150% OS scaling) and any
@@ -1657,6 +1667,56 @@ export const ChronixGantt = defineComponent({
             }),
           );
         }
+
+        // Phase 27: continuation indicators. A left-pointing triangle
+        // when the bar's `range.start` falls before the axis range
+        // (`!bar.isStart`); a right-pointing triangle when the bar's
+        // `range.end` falls past the axis range (`!bar.isEnd`). Both
+        // flags come from `BarPlacementPass.place`. Inserted between
+        // the bar's main rect (default or custom-slot output) and the
+        // progress fill/handle so paint order reads
+        // rect → triangles → progress fill → progress handle →
+        // progress label, matching the parity reference.
+        //
+        // Geometry: apex is `TRIANGLE_MARGIN` inside the bar's edge;
+        // base extends `TRIANGLE_SIZE` further inward; vertical span
+        // is `2 × TRIANGLE_SIZE` centered on the bar's mid-line.
+        // `pointer-events: none` so triangles never intercept clicks
+        // on the bar body underneath. `opacity: 0.8` matches the
+        // parity reference's translucent-black indicator convention.
+        if (!bar.isStart) {
+          const apexX = renderX + TRIANGLE_MARGIN;
+          const baseX = renderX + TRIANGLE_MARGIN + TRIANGLE_SIZE;
+          const centerY = renderY + bar.height / 2;
+          nodes.push(
+            h('polygon', {
+              key: `${bar.barId}-continuation-left`,
+              'data-bar-id': bar.barId,
+              class: 'cx-gantt-bar-continuation-indicator cx-gantt-bar-continuation-left',
+              points: `${apexX},${centerY} ${baseX},${centerY - TRIANGLE_SIZE} ${baseX},${centerY + TRIANGLE_SIZE}`,
+              fill: '#000',
+              opacity: 0.8,
+              'pointer-events': 'none',
+            }),
+          );
+        }
+        if (!bar.isEnd) {
+          const apexX = renderX + renderWidth - TRIANGLE_MARGIN;
+          const baseX = renderX + renderWidth - TRIANGLE_MARGIN - TRIANGLE_SIZE;
+          const centerY = renderY + bar.height / 2;
+          nodes.push(
+            h('polygon', {
+              key: `${bar.barId}-continuation-right`,
+              'data-bar-id': bar.barId,
+              class: 'cx-gantt-bar-continuation-indicator cx-gantt-bar-continuation-right',
+              points: `${apexX},${centerY} ${baseX},${centerY - TRIANGLE_SIZE} ${baseX},${centerY + TRIANGLE_SIZE}`,
+              fill: '#000',
+              opacity: 0.8,
+              'pointer-events': 'none',
+            }),
+          );
+        }
+
         // Progress fill + handle: only for bars that declared BOTH
         // `progress` AND `pointerOverlayId`. Progress fill is a
         // translucent overlay from bar start to the progress-x; the

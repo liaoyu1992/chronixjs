@@ -54,7 +54,9 @@ const strips: readonly SwimlaneStrip[] = [
 ];
 
 // Bar at content x=480..720 (hour 8..12) on row r1 with height 30 inside strip 0.
-const placedBars: readonly PlacedBar[] = [{ barId: 'b1', x: 480, y: 8, width: 240, height: 30 }];
+const placedBars: readonly PlacedBar[] = [
+  { barId: 'b1', x: 480, y: 8, width: 240, height: 30, isStart: true, isEnd: true },
+];
 
 const barRanges = new Map<string, TimeRange>([
   [
@@ -582,7 +584,7 @@ describe('useGanttPointer — cross-row drag (Phase 9)', () => {
     { rowId: 'r2', y: 40, height: 40 },
   ];
   const placedBarsForCrossRow: readonly PlacedBar[] = [
-    { barId: 'b1', x: 480, y: 8, width: 240, height: 30 },
+    { barId: 'b1', x: 480, y: 8, width: 240, height: 30, isStart: true, isEnd: true },
   ];
   const barRowIds = new Map<string, string>([['b1', 'r1']]);
 
