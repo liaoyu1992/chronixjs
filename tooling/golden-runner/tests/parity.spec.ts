@@ -1254,4 +1254,196 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       await chronixPage.context().close();
     }
   });
+
+  test('phase24-handle.next() — toolbar title changes equivalently on both sides', async ({
+    browser,
+  }) => {
+    // Both demos expose hidden test buttons at
+    // [data-test-handle-method='next']. Clicking invokes
+    // chronix's `handle.next()` (compute-and-emit via
+    // update:axisInput) and k-ui's `api.next()` (dispatch CHANGE_DATE).
+    // After click, both toolbars must show a title text DIFFERENT from
+    // the pre-click title — confirming the chart re-rendered at a new
+    // anchor. Exact format equality is parked per Phase 22 disposition;
+    // what we assert is "before ≠ after on each side, both sides
+    // observed the change".
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase24-handle-next-parity',
+      viewId: 'week',
+    });
+    try {
+      const beforeKui = (await extractToolbarSnapshot('kui', kuiPage)).find(
+        (w) => w.kind === 'title',
+      )!.text;
+      const beforeChronix = (await extractToolbarSnapshot('chronix', chronixPage)).find(
+        (w) => w.kind === 'title',
+      )!.text;
+
+      await kuiPage.click("[data-test-handle-method='next']");
+      await chronixPage.click("[data-test-handle-method='next']");
+      // Give the reactive cycle a frame to settle.
+      await kuiPage.waitForTimeout(50);
+      await chronixPage.waitForTimeout(50);
+
+      const afterKui = (await extractToolbarSnapshot('kui', kuiPage)).find(
+        (w) => w.kind === 'title',
+      )!.text;
+      const afterChronix = (await extractToolbarSnapshot('chronix', chronixPage)).find(
+        (w) => w.kind === 'title',
+      )!.text;
+
+      console.warn(
+        `Phase 24 handle.next title shift: kui '${beforeKui}'→'${afterKui}' ` +
+          `chronix '${beforeChronix}'→'${afterChronix}'`,
+      );
+
+      expect(afterKui, 'reference title did not change after api.next()').not.toBe(beforeKui);
+      expect(afterChronix, 'chronix title did not change after handle.next()').not.toBe(
+        beforeChronix,
+      );
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase24-handle.changeView(month) — month button pressed on both sides afterward', async ({
+    browser,
+  }) => {
+    // After clicking the changeView-month test button, both toolbars
+    // should reflect the new viewId — `aria-pressed='true'` on the
+    // `month` widget, all other view widgets unpressed. Same widget-set
+    // / pressed-state mechanism as the Phase 22 toolbar-active-button
+    // assertion, just invoked via imperative handle instead of toolbar
+    // click.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase24-handle-changeView-parity',
+      viewId: 'week',
+    });
+    try {
+      await kuiPage.click("[data-test-handle-method='changeView-month']");
+      await chronixPage.click("[data-test-handle-method='changeView-month']");
+      await kuiPage.waitForTimeout(50);
+      await chronixPage.waitForTimeout(50);
+
+      const kuiSnap = await extractToolbarSnapshot('kui', kuiPage);
+      const chronixSnap = await extractToolbarSnapshot('chronix', chronixPage);
+      const kuiPressed = kuiSnap.filter((w) => w.isPressed).map((w) => w.id);
+      const chronixPressed = chronixSnap.filter((w) => w.isPressed).map((w) => w.id);
+
+      console.warn(
+        `Phase 24 handle.changeView('month') pressed: kui=[${kuiPressed.join(',')}] ` +
+          `chronix=[${chronixPressed.join(',')}]`,
+      );
+
+      expect(kuiPressed).toEqual(['month']);
+      expect(chronixPressed).toEqual(['month']);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase24-handle.today() — title resets to a today-shaped value on both sides', async ({
+    browser,
+  }) => {
+    // `today()` always sets the anchor to local-midnight today, so
+    // calling it twice produces the same title. Drive the title to a
+    // non-today value first (via next()), then click today(), and
+    // assert both sides converged back to a non-empty title containing
+    // the current year — gives us a deterministic post-click signal
+    // without coupling to the exact format.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase24-handle-today-parity',
+      viewId: 'week',
+    });
+    try {
+      // Step the anchor away from today.
+      await kuiPage.click("[data-test-handle-method='next']");
+      await chronixPage.click("[data-test-handle-method='next']");
+      await kuiPage.waitForTimeout(50);
+      await chronixPage.waitForTimeout(50);
+
+      // Reset.
+      await kuiPage.click("[data-test-handle-method='today']");
+      await chronixPage.click("[data-test-handle-method='today']");
+      await kuiPage.waitForTimeout(50);
+      await chronixPage.waitForTimeout(50);
+
+      const kuiTitle = (await extractToolbarSnapshot('kui', kuiPage)).find(
+        (w) => w.kind === 'title',
+      )!.text;
+      const chronixTitle = (await extractToolbarSnapshot('chronix', chronixPage)).find(
+        (w) => w.kind === 'title',
+      )!.text;
+      const currentYear = String(new Date().getFullYear());
+
+      console.warn(
+        `Phase 24 handle.today() titles: kui='${kuiTitle}' chronix='${chronixTitle}' ` +
+          `(expecting both to contain '${currentYear}')`,
+      );
+
+      expect(kuiTitle).toContain(currentYear);
+      expect(chronixTitle).toContain(currentYear);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase24-handle.scrollToDate — scrollLeft of chart wrapper becomes non-zero on both sides', async ({
+    browser,
+  }) => {
+    // chronix scrollToDate(anchor+1d) and k-ui scrollToTime({ days: 1 })
+    // both ask the chart wrapper to scroll. With the demo anchor at
+    // today and view=week the target lands well inside the rendered
+    // axis; both wrappers should end up with a positive scrollLeft.
+    // We don't compare absolute scroll values across demos (different
+    // viewport widths, different wrapper-element selectors, slightly
+    // different axis math), only that BOTH moved.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase24-handle-scrollToDate-parity',
+      viewId: 'week',
+    });
+    try {
+      await kuiPage.click("[data-test-handle-method='scrollToDate']");
+      await chronixPage.click("[data-test-handle-method='scrollToDate']");
+      await kuiPage.waitForTimeout(50);
+      await chronixPage.waitForTimeout(50);
+
+      const kuiScrollLeft = await kuiPage.evaluate(() => {
+        // k-ui's chart body scroll container — fall through known
+        // class options to stay resilient to internal restructuring.
+        const candidates = [
+          '.gantt-timeline-body-right',
+          '.gantt-scroller-harness',
+          '.gantt-scroller',
+        ];
+        for (const sel of candidates) {
+          const el = document.querySelector<HTMLElement>(sel);
+          if (el && el.scrollLeft > 0) return el.scrollLeft;
+        }
+        return 0;
+      });
+      const chronixScrollLeft = await chronixPage.evaluate(() => {
+        const wrap = document.querySelector<HTMLElement>('.cx-gantt-wrapper');
+        return wrap?.scrollLeft ?? 0;
+      });
+
+      console.warn(
+        `Phase 24 handle.scrollToDate scrollLeft: kui=${kuiScrollLeft} chronix=${chronixScrollLeft}`,
+      );
+
+      expect(kuiScrollLeft, 'reference wrapper did not scroll on api.scrollToTime').toBeGreaterThan(
+        0,
+      );
+      expect(
+        chronixScrollLeft,
+        'chronix wrapper did not scroll on handle.scrollToDate',
+      ).toBeGreaterThan(0);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
 });

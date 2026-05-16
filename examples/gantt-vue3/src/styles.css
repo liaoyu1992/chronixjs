@@ -333,3 +333,19 @@ body {
   padding-top: 8px;
   line-height: 1.5;
 }
+
+/*
+ * Phase 24: imperative-handle test-button bar. Positioned offscreen so
+ * Playwright can click via data-test-handle-method selector without the
+ * bar leaking into any captured VRT snapshot or into the demo's visible
+ * chrome. Buttons remain in document flow + interactive (NOT
+ * display:none which would block pointer events).
+ */
+.cx-demo-handle-test-bar {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

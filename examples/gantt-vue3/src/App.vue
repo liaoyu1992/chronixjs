@@ -6,6 +6,7 @@ import type {
   EventAllowFunc,
   EventConstraint,
   EventOverlapFunc,
+  GanttHandle,
   SelectAllowFunc,
   TodayCellBgOption,
   TodayLineOption,
@@ -204,6 +205,21 @@ const activeTodayCellBg = computed<TodayCellBgOption | false>(() => {
 // anchor-date URL persistence is deferred to a future i18n / date-
 // URL phase. Seeded at module-load with today's local midnight.
 const anchorDate = ref<Date>(todayLocalMidnight());
+
+// Phase 24: imperative-handle ref. Demo binds it via the `ref` template
+// attr below; the Phase-24 test-button bar invokes methods on it. The
+// chart re-renders via the normal `v-model:axis-input` round-trip
+// (compute-and-emit pathway documented in PHASE_24_IMPERATIVE_HANDLE_DESIGN).
+const ganttRef = ref<GanttHandle | null>(null);
+
+// Phase 24: fixed scroll target one day after the anchor — gives the
+// cross-demo parity assertion a deterministic destination that exists in
+// every view's axis window without depending on the live "today" date.
+function scrollTargetDate(): Date {
+  const t = new Date(anchorDate.value);
+  t.setDate(t.getDate() + 1);
+  return t;
+}
 
 const axisInput = computed<AxisRangePlanInput>(() => ({
   viewId: cfg.view.value,
@@ -411,6 +427,7 @@ function resetBars(): void {
       </header>
       <div class="cx-demo-svg-frame">
         <ChronixGantt
+          ref="ganttRef"
           :bars="bars"
           :rows="initialRows"
           :axis-input="axisInput"
@@ -445,6 +462,28 @@ function resetBars(): void {
           @bar-resize-rejected="onBarResizeRejected"
           @select-rejected="onSelectRejected"
         />
+      </div>
+      <!--
+        Phase 24: imperative-handle test-button bar. Positioned offscreen
+        (top: -9999px) so Playwright can click it without it leaking into
+        any captured VRT snapshot. Each button drives the chart via the
+        adapter's exposed `GanttHandle`; chart re-renders via the same
+        compute-and-emit pathway the toolbar uses. Cross-demo parity
+        assertions in tooling/golden-runner/tests/parity.spec.ts pair
+        these against equivalent buttons on the k-ui demo.
+      -->
+      <div class="cx-demo-handle-test-bar" role="group" aria-label="Phase 24 handle tests">
+        <button data-test-handle-method="next" @click="ganttRef?.next()">handle.next()</button>
+        <button data-test-handle-method="today" @click="ganttRef?.today()">handle.today()</button>
+        <button data-test-handle-method="changeView-month" @click="ganttRef?.changeView('month')">
+          handle.changeView('month')
+        </button>
+        <button
+          data-test-handle-method="scrollToDate"
+          @click="ganttRef?.scrollToDate(scrollTargetDate())"
+        >
+          handle.scrollToDate(anchor+1d)
+        </button>
       </div>
       <details class="cx-demo-url-schema">
         <summary>URL flags ({{ schemaDocs.length }}) — shareable demo links</summary>
