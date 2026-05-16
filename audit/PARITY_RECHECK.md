@@ -485,6 +485,17 @@ Items chronix implemented but missed catalog rows. Officially recorded as DONE:
 | `.gantt-event-link`                                                                                     | Phase 8          | `.cx-gantt-link`                                                  |
 | `.gantt-defs`                                                                                           | Phase 8          | `.cx-gantt-defs`                                                  |
 
+#### Alias / variant names covered by the cluster rows above
+
+The cluster rows fold many k-ui items by canonical name; for completeness the audit-sweep also covers these aliases and variant names that occasionally appear in k-ui code under slightly different identifiers:
+
+- `EventResizeStartArg` / `EventResizeStopArg` — variant aliases for `EventResizeStartStopArg` (both argument forms exist in k-ui's exported types). Same disposition as the canonical form (⚠ done in chronix Phase 16 as `BarResizeStartPayload` / `BarResizeStopPayload`).
+- `EventProgressStartArg` / `EventProgressStopArg` — variant aliases for `EventProgressStartStopArg`. Same disposition (⚠ done in chronix Phase 3.x).
+- `EventReceiveLeaveArg` — union alias for `EventReceiveArg` / `EventLeaveArg`. Same disposition (Defer-indefinite within the external HTML5 drag-in / drag-out cluster).
+- `viewClassNames` — third member of the `viewDidMount` / `viewWillUnmount` view-lifecycle hook cluster. Same disposition (Defer-indefinite within the day-header/cell + view-customization clusters).
+- `nowIndicatorWillUnmount` — paired with `nowIndicatorDidMount`. Same disposition as the `nowIndicator` reject family.
+- `eventAdd` / `eventRemove` — emit listeners paired with `eventChange`. Same disposition: covered by `EventAddArg` / `EventRemoveArg` arg-shapes' disposition row (Phase 24 imperative-API emits, alongside `addEvent` / `removeAllEvents` / `getEventById`).
+
 ### Counts after audit-sweep 2026-05-16
 
 - **DONE since recheck**: 5 (unchanged — same items as before audit-sweep).
