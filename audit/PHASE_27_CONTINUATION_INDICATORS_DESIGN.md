@@ -1,6 +1,8 @@
 # Phase 27 — Event continuation indicators (overflow triangles)
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)** — all 5 commits landed + /phase-close passed + ci-check green. See `audit/journal/2026-05-13.md` "Phase 27" section for full wrap-up.
+
+> **Implementation note (2026-05-16, mid-Phase-27)**: chronix's initial `isStart` / `isEnd` formula emitted triangles for bars entirely outside the axis range (bars from yesterday or tomorrow in a day-view session). The parity reference's `TimelineEvent` doesn't mount for bars without a visible segment, so its triangle count is strictly bars-overlapping-axis. Fix: gate the flags by `hasAxisOverlap = startMs < axisEndMs && endMs > axisStartMs` — bars not overlapping the axis get `isStart=true, isEnd=true` so the adapter skips both triangles. Caught by the cross-demo parity assertion (chronix=12/23/7 vs kui=10/13/6 in day/right/week before the gate; exact match after).
 
 ## Problem
 
