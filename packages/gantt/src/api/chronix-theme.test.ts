@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { defaultChronixTheme, type ChronixTheme } from './chronix-theme.js';
 
-// The 41-token surface chronix ships in v0. If this list drifts from
+// The 44-token surface chronix ships in v0. If this list drifts from
 // `ChronixTheme` the type-error in `expectedKeys: (keyof ChronixTheme)[]`
 // catches it at compile time; the runtime assertion below catches a
 // missing default-value mapping.
@@ -58,6 +58,10 @@ const EXPECTED_TOKEN_KEYS: readonly (keyof ChronixTheme)[] = [
   'toolbarButtonBorder',
   'toolbarButtonColor',
   'toolbarTitleColor',
+  // Grid lines (Phase 26)
+  'gridLineColor',
+  'gridLineWeekStartColor',
+  'gridLineRowRuleColor',
 ];
 
 describe('defaultChronixTheme', () => {
@@ -104,6 +108,9 @@ describe('defaultChronixTheme', () => {
       'toolbarButtonBorder',
       'toolbarButtonColor',
       'toolbarTitleColor',
+      'gridLineColor',
+      'gridLineWeekStartColor',
+      'gridLineRowRuleColor',
     ];
     for (const key of stringKeys) {
       expect(typeof defaultChronixTheme[key]).toBe('string');

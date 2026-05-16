@@ -146,6 +146,36 @@ export interface ChronixTheme {
   readonly toolbarButtonColor: string;
   /** `.cx-gantt-toolbar-title` text color. */
   readonly toolbarTitleColor: string;
+
+  // ----- Grid lines (Phase 26) -----
+  /**
+   * Stroke / fill color for body grid lines: vertical cell-boundary
+   * (`.cx-gantt-grid-vline` solid 1-px rect) AND vertical sub-slot
+   * (`.cx-gantt-grid-vline-dashed` 1-px line with `stroke-dasharray=2,2`).
+   * Default `'#ddd'` matches the parity reference's `--gantt-border-color`
+   * fallback.
+   */
+  readonly gridLineColor: string;
+  /**
+   * Fill color for vertical cell-boundary lines that coincide with the
+   * start of an ISO week (Monday at 00:00) — emitted on
+   * `.cx-gantt-grid-vline.cx-gantt-grid-vline-week`. Default `'#bbb'`
+   * matches the parity reference's week-emphasis fallback. Unlike the
+   * parity reference (where one CSS var with two fallbacks means
+   * setting it collapses the two branches), chronix exposes the
+   * regular and week-start colors as independent tokens so consumers
+   * can customize week-start emphasis without flattening it.
+   */
+  readonly gridLineWeekStartColor: string;
+  /**
+   * Stroke color for horizontal row-bottom lines emitted on
+   * `.cx-gantt-grid-hline`. Default `'#ddd'` matches the parity
+   * reference's `--gantt-grid-row-rule-color` (which itself falls back
+   * to `--gantt-border-color`). Independent from `gridLineColor` so
+   * consumers can give vertical and horizontal grid lines different
+   * intensities.
+   */
+  readonly gridLineRowRuleColor: string;
 }
 
 /**
@@ -222,4 +252,14 @@ export const defaultChronixTheme: ChronixTheme = {
   toolbarButtonBorder: '#d1d5db',
   toolbarButtonColor: '#374151',
   toolbarTitleColor: '#111827',
+
+  // Grid lines — Phase 26. `#ddd` is the parity reference's
+  // `--gantt-border-color` fallback used for both vertical solid cell
+  // boundaries and vertical dashed sub-slot dividers + horizontal
+  // row-bottom lines; `#bbb` is the week-start emphasis fallback.
+  // Independent tokens so consumers can customize each branch
+  // without the parity reference's "one var, two fallbacks" quirk.
+  gridLineColor: '#ddd',
+  gridLineWeekStartColor: '#bbb',
+  gridLineRowRuleColor: '#ddd',
 };
