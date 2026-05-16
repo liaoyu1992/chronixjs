@@ -720,6 +720,113 @@ export function extractSidebarSnapshot(
   );
 }
 
+/**
+ * Phase 22: extract the toolbar widget set from either demo.
+ *
+ * Pairs by `buttonName` (derived from the `gantt-<name>-button` /
+ * `cx-gantt-<name>-button` class regex). The title widget gets a
+ * synthetic id `'title'`. Returns one entry per visible widget with:
+ *
+ * - `id`: `buttonName`
+ * - `kind`: `'title' | 'view' | 'nav'` — view = one of `viewIds`,
+ *   nav = `'prev' | 'next' | 'today'`, else title.
+ * - `text`: `textContent.trim()` (empty for icon-only buttons)
+ * - `isPressed`: `aria-pressed === 'true'`
+ * - `x` / `y` / `width` / `height`: bounding box relative to the
+ *   toolbar root's top-left edge (NOT page-absolute) — both demos'
+ *   toolbar roots share the same coordinate frame.
+ *
+ * No computed-style extraction (toolbar styling diverges across
+ * demos by design — chronix uses its own theme tokens; pixel diff
+ * lives in chronix-self VRT, not cross-demo).
+ */
+export interface ToolbarWidgetSnapshot {
+  readonly id: string;
+  readonly kind: 'title' | 'view' | 'nav' | 'unknown';
+  readonly text: string;
+  readonly isPressed: boolean;
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+export async function extractToolbarSnapshot(
+  source: 'kui' | 'chronix',
+  page: Page,
+): Promise<readonly ToolbarWidgetSnapshot[]> {
+  const toolbarSel = source === 'kui' ? '.gantt-toolbar' : '.cx-gantt-toolbar';
+  const buttonClassRe = '(?:^|\\s)(?:cx-)?gantt-(\\w+)-button(?:\\s|$)';
+  return page.evaluate(
+    ({ tbSel, classRe }) => {
+      const re = new RegExp(classRe);
+      const toolbar = document.querySelector(tbSel);
+      if (!toolbar) return [];
+      const tbRect = toolbar.getBoundingClientRect();
+      const out: {
+        id: string;
+        kind: 'title' | 'view' | 'nav' | 'unknown';
+        text: string;
+        isPressed: boolean;
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+      }[] = [];
+
+      // Title widget — k-ui: `<h2.gantt-toolbar-title>`; chronix:
+      // `<h2.cx-gantt-toolbar-title>`. There's at most one per
+      // toolbar.
+      const titleEl = toolbar.querySelector('h2[class*="-toolbar-title"]');
+      if (titleEl) {
+        const r = titleEl.getBoundingClientRect();
+        out.push({
+          id: 'title',
+          kind: 'title',
+          text: titleEl.textContent?.trim() ?? '',
+          isPressed: false,
+          x: Math.round((r.left - tbRect.left) * 100) / 100,
+          y: Math.round((r.top - tbRect.top) * 100) / 100,
+          width: Math.round(r.width * 100) / 100,
+          height: Math.round(r.height * 100) / 100,
+        });
+      }
+
+      // Buttons — match any `<button>` whose class list contains a
+      // `(?:cx-)?gantt-<name>-button` token. Extract `<name>` via
+      // regex; classify against the known view + nav names.
+      const viewNames = new Set(['day', 'week', 'month', 'season', 'halfYear', 'year']);
+      const navNames = new Set(['prev', 'next', 'today']);
+      toolbar.querySelectorAll('button').forEach((btn) => {
+        const cls = btn.getAttribute('class') ?? '';
+        const m = re.exec(cls);
+        if (!m) return;
+        const name = m[1]!;
+        const r = btn.getBoundingClientRect();
+        if (r.width < 1 || r.height < 1) return;
+        const kind: 'title' | 'view' | 'nav' | 'unknown' = viewNames.has(name)
+          ? 'view'
+          : navNames.has(name)
+            ? 'nav'
+            : 'unknown';
+        out.push({
+          id: name,
+          kind,
+          text: btn.textContent?.trim() ?? '',
+          isPressed: btn.getAttribute('aria-pressed') === 'true',
+          x: Math.round((r.left - tbRect.left) * 100) / 100,
+          y: Math.round((r.top - tbRect.top) * 100) / 100,
+          width: Math.round(r.width * 100) / 100,
+          height: Math.round(r.height * 100) / 100,
+        });
+      });
+
+      return out;
+    },
+    { tbSel: toolbarSel, classRe: buttonClassRe },
+  );
+}
+
 export interface ParityTolerance {
   /** Maximum allowed delta in px. Default 1 px. Set to `Infinity` to skip the channel. */
   readonly x?: number;

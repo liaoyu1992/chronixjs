@@ -90,15 +90,6 @@ const initialRows = cfg.parity.value ? sampleRowsParity : sampleRows;
 // map 1:1 to chronix `LinkSpec` shapes and styling parity is parked.
 const initialLinks = cfg.parity.value ? [] : sampleLinks;
 
-const VIEW_TOGGLE: readonly { readonly id: ViewId; readonly label: string }[] = [
-  { id: 'day', label: '日' },
-  { id: 'week', label: '周' },
-  { id: 'month', label: '月' },
-  { id: 'season', label: '季' },
-  { id: 'halfYear', label: '半年' },
-  { id: 'year', label: '年' },
-];
-
 // Resource-panel column descriptors. Three columns demonstrate
 // Phase 5.x's vGrouping rowspan merge: 地区 + 基地 are flagged
 // `group: true` so consecutive rows that share their value collapse
@@ -194,13 +185,37 @@ const activeTodayLine = computed<TodayLineOption | false>(() => {
   return false;
 });
 
+// Phase 22: anchorDate becomes a local-ref so toolbar nav buttons
+// (prev / next / today) can shift it via `update:axisInput`. URL
+// persistence stays scoped to `cfg.view` (Phase 20.6 schema field) —
+// anchor-date URL persistence is deferred to a future i18n / date-
+// URL phase. Seeded at module-load with today's local midnight.
+const anchorDate = ref<Date>(todayLocalMidnight());
+
 const axisInput = computed<AxisRangePlanInput>(() => ({
   viewId: cfg.view.value,
-  anchorDate: todayLocalMidnight(),
+  anchorDate: anchorDate.value,
   viewportWidth: 1440,
   locale: 'zh-CN',
   weekendsVisible: true,
 }));
+
+// Phase 22: toolbar two-way binding. The toolbar emits the full new
+// `axisInput`; the demo decomposes it back into the two reactive
+// sources (`cfg.view` URL-persisted, `anchorDate` local).
+function onUpdateAxisInput(next: AxisRangePlanInput): void {
+  cfg.view.value = next.viewId;
+  anchorDate.value = next.anchorDate;
+}
+
+// Phase 22: k-ui-parity headerToolbar wiring. Three nav buttons +
+// a title + six view-toggle buttons, matching the parity-reference
+// demo's `headerToolbar` shape (see DemoApp.vue:1346-1350).
+const HEADER_TOOLBAR = {
+  left: 'prev,next today',
+  center: 'title',
+  right: 'day,week,month,season,halfYear,year',
+} as const;
 
 const schemaDocs = describeConfigSchema(DEMO_SCHEMA);
 
@@ -336,18 +351,6 @@ function resetBars(): void {
       <header class="cx-demo-header">
         <h1>@chronixjs/gantt-vue3 demo</h1>
         <div class="cx-demo-config">
-          <div class="cx-demo-view-toggle" role="group" aria-label="timeline scale">
-            <button
-              v-for="view in VIEW_TOGGLE"
-              :key="view.id"
-              type="button"
-              class="cx-demo-view-toggle-button"
-              :class="{ active: cfg.view.value === view.id }"
-              @click="cfg.view.value = view.id"
-            >
-              {{ view.label }}
-            </button>
-          </div>
           <label>
             <input v-model="cfg.editable.value" type="checkbox" />
             editable
@@ -412,6 +415,8 @@ function resetBars(): void {
           :bar-border-color="activeBarBorderColor"
           :bar-background-color-callback="activeBarBackgroundCallback"
           :today-line="activeTodayLine"
+          :header-toolbar="HEADER_TOOLBAR"
+          @update:axis-input="onUpdateAxisInput"
           @bar-drop="onBarDrop"
           @bar-resize="onBarResize"
           @select="onSelect"

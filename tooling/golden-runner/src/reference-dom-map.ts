@@ -109,3 +109,26 @@ export const RESIZER_END = '.gantt-event-resizer-end';
  * hover; chronix's recording-replay parity is unaffected.
  */
 export const RESIZER_ALWAYS_VISIBLE_CSS = '.gantt-event-resizer { display: block !important; }';
+
+// ─── Toolbar (Phase 22) ─────────────────────────────────────────────
+
+/**
+ * Header toolbar root in the upstream demo. Chronix equivalent:
+ * `.cx-gantt-toolbar` (above the chart wrapper inside `.cx-gantt-root`).
+ * Both sides render the same 9-button + 1-title widget set when wired
+ * with the canonical `headerToolbar: { left: 'prev,next today',
+ * center: 'title', right: 'day,week,month,season,halfYear,year' }`
+ * shape.
+ */
+export const TOOLBAR_ROOT = '.gantt-toolbar';
+
+/** Toolbar title widget (`<h2.gantt-toolbar-title>`). */
+export const TOOLBAR_TITLE = '.gantt-toolbar-title';
+
+/**
+ * Per-button selector pattern. The upstream renders one
+ * `<button class="gantt-<buttonName>-button">` per widget. Captured
+ * via this regex to reverse-derive `buttonName` from the class list
+ * inside `extractToolbarSnapshot`.
+ */
+export const TOOLBAR_BUTTON_CLASS_PATTERN = /(?:^|\s)gantt-(\w+)-button(?:\s|$)/;

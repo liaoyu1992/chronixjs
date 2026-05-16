@@ -11,6 +11,7 @@ import { buildParityEvents } from '../src/parity-events.js';
 import {
   diffBarsSnapshots,
   extractBarsSnapshot,
+  extractToolbarSnapshot,
   formatParityDiff,
   hexToRgbString,
   loadBothDemos,
@@ -1040,6 +1041,134 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       for (const bar of chronixSnap) {
         expect(bar.fill).toBe(expectedRgb);
       }
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('toolbar button set parity — same 9 buttonNames render on both sides (Phase 22)', async ({
+    browser,
+  }) => {
+    // Both demos wire the canonical headerToolbar (prev,next today |
+    // title | day,week,month,season,halfYear,year). chronix's
+    // toolbar is now visible by default (Phase 22 lands the
+    // `headerToolbar` prop on `<ChronixGantt>`). The reference demo
+    // has wired it since pre-chronix.
+    //
+    // Pair by `buttonName` extracted from class regex
+    // `gantt-<name>-button` / `cx-gantt-<name>-button`. Asserts the
+    // 9 expected names + 1 title are present on both sides. Text
+    // differs (Chinese vs English defaults) — that's a v0 by-design
+    // divergence, parked under `buttonText` i18n in the catalog.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'toolbar-button-set-parity',
+      viewId: 'week',
+    });
+    try {
+      const kuiSnap = await extractToolbarSnapshot('kui', kuiPage);
+      const chronixSnap = await extractToolbarSnapshot('chronix', chronixPage);
+
+      const kuiIds = new Set(kuiSnap.map((w) => w.id));
+      const chronixIds = new Set(chronixSnap.map((w) => w.id));
+      const expected = new Set([
+        'title',
+        'prev',
+        'next',
+        'today',
+        'day',
+        'week',
+        'month',
+        'season',
+        'halfYear',
+        'year',
+      ]);
+
+      console.warn(
+        `Phase 22 toolbar widget set: kui=[${[...kuiIds].sort().join(',')}] ` +
+          `chronix=[${[...chronixIds].sort().join(',')}]`,
+      );
+
+      // Both sides must contain every expected id. (Either side may
+      // emit additional ids if a future toolbar adds buttons; we
+      // only assert the canonical 10 are present.)
+      for (const id of expected) {
+        expect(kuiIds, `reference toolbar missing '${id}'`).toContain(id);
+        expect(chronixIds, `chronix toolbar missing '${id}'`).toContain(id);
+      }
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('toolbar active-button parity — week button is pressed on both at viewId=week (Phase 22)', async ({
+    browser,
+  }) => {
+    // `loadBothDemos` clicks the `周` button via accessible role on
+    // both demos. After the click, the active-button state should
+    // propagate to the toolbar: k-ui's `<button.gantt-week-button
+    // aria-pressed='true'>`, chronix's `<button.cx-gantt-week-button
+    // aria-pressed='true'>`. All other view buttons must read
+    // `aria-pressed='false'`.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'toolbar-active-button-parity',
+      viewId: 'week',
+    });
+    try {
+      const kuiSnap = await extractToolbarSnapshot('kui', kuiPage);
+      const chronixSnap = await extractToolbarSnapshot('chronix', chronixPage);
+
+      const kuiPressed = kuiSnap.filter((w) => w.isPressed).map((w) => w.id);
+      const chronixPressed = chronixSnap.filter((w) => w.isPressed).map((w) => w.id);
+
+      console.warn(
+        `Phase 22 toolbar active-button: kui pressed=[${kuiPressed.join(',')}] ` +
+          `chronix pressed=[${chronixPressed.join(',')}]`,
+      );
+
+      // Exactly one view button should be pressed per side, and it
+      // should be 'week' on both. Nav buttons (prev / next / today)
+      // are never pressed.
+      expect(kuiPressed).toEqual(['week']);
+      expect(chronixPressed).toEqual(['week']);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('toolbar title presence — exactly one non-empty title element per side (Phase 22)', async ({
+    browser,
+  }) => {
+    // The title TEXT format differs between demos by design (k-ui's
+    // formatRange vs chronix's `formatToolbarTitle` — both emit
+    // locale-appropriate range labels, but the format strings
+    // diverge: k-ui falls back to FullCalendar's defaults, chronix
+    // uses Chinese-Q1 / YYYY-MM-DD / YYYY年M月 patterns). What we
+    // CAN assert: both render exactly one title widget, both have
+    // non-empty text. Format-equality is parked with `buttonText`
+    // i18n.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'toolbar-title-parity',
+      viewId: 'week',
+    });
+    try {
+      const kuiSnap = await extractToolbarSnapshot('kui', kuiPage);
+      const chronixSnap = await extractToolbarSnapshot('chronix', chronixPage);
+
+      const kuiTitle = kuiSnap.find((w) => w.kind === 'title');
+      const chronixTitle = chronixSnap.find((w) => w.kind === 'title');
+
+      console.warn(
+        `Phase 22 toolbar title: kui='${kuiTitle?.text ?? '(missing)'}' ` +
+          `chronix='${chronixTitle?.text ?? '(missing)'}'`,
+      );
+
+      expect(kuiTitle, 'reference toolbar title widget missing').toBeDefined();
+      expect(chronixTitle, 'chronix toolbar title widget missing').toBeDefined();
+      expect(kuiTitle!.text.length, 'reference title is empty').toBeGreaterThan(0);
+      expect(chronixTitle!.text.length, 'chronix title is empty').toBeGreaterThan(0);
     } finally {
       await kuiPage.context().close();
       await chronixPage.context().close();
