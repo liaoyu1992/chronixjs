@@ -193,6 +193,44 @@ export interface ChronixTheme {
    * intensities.
    */
   readonly gridLineRowRuleColor: string;
+
+  // ----- Bar selection + resize handles (Phase 28.1) -----
+  /**
+   * Stroke color for the selection-border SVG rect rendered on top of
+   * a selected bar (`.cx-gantt-bar-selection-border`). Default
+   * `'rgba(0,0,0,0.3)'` matches the parity reference's hard-coded
+   * stroke for `gantt-event-selection-border`. The border is a
+   * separate rect from the bar's main `<rect>`, so this token does
+   * not affect unselected bars at all.
+   */
+  readonly barSelectedBorderColor: string;
+  /**
+   * Stroke width (px) for the selection-border SVG rect. Default `2`
+   * matches the parity reference's `strokeWidth="2"`. The border is
+   * `pointer-events: none` so it never intercepts clicks on the bar.
+   */
+  readonly barSelectedBorderWidth: number;
+  /**
+   * Width (px) of the transparent edge-zone rects emitted on each
+   * editable bar (`.cx-gantt-bar-resizer-start` / `-end`) and ALSO
+   * the geometric edge-zone width used by `useGanttPointer`'s
+   * hit-test. Default `8` matches the parity reference's
+   * `edgeResizeZone` = 8 px. Threading one token through both render
+   * and hit-test keeps the visible `cursor: ew-resize` cue aligned
+   * with the actual resize-edge detection — consumers who widen the
+   * cue grow both halves simultaneously.
+   */
+  readonly barResizerThickness: number;
+  /**
+   * Total side length (px) of the visible white dot handles emitted
+   * when a bar is selected (`.cx-gantt-bar-resizer-dot-start` /
+   * `-end`). Default `8` matches the parity reference's
+   * `--gantt-event-resizer-dot-total-width` default. The dot's
+   * border-width is hard-coded to 1 px for v0 — the parity reference
+   * has a separate `-dot-border-width` variable but chronix collapses
+   * to one token until a consumer asks for thicker borders.
+   */
+  readonly barResizerDotSize: number;
 }
 
 /**
@@ -287,4 +325,14 @@ export const defaultChronixTheme: ChronixTheme = {
   gridLineColor: '#ddd',
   gridLineWeekStartColor: '#bbb',
   gridLineRowRuleColor: '#ddd',
+
+  // Bar selection + resize handles — Phase 28.1. `rgba(0,0,0,0.3)` and
+  // strokeWidth 2 mirror the parity reference's hard-coded selection
+  // border on `.gantt-event-selection-border`. Resizer thickness and
+  // dot size both default to 8 px to match the parity reference's
+  // `edgeResizeZone` + `--gantt-event-resizer-dot-total-width` defaults.
+  barSelectedBorderColor: 'rgba(0,0,0,0.3)',
+  barSelectedBorderWidth: 2,
+  barResizerThickness: 8,
+  barResizerDotSize: 8,
 };

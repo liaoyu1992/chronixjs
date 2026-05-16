@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { defaultChronixTheme, type ChronixTheme } from './chronix-theme.js';
 
-// The 44-token surface chronix ships in v0. If this list drifts from
+// The 50-token surface chronix ships in v0. If this list drifts from
 // `ChronixTheme` the type-error in `expectedKeys: (keyof ChronixTheme)[]`
 // catches it at compile time; the runtime assertion below catches a
 // missing default-value mapping.
@@ -65,6 +65,11 @@ const EXPECTED_TOKEN_KEYS: readonly (keyof ChronixTheme)[] = [
   'gridLineColor',
   'gridLineWeekStartColor',
   'gridLineRowRuleColor',
+  // Bar selection + resize handles (Phase 28.1)
+  'barSelectedBorderColor',
+  'barSelectedBorderWidth',
+  'barResizerThickness',
+  'barResizerDotSize',
 ];
 
 describe('defaultChronixTheme', () => {
@@ -114,6 +119,7 @@ describe('defaultChronixTheme', () => {
       'gridLineColor',
       'gridLineWeekStartColor',
       'gridLineRowRuleColor',
+      'barSelectedBorderColor',
     ];
     for (const key of stringKeys) {
       expect(typeof defaultChronixTheme[key]).toBe('string');
@@ -131,6 +137,9 @@ describe('defaultChronixTheme', () => {
       'progressLabelFontWeight',
       'barFontSize',
       'barFontWeight',
+      'barSelectedBorderWidth',
+      'barResizerThickness',
+      'barResizerDotSize',
     ];
     for (const key of numberKeys) {
       expect(typeof defaultChronixTheme[key]).toBe('number');
@@ -138,5 +147,18 @@ describe('defaultChronixTheme', () => {
     // Opacity ∈ [0, 1].
     expect(defaultChronixTheme.progressFillOpacity).toBeGreaterThanOrEqual(0);
     expect(defaultChronixTheme.progressFillOpacity).toBeLessThanOrEqual(1);
+  });
+
+  it('Phase 28.1 selection/resizer defaults pin to the parity reference', () => {
+    // Selection border: rgba(0,0,0,0.3) stroke + 2px width mirror the
+    // hard-coded values on `.gantt-event-selection-border`. Resizer
+    // thickness 8 px mirrors `edgeResizeZone`; dot size 8 px mirrors
+    // `--gantt-event-resizer-dot-total-width`. Drift here would change
+    // the default visual feedback for selected bars in a way that's
+    // visible to every consumer who relies on the default theme.
+    expect(defaultChronixTheme.barSelectedBorderColor).toBe('rgba(0,0,0,0.3)');
+    expect(defaultChronixTheme.barSelectedBorderWidth).toBe(2);
+    expect(defaultChronixTheme.barResizerThickness).toBe(8);
+    expect(defaultChronixTheme.barResizerDotSize).toBe(8);
   });
 });
