@@ -292,6 +292,22 @@ const TITLE_RIGHT_PADDING = 4;
 const TITLE_TRIANGLE_GAP = 4;
 
 /**
+ * Phase 28.1: visible resize-dot geometry. `DOT_EDGE_INSET` matches
+ * the parity reference's `x + 1` / `x + finalWidth - handleWidth - 1`
+ * 1-px inset from each bar edge. `DOT_TRIANGLE_GAP` keeps a small
+ * cushion between a continuation triangle's base and the dot when
+ * both are present on the same side — `TRIANGLE_MARGIN + TRIANGLE_SIZE
+ * + DOT_TRIANGLE_GAP = 9 px` of horizontal space allocated before the
+ * dot starts. The parity reference's triangle + dot don't typically
+ * coexist on the same bar (k-ui's `TimelineEvent` clips the bar
+ * before either fires); chronix's axis-overlap gate matches that
+ * semantically, so this gap only fires for the narrow case where a
+ * bar straddles the axis edge.
+ */
+const DOT_EDGE_INSET = 1;
+const DOT_TRIANGLE_GAP = 2;
+
+/**
  * Phase 28.2: truncate `text` to the longest prefix that fits inside
  * `maxWidth` at `fontSize`, append `'...'` ellipsis when truncated.
  * Returns `''` when fewer than 4 characters fit (no room for prefix
@@ -986,6 +1002,12 @@ export const ChronixGantt = defineComponent({
       progressHandleSize: () => props.progressHandleSize,
       // 0 is treated as "no snap" by the commit layer — pass through verbatim.
       snapDurationMs: () => props.snapDurationMs,
+      // Phase 28.1: thread the bar-resizer-thickness theme token
+      // through to the hit-test edge-zone width. One token drives both
+      // the visible `cursor: ew-resize` cue (DOM rect in the body SVG
+      // render) and the geometric resize-edge detection — consumers
+      // who widen the cue grow both halves simultaneously.
+      edgeZoneWidth: () => theme.value.barResizerThickness,
       // Phase 19: validation gate inputs.
       bars: () => props.bars,
       eventAllow: () => props.eventAllow,
@@ -1947,6 +1969,127 @@ export const ChronixGantt = defineComponent({
             );
           }
         }
+
+        // Phase 28.1: selection visual + resize-handle render. Three
+        // independent emissions, each gated on `selectionHasAxisOverlap`
+        // so off-axis bars get no visual feedback (matches the parity
+        // reference's mount-vs-no-mount semantics for `TimelineEvent`).
+        // Same axis-overlap gate pattern as Phase 27 (continuation
+        // triangles) and Phase 28.2 (bar title) — adopted proactively
+        // at design time per the third-consecutive-phase finding.
+        //
+        // Z-order: selection-border → edge-zone rects → dot rects.
+        // Selection-border paints on top of bar fill + progress overlay
+        // so the outline is always visible; edge-zone rects come next
+        // (transparent — `pointer-events: auto` + `cursor: ew-resize`
+        // for cursor styling at the hit-test boundary); dot rects last
+        // so the visible white dots paint above the transparent edge
+        // zones.
+        //
+        // Dot rects use `pointer-events: none` so they don't intercept
+        // events that should reach the edge-zone underneath. Selection-
+        // border uses `pointer-events: none` for the same reason — the
+        // outline is decorative, not interactive.
+        const selectionHasAxisOverlap = bar.x < a.totalWidth && bar.x + bar.width > 0;
+        if (selectionHasAxisOverlap) {
+          // Selection border: one rect when the bar is selected.
+          if (isSelected) {
+            nodes.push(
+              h('rect', {
+                key: `${bar.barId}-selection-border`,
+                'data-bar-id': bar.barId,
+                class: 'cx-gantt-bar-selection-border',
+                x: renderX,
+                y: renderY,
+                width: renderWidth,
+                height: bar.height,
+                fill: 'none',
+                stroke: t.barSelectedBorderColor,
+                'stroke-width': t.barSelectedBorderWidth,
+                'pointer-events': 'none',
+              }),
+            );
+          }
+          // Edge resize zones: always when bar is editable AND has
+          // axis-overlap. Transparent rects for cursor cue only — the
+          // hit-test layer (Phase 3 + 9 + 19) still owns the actual
+          // resize detection by geometry; one shared
+          // `barResizerThickness` token drives both, threaded into
+          // `useGanttPointer`'s `edgeZoneWidth` above.
+          if (props.editable) {
+            const resizerThickness = t.barResizerThickness;
+            nodes.push(
+              h('rect', {
+                key: `${bar.barId}-resizer-start`,
+                'data-bar-id': bar.barId,
+                class: 'cx-gantt-bar-resizer-start',
+                x: renderX,
+                y: renderY,
+                width: resizerThickness,
+                height: bar.height,
+                fill: 'transparent',
+                'pointer-events': 'auto',
+                style: { cursor: 'ew-resize' },
+              }),
+              h('rect', {
+                key: `${bar.barId}-resizer-end`,
+                'data-bar-id': bar.barId,
+                class: 'cx-gantt-bar-resizer-end',
+                x: renderX + renderWidth - resizerThickness,
+                y: renderY,
+                width: resizerThickness,
+                height: bar.height,
+                fill: 'transparent',
+                'pointer-events': 'auto',
+                style: { cursor: 'ew-resize' },
+              }),
+            );
+          }
+          // Visible dot handles: 2 rects when bar is selected AND
+          // editable AND has axis-overlap. White fill + bar's resolved
+          // border color stroke, 8 × 8 px, 1-px inset from each edge
+          // (or shifted inward past a continuation triangle when one
+          // is present on the same side).
+          if (isSelected && props.editable) {
+            const dotSize = t.barResizerDotSize;
+            const dotY = renderY + (bar.height - dotSize) / 2;
+            const leftDotX = !bar.isStart
+              ? renderX + TRIANGLE_MARGIN + TRIANGLE_SIZE + DOT_TRIANGLE_GAP
+              : renderX + DOT_EDGE_INSET;
+            const rightDotX = !bar.isEnd
+              ? renderX + renderWidth - TRIANGLE_MARGIN - TRIANGLE_SIZE - DOT_TRIANGLE_GAP - dotSize
+              : renderX + renderWidth - DOT_EDGE_INSET - dotSize;
+            nodes.push(
+              h('rect', {
+                key: `${bar.barId}-resizer-dot-start`,
+                'data-bar-id': bar.barId,
+                class: 'cx-gantt-bar-resizer-dot-start',
+                x: leftDotX,
+                y: dotY,
+                width: dotSize,
+                height: dotSize,
+                fill: '#ffffff',
+                stroke: resolvedStyle.borderColor,
+                'stroke-width': 1,
+                'pointer-events': 'none',
+              }),
+              h('rect', {
+                key: `${bar.barId}-resizer-dot-end`,
+                'data-bar-id': bar.barId,
+                class: 'cx-gantt-bar-resizer-dot-end',
+                x: rightDotX,
+                y: dotY,
+                width: dotSize,
+                height: dotSize,
+                fill: '#ffffff',
+                stroke: resolvedStyle.borderColor,
+                'stroke-width': 1,
+                'pointer-events': 'none',
+              }),
+            );
+          }
+        }
+
         return nodes;
       });
 
