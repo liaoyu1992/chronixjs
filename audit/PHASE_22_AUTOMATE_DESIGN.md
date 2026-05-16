@@ -1,6 +1,6 @@
 # Phase 22.AUTOMATE — Catalog-completeness CI gate
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)**. Landed as 2 commits: `dbb3c36` (design doc, 154 lines) + `bcb0c44` (Commit 1: baseline JSON 359 items + scanner 125 LOC + self-test 220 LOC + ci-check wiring + 6-alias backfill, 745 lines). chronix-new declaration (no parity assertion possible — infrastructure script, not a k-ui feature port). 5/5 self-test cases pass. `pnpm audit:catalog` scans 359 k-ui surface items × 32 audit files in milliseconds; wired as the 7th step of `pnpm ci-check` (after `audit:names`). `/phase-close` skill walked all 6 gates green. Silent-gap class structurally prevented: any future PHASE\_\*\_DESIGN.md that fails to disposition a k-ui surface item, or any new k-ui surface item added to baseline without a chronix disposition row, will fail CI. See `audit/journal/2026-05-13.md` "Phase 22.AUTOMATE" section.
 
 ## Problem
 
