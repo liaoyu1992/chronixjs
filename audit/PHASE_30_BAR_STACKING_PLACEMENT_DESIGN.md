@@ -1,6 +1,6 @@
 # Phase 30 — Bar stacking placement
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)** — all 4 commits landed + /phase-close passed + ci-check green. See `audit/journal/2026-05-13.md` "Phase 30" section for full wrap-up.
 
 ## Problem
 
