@@ -1,6 +1,6 @@
 # Phase 26 — Grid lines (vertical cell-boundary + week-start emphasis + horizontal row-bottom)
 
-**Status**: **IMPLEMENTING** (2026-05-16). Commits 1–4 landed. Final wrap-up pending.
+**Status**: **DONE (2026-05-16)** — all 5 commits landed + /phase-close passed + ci-check green. See `audit/journal/2026-05-13.md` "Phase 26" section for full wrap-up.
 
 > **Implementation note (2026-05-16, mid-Phase-26)**: the design's
 > dashed-sub-slot branch turned out to be dead code in the parity
