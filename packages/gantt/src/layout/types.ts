@@ -141,6 +141,21 @@ export interface BarStackHeightPassOutput {
   readonly heightsPerRow: readonly number[];
   /** Same data as `heightsPerRow`, keyed by `RowSpec.id` for direct lookup. */
   readonly heightByRowId: ReadonlyMap<string, number>;
+  /**
+   * Phase 30: per-bar stacking level (0 = top track, 1 = second track,
+   * etc.). Populated for every bar that intersects the axis range; bars
+   * outside the axis range are absent from the map.
+   *
+   * Downstream `BarPlacementPass.place` reads this to assign Y offset
+   * within the row strip — without it, all same-row bars would render
+   * at the same Y coordinate even when their time windows overlap.
+   *
+   * Assignment policy: greedy interval coloring over bars sorted by
+   * `(range.start ASC, range.end ASC)` per row. Two bars on the same
+   * row with non-overlapping time both land on level 0; overlapping
+   * bars get distinct levels in their sorted order.
+   */
+  readonly levelByBarId: ReadonlyMap<string, number>;
 }
 
 export interface BarStackHeightPassInput {
@@ -194,6 +209,25 @@ export interface BarPlacementPassInput {
    * the caller until a Phase 2.x pass lands.
    */
   readonly barHeight?: number;
+  /**
+   * Phase 30: per-bar stacking level from `BarStackHeightPass.compute`'s
+   * output. When present, bar Y =
+   * `strip.y + barVerticalPadding + level * (barHeight + barStackSpacing)`.
+   * Bars absent from the map (or when the map itself is undefined)
+   * default to level 0 — single-track placement, matching pre-Phase-30
+   * behavior for callers that don't thread the height-pass output through.
+   */
+  readonly levelByBarId?: ReadonlyMap<string, number>;
+  /**
+   * Phase 30: vertical spacing in pixels between stacked bars on the same
+   * row. Must match `BarStackHeightPassInput.barStackSpacing` so the placed
+   * bars fit within the row height the height-pass reserved. Default 10
+   * (matches the height-pass default for symmetry).
+   *
+   * Ignored when `levelByBarId` is undefined OR every bar resolves to
+   * level 0 — single-track placement uses only `strip.y + barVerticalPadding`.
+   */
+  readonly barStackSpacing?: number;
 }
 
 export interface BarPlacementPassOutput {

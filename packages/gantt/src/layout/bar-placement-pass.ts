@@ -20,6 +20,15 @@ export const defaultBarPlacementPass: BarPlacementPass = {
     const explicitBarHeight = input.barHeight;
     const axisStartMs = input.axis.ticks[0]?.time.getTime() ?? 0;
     const pxPerMs = input.axis.slotWidth / input.axis.slotDurationMs;
+    // Phase 30: per-bar stack-level offset. When `levelByBarId` is
+    // omitted (or a bar is absent from the map), the bar lands on
+    // level 0 — same Y as pre-Phase-30. The offset per level is
+    // `(barHeight ?? strip.height) + stackSpacing`; explicit-barHeight
+    // mode uses the configured bar height, implicit mode uses the
+    // strip's full height (the legacy single-level behavior is
+    // preserved for symmetric-padding callers).
+    const stackSpacing = input.barStackSpacing ?? 10;
+    const levelByBarId = input.levelByBarId;
 
     // Index strips by rowId for O(1) lookup; bar sets can reach hundreds.
     const stripsByRow = new Map(input.strips.map((s) => [s.rowId, s]));
@@ -40,10 +49,19 @@ export const defaultBarPlacementPass: BarPlacementPass = {
       //   strip.height < padding + barHeight (caller's contract).
       // - implicit: symmetric padding fills the strip (legacy v0).
       const height = explicitBarHeight ?? Math.max(0, strip.height - 2 * padding);
+      // Phase 30: per-bar level offset. Per-level distance =
+      // (explicit barHeight if set, else strip's filled height) + stackSpacing.
+      // For implicit-height callers (no explicit barHeight) the strip
+      // already contains exactly one bar's worth of vertical space, so
+      // they should never request level > 0 — `BarStackHeightPass`
+      // doesn't expand row heights for them either. Defensive default
+      // to level 0 if the map says otherwise.
+      const level = levelByBarId?.get(bar.id) ?? 0;
+      const offsetPerLevel = (explicitBarHeight ?? height) + stackSpacing;
       placedBars.push({
         barId: bar.id,
         x: (startMs - axisStartMs) * pxPerMs,
-        y: strip.y + padding,
+        y: strip.y + padding + level * offsetPerLevel,
         width: (endMs - startMs) * pxPerMs,
         height,
       });

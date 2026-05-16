@@ -205,3 +205,100 @@ describe('defaultBarPlacementPass — month view (slot = 1 day)', () => {
     expect(placedBars[0]?.width).toBe(2 * monthAxis.slotWidth); // 2-day duration
   });
 });
+
+describe('defaultBarPlacementPass — stack-level Y placement (Phase 30)', () => {
+  // Build a single tall strip so Y arithmetic isn't clipped by strip
+  // height. Strip y=0, height=200 — plenty of room for 3 stacked bars
+  // at barHeight=30 + stackSpacing=10 (total 110 incl. padding).
+  const tallStrip = defaultRowSwimlaneLayout.layout({
+    rows: [{ id: 'r1', columns: {}, heightHint: 200 }],
+    defaultRowHeight: 200,
+  });
+
+  it('places 2 overlapping same-row bars at distinct Y offsets when levelByBarId provided', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [
+        bar('b1', 'r1', '2026-05-13T00:00:00', '2026-05-13T05:00:00'),
+        bar('b2', 'r1', '2026-05-13T03:00:00', '2026-05-13T08:00:00'),
+      ],
+      axis: dayAxis,
+      strips: tallStrip.strips,
+      barHeight: 30,
+      barVerticalPadding: 8,
+      barStackSpacing: 10,
+      levelByBarId: new Map([
+        ['b1', 0],
+        ['b2', 1],
+      ]),
+    });
+
+    // Level 0: y = strip.y + padding = 0 + 8 = 8
+    // Level 1: y = 8 + 1 × (30 + 10) = 48
+    expect(placedBars[0]?.y).toBe(8);
+    expect(placedBars[1]?.y).toBe(48);
+  });
+
+  it('places 3 mutually-overlapping bars at level 0 / 1 / 2 with correct stack spacing', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [
+        bar('a', 'r1', '2026-05-13T00:00:00', '2026-05-13T05:00:00'),
+        bar('b', 'r1', '2026-05-13T01:00:00', '2026-05-13T06:00:00'),
+        bar('c', 'r1', '2026-05-13T02:00:00', '2026-05-13T07:00:00'),
+      ],
+      axis: dayAxis,
+      strips: tallStrip.strips,
+      barHeight: 30,
+      barVerticalPadding: 8,
+      barStackSpacing: 10,
+      levelByBarId: new Map([
+        ['a', 0],
+        ['b', 1],
+        ['c', 2],
+      ]),
+    });
+
+    // Level 0: y = 8
+    // Level 1: y = 8 + 40 = 48
+    // Level 2: y = 8 + 80 = 88
+    expect(placedBars[0]?.y).toBe(8);
+    expect(placedBars[1]?.y).toBe(48);
+    expect(placedBars[2]?.y).toBe(88);
+  });
+
+  it('non-overlapping same-row bars all stay at level 0 (Y = strip.y + padding) when levelByBarId is provided with all-zero levels', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [
+        bar('first', 'r1', '2026-05-13T00:00:00', '2026-05-13T02:00:00'),
+        bar('second', 'r1', '2026-05-13T03:00:00', '2026-05-13T05:00:00'),
+        bar('third', 'r1', '2026-05-13T06:00:00', '2026-05-13T08:00:00'),
+      ],
+      axis: dayAxis,
+      strips: tallStrip.strips,
+      barHeight: 30,
+      barVerticalPadding: 8,
+      barStackSpacing: 10,
+      levelByBarId: new Map([
+        ['first', 0],
+        ['second', 0],
+        ['third', 0],
+      ]),
+    });
+
+    for (const placed of placedBars) {
+      expect(placed.y).toBe(8);
+    }
+  });
+
+  it('bars absent from levelByBarId default to level 0 (pre-Phase-30 behavior preserved)', () => {
+    const { placedBars } = defaultBarPlacementPass.place({
+      bars: [bar('lonely', 'r1', '2026-05-13T00:00:00', '2026-05-13T02:00:00')],
+      axis: dayAxis,
+      strips: tallStrip.strips,
+      barHeight: 30,
+      barVerticalPadding: 8,
+      // levelByBarId omitted entirely → defaults level 0
+    });
+
+    expect(placedBars[0]?.y).toBe(8);
+  });
+});

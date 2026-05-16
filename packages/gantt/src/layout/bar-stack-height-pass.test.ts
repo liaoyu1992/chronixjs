@@ -210,3 +210,64 @@ describe('defaultBarStackHeightPass — multi-row + orphan inputs', () => {
     expect(heightsPerRow).toEqual([42]);
   });
 });
+
+describe('defaultBarStackHeightPass — levelByBarId (Phase 30)', () => {
+  it('assigns level 0 to a single bar on a row', () => {
+    const { levelByBarId } = defaultBarStackHeightPass.compute({
+      bars: [bar('b1', 'r1', '2026-05-13T00:00:00', '2026-05-13T02:00:00')],
+      rows: [row('r1')],
+      axis: dayAxis,
+    });
+
+    expect(levelByBarId.get('b1')).toBe(0);
+  });
+
+  it('assigns distinct ascending levels to mutually-overlapping bars on the same row in sorted-by-start order', () => {
+    const { levelByBarId } = defaultBarStackHeightPass.compute({
+      bars: [
+        bar('late', 'r1', '2026-05-13T03:00:00', '2026-05-13T07:00:00'),
+        bar('early', 'r1', '2026-05-13T00:00:00', '2026-05-13T05:00:00'),
+        bar('middle', 'r1', '2026-05-13T01:00:00', '2026-05-13T06:00:00'),
+      ],
+      rows: [row('r1')],
+      axis: dayAxis,
+    });
+
+    // Sort key: (start ASC, end ASC). Order: early(0–5), middle(1–6), late(3–7).
+    // All three pair-wise overlap → distinct levels 0, 1, 2.
+    expect(levelByBarId.get('early')).toBe(0);
+    expect(levelByBarId.get('middle')).toBe(1);
+    expect(levelByBarId.get('late')).toBe(2);
+  });
+
+  it('reuses level 0 across different rows simultaneously (per-row scoping)', () => {
+    const { levelByBarId } = defaultBarStackHeightPass.compute({
+      bars: [
+        bar('a', 'r1', '2026-05-13T00:00:00', '2026-05-13T05:00:00'),
+        bar('b', 'r2', '2026-05-13T00:00:00', '2026-05-13T05:00:00'),
+        bar('c', 'r3', '2026-05-13T00:00:00', '2026-05-13T05:00:00'),
+      ],
+      rows: [row('r1'), row('r2'), row('r3')],
+      axis: dayAxis,
+    });
+
+    expect(levelByBarId.get('a')).toBe(0);
+    expect(levelByBarId.get('b')).toBe(0);
+    expect(levelByBarId.get('c')).toBe(0);
+  });
+
+  it('omits bars whose range falls entirely outside the axis from levelByBarId', () => {
+    const { levelByBarId } = defaultBarStackHeightPass.compute({
+      bars: [
+        bar('in-range', 'r1', '2026-05-13T01:00:00', '2026-05-13T02:00:00'),
+        // Far-future bar (way past day-view axis end at 2026-05-13T23:59:59).
+        bar('out-of-range', 'r1', '2030-01-01T00:00:00', '2030-01-01T05:00:00'),
+      ],
+      rows: [row('r1')],
+      axis: dayAxis,
+    });
+
+    expect(levelByBarId.has('in-range')).toBe(true);
+    expect(levelByBarId.has('out-of-range')).toBe(false);
+  });
+});
