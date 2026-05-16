@@ -201,11 +201,11 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
   // The arg also carries the theme floor for the font fields since
   // chronix doesn't have prop / spec layers for fonts in v0.
   const hasAnyCallback =
-    input.barBackgroundColorCallback ||
-    input.barBorderColorCallback ||
-    input.barTextColorCallback ||
-    input.barFontSizeCallback ||
-    input.barFontWeightCallback;
+    input.barBackgroundColorCallback !== undefined ||
+    input.barBorderColorCallback !== undefined ||
+    input.barTextColorCallback !== undefined ||
+    input.barFontSizeCallback !== undefined ||
+    input.barFontWeightCallback !== undefined;
   if (hasAnyCallback) {
     const arg: BarStyleArg = {
       bar: input.bar,

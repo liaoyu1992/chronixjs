@@ -280,6 +280,40 @@ const TRIANGLE_SIZE = 6;
 const TRIANGLE_MARGIN = 1;
 
 /**
+ * Phase 28.2: bar title text positioning. Default left padding
+ * pushes the title 8 px right of the bar's left edge; default right
+ * padding leaves 4 px clear on the trailing edge. When a continuation
+ * triangle is present on either side, the title shifts inward by
+ * `TRIANGLE_MARGIN + TRIANGLE_SIZE + 4 = 11 px` to clear the
+ * triangle. Both numbers ported verbatim from the parity reference.
+ */
+const TITLE_LEFT_PADDING = 8;
+const TITLE_RIGHT_PADDING = 4;
+const TITLE_TRIANGLE_GAP = 4;
+
+/**
+ * Phase 28.2: truncate `text` to the longest prefix that fits inside
+ * `maxWidth` at `fontSize`, append `'...'` ellipsis when truncated.
+ * Returns `''` when fewer than 4 characters fit (no room for prefix
+ * + ellipsis).
+ *
+ * Char-count truncation using the parity reference's empirical
+ * `0.6 × fontSize` average glyph width (matches the demo's default
+ * font stack). Deterministic — no DOM measurement, no canvas — so
+ * jsdom tests can pin the exact truncated string.
+ *
+ * Ported verbatim from `d:/work/k-ui/packages/gantt/src/timeline/TimelineEvent.tsx`
+ * `truncateText` (lines 715-730).
+ */
+function truncateBarText(text: string, maxWidth: number, fontSize: number): string {
+  const avgCharWidth = fontSize * 0.6;
+  const maxChars = Math.floor(maxWidth / avgCharWidth);
+  if (text.length <= maxChars) return text;
+  if (maxChars <= 3) return '';
+  return text.slice(0, maxChars - 3) + '...';
+}
+
+/**
  * Phase 26: snap a horizontal grid line's y coordinate to the device
  * pixel grid so a 1-px stroke renders as a single device row at any
  * `devicePixelRatio` (100% / 125% / 150% OS scaling) and any
@@ -1748,6 +1782,70 @@ export const ChronixGantt = defineComponent({
               'pointer-events': 'none',
             }),
           );
+        }
+
+        // Phase 28.2: bar title auto-render. Emits a `<text class=
+        // "cx-gantt-bar-text">` per bar with a non-empty `title`,
+        // positioned inside the bar body. Inserted AFTER continuation
+        // triangles (Phase 27) and BEFORE the progress fill so the
+        // title paints below the translucent progress overlay —
+        // matches the parity reference's paint order (rect →
+        // triangles → title → progress → label → handle).
+        //
+        // Gates: outer (`renderWidth > 30`) skips very narrow bars
+        // (matches k-ui's `finalWidth > 30` gate); inner
+        // (`availableWidth >= 10`) skips when continuation triangles
+        // eat most of the title's space.
+        //
+        // Title position adapts to continuation triangles (Phase 27):
+        // when `!bar.isStart`, `leftPadding = TRIANGLE_MARGIN +
+        // TRIANGLE_SIZE + TITLE_TRIANGLE_GAP = 11 px`; same on the
+        // right when `!bar.isEnd`. Otherwise the parity reference's
+        // 8 px left + 4 px right insets apply.
+        //
+        // Truncation via `truncateBarText` (char-count + ellipsis,
+        // ported verbatim from the parity reference). `<text>` uses
+        // `text-anchor="start"` + `dominant-baseline="middle"` so
+        // the title anchors at `(titleStartX, bar mid-line)`.
+        // `pointer-events: none` + `user-select: none` so the title
+        // never intercepts clicks on the bar body.
+        const title = sourceBar?.title;
+        if (title && title.length > 0 && renderWidth > 30) {
+          const leftPadding = !bar.isStart
+            ? TRIANGLE_MARGIN + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP
+            : TITLE_LEFT_PADDING;
+          const rightPadding = !bar.isEnd
+            ? TRIANGLE_MARGIN + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP
+            : TITLE_RIGHT_PADDING;
+          const titleStartX = renderX + leftPadding;
+          const titleEndX = renderX + renderWidth - rightPadding;
+          const availableWidth = Math.max(0, titleEndX - titleStartX);
+          if (availableWidth >= 10) {
+            const truncated = truncateBarText(title, availableWidth, resolvedStyle.fontSize);
+            if (truncated.length > 0) {
+              nodes.push(
+                h(
+                  'text',
+                  {
+                    key: `${bar.barId}-title`,
+                    'data-bar-id': bar.barId,
+                    class: 'cx-gantt-bar-text',
+                    x: titleStartX,
+                    y: renderY + bar.height / 2,
+                    fill: resolvedStyle.textColor,
+                    'font-size': resolvedStyle.fontSize,
+                    'font-weight': resolvedStyle.fontWeight,
+                    'font-family': 'inherit',
+                    'text-anchor': 'start',
+                    'dominant-baseline': 'middle',
+                    'pointer-events': 'none',
+                    style: { userSelect: 'none' },
+                  },
+                  truncated,
+                ),
+              );
+            }
+          }
         }
 
         // Progress fill + handle: only for bars that declared BOTH
