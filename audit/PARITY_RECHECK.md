@@ -563,6 +563,31 @@ Trigger: 2026-05-16 user spotted that vertical/horizontal grid lines, event cont
 
 **Discipline implication**: per `feedback_chronix_parity_discipline.md`, each new phase needs its own design doc + parity assertion + /phase-close before DONE. Per `feedback_quality_acceleration.md`, each runs single-session no-batch.
 
+### Layout-algorithm 4th-dimension sweep additions (2026-05-16 late evening)
+
+See [`LAYOUT_ALGORITHM_GAP_SWEEP_2026-05-16.md`](LAYOUT_ALGORITHM_GAP_SWEEP_2026-05-16.md). User-triggered after spotting that same-row overlapping bars stack vertically in k-ui but render at identical Y in chronix. This sweep is the 4th audit dimension: per-pass internal computation vs downstream consumption ("pipeline integrity").
+
+#### Phase number added by this addendum
+
+| Phase        | Title                  | Items                                                                                                                                                                                                                                                                                                                                                                                                                             | Status                                 |
+| ------------ | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| **Phase 30** | Bar stacking placement | (a) `BarStackHeightPassOutput` adds `levelByBarId` field; (b) `BarPlacementPassInput` adds `levelByBarId` + `barStackSpacing` fields; (c) `BarPlacementPass.place` emits `y = strip.y + padding + level * (barHeight + spacing)`; (d) `useGanttLayout` threads level map between passes; (e) new test scenario: 3 same-row overlapping bars → 3 distinct Y; (f) parity-spec cross-demo assertion with synthetic 3-bar-overlap row | **Planned** ⭐ user-flagged 2026-05-16 |
+
+#### Disposition register row corrections
+
+| Original row                                   | Original disposition | Correction                                                                                                                                        |
+| ---------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Row 78 of Batch 4 "BarStackHeightPass formula" | 🟢 GREEN             | Add note: "🟢 height-formula only — per-bar level placement was NOT validated. Pipeline-integrity gap identified 2026-05-16; Phase 30 closes it." |
+
+#### A4 (sweep-agent) false-positive flagged
+
+A4 claimed `weekendsVisible: false` was 🔴 BLOCKING ("plumbed but never read"). Independent grep verification found 17 matches across `axis-range-planner.ts` lines 89-309 — **Phase 18 IS implemented correctly**. The audit-method lesson: agent claims about "never read / never used" require independent grep verification before triaging. Documented in the sweep doc's "Agent A4 quality note" section.
+
+#### Counts after layout-algorithm sweep
+
+- **Planned with phase number**: previous 11-12 + **1 new phase (Phase 30)** = 12-13 total.
+- **Defer-indefinite + Reject**: unchanged (A4's other real findings were already cataloged from prior sweeps).
+
 ### Roadmap implications (historical — superseded 2026-05-16)
 
 **⚠ This section was the original recheck's roadmap framing. The
