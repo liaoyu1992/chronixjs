@@ -56,6 +56,10 @@ function parityEventToBar(event: ParityEvent): BarSpec {
       end: new Date(event.endMs),
     },
     dprIntent: 'crisp-pixel',
+    // Phase 28.2: bar title from the parity fixture so chronix's
+    // bar-text auto-render emits the same per-bar string the k-ui
+    // demo paints. Required for cross-demo content-parity assertion.
+    title: event.title,
     ...(event.progressValue !== undefined
       ? {
           progress: {

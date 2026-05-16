@@ -1809,8 +1809,21 @@ export const ChronixGantt = defineComponent({
         // the title anchors at `(titleStartX, bar mid-line)`.
         // `pointer-events: none` + `user-select: none` so the title
         // never intercepts clicks on the bar body.
+        // Phase 28.2: also gate on axis-overlap. The parity reference's
+        // `TimelineEvent` doesn't mount for bars whose calendar range
+        // falls outside the visible axis, so its text count is bars-
+        // overlapping-axis only. Chronix's `BarPlacementPass` produces
+        // a `PlacedBar` for every bar (off-axis bars get x < 0 or
+        // x > totalWidth) so the title-gate has to do the same check
+        // the placement pass did. Equivalent to `hasAxisOverlap`:
+        // `bar.x < a.totalWidth && bar.x + bar.width > 0`.
+        // (Same pattern as Phase 27's axis-overlap gate on continuation
+        // flags. Bar rects still mount off-screen — only text is
+        // suppressed — matching k-ui's mount-vs-no-mount decision
+        // applied at the title level.)
+        const titleHasAxisOverlap = bar.x < a.totalWidth && bar.x + bar.width > 0;
         const title = sourceBar?.title;
-        if (title && title.length > 0 && renderWidth > 30) {
+        if (titleHasAxisOverlap && title && title.length > 0 && renderWidth > 30) {
           const leftPadding = !bar.isStart
             ? TRIANGLE_MARGIN + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP
             : TITLE_LEFT_PADDING;

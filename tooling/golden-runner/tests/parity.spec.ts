@@ -17,6 +17,7 @@ import {
   loadBothDemos,
 } from '../src/parity-helpers.js';
 import {
+  BAR_TEXT,
   CONTINUATION_LEFT,
   CONTINUATION_RIGHT,
   GRID_HLINE,
@@ -1845,6 +1846,112 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
         `Phase 27 continuation total count (month): kui=${kuiTotal} chronix=${chronixTotal}`,
       );
       expect(chronixTotal).toBe(kuiTotal);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase28.2-bar-text count parity (week view)', async ({ browser }) => {
+    // Phase 28.2: bars wide enough to show titles get a <text> element.
+    // Week view's hourly axis produces bar widths spanning many slots
+    // (multi-day bars × ~1440-px viewport), so most bars qualify. Both
+    // sides emit the same per-bar count when given the same axis + bar
+    // data + same `renderWidth > 30` gate. Same parity dataset → exact
+    // count match.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase28.2-bar-text-count-week',
+      viewId: 'week',
+    });
+    try {
+      const kuiCount = await kuiPage.evaluate(
+        ({ sel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(sel).length;
+        },
+        { sel: BAR_TEXT, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCount = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-text').length,
+      );
+      console.warn(`Phase 28.2 bar-text count (week): kui=${kuiCount} chronix=${chronixCount}`);
+      expect(kuiCount, 'kui bar-text count > 0').toBeGreaterThan(0);
+      expect(chronixCount, 'chronix bar-text count > 0').toBeGreaterThan(0);
+      expect(chronixCount).toBe(kuiCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  // Phase 28.2 architectural divergence: bar-text CONTENT parity is
+  // not asserted across demos because the parity reference combines
+  // bar title + progress textFormat into a single text element
+  // (e.g. "Foo - 60% 完成"); chronix keeps title and progress label
+  // as SEPARATE elements (Phase 7's `cx-gantt-progress-label` is
+  // text-anchor="middle" centered; chronix's `cx-gantt-bar-text` is
+  // text-anchor="start" left-aligned — combining would break either
+  // anchor). EVERY event in the parity fixture carries progress, so
+  // there's no no-progress sub-set to compare cleanly.
+  //
+  // Truncation-algorithm parity is verified by adapter tests that
+  // pin specific truncated outputs (e.g. "012..." from a known input
+  // at a known width) in `chronix-gantt-bar-text.test.ts`. Count
+  // parity (next 3 tests) confirms both sides apply the same
+  // renderWidth-gate and same bar-overlap-axis filter.
+
+  test('phase28.2-bar-text count parity (day view)', async ({ browser }) => {
+    // Day view has wider bars (24h spread over ~1440 px), so fewer
+    // bars fail the renderWidth > 30 gate. Different bar subset
+    // than week view but same exact-count parity requirement.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase28.2-bar-text-count-day',
+      viewId: 'day',
+    });
+    try {
+      const kuiCount = await kuiPage.evaluate(
+        ({ sel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(sel).length;
+        },
+        { sel: BAR_TEXT, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCount = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-text').length,
+      );
+      console.warn(`Phase 28.2 bar-text count (day): kui=${kuiCount} chronix=${chronixCount}`);
+      expect(chronixCount).toBe(kuiCount);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase28.2-bar-text gate threshold parity (month view)', async ({ browser }) => {
+    // Month view has narrower bars; many fail the `renderWidth > 30`
+    // gate. The exact-count requirement still applies: both sides
+    // use the same threshold, so the count of bars that pass it
+    // should match.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase28.2-bar-text-gate-month',
+      viewId: 'month',
+    });
+    try {
+      const kuiCount = await kuiPage.evaluate(
+        ({ sel, bodySel }) => {
+          const body = document.querySelector(bodySel);
+          if (!body) return 0;
+          return body.querySelectorAll(sel).length;
+        },
+        { sel: BAR_TEXT, bodySel: TIMELINE_BODY_WRAPPER },
+      );
+      const chronixCount = await chronixPage.evaluate(
+        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-text').length,
+      );
+      console.warn(`Phase 28.2 bar-text count (month): kui=${kuiCount} chronix=${chronixCount}`);
+      expect(chronixCount).toBe(kuiCount);
     } finally {
       await kuiPage.context().close();
       await chronixPage.context().close();

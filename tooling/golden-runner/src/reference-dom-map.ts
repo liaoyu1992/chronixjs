@@ -206,3 +206,18 @@ export const GRID_HLINE = '.gantt-grid-hline';
  */
 export const CONTINUATION_LEFT = '.gantt-event-continuation-left';
 export const CONTINUATION_RIGHT = '.gantt-event-continuation-right';
+
+// ─── Bar title text (Phase 28.2) ────────────────────────────────────
+
+/**
+ * Phase 28.2: auto-rendered bar title text emitted by the upstream
+ * demo's `TimelineEvent.tsx:543-656`. One `<text class="gantt-event-text">`
+ * per event wide enough to show its title (the parity reference's
+ * `showText && finalWidth > 30 && availableWidth >= 10` gate).
+ *
+ * Chronix equivalent: `.cx-gantt-bar-text`. Both sides emit the
+ * same per-bar count when given the same axis + bar data and
+ * apply the same truncation algorithm. Cross-demo content parity
+ * (Set of truncated strings) is the load-bearing check.
+ */
+export const BAR_TEXT = '.gantt-event-text';

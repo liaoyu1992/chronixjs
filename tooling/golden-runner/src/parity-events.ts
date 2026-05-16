@@ -81,6 +81,14 @@ export interface ParityEvent {
   readonly endMs: number;
   /** 0..100 progress percentage; undefined when k-ui demo's event has no progress field. */
   readonly progressValue?: number;
+  /**
+   * Phase 28.2: bar title text. Mirrors the k-ui demo's per-event
+   * `title` field at `examples/gantt/vue3/src/DemoApp.vue:691-1271`
+   * so cross-demo content parity (Set of truncated text contents)
+   * holds. Always present — every event in `generateTestEvents()`
+   * carries a title.
+   */
+  readonly title: string;
 }
 
 /**
@@ -106,6 +114,7 @@ export function buildParityEvents(todayMs: number): readonly ParityEvent[] {
   const E = (
     id: string,
     resourceId: string,
+    title: string,
     sd: number,
     sh: number,
     ed: number,
@@ -116,35 +125,38 @@ export function buildParityEvents(todayMs: number): readonly ParityEvent[] {
   ): ParityEvent => ({
     id,
     resourceId,
+    title,
     startMs: eventEpoch(todayMs, sd, sh, sm),
     endMs: eventEpoch(todayMs, ed, eh, em),
     ...(progressValue !== undefined ? { progressValue } : {}),
   });
+  // Titles mirror `examples/gantt/vue3/src/DemoApp.vue:691-1271`
+  // event-by-event so cross-demo content parity (Phase 28.2) holds.
   return [
-    E('event-1', '32', -5, 8, -2, 18, 60),
-    E('event-2', '25', -3, 9, +1, 17, 40),
-    E('event-3', '25', +2, 8, +5, 16, 0),
-    E('event-4', '16', -2, 10, +2, 15),
-    E('event-5', '16', +3, 9, +7, 17),
-    E('event-6', '19', -7, 8, -3, 18),
-    E('event-7', '19', -1, 9, +10, 16),
-    E('event-8', '20', 0, 8, +5, 18),
-    E('event-9', '18', +1, 10, +7, 15),
-    E('event-10', '21', -5, 8, +3, 18),
-    E('event-11', '21', +4, 9, +14, 17),
-    E('event-12', '33', -3, 8, +5, 18),
-    E('event-13', '3', -2, 9, +7, 16),
-    E('event-14', '3', +8, 8, +20, 17),
-    E('event-15', '4', 0, 10, +5, 15),
-    E('event-16', '2', +1, 9, +10, 16),
-    E('event-17', '8', -1, 8, +7, 18, 50),
-    E('event-18', '9', +3, 10, +14, 17),
-    E('event-19', '9', +15, 9, +30, 16),
-    E('event-20', '28', -1, 14, +2, 20),
-    E('event-21', '10', 0, 13, +3, 19),
-    E('event-22', '31', -7, 8, +20, 18),
-    E('event-23', '11', -5, 9, +25, 17),
-    E('event-24', '27', +5, 8, +14, 16),
-    E('event-25', '12', +15, 9, +30, 17),
+    E('event-1', '32', 'A33机型-大修项目-阶段1', -5, 8, -2, 18, 60),
+    E('event-2', '25', 'A33-发动机检查', -3, 9, +1, 17, 40),
+    E('event-3', '25', 'A33-起落架维护', +2, 8, +5, 16, 0),
+    E('event-4', '16', 'A33-液压系统检修', -2, 10, +2, 15),
+    E('event-5', '16', 'A33-电气系统检查', +3, 9, +7, 17),
+    E('event-6', '19', 'A32-机身检查', -7, 8, -3, 18),
+    E('event-7', '19', 'A32-发动机大修', -1, 9, +10, 16),
+    E('event-8', '20', 'A32-73N-综合检查', 0, 8, +5, 18),
+    E('event-9', '18', 'A32-航电系统升级', +1, 10, +7, 15),
+    E('event-10', '21', '73M-73N-发动机更换', -5, 8, +3, 18),
+    E('event-11', '21', '73M-73N-系统测试', +4, 9, +14, 17),
+    E('event-12', '33', '787机型-4C检查-阶段1', -3, 8, +5, 18),
+    E('event-13', '3', '73M-73N-起落架大修', -2, 9, +7, 16),
+    E('event-14', '3', '73M-73N-液压系统检修', +8, 8, +20, 17),
+    E('event-15', '4', '73N-发动机检查', 0, 10, +5, 15),
+    E('event-16', '2', '73N-航电系统检查', +1, 9, +10, 16),
+    E('event-17', '8', 'A32-73N-综合维护', -1, 8, +7, 18, 50),
+    E('event-18', '9', '多机型-综合测试', +3, 10, +14, 17),
+    E('event-19', '9', '多机型-最终验收', +15, 9, +30, 16),
+    E('event-20', '28', '紧急维修-故障排除', -1, 14, +2, 20),
+    E('event-21', '10', '紧急维修-部件更换', 0, 13, +3, 19),
+    E('event-22', '31', '长期停场-定期检查', -7, 8, +20, 18),
+    E('event-23', '11', '长期停场-维护保养', -5, 9, +25, 17),
+    E('event-24', '27', '封存-预处理', +5, 8, +14, 16),
+    E('event-25', '12', '封存-最终处理', +15, 9, +30, 17),
   ];
 }
