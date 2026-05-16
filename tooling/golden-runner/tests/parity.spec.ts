@@ -1280,10 +1280,10 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       )!.text;
 
       await kuiPage.evaluate(() =>
-        (document.querySelector("[data-test-handle-method='next']") as HTMLElement | null)?.click(),
+        document.querySelector<HTMLElement>("[data-test-handle-method='next']")?.click(),
       );
       await chronixPage.evaluate(() =>
-        (document.querySelector("[data-test-handle-method='next']") as HTMLElement | null)?.click(),
+        document.querySelector<HTMLElement>("[data-test-handle-method='next']")?.click(),
       );
       // Give the reactive cycle a frame to settle.
       await kuiPage.waitForTimeout(50);
@@ -1326,18 +1326,14 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
     });
     try {
       await kuiPage.evaluate(() =>
-        (
-          document.querySelector(
-            "[data-test-handle-method='changeView-month']",
-          ) as HTMLElement | null
-        )?.click(),
+        document
+          .querySelector<HTMLElement>("[data-test-handle-method='changeView-month']")
+          ?.click(),
       );
       await chronixPage.evaluate(() =>
-        (
-          document.querySelector(
-            "[data-test-handle-method='changeView-month']",
-          ) as HTMLElement | null
-        )?.click(),
+        document
+          .querySelector<HTMLElement>("[data-test-handle-method='changeView-month']")
+          ?.click(),
       );
       await kuiPage.waitForTimeout(50);
       await chronixPage.waitForTimeout(50);
@@ -1376,24 +1372,20 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
     try {
       // Step the anchor away from today.
       await kuiPage.evaluate(() =>
-        (document.querySelector("[data-test-handle-method='next']") as HTMLElement | null)?.click(),
+        document.querySelector<HTMLElement>("[data-test-handle-method='next']")?.click(),
       );
       await chronixPage.evaluate(() =>
-        (document.querySelector("[data-test-handle-method='next']") as HTMLElement | null)?.click(),
+        document.querySelector<HTMLElement>("[data-test-handle-method='next']")?.click(),
       );
       await kuiPage.waitForTimeout(50);
       await chronixPage.waitForTimeout(50);
 
       // Reset.
       await kuiPage.evaluate(() =>
-        (
-          document.querySelector("[data-test-handle-method='today']") as HTMLElement | null
-        )?.click(),
+        document.querySelector<HTMLElement>("[data-test-handle-method='today']")?.click(),
       );
       await chronixPage.evaluate(() =>
-        (
-          document.querySelector("[data-test-handle-method='today']") as HTMLElement | null
-        )?.click(),
+        document.querySelector<HTMLElement>("[data-test-handle-method='today']")?.click(),
       );
       await kuiPage.waitForTimeout(50);
       await chronixPage.waitForTimeout(50);
@@ -1444,9 +1436,7 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
     });
     try {
       await chronixPage.evaluate(() =>
-        (
-          document.querySelector("[data-test-handle-method='scrollToDate']") as HTMLElement | null
-        )?.click(),
+        document.querySelector<HTMLElement>("[data-test-handle-method='scrollToDate']")?.click(),
       );
       await chronixPage.waitForTimeout(50);
 
