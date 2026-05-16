@@ -1,6 +1,12 @@
 # Phase 28.2 — Bar title auto-render + font callbacks
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-16)** — all 5 commits landed + /phase-close passed + ci-check green. See `audit/journal/2026-05-13.md` "Phase 28.2" section for full wrap-up.
+
+> **Implementation notes (2026-05-16, mid-Phase-28.2)**:
+>
+> 1. **Parity fixture initially lacked titles** → chronix=0 across all assertions. Fixed by adding `title` to `ParityEvent` interface + populating from k-ui's per-event titles (verbatim from `examples/gantt/vue3/src/DemoApp.vue:691-1271`).
+> 2. **Chronix emitted titles for off-axis bars** (kui=13 chronix=25 in day view): k-ui's `TimelineEvent` doesn't mount for bars whose calendar range falls outside the visible axis; chronix's bar render path produces a `PlacedBar` for every input bar (off-axis bars get `x < 0` or `x > totalWidth`). Same pattern as Phase 27's axis-overlap finding. Fix: adapter title-gate now checks `bar.x < a.totalWidth && bar.x + bar.width > 0` before emitting text. After fix: exact count parity (week 20=20, day 13=13, month 25=25).
+> 3. **Content parity dropped from the test plan** — the parity reference combines title + progress textFormat into one element (`"Foo - 60% 完成"`); chronix keeps them as separate `<text>` elements (architectural divergence already documented as ❌ Reject for v0). Every event in the parity fixture carries progress, so there's no no-progress subset for clean comparison. Truncation-algorithm parity is covered by adapter tests that pin specific truncated strings (e.g. `"012..."`).
 
 ## Problem
 
