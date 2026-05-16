@@ -70,6 +70,8 @@ export type {
   BarClickPayload,
   BarColorFunc,
   BarDropPayload,
+  BarFontSizeFunc,
+  BarFontWeightFunc,
   BarResizePayload,
   BarsSetPayload,
   BarStyleArg,

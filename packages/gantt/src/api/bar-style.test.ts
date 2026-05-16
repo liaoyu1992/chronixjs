@@ -36,6 +36,9 @@ function baseInput(barSpec: BarSpec): ResolveBarStyleInput {
     themeBackgroundColor: '#3b82f6',
     themeBorderColor: '#1e40af',
     themeTextColor: '#ffffff',
+    // Phase 28.2: font cascade defaults match `defaultChronixTheme`.
+    themeFontSize: 12,
+    themeFontWeight: 400,
   };
 }
 
@@ -46,6 +49,8 @@ describe('resolveBarStyle — theme default cascade', () => {
       backgroundColor: '#3b82f6',
       borderColor: '#1e40af',
       textColor: '#ffffff',
+      fontSize: 12,
+      fontWeight: 400,
     });
   });
 });
@@ -184,5 +189,77 @@ describe('resolveBarStyle — full cascade precedence', () => {
       barBackgroundColorCallback: () => '#callback',
     });
     expect(result.backgroundColor).toBe('#callback');
+  });
+});
+
+describe('resolveBarStyle — Phase 28.2 font cascade', () => {
+  it('returns themeFontSize / themeFontWeight when no font callback is set', () => {
+    const result = resolveBarStyle(baseInput(bar('b1')));
+    expect(result.fontSize).toBe(12);
+    expect(result.fontWeight).toBe(400);
+  });
+
+  it('barFontSizeCallback returning a number overrides the theme default', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barFontSizeCallback: () => 16,
+    });
+    expect(result.fontSize).toBe(16);
+  });
+
+  it('barFontWeightCallback returning a number overrides the theme default', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barFontWeightCallback: () => 700,
+    });
+    expect(result.fontWeight).toBe(700);
+  });
+
+  it('barFontWeightCallback returning a CSS keyword string is passed through verbatim', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barFontWeightCallback: () => 'bold',
+    });
+    expect(result.fontWeight).toBe('bold');
+  });
+
+  it('callback returning `undefined` falls through to the theme default', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barFontSizeCallback: () => undefined,
+      barFontWeightCallback: () => undefined,
+    });
+    expect(result.fontSize).toBe(12);
+    expect(result.fontWeight).toBe(400);
+  });
+
+  it('BarStyleArg passed to font callbacks carries `defaultFontSize` / `defaultFontWeight` from the theme', () => {
+    let receivedSize: number | undefined;
+    let receivedWeight: number | undefined;
+    resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barFontSizeCallback: (arg) => {
+        receivedSize = arg.defaultFontSize;
+        return undefined;
+      },
+      barFontWeightCallback: (arg) => {
+        receivedWeight = arg.defaultFontWeight;
+        return undefined;
+      },
+    });
+    expect(receivedSize).toBe(12);
+    expect(receivedWeight).toBe(400);
+  });
+
+  it('font callbacks coexist with color callbacks without interference', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barBackgroundColorCallback: () => '#color',
+      barFontSizeCallback: () => 14,
+      barFontWeightCallback: () => 600,
+    });
+    expect(result.backgroundColor).toBe('#color');
+    expect(result.fontSize).toBe(14);
+    expect(result.fontWeight).toBe(600);
   });
 });

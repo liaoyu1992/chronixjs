@@ -28,6 +28,8 @@ import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selecti
 import type {
   AxisRangePlanInput,
   BarColorFunc,
+  BarFontSizeFunc,
+  BarFontWeightFunc,
   BarSlotArgs,
   BarSpec,
   BarTable,
@@ -584,6 +586,25 @@ export const ChronixGantt = defineComponent({
     /** Phase 20: per-bar text callback (same cascade). */
     barTextColorCallback: {
       type: Function as PropType<BarColorFunc | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 28.2: per-bar font-size callback. Same `BarStyleArg`
+     * cascade as the 3 color callbacks. Receives the theme default
+     * via `arg.defaultFontSize`; returning a number overrides;
+     * returning `undefined` defers to `theme.barFontSize`.
+     */
+    barFontSizeCallback: {
+      type: Function as PropType<BarFontSizeFunc | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 28.2: per-bar font-weight callback. Same cascade as
+     * `barFontSizeCallback`. Numeric (400 / 600 / 700) OR CSS
+     * keyword string (`'normal'` / `'bold'`) both accepted.
+     */
+    barFontWeightCallback: {
+      type: Function as PropType<BarFontWeightFunc | undefined>,
       default: undefined,
     },
     /**
@@ -1593,6 +1614,9 @@ export const ChronixGantt = defineComponent({
               themeBackgroundColor: t.barBackgroundColor,
               themeBorderColor: t.barBorderColor,
               themeTextColor: t.barTextColor,
+              // Phase 28.2: thread font cascade theme defaults.
+              themeFontSize: t.barFontSize,
+              themeFontWeight: t.barFontWeight,
               ...(props.barColor !== undefined ? { barColor: props.barColor } : {}),
               ...(props.barBackgroundColor !== undefined
                 ? { barBackgroundColor: props.barBackgroundColor }
@@ -1610,11 +1634,20 @@ export const ChronixGantt = defineComponent({
               ...(props.barTextColorCallback
                 ? { barTextColorCallback: props.barTextColorCallback }
                 : {}),
+              // Phase 28.2: font callback props.
+              ...(props.barFontSizeCallback
+                ? { barFontSizeCallback: props.barFontSizeCallback }
+                : {}),
+              ...(props.barFontWeightCallback
+                ? { barFontWeightCallback: props.barFontWeightCallback }
+                : {}),
             })
           : {
               backgroundColor: t.barBackgroundColor,
               borderColor: t.barBorderColor,
               textColor: t.barTextColor,
+              fontSize: t.barFontSize,
+              fontWeight: t.barFontWeight,
             };
         const nodes: ReturnType<typeof h>[] = [];
         if (barTemplate) {

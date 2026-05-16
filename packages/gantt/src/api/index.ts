@@ -1,5 +1,7 @@
 export type {
   BarColorFunc,
+  BarFontSizeFunc,
+  BarFontWeightFunc,
   BarStyleArg,
   ResolvedBarStyle,
   ResolveBarStyleInput,

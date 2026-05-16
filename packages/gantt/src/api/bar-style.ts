@@ -52,6 +52,19 @@ export interface BarStyleArg {
   readonly defaultBorderColor: string;
   /** Resolved text color after layers 1-3. */
   readonly defaultTextColor: string;
+  /**
+   * Phase 28.2: resolved font size (px) after the theme layer. No
+   * per-prop / per-spec font layers in v0 — only theme default and
+   * callback override; this field carries the theme floor that the
+   * callback can compare against.
+   */
+  readonly defaultFontSize: number;
+  /**
+   * Phase 28.2: resolved font weight (numeric: 400 / 600 / etc.)
+   * after the theme layer. Same v0 cascade scope as
+   * `defaultFontSize`.
+   */
+  readonly defaultFontWeight: number;
 }
 
 /**
@@ -62,6 +75,22 @@ export interface BarStyleArg {
 export type BarColorFunc = (arg: BarStyleArg) => string | undefined;
 
 /**
+ * Phase 28.2: per-bar font-size callback. Returns a pixel number or
+ * `undefined` to defer to the theme default. Same `BarStyleArg`
+ * shape as the color callbacks; same cascade-slot semantics.
+ */
+export type BarFontSizeFunc = (arg: BarStyleArg) => number | undefined;
+
+/**
+ * Phase 28.2: per-bar font-weight callback. Returns a numeric
+ * weight (400 / 600 / 700) OR a CSS keyword string (`'normal'` /
+ * `'bold'`) OR `undefined` to defer to the theme default. The
+ * adapter casts the resolved value to a string at the `<text>`
+ * attribute so either form is acceptable.
+ */
+export type BarFontWeightFunc = (arg: BarStyleArg) => number | string | undefined;
+
+/**
  * The final resolved per-bar style. Consumed by the default `<rect>`
  * render (inline `fill=` / `stroke=`) and by custom slot renderers
  * via `BarSlotArgs.resolvedXxx`.
@@ -70,6 +99,17 @@ export interface ResolvedBarStyle {
   readonly backgroundColor: string;
   readonly borderColor: string;
   readonly textColor: string;
+  /**
+   * Phase 28.2: resolved font size in pixels for bar-title rendering.
+   * Theme default OR callback override.
+   */
+  readonly fontSize: number;
+  /**
+   * Phase 28.2: resolved font weight for bar-title rendering. Either
+   * numeric (`400`) or a CSS keyword string (`'normal'`); the adapter
+   * casts to string when setting the SVG attribute.
+   */
+  readonly fontWeight: number | string;
 }
 
 /**
@@ -97,6 +137,12 @@ export interface ResolveBarStyleInput {
   readonly barBackgroundColorCallback?: BarColorFunc;
   readonly barBorderColorCallback?: BarColorFunc;
   readonly barTextColorCallback?: BarColorFunc;
+  // Phase 28.2: font cascade (theme + callback only; no prop / spec
+  // layer in v0 — add when a consumer asks).
+  readonly themeFontSize: number;
+  readonly themeFontWeight: number;
+  readonly barFontSizeCallback?: BarFontSizeFunc;
+  readonly barFontWeightCallback?: BarFontWeightFunc;
 }
 
 export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
@@ -145,14 +191,22 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
     textColor = style.textColor;
   }
 
+  // Phase 28.2: font cascade. Theme floor; callback override.
+  let fontSize = input.themeFontSize;
+  let fontWeight: number | string = input.themeFontWeight;
+
   // Layer 4: callbacks. Build the arg AFTER layers 1-3 so the
   // callback can compare against the cascaded defaults via
-  // `arg.defaultXxxColor`.
-  if (
+  // `arg.defaultXxxColor` / `arg.defaultFontSize` / `arg.defaultFontWeight`.
+  // The arg also carries the theme floor for the font fields since
+  // chronix doesn't have prop / spec layers for fonts in v0.
+  const hasAnyCallback =
     input.barBackgroundColorCallback ||
     input.barBorderColorCallback ||
-    input.barTextColorCallback
-  ) {
+    input.barTextColorCallback ||
+    input.barFontSizeCallback ||
+    input.barFontWeightCallback;
+  if (hasAnyCallback) {
     const arg: BarStyleArg = {
       bar: input.bar,
       placedBar: input.placedBar,
@@ -161,6 +215,8 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
       defaultBackgroundColor: backgroundColor,
       defaultBorderColor: borderColor,
       defaultTextColor: textColor,
+      defaultFontSize: fontSize,
+      defaultFontWeight: input.themeFontWeight,
     };
     if (input.barBackgroundColorCallback) {
       const result = input.barBackgroundColorCallback(arg);
@@ -182,6 +238,14 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
         textColor = result;
       }
     }
+    if (input.barFontSizeCallback) {
+      const result = input.barFontSizeCallback(arg);
+      if (result !== undefined) fontSize = result;
+    }
+    if (input.barFontWeightCallback) {
+      const result = input.barFontWeightCallback(arg);
+      if (result !== undefined) fontWeight = result;
+    }
   }
 
   // Background-overrides-border umbrella: if background was
@@ -193,5 +257,5 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
     borderColor = backgroundColor;
   }
 
-  return { backgroundColor, borderColor, textColor };
+  return { backgroundColor, borderColor, textColor, fontSize, fontWeight };
 }

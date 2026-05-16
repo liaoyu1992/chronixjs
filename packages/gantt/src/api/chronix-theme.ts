@@ -147,6 +147,23 @@ export interface ChronixTheme {
   /** `.cx-gantt-toolbar-title` text color. */
   readonly toolbarTitleColor: string;
 
+  // ----- Bar text (Phase 28.2) -----
+  /**
+   * Font size (px) for auto-rendered bar title text
+   * (`.cx-gantt-bar-text`). Default 12 — matches the parity
+   * reference's `<text fontSize='12px'>` default. The font-size
+   * cascade allows per-bar override via `barFontSizeCallback`.
+   */
+  readonly barFontSize: number;
+  /**
+   * Font weight for auto-rendered bar title text. Numeric (400 =
+   * normal, 600 = semibold, 700 = bold) to mirror chronix's
+   * existing `progressLabelFontWeight` / `sidebarHeaderFontWeight`
+   * tokens. Default 400 — matches the parity reference's `'normal'`
+   * fontWeight default. Per-bar override via `barFontWeightCallback`.
+   */
+  readonly barFontWeight: number;
+
   // ----- Grid lines (Phase 26) -----
   /**
    * Stroke / fill color for body grid lines: vertical cell-boundary
@@ -252,6 +269,14 @@ export const defaultChronixTheme: ChronixTheme = {
   toolbarButtonBorder: '#d1d5db',
   toolbarButtonColor: '#374151',
   toolbarTitleColor: '#111827',
+
+  // Bar text — Phase 28.2. 12px / 400 mirror the parity reference's
+  // `<text fontSize='12px' fontWeight='normal'>` defaults on the
+  // `.gantt-event-text` element. Per-bar overrides via the font
+  // callbacks (no per-prop layer in v0 — theme + callback cover
+  // the common cases without inflating the API).
+  barFontSize: 12,
+  barFontWeight: 400,
 
   // Grid lines — Phase 26. `#ddd` is the parity reference's
   // `--gantt-border-color` fallback used for both vertical solid cell

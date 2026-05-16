@@ -58,6 +58,9 @@ const EXPECTED_TOKEN_KEYS: readonly (keyof ChronixTheme)[] = [
   'toolbarButtonBorder',
   'toolbarButtonColor',
   'toolbarTitleColor',
+  // Bar text (Phase 28.2)
+  'barFontSize',
+  'barFontWeight',
   // Grid lines (Phase 26)
   'gridLineColor',
   'gridLineWeekStartColor',
@@ -126,6 +129,8 @@ describe('defaultChronixTheme', () => {
       'sidebarBodyFontSize',
       'progressLabelFontSize',
       'progressLabelFontWeight',
+      'barFontSize',
+      'barFontWeight',
     ];
     for (const key of numberKeys) {
       expect(typeof defaultChronixTheme[key]).toBe('number');
