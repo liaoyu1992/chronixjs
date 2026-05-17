@@ -1,6 +1,6 @@
 # Phase 25 — drag-distance gate (5px Pythagorean)
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-18)** — all 4 commits landed + /phase-close passed (6/6 gates) + ci-check green + parity-spec passes (kui Δ=0.00px chronix Δ=0.00px under 3-px wiggle). See `audit/journal/2026-05-13.md` "Phase 25" section for full wrap-up.
 
 ## Problem
 
