@@ -1,6 +1,6 @@
 # Phase 23 — sidebar dual-scrollport architecture
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-17)** — all 5 commits landed + /phase-close passed (6/6 gates) + ci-check green + cross-demo verify 27/27 (15 chronix-side baselines re-captured) + chronix-visual 5/5 (re-captured) + 2 new parity assertions. See `audit/journal/2026-05-13.md` "Phase 23" section for full wrap-up.
 
 ## Problem
 
