@@ -1,10 +1,14 @@
 import {
   BAR_SLOT_NAME,
+  HEADER_CELL_SLOT_NAME,
   LINK_SLOT_NAME,
   applyIncrement,
+  computeCellStateMeta,
   defaultChronixTheme,
   defaultLinkRouter,
   formatToolbarTitle,
+  getDayClassNames,
+  getSlotClassNames,
   nextAnchor,
   parseToolbar,
   prevAnchor,
@@ -27,7 +31,9 @@ import {
 
 import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
 import type {
+  AxisHeaderCell,
   AxisRangePlanInput,
+  AxisTick,
   BarClassNamesFunc,
   BarColorFunc,
   BarFontSizeFunc,
@@ -35,6 +41,7 @@ import type {
   BarSlotArgs,
   BarSpec,
   BarTable,
+  CellStateMeta,
   ChronixTheme,
   CustomLinkMarker,
   EventAllowFunc,
@@ -42,6 +49,7 @@ import type {
   EventOverlapFunc,
   GanttEventMap,
   GanttHandle,
+  HeaderCellSlotArgs,
   IncrementDelta,
   LinkMarker,
   LinkRenderArg,
@@ -70,6 +78,40 @@ import type {
  * model doesn't re-allocate per render.
  */
 const ALL_VIEW_IDS: readonly ViewId[] = ['day', 'week', 'month', 'season', 'halfYear', 'year'];
+
+/**
+ * Phase 29: argument bag passed to `headerCellClassNamesCallback`.
+ * Fires per rendered header cell — once for each outer band cell
+ * (e.g. month-name cell in a month/season/halfYear/year view), once
+ * for each tick-row text label. `bandIndex === 0` is the tick row;
+ * `bandIndex >= 1` indexes into the outer `axis.headerRows[]` stack
+ * (1 = innermost outer band, 2 = next outer, ...).
+ *
+ * `date` and `dayMeta` are populated when the cell represents a
+ * single calendar day — day-resolution tick labels (month / season /
+ * halfYear / year views) and the week view's per-day outer cells.
+ * Both `undefined` for multi-day band cells (month-name bands
+ * spanning many days) and for hourly tick labels in day/week views.
+ */
+export interface HeaderCellArg {
+  readonly bandIndex: number;
+  readonly cellIndex: number;
+  readonly date: Date | undefined;
+  readonly label: string;
+  readonly dayMeta: CellStateMeta | undefined;
+}
+
+/**
+ * Phase 29: per-header-cell class-names callback. Returns a class
+ * string, an array of strings, or `undefined` to add no extra
+ * classes. Returned classes append to the cell's primary `<rect>`
+ * (outer band) or `<text>` (tick row label) — the element whose
+ * `cx-gantt-header-cell` / `cx-gantt-tick-label` selector consumer
+ * CSS already targets.
+ */
+export type HeaderCellClassNamesFunc = (
+  arg: HeaderCellArg,
+) => string | readonly string[] | undefined;
 
 /**
  * Public payload for the `'bar-dragstart'` emit. Fires the first time
@@ -705,6 +747,20 @@ export const ChronixGantt = defineComponent({
      * `false` so existing consumers see no visual change.
      */
     useLineEventColor: { type: Boolean, default: false },
+    /**
+     * Phase 29: per-header-cell class-names callback. Fires once per
+     * rendered header cell (outer band cells AND tick-row labels);
+     * returned classes append to the cell's primary element. Use this
+     * for state-driven CSS hooks (weekend tinting, holiday markers,
+     * etc.). For full cell-content replacement, register a template
+     * under the `'header-cell'` slot via `slotRegistry` — the slot
+     * args include any callback-returned classes via `extraClasses`
+     * so a slot consumer can still honor the callback's output.
+     */
+    headerCellClassNamesCallback: {
+      type: Function as PropType<HeaderCellClassNamesFunc | undefined>,
+      default: undefined,
+    },
     /**
      * Phase 21: today-line config. `false` or omitted = hide (default);
      * `true` = enable with all defaults (red `#ff6b6b`, 2 px, dashed,
@@ -1435,21 +1491,120 @@ export const ChronixGantt = defineComponent({
       // the same props; both point at the same evaluation.
       const hasSidebar = props.columns.length > 0;
 
+      // Phase 29: start-of-today reference shared by day/slot class
+      // derivation across the header + body. Sampled once per render
+      // so all classes agree on which calendar day is "today".
+      const MS_PER_DAY = 24 * 60 * 60 * 1000;
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+
+      // Phase 29: derive per-header-cell date + dayMeta. Outer band
+      // cells (e.g. week view's 7 day-header cells, month view's
+      // month-name bands) carry a `date` derived from `cell.x` against
+      // the axis's start time + per-slot duration. `dayMeta` is
+      // populated only when the cell represents EXACTLY ONE calendar
+      // day — `(cell.width / slotWidth) × slotDurationMs === MS_PER_DAY`.
+      // The eligibility check filters out month-name bands (multi-day
+      // spans) while preserving the day-cell hook for day/week views.
+      const axisStartMs = a.ticks[0]?.time.getTime() ?? 0;
+      const msPerCellX = a.slotWidth > 0 ? a.slotDurationMs / a.slotWidth : 0;
+      function deriveBandCellMeta(cell: AxisHeaderCell): {
+        date: Date | undefined;
+        dayMeta: CellStateMeta | undefined;
+      } {
+        if (msPerCellX === 0) return { date: undefined, dayMeta: undefined };
+        const date = new Date(axisStartMs + cell.x * msPerCellX);
+        const cellSpanMs = cell.width * msPerCellX;
+        // Floating-point tolerance for the equality check — pxPerMs
+        // arithmetic can lose half a millisecond on long axes.
+        const isOneDay = Math.abs(cellSpanMs - MS_PER_DAY) < 1;
+        const dayMeta = isOneDay ? computeCellStateMeta(date, todayStart) : undefined;
+        return { date, dayMeta };
+      }
+
+      // Phase 29: for tick row labels, day classes apply when the
+      // axis's slotDurationMs >= MS_PER_DAY (i.e. month / season /
+      // halfYear / year views, where one tick = one day). For hourly
+      // views (day / week) the tick label is one hour, not a day, so
+      // no day classes attach to the tick text.
+      const tickIsDayEligible = a.slotDurationMs >= MS_PER_DAY;
+      function deriveTickMeta(tick: AxisTick): CellStateMeta | undefined {
+        return tickIsDayEligible ? computeCellStateMeta(tick.time, todayStart) : undefined;
+      }
+
+      // Phase 29: normalize the optional `headerCellClassNamesCallback`
+      // return into a `readonly string[]`. Empty array when no
+      // callback is set OR the callback returned `undefined`.
+      function callHeaderCellClassNames(arg: HeaderCellArg): readonly string[] {
+        const cb = props.headerCellClassNamesCallback;
+        if (!cb) return [];
+        const raw = cb(arg);
+        if (raw === undefined) return [];
+        return typeof raw === 'string' ? [raw] : raw;
+      }
+
+      const headerCellTemplate = props.slotRegistry?.get(HEADER_CELL_SLOT_NAME);
+
       // Outer header rows (e.g. month bands above day ticks). One <rect>
       // per cell as the band background + a centered <text> for the label.
       // Rendered first so the tick row draws on top of cell strokes at
       // shared edges.
-      const headerRowChildren = [];
+      //
+      // Phase 29: per-cell day classes append onto the `<rect>` class
+      // attribute when the cell is day-eligible (week view's 7 day
+      // cells; day view's single anchor cell). The class callback
+      // fires for ALL outer band cells regardless of eligibility. When
+      // a `'header-cell'` slot template is registered, it replaces the
+      // default `<rect>+<text>` pair for that cell — args include
+      // pre-resolved day meta + any callback-returned extra classes.
+      const headerRowChildren: VNode[] = [];
       if (hrh > 0) {
         for (let rowIdx = 0; rowIdx < a.headerRows.length; rowIdx += 1) {
           const row = a.headerRows[rowIdx]!;
           const rowY = rowIdx * hrh;
+          // bandIndex 0 is reserved for the tick row; outer bands
+          // index from 1 upward to match k-ui's "tick = innermost"
+          // mental model and the design doc's contract.
+          const bandIndex = rowIdx + 1;
           for (let cellIdx = 0; cellIdx < row.cells.length; cellIdx += 1) {
             const cell = row.cells[cellIdx]!;
+            const { date, dayMeta } = deriveBandCellMeta(cell);
+            const extraClasses = callHeaderCellClassNames({
+              bandIndex,
+              cellIndex: cellIdx,
+              date,
+              label: cell.label,
+              dayMeta,
+            });
+            if (headerCellTemplate) {
+              const slotArgs: HeaderCellSlotArgs = {
+                bandIndex,
+                cellIndex: cellIdx,
+                x: cell.x,
+                y: rowY,
+                width: cell.width,
+                height: hrh,
+                label: cell.label,
+                date,
+                dayMeta,
+                theme: t,
+                cell,
+                extraClasses,
+              };
+              const raw = headerCellTemplate({
+                slot: HEADER_CELL_SLOT_NAME,
+                args: slotArgs as unknown as Readonly<Record<string, unknown>>,
+              });
+              const customVNodes: VNode[] = Array.isArray(raw) ? (raw as VNode[]) : [raw as VNode];
+              headerRowChildren.push(...customVNodes);
+              continue;
+            }
+            const dayClasses = dayMeta ? getDayClassNames(dayMeta) : [];
+            const classAttr = ['cx-gantt-header-cell', ...dayClasses, ...extraClasses].join(' ');
             headerRowChildren.push(
               h('rect', {
                 key: `header-cell-${rowIdx}-${cellIdx}`,
-                class: 'cx-gantt-header-cell',
+                class: classAttr,
                 x: cell.x,
                 y: rowY,
                 width: cell.width,
@@ -1478,8 +1633,28 @@ export const ChronixGantt = defineComponent({
       // Tick row: one <line> + <text> per axis.ticks entry. Group is
       // translated down past the outer header rows so the tick group's
       // own coordinate space matches what it was before headerRows landed.
-      const tickChildren = [];
-      for (const tick of a.ticks) {
+      //
+      // Phase 29: tick labels carry day classes only when each tick
+      // resolves to exactly one calendar day (month / season /
+      // halfYear / year views). Hourly tick views (day / week) keep
+      // the label unstyled — the day grouping lives on the outer band
+      // for those. The class callback fires for every tick. When a
+      // `'header-cell'` slot template is registered, it replaces the
+      // `<text>` label for that tick (the `<line>` separator is
+      // structural and always renders).
+      const tickChildren: VNode[] = [];
+      for (let tickIdx = 0; tickIdx < a.ticks.length; tickIdx += 1) {
+        const tick = a.ticks[tickIdx]!;
+        const tickDayMeta = deriveTickMeta(tick);
+        const extraClasses = callHeaderCellClassNames({
+          bandIndex: 0,
+          cellIndex: tickIdx,
+          date: tick.time,
+          label: tick.label,
+          dayMeta: tickDayMeta,
+        });
+        // Structural separator always renders — slot templates own
+        // label replacement only, not the boundary line.
         tickChildren.push(
           h('line', {
             key: `tick-line-${tick.x}`,
@@ -1490,11 +1665,38 @@ export const ChronixGantt = defineComponent({
             y2: hh,
             stroke: t.headerTickStroke,
           }),
+        );
+        if (headerCellTemplate) {
+          const slotArgs: HeaderCellSlotArgs = {
+            bandIndex: 0,
+            cellIndex: tickIdx,
+            x: tick.x,
+            y: 0,
+            width: a.slotWidth,
+            height: hh,
+            label: tick.label,
+            date: tick.time,
+            dayMeta: tickDayMeta,
+            theme: t,
+            tick,
+            extraClasses,
+          };
+          const raw = headerCellTemplate({
+            slot: HEADER_CELL_SLOT_NAME,
+            args: slotArgs as unknown as Readonly<Record<string, unknown>>,
+          });
+          const customVNodes: VNode[] = Array.isArray(raw) ? (raw as VNode[]) : [raw as VNode];
+          tickChildren.push(...customVNodes);
+          continue;
+        }
+        const dayClasses = tickDayMeta ? getDayClassNames(tickDayMeta) : [];
+        const classAttr = ['cx-gantt-tick-label', ...dayClasses, ...extraClasses].join(' ');
+        tickChildren.push(
           h(
             'text',
             {
               key: `tick-label-${tick.x}`,
-              class: 'cx-gantt-tick-label',
+              class: classAttr,
               x: tick.x + 2,
               y: hh - 6,
               fill: t.headerTickLabel,
@@ -2348,6 +2550,32 @@ export const ChronixGantt = defineComponent({
             })
           : null;
 
+      // Phase 29: one transparent `<rect class="cx-gantt-slot ...">`
+      // per axis tick — pure CSS hook for consumer styling (weekend
+      // tinting, today-column emphasis, past/future fade). Sits BEHIND
+      // grid lines + bars + links so consumer fills paint visibly
+      // without obscuring chart chrome. `fill: transparent` keeps the
+      // default render pixel-identical to pre-Phase-29; classes alone
+      // let consumer CSS opt-in to backgrounds via
+      // `.cx-gantt-slot-sat { background: ... }` selectors.
+      const bodySlotChildren: VNode[] = [];
+      for (const tick of a.ticks) {
+        const slotMeta = computeCellStateMeta(tick.time, todayStart);
+        const slotClasses = getSlotClassNames(slotMeta);
+        bodySlotChildren.push(
+          h('rect', {
+            key: `body-slot-${tick.x}`,
+            class: slotClasses.join(' '),
+            x: tick.x,
+            y: 0,
+            width: a.slotWidth,
+            height: bodyHeight,
+            fill: 'transparent',
+            'pointer-events': 'none',
+          }),
+        );
+      }
+
       // Phase 26: body grid lines. Renders BETWEEN today-cell tint and
       // today-line so the SVG paint order reads tint → grid → today-line
       // → bars → links — matches the parity reference's layering.
@@ -2477,6 +2705,12 @@ export const ChronixGantt = defineComponent({
         [
           h('defs', { class: 'cx-gantt-defs' }, defsChildren),
           ...(todayCellBodyNode ? [todayCellBodyNode] : []),
+          // Phase 29: body slot rects (one transparent <rect> per
+          // axis tick, carrying `cx-gantt-slot` + `cx-gantt-slot-{dayId}`
+          // + state-modifier classes). Layered BEFORE grid lines so
+          // grid strokes paint over them, and BEFORE bars / links so
+          // consumer-CSS backgrounds don't obscure chart chrome.
+          h('g', { class: 'cx-gantt-slots', 'pointer-events': 'none' }, bodySlotChildren),
           ...(gridGroupNode ? [gridGroupNode] : []),
           ...(todayLineBodyNode ? [todayLineBodyNode] : []),
           h('g', { class: 'cx-gantt-bars' }, barChildren),
