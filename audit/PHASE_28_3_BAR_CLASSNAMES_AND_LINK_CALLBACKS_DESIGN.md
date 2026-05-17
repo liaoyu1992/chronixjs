@@ -1,6 +1,8 @@
 # Phase 28.3 — barClassNames + onLine + useLineEventColor + link slot
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-17)** — all 5 commits landed + /phase-close passed + ci-check green + cross-demo verify 27/27. See `audit/journal/2026-05-13.md` "Phase 28.3" section for full wrap-up.
+
+> **Implementation note (2026-05-17)**: original parity plan had 2 cross-demo `useLineEventColor` assertions (link-color set + marker-def color set). Both dropped because the chronix parity-mode fixture (`buildParityEvents`) carries no `LinkSpec[]` — mirroring the parity reference's 33 dependency entries is a separate fixture-extension task that would inflate Phase 28.3 past single-session scope. Pinned instead by 9 adapter unit tests covering the cascade + 4 link slot tests + 6 class-names tests = 19 total adapter tests across 3 new test files. Cross-demo parity for `useLineEventColor` is now a Phase 28.3.1 candidate (alongside the 3 chronix-additive callbacks which are inherently not parity-testable). Parity-spec count stays at 51 (+0 instead of +2).
 
 ## Problem
 
