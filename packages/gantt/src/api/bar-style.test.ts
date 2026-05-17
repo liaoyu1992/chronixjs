@@ -51,6 +51,8 @@ describe('resolveBarStyle — theme default cascade', () => {
       textColor: '#ffffff',
       fontSize: 12,
       fontWeight: 400,
+      // Phase 28.3: no callback → empty class-names array.
+      classNames: [],
     });
   });
 });
@@ -261,5 +263,73 @@ describe('resolveBarStyle — Phase 28.2 font cascade', () => {
     expect(result.backgroundColor).toBe('#color');
     expect(result.fontSize).toBe(14);
     expect(result.fontWeight).toBe(600);
+  });
+});
+
+describe('resolveBarStyle — Phase 28.3 `barClassNamesCallback`', () => {
+  it('returns an empty `classNames` array when no class callback is set', () => {
+    const result = resolveBarStyle(baseInput(bar('b1')));
+    expect(result.classNames).toEqual([]);
+  });
+
+  it('normalizes a string return into a single-entry array', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barClassNamesCallback: () => 'priority-high',
+    });
+    expect(result.classNames).toEqual(['priority-high']);
+  });
+
+  it('passes a returned array through verbatim (order + duplicates preserved)', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barClassNamesCallback: () => ['warn', 'overdue', 'warn'],
+    });
+    expect(result.classNames).toEqual(['warn', 'overdue', 'warn']);
+  });
+
+  it('callback returning `undefined` leaves `classNames` as the empty default', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barClassNamesCallback: () => undefined,
+    });
+    expect(result.classNames).toEqual([]);
+  });
+
+  it('class callback receives the same `BarStyleArg` shape color + font callbacks see', () => {
+    const seen = vi.fn((_arg: BarStyleArg): string => 'x');
+    resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barColor: '#10b981',
+      barClassNamesCallback: seen,
+    });
+    const arg = seen.mock.calls[0]![0];
+    expect(arg.bar.id).toBe('b1');
+    expect(arg.placedBar.barId).toBe('b1');
+    expect(arg.isSelected).toBe(false);
+    expect(arg.activeTransaction).toBeNull();
+    // The arg carries the cascaded color / font defaults (post layers
+    // 1-3). When `barColor` is set, both background and border defaults
+    // reflect the prop layer.
+    expect(arg.defaultBackgroundColor).toBe('#10b981');
+    expect(arg.defaultBorderColor).toBe('#10b981');
+    expect(arg.defaultTextColor).toBe('#ffffff');
+    expect(arg.defaultFontSize).toBe(12);
+    expect(arg.defaultFontWeight).toBe(400);
+  });
+
+  it('class callback fires in the same cascade slot as color + font callbacks (all coexist)', () => {
+    const result = resolveBarStyle({
+      ...baseInput(bar('b1')),
+      barBackgroundColorCallback: () => '#bg',
+      barTextColorCallback: () => '#fg',
+      barFontSizeCallback: () => 14,
+      barClassNamesCallback: () => ['priority-high'],
+    });
+    // All 4 channels resolve in one pass.
+    expect(result.backgroundColor).toBe('#bg');
+    expect(result.textColor).toBe('#fg');
+    expect(result.fontSize).toBe(14);
+    expect(result.classNames).toEqual(['priority-high']);
   });
 });

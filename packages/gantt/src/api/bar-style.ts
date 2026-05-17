@@ -91,6 +91,25 @@ export type BarFontSizeFunc = (arg: BarStyleArg) => number | undefined;
 export type BarFontWeightFunc = (arg: BarStyleArg) => number | string | undefined;
 
 /**
+ * Phase 28.3: per-bar class-names callback. Returns a CSS class
+ * string, an array of class strings, or `undefined` to add no extra
+ * classes. Returned classes append to the `.cx-gantt-bar` rect's
+ * existing class list (`cx-gantt-bar` + optionally
+ * `cx-gantt-bar--selected`) — they do NOT propagate to the per-bar
+ * continuation triangles, title text, selection-border, resize
+ * zones, or dot handles. The chronix-flat per-bar render emits each
+ * of those as a sibling rect/polygon/text with its own stable
+ * `cx-gantt-bar-*` class; the consumer-driven classes from this
+ * callback target the bar's primary rect only.
+ *
+ * Same cascade slot as the color + font callbacks; fires after the
+ * theme / prop / spec layers have produced the cascaded color /
+ * font defaults so the callback can read those via `BarStyleArg`
+ * if it wants to branch on them.
+ */
+export type BarClassNamesFunc = (arg: BarStyleArg) => string | readonly string[] | undefined;
+
+/**
  * The final resolved per-bar style. Consumed by the default `<rect>`
  * render (inline `fill=` / `stroke=`) and by custom slot renderers
  * via `BarSlotArgs.resolvedXxx`.
@@ -110,6 +129,15 @@ export interface ResolvedBarStyle {
    * casts to string when setting the SVG attribute.
    */
   readonly fontWeight: number | string;
+  /**
+   * Phase 28.3: extra CSS class names from `barClassNamesCallback`.
+   * Empty array when no callback set or the callback returned
+   * `undefined`. Normalized form — a string return is wrapped to a
+   * single-entry array. Whitespace inside individual class strings is
+   * preserved (consumers can return space-separated multi-class
+   * strings if they prefer).
+   */
+  readonly classNames: readonly string[];
 }
 
 /**
@@ -143,6 +171,11 @@ export interface ResolveBarStyleInput {
   readonly themeFontWeight: number;
   readonly barFontSizeCallback?: BarFontSizeFunc;
   readonly barFontWeightCallback?: BarFontWeightFunc;
+  // Phase 28.3: class-names callback. No theme / prop / spec layer
+  // for class names — classes are pure-additive consumer hooks, not a
+  // cascaded style. Theme tokens cover visual defaults; classes cover
+  // semantic state (priority, overdue, warning, etc.).
+  readonly barClassNamesCallback?: BarClassNamesFunc;
 }
 
 export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
@@ -200,12 +233,15 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
   // `arg.defaultXxxColor` / `arg.defaultFontSize` / `arg.defaultFontWeight`.
   // The arg also carries the theme floor for the font fields since
   // chronix doesn't have prop / spec layers for fonts in v0.
+  let classNames: readonly string[] = [];
+
   const hasAnyCallback =
     input.barBackgroundColorCallback !== undefined ||
     input.barBorderColorCallback !== undefined ||
     input.barTextColorCallback !== undefined ||
     input.barFontSizeCallback !== undefined ||
-    input.barFontWeightCallback !== undefined;
+    input.barFontWeightCallback !== undefined ||
+    input.barClassNamesCallback !== undefined;
   if (hasAnyCallback) {
     const arg: BarStyleArg = {
       bar: input.bar,
@@ -246,6 +282,16 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
       const result = input.barFontWeightCallback(arg);
       if (result !== undefined) fontWeight = result;
     }
+    if (input.barClassNamesCallback) {
+      const result = input.barClassNamesCallback(arg);
+      if (result !== undefined) {
+        // Normalize: a string return wraps to a single-entry array.
+        // An empty string from a callback is intentionally preserved
+        // — the consumer chose to return it; we don't second-guess.
+        // Array returns are accepted as-is (already readonly string[]).
+        classNames = typeof result === 'string' ? [result] : result;
+      }
+    }
   }
 
   // Background-overrides-border umbrella: if background was
@@ -257,5 +303,5 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
     borderColor = backgroundColor;
   }
 
-  return { backgroundColor, borderColor, textColor, fontSize, fontWeight };
+  return { backgroundColor, borderColor, textColor, fontSize, fontWeight, classNames };
 }

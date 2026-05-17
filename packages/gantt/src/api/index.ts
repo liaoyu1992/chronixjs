@@ -1,4 +1,5 @@
 export type {
+  BarClassNamesFunc,
   BarColorFunc,
   BarFontSizeFunc,
   BarFontWeightFunc,
@@ -7,6 +8,7 @@ export type {
   ResolveBarStyleInput,
 } from './bar-style.js';
 export { resolveBarStyle } from './bar-style.js';
+export type { LinkRenderArg, LinkRenderFunc, LinkRenderOverride } from './link-render.js';
 export type { ChronixTheme } from './chronix-theme.js';
 export { defaultChronixTheme } from './chronix-theme.js';
 export type { GanttHandle } from './gantt-handle.js';

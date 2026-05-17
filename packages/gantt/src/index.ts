@@ -58,15 +58,17 @@ export {
 export type {
   BarSlotArgs,
   IRCanvas,
+  LinkSlotArgs,
   PointerOverlayGroup,
   SlotContext,
   SlotRegistry,
   SlotRenderer,
   SlotTemplate,
 } from './render/index.js';
-export { BAR_SLOT_NAME, createSlotRegistry } from './render/index.js';
+export { BAR_SLOT_NAME, createSlotRegistry, LINK_SLOT_NAME } from './render/index.js';
 
 export type {
+  BarClassNamesFunc,
   BarClickPayload,
   BarColorFunc,
   BarDropPayload,
@@ -84,6 +86,9 @@ export type {
   GanttHandle,
   GanttOptions,
   IncrementDelta,
+  LinkRenderArg,
+  LinkRenderFunc,
+  LinkRenderOverride,
   ParseToolbarOptions,
   ProgressChangePayload,
   RejectionReason,
