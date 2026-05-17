@@ -1,5 +1,6 @@
 import {
   BAR_SLOT_NAME,
+  LINK_SLOT_NAME,
   applyIncrement,
   defaultChronixTheme,
   defaultLinkRouter,
@@ -27,6 +28,7 @@ import {
 import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
 import type {
   AxisRangePlanInput,
+  BarClassNamesFunc,
   BarColorFunc,
   BarFontSizeFunc,
   BarFontWeightFunc,
@@ -42,8 +44,13 @@ import type {
   GanttHandle,
   IncrementDelta,
   LinkMarker,
+  LinkRenderArg,
+  LinkRenderFunc,
+  LinkSlotArgs,
   LinkSpec,
   LinkTable,
+  PlacedBar,
+  RoutedLink,
   RowDataSource,
   RowSpec,
   SelectAllowFunc,
@@ -657,6 +664,47 @@ export const ChronixGantt = defineComponent({
       type: Function as PropType<BarFontWeightFunc | undefined>,
       default: undefined,
     },
+    /**
+     * Phase 28.3: per-bar class-names callback. Receives the same
+     * `BarStyleArg` the color / font callbacks do; returns a class
+     * string, an array of strings, or `undefined`. The returned
+     * classes append to the bar's main `<rect class="cx-gantt-bar">`
+     * — they do NOT propagate to the per-bar selection-border /
+     * resize-zone / dot rects (each carries its own stable
+     * `cx-gantt-bar-*` modifier class). Consumers use these for
+     * semantic state (priority, overdue, warning, etc.) styled via
+     * consumer CSS.
+     */
+    barClassNamesCallback: {
+      type: Function as PropType<BarClassNamesFunc | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 28.3: per-link render-time callback. One callback per
+     * chart. Receives a `LinkRenderArg` carrying the routed link
+     * geometry, the source / target `PlacedBar`s, the default line
+     * color (after `colorOverride` + `useLineEventColor` lookup), and
+     * the current marker. Returns `{ color?, marker? }` to override
+     * one or both, or `undefined` to accept the defaults. The
+     * resolved values feed the link's `<path>` stroke and the marker
+     * `<defs>` collection so marker shapes get the right color.
+     * Routing-type mutation NOT supported in v0 (would require re-
+     * running `LinkRouter`); use per-`LinkSpec.routing` for static
+     * choice.
+     */
+    onLineCallback: {
+      type: Function as PropType<LinkRenderFunc | undefined>,
+      default: undefined,
+    },
+    /**
+     * Phase 28.3: when `true`, each dependency line's stroke inherits
+     * the source bar's resolved background color (the Phase 20
+     * cascade output) instead of the theme's `linkDefaultColor`.
+     * `LinkSpec.colorOverride` still wins when present;
+     * `onLineCallback`'s `color` return still wins over both. Defaults
+     * `false` so existing consumers see no visual change.
+     */
+    useLineEventColor: { type: Boolean, default: false },
     /**
      * Phase 21: today-line config. `false` or omitted = hide (default);
      * `true` = enable with all defaults (red `#ff6b6b`, 2 px, dashed,
@@ -1602,6 +1650,12 @@ export const ChronixGantt = defineComponent({
         ],
       );
 
+      // Phase 28.3: populated during the per-bar flatMap below so the
+      // link-render block can look up each bar's resolved background
+      // color (`useLineEventColor: true` lets each dependency line
+      // inherit its source bar's color). Cleared and rebuilt every
+      // render — no cross-render state.
+      const barColorByBarId = new Map<string, string>();
       const barChildren = placedBars.value.flatMap((bar) => {
         // Live geometry: when a `bar-drag` or `bar-resize` transaction
         // is active on THIS bar, shift the rendered rect by the
@@ -1697,6 +1751,10 @@ export const ChronixGantt = defineComponent({
               ...(props.barFontWeightCallback
                 ? { barFontWeightCallback: props.barFontWeightCallback }
                 : {}),
+              // Phase 28.3: class-names callback.
+              ...(props.barClassNamesCallback
+                ? { barClassNamesCallback: props.barClassNamesCallback }
+                : {}),
             })
           : {
               backgroundColor: t.barBackgroundColor,
@@ -1704,7 +1762,19 @@ export const ChronixGantt = defineComponent({
               textColor: t.barTextColor,
               fontSize: t.barFontSize,
               fontWeight: t.barFontWeight,
+              // Phase 28.3: orphan bars take no callback-supplied
+              // classes — by definition, no source bar means no
+              // callback target. Empty array keeps the contract.
+              classNames: [],
             };
+        // Phase 28.3: record the bar's resolved background color so
+        // the link-render block can look it up when
+        // `useLineEventColor: true`. Map cleared at the top of every
+        // render pass; only bars present in `placedBars` populate the
+        // map. Orphan-bar resolution (no source bar found) still
+        // captures the theme fallback color since `resolvedStyle`
+        // carries it.
+        barColorByBarId.set(bar.barId, resolvedStyle.backgroundColor);
         const nodes: ReturnType<typeof h>[] = [];
         if (barTemplate) {
           if (sourceBar) {
@@ -1738,11 +1808,23 @@ export const ChronixGantt = defineComponent({
             nodes.push(...customVNodes);
           }
         } else {
+          // Phase 28.3: append callback-returned class names to the
+          // bar's main `<rect>` class list. The classes come AFTER the
+          // built-in `cx-gantt-bar` + optional `--selected` modifier so
+          // consumer CSS can use `.priority-high.cx-gantt-bar { ... }`
+          // descendants without specificity surprises. Empty array
+          // means the callback wasn't set OR returned undefined —
+          // either way, no extra classes get appended.
+          const baseClasses = isSelected ? 'cx-gantt-bar cx-gantt-bar--selected' : 'cx-gantt-bar';
+          const barClass =
+            resolvedStyle.classNames.length > 0
+              ? `${baseClasses} ${resolvedStyle.classNames.join(' ')}`
+              : baseClasses;
           nodes.push(
             h('rect', {
               key: bar.barId,
               'data-bar-id': bar.barId,
-              class: isSelected ? 'cx-gantt-bar cx-gantt-bar--selected' : 'cx-gantt-bar',
+              class: barClass,
               x: renderX,
               y: renderY,
               width: renderWidth,
@@ -2099,45 +2181,142 @@ export const ChronixGantt = defineComponent({
       // through to the bars layer. Markers attach via `marker-end`
       // referencing a `<defs>` entry built below.
       //
-      // Build the marker spec lookup keyed by link id so the path
-      // render step can pair `routed.color ?? defaultLinkColor` with
-      // the link's `marker` to form the marker-end URL.
+      // Phase 28.3 layering for each routed link:
+      //   1. Resolve base color via `LinkSpec.colorOverride` →
+      //      (useLineEventColor: true) source-bar resolved bg →
+      //      `theme.linkDefaultColor`.
+      //   2. Resolve base marker from `LinkSpec.marker`.
+      //   3. If `onLineCallback` set, invoke with the resolved
+      //      defaults; merge any returned `{ color?, marker? }`.
+      //   4. If the slot registry has a `'link'` template, invoke it
+      //      with `LinkSlotArgs` carrying the final color + marker;
+      //      consumer template owns the entire link output (path +
+      //      marker selection). Else emit default `<path
+      //      class="cx-gantt-link">`.
+      //
+      // The marker `<defs>` collection uses POST-callback resolved
+      // colors so `marker-end="url(#cx-marker-...)"` references stay
+      // valid for the override.
       const linkSpecById = new Map<string, LinkSpec>(props.links.map((l) => [l.id, l]));
-      const linkPathNodes = routedLinks.value.map((routed) => {
-        const color = routed.color ?? t.linkDefaultColor;
+      const placedBarById = new Map<string, PlacedBar>(placedBars.value.map((p) => [p.barId, p]));
+      const linkSlotTemplate = props.slotRegistry?.get(LINK_SLOT_NAME);
+
+      // Per-link resolved color + marker built once + reused for both
+      // the path render and the marker defs.
+      interface ResolvedLinkRender {
+        readonly routed: RoutedLink;
+        readonly spec: LinkSpec;
+        readonly fromBar: PlacedBar;
+        readonly toBar: PlacedBar;
+        readonly color: string;
+        readonly marker: LinkMarker | CustomLinkMarker;
+      }
+      const resolvedLinks: ResolvedLinkRender[] = [];
+      for (const routed of routedLinks.value) {
         const spec = linkSpecById.get(routed.linkId);
-        // `spec` always exists for non-orphan routed links — orphans
-        // never make it into routedLinks. Defensive lookup keeps the
-        // type checker happy without a non-null assertion.
-        const markerEnd = spec ? markerEndUrl(spec.marker, color) : null;
-        return h('path', {
-          key: routed.linkId,
-          'data-link-id': routed.linkId,
-          class: 'cx-gantt-link',
-          d: routed.pathD,
-          stroke: color,
-          'stroke-width': t.linkStrokeWidth,
-          fill: 'none',
-          ...(markerEnd !== null ? { 'marker-end': markerEnd } : {}),
-        });
-      });
+        if (!spec) continue; // Orphan; never reaches here in practice.
+        const fromBar = placedBarById.get(spec.fromBarId);
+        const toBar = placedBarById.get(spec.toBarId);
+        if (!fromBar || !toBar) continue; // Bar resolution gap — defensive.
+
+        // Color cascade:
+        //   colorOverride > useLineEventColor source bar > theme default.
+        let color: string;
+        if (routed.color !== undefined) {
+          color = routed.color;
+        } else if (props.useLineEventColor) {
+          const sourceBarColor = barColorByBarId.get(spec.fromBarId);
+          color = sourceBarColor ?? t.linkDefaultColor;
+        } else {
+          color = t.linkDefaultColor;
+        }
+
+        let marker: LinkMarker | CustomLinkMarker = spec.marker;
+
+        // `onLineCallback` runs LAST so the host can override either
+        // channel. Callback sees the resolved defaults (post cascade)
+        // and returns only what it wants to override.
+        if (props.onLineCallback) {
+          const arg: LinkRenderArg = {
+            routedLink: routed,
+            linkSpec: spec,
+            fromBar,
+            toBar,
+            defaultColor: color,
+            currentMarker: marker,
+          };
+          const override = props.onLineCallback(arg);
+          if (override !== undefined) {
+            if (override.color !== undefined) color = override.color;
+            if (override.marker !== undefined) marker = override.marker;
+          }
+        }
+
+        resolvedLinks.push({ routed, spec, fromBar, toBar, color, marker });
+      }
+
+      const linkPathNodes: ReturnType<typeof h>[] = [];
+      for (const r of resolvedLinks) {
+        if (linkSlotTemplate) {
+          // Slot owns the entire rendered output. Build the args bag,
+          // invoke, normalize VNode | VNode[] | null returns.
+          const slotArgs: LinkSlotArgs = {
+            routedLink: r.routed,
+            linkSpec: r.spec,
+            fromBar: r.fromBar,
+            toBar: r.toBar,
+            color: r.color,
+            marker: r.marker,
+            theme: t,
+          };
+          const raw = linkSlotTemplate({
+            slot: LINK_SLOT_NAME,
+            args: slotArgs as unknown as Readonly<Record<string, unknown>>,
+          });
+          const customVNodes: ReturnType<typeof h>[] = Array.isArray(raw)
+            ? (raw as ReturnType<typeof h>[])
+            : raw === null
+              ? []
+              : [raw as ReturnType<typeof h>];
+          linkPathNodes.push(...customVNodes);
+        } else {
+          const markerEnd = markerEndUrl(r.marker, r.color);
+          linkPathNodes.push(
+            h('path', {
+              key: r.routed.linkId,
+              'data-link-id': r.routed.linkId,
+              class: 'cx-gantt-link',
+              d: r.routed.pathD,
+              stroke: r.color,
+              'stroke-width': t.linkStrokeWidth,
+              fill: 'none',
+              ...(markerEnd !== null ? { 'marker-end': markerEnd } : {}),
+            }),
+          );
+        }
+      }
 
       // Build `<defs>` containing one `<marker>` per (markerType × color)
-      // pair plus one `<marker>` per (customMarkerId × color). Colors
-      // come from the chart-level default plus any per-link override
-      // present in routedLinks; built-in marker types are emitted in
-      // full so a `LinkSpec.marker` of any kind resolves to a def even
-      // if the demo currently uses only one. Custom markers in `links`
-      // get their own defs.
+      // pair plus one `<marker>` per (customMarkerId × color). Phase 28.3:
+      // the color set now includes POST-callback resolved colors so a
+      // line whose `onLineCallback` returned a new color still resolves
+      // its marker-end ref to a valid def. Custom markers from
+      // callbacks ALSO contribute new defs (the override's marker may
+      // be a `CustomLinkMarker` object that wasn't in `props.links`).
       const usedColors = new Set<string>();
       usedColors.add(t.linkDefaultColor);
-      for (const routed of routedLinks.value) {
-        if (routed.color !== undefined) usedColors.add(routed.color);
+      for (const r of resolvedLinks) {
+        usedColors.add(r.color);
       }
       const customMarkerById = new Map<string, CustomLinkMarker>();
       for (const link of props.links) {
         if (typeof link.marker === 'object') {
           customMarkerById.set(link.marker.id, link.marker);
+        }
+      }
+      for (const r of resolvedLinks) {
+        if (typeof r.marker === 'object') {
+          customMarkerById.set(r.marker.id, r.marker);
         }
       }
       const defsChildren: ReturnType<typeof h>[] = [];
