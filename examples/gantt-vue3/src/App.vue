@@ -84,6 +84,8 @@ const DEMO_SCHEMA = {
   ),
   // Phase 22.2 today cell bg (default ON matching parity-reference's `todayBgColor`)
   todayCellBg: bool(true, 'Show today-column background tint (rgba(255, 220, 40, .15))'),
+  // Phase 28.3 link rendering
+  useLineEventColor: bool(false, 'Color dependency lines by source bar (Phase 28.3)'),
 } as const;
 
 const cfg = useDemoConfig(DEMO_SCHEMA);
@@ -446,6 +448,7 @@ function resetBars(): void {
           :bar-background-color-callback="activeBarBackgroundCallback"
           :today-line="activeTodayLine"
           :today-cell-bg="activeTodayCellBg"
+          :use-line-event-color="cfg.useLineEventColor.value"
           :header-toolbar="HEADER_TOOLBAR"
           @update:axis-input="onUpdateAxisInput"
           @bar-drop="onBarDrop"

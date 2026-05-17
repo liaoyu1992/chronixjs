@@ -2081,4 +2081,46 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
   // axis-overlap branch — the same gate that drives selection-border
   // and dots emission on the chronix side — so a regression in that
   // gate would surface via the resize-zone assertions.
+
+  // Phase 28.3 architectural divergence: cross-demo parity for the
+  // 4 new customization surfaces (barClassNamesCallback,
+  // onLineCallback, useLineEventColor, link slot) is NOT asserted
+  // for two distinct reasons:
+  //
+  // 1. **`barClassNamesCallback` + `onLineCallback` + link slot**
+  //    are chronix-additive consumer hooks. The parity-reference
+  //    demo's `eventClassNames` is not wired (no per-event class
+  //    callback in the default `DemoApp.vue` setup); the parity-
+  //    reference's `onLine` is registered but defaults to a no-op
+  //    in the demo. Cross-demo testing would require modifying
+  //    both demos to wire identical callbacks — chronix-additive
+  //    customization paths aren't a parity-oracle concern. 19
+  //    adapter unit tests across
+  //    `adapters/vue3/src/chronix-gantt-bar-classnames.test.ts`,
+  //    `chronix-gantt-link-callbacks.test.ts`, and
+  //    `chronix-gantt-link-slot.test.ts` pin the chronix-side
+  //    correctness across cascade order, threading, and slot
+  //    replacement.
+  //
+  // 2. **`useLineEventColor`** IS testable in principle (parity-
+  //    reference's demo defaults it to `true`; chronix's demo now
+  //    has a `?useLineEventColor=true` toggle), but the chronix
+  //    parity-mode dataset (`PARITY_RESOURCE_IDS` + `buildParityEvents`)
+  //    carries no `LinkSpec[]` — the parity fixture mirrors only
+  //    the 25 events' geometry, NOT the 33 dependency entries
+  //    from the parity-reference's demo. Extending the fixture
+  //    with dependencies is a non-trivial sub-task (matching
+  //    upstream event ids + dependency directions verbatim) that
+  //    would inflate Phase 28.3 past single-session scope. Pinned
+  //    instead by 9 adapter unit tests in
+  //    `chronix-gantt-link-callbacks.test.ts` covering
+  //    colorOverride > useLineEventColor > theme cascade,
+  //    callback-color-overrides-cascade composition, and marker
+  //    def color emission for the post-callback color.
+  //
+  // Future Phase 28.3.1 candidates: extend the parity fixture
+  // with dependency arrays + thread `sampleLinksParity` through
+  // the chronix demo's parity mode. With both sides carrying
+  // links, the 2 useLineEventColor assertions (link-color set +
+  // marker-def color set) become straightforward.
 });
