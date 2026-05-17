@@ -28,6 +28,7 @@ import {
   type VNode,
 } from 'vue';
 
+import { deriveViewportClipping } from './derive-viewport-clipping.js';
 import { useChartScrollState } from './use-chart-scroll-state.js';
 import { useGanttLayout } from './use-gantt-layout.js';
 import {
@@ -1213,11 +1214,11 @@ export const ChronixGantt = defineComponent({
     // sidebarPaneRef null since the pane isn't rendered).
     useScrollSync(sidebarPaneRef, chartPaneRef);
 
-    // Phase 23: chart-pane viewport state exposed for downstream
-    // phases (27.1 isClippedStart/End, 28.2.1 text-area-by-viewport).
-    // Computed eagerly so the refs stay current across the whole
-    // setup scope; not consumed by Phase 23 itself.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // Phase 23: chart-pane viewport state, reactive across the whole
+    // setup scope. Phase 27.1 is the first consumer (per-bar viewport-
+    // clipping check inside the flatMap closure that emits continuation
+    // triangles); Phase 28.2.1 will follow with the title + progress-dot
+    // viewport-aware positioning.
     const chartScroll = useChartScrollState(chartPaneRef);
 
     /**
@@ -2027,6 +2028,19 @@ export const ChronixGantt = defineComponent({
           }
         }
 
+        // Phase 27.1: viewport-clipping derivation. Reads chartScroll's
+        // reactive refs so the per-bar render reacts to user scroll +
+        // chart-pane resize. Pure helper — see `derive-viewport-clipping.ts`
+        // for the formula + boundary semantics (strict `<` / `>`,
+        // `clientWidth === 0` short-circuit for the pre-mount frame).
+        const viewportClip = deriveViewportClipping(
+          renderX,
+          renderWidth,
+          chartScroll.scrollLeft.value,
+          chartScroll.clientWidth.value,
+          TRIANGLE_MARGIN,
+        );
+
         // Bar render: prefer a registered `'bar'` slot template when
         // present; fall back to the default `<rect class="cx-gantt-bar">`.
         // The slot template receives the same live geometry the default
@@ -2162,30 +2176,53 @@ export const ChronixGantt = defineComponent({
           );
         }
 
-        // Phase 27: continuation indicators. A left-pointing triangle
-        // when the bar's `range.start` falls before the axis range
-        // (`!bar.isStart`); a right-pointing triangle when the bar's
-        // `range.end` falls past the axis range (`!bar.isEnd`). Both
-        // flags come from `BarPlacementPass.place`. Inserted between
-        // the bar's main rect (default or custom-slot output) and the
-        // progress fill/handle so paint order reads
+        // Phase 27 + 27.1: continuation indicators. A left-pointing
+        // triangle fires on EITHER axis-clipped (`!bar.isStart` —
+        // bar's `range.start` falls before the axis range; Phase 27)
+        // OR viewport-clipped (`isViewportClippedStart` — bar's left
+        // edge is to the left of the visible chart-pane viewport;
+        // Phase 27.1). Right-pointing symmetric.
+        //
+        // Apex position depends on WHICH case fired. When the
+        // viewport-clipped sub-case fires, the apex locks to the
+        // visible viewport edge in content-coords (`scrollLeft +
+        // TRIANGLE_MARGIN` for left, `scrollLeft + clientWidth -
+        // TRIANGLE_MARGIN` for right). The chart-pane's native
+        // scroll then translates this into the user's viewport
+        // coordinates at paint time, so the apex stays visible at
+        // the viewport edge regardless of how far the bar has
+        // scrolled offscreen. When only the axis-clipped sub-case
+        // fires (Phase 27's existing branch), the apex is anchored
+        // inside the bar's content-x edge — same as before Phase 27.1.
+        //
+        // Precedence (viewport over bar-edge) matches the parity
+        // reference's first-branch-wins logic at TimelineEvent.tsx:314-320.
+        //
+        // `data-viewport-clipped` records which sub-case fired so
+        // tests + consumer CSS can distinguish viewport-locked from
+        // bar-edge-locked triangles without re-running the math.
+        //
+        // Inserted between the bar's main rect (default or custom-slot
+        // output) and the progress fill/handle so paint order reads
         // rect → triangles → progress fill → progress handle →
         // progress label, matching the parity reference.
         //
-        // Geometry: apex is `TRIANGLE_MARGIN` inside the bar's edge;
-        // base extends `TRIANGLE_SIZE` further inward; vertical span
-        // is `2 × TRIANGLE_SIZE` centered on the bar's mid-line.
-        // `pointer-events: none` so triangles never intercept clicks
-        // on the bar body underneath. `opacity: 0.8` matches the
-        // parity reference's translucent-black indicator convention.
-        if (!bar.isStart) {
-          const apexX = renderX + TRIANGLE_MARGIN;
-          const baseX = renderX + TRIANGLE_MARGIN + TRIANGLE_SIZE;
+        // Geometry: `pointer-events: none` so triangles never intercept
+        // clicks on the bar body underneath. `opacity: 0.8` + `fill:#000`
+        // match the parity reference's translucent-black indicator
+        // convention.
+        const fireLeftTriangle = !bar.isStart || viewportClip.isViewportClippedStart;
+        if (fireLeftTriangle) {
+          const apexX = viewportClip.isViewportClippedStart
+            ? viewportClip.viewportLockedLeftApexX
+            : renderX + TRIANGLE_MARGIN;
+          const baseX = apexX + TRIANGLE_SIZE;
           const centerY = renderY + bar.height / 2;
           nodes.push(
             h('polygon', {
               key: `${bar.barId}-continuation-left`,
               'data-bar-id': bar.barId,
+              'data-viewport-clipped': viewportClip.isViewportClippedStart ? 'true' : 'false',
               class: 'cx-gantt-bar-continuation-indicator cx-gantt-bar-continuation-left',
               points: `${apexX},${centerY} ${baseX},${centerY - TRIANGLE_SIZE} ${baseX},${centerY + TRIANGLE_SIZE}`,
               fill: '#000',
@@ -2194,14 +2231,18 @@ export const ChronixGantt = defineComponent({
             }),
           );
         }
-        if (!bar.isEnd) {
-          const apexX = renderX + renderWidth - TRIANGLE_MARGIN;
-          const baseX = renderX + renderWidth - TRIANGLE_MARGIN - TRIANGLE_SIZE;
+        const fireRightTriangle = !bar.isEnd || viewportClip.isViewportClippedEnd;
+        if (fireRightTriangle) {
+          const apexX = viewportClip.isViewportClippedEnd
+            ? viewportClip.viewportLockedRightApexX
+            : renderX + renderWidth - TRIANGLE_MARGIN;
+          const baseX = apexX - TRIANGLE_SIZE;
           const centerY = renderY + bar.height / 2;
           nodes.push(
             h('polygon', {
               key: `${bar.barId}-continuation-right`,
               'data-bar-id': bar.barId,
+              'data-viewport-clipped': viewportClip.isViewportClippedEnd ? 'true' : 'false',
               class: 'cx-gantt-bar-continuation-indicator cx-gantt-bar-continuation-right',
               points: `${apexX},${centerY} ${baseX},${centerY - TRIANGLE_SIZE} ${baseX},${centerY + TRIANGLE_SIZE}`,
               fill: '#000',
