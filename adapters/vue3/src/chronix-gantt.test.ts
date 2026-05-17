@@ -83,23 +83,29 @@ describe('<ChronixGantt>', () => {
     expect(wrapper.find('svg.cx-gantt-body').exists()).toBe(true);
   });
 
-  it('wrapper div has inline `overflow: auto` so it acts as the sticky-header scrollport', () => {
+  it('Phase 23: wrapper div is a grid and the chart-pane (NOT the wrapper) owns overflow', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
     });
     const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
-    expect(root.style.overflow).toBe('auto');
+    // Wrapper is a grid container; overflow lives on the chart-pane.
+    expect(root.style.display).toBe('grid');
+    expect(root.style.overflow).toBe('');
+    const chartPane = wrapper.find('div.cx-gantt-chart-pane').element as HTMLElement;
+    expect(chartPane.style.overflow).toBe('auto');
   });
 
-  it('header SVG has inline `position: sticky` + `top: 0` so it pins to the wrapper top during vertical scroll', () => {
+  it('Phase 23: header SVG sits inside cx-gantt-chart-header-pane (overflow: hidden) and is no longer sticky', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
     });
+    const headerPane = wrapper.find('div.cx-gantt-chart-header-pane').element as HTMLElement;
+    expect(headerPane.style.overflow).toBe('hidden');
     const header = wrapper.find('svg.cx-gantt-header').element as SVGSVGElement;
-    expect(header.style.position).toBe('sticky');
-    expect(header.style.top).toBe('0px');
-    // Opaque background prevents body bars from bleeding through the
-    // header while sliding under it during scroll.
+    // Dual-scrollport: header is structurally above chart-pane; sticky removed.
+    expect(header.style.position).toBe('');
+    expect(header.style.top).toBe('');
+    // Opaque header background still preserved for visual chrome.
     expect(header.style.background).not.toBe('');
   });
 
@@ -1458,13 +1464,18 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     expect(root.style.gridTemplateColumns).toBe('200px 8px auto');
   });
 
-  it('wrapper stays as a non-grid block when `columns` is omitted', () => {
+  it('Phase 23: wrapper is a 1-column grid when `columns` is omitted (chart-only layout)', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows: rowsWithNames, axisInput },
     });
     const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
-    expect(root.style.display).toBe('');
-    expect(root.style.gridTemplateColumns).toBe('');
+    // Dual-scrollport applies even without sidebar: chart-header-pane
+    // above chart-pane, in a single-column grid. Both panes own their
+    // own overflow.
+    expect(root.style.display).toBe('grid');
+    expect(root.style.gridTemplateColumns).toBe('auto');
+    expect(wrapper.find('div.cx-gantt-sidebar-pane').exists()).toBe(false);
+    expect(wrapper.find('div.cx-gantt-sidebar-header-pane').exists()).toBe(false);
   });
 
   it('with columns set, the header SVG and body SVG still render at the same width (the chart pane is unchanged)', () => {
@@ -1483,7 +1494,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     );
   });
 
-  it('sidebar-header has inline `position: sticky; top: 0; left: 0` so it pins to the wrapper top-left corner under any scroll', () => {
+  it('Phase 23: sidebar-header sits inside cx-gantt-sidebar-header-pane (overflow: hidden), no longer sticky', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1492,16 +1503,19 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
         columns: [{ key: 'region', label: '地区', width: 80 }],
       },
     });
+    const headerPane = wrapper.find('div.cx-gantt-sidebar-header-pane').element as HTMLElement;
+    expect(headerPane.style.overflow).toBe('hidden');
     const header = wrapper.find('.cx-gantt-sidebar-header').element as HTMLElement;
-    expect(header.style.position).toBe('sticky');
-    expect(header.style.top).toBe('0px');
-    expect(header.style.left).toBe('0px');
-    // Opaque background prevents body bars from bleeding through during
-    // horizontal scroll.
+    // Dual-scrollport: sticky positioning removed; sidebar-header
+    // lives inside its own pane wrapper.
+    expect(header.style.position).toBe('');
+    expect(header.style.top).toBe('');
+    expect(header.style.left).toBe('');
+    // Background preserved for visual chrome.
     expect(header.style.background).not.toBe('');
   });
 
-  it('sidebar-body has inline `position: sticky; left: 0` so it stays put during horizontal scroll', () => {
+  it('Phase 23: sidebar-body sits inside cx-gantt-sidebar-pane (overflow: auto), no longer sticky', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1510,14 +1524,15 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
         columns: [{ key: 'region', label: '地区', width: 80 }],
       },
     });
+    const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
+    expect(sidebarPane.style.overflow).toBe('auto');
     const body = wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement;
-    expect(body.style.position).toBe('sticky');
-    expect(body.style.left).toBe('0px');
-    // Opaque background ditto.
+    expect(body.style.position).toBe('');
+    expect(body.style.left).toBe('');
     expect(body.style.background).not.toBe('');
   });
 
-  it('z-index ladder is monotone: sidebar-header > chart-header > sidebar-body', () => {
+  it('Phase 23: no z-index stacking on sidebar/chart panes (sticky positioning removed)', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1530,10 +1545,11 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     const ch = (wrapper.find('svg.cx-gantt-header').element as unknown as SVGSVGElement).style
       .zIndex;
     const sb = (wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement).style.zIndex;
-    // Strict monotone ordering ensures correct paint stacking when both
-    // axes scroll and the top-left corner of each pane overlaps.
-    expect(Number(sh)).toBeGreaterThan(Number(ch));
-    expect(Number(ch)).toBeGreaterThan(Number(sb));
+    // Under dual-scrollport, panes don't overlap (they're in distinct
+    // grid cells) so z-index ladders aren't needed.
+    expect(sh).toBe('');
+    expect(ch).toBe('');
+    expect(sb).toBe('');
   });
 });
 
@@ -1680,13 +1696,17 @@ describe('<ChronixGantt> sidebar vGrouping (rowspan merge)', () => {
     expect(bodyRows.map((r) => r.attributes('data-row-id'))).toEqual(['r1', 'r2', 'r3', 'r4']);
   });
 
-  it('the `.cx-gantt-sidebar-body` div keeps its sticky-left positioning regardless of the new table inside', () => {
+  it('Phase 23: the `.cx-gantt-sidebar-body` div lives inside the sidebar-pane wrapper (no longer sticky)', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
     });
+    const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
+    expect(sidebarPane.style.overflow).toBe('auto');
     const body = wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement;
-    expect(body.style.position).toBe('sticky');
-    expect(body.style.left).toBe('0px');
+    expect(body.style.position).toBe('');
+    expect(body.style.left).toBe('');
+    // Body must sit inside the sidebar-pane DOM-wise.
+    expect(sidebarPane.contains(body)).toBe(true);
   });
 
   it('header + body tables share the same per-column widths via matching `<colgroup>` entries', () => {
@@ -2100,9 +2120,10 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
     const divider = wrapper.find('.cx-gantt-sidebar-divider');
     expect(divider.exists()).toBe(true);
     expect((divider.element as HTMLElement).style.cursor).toBe('col-resize');
-    // Sticky-left to the natural sidebar boundary (200 = 80 + 120) so
-    // the divider remains visible during horizontal scroll.
-    expect((divider.element as HTMLElement).style.left).toBe('200px');
+    // Phase 23: under dual-scrollport the divider sits in grid column 2
+    // naturally — no sticky-left positioning required.
+    expect((divider.element as HTMLElement).style.left).toBe('');
+    expect((divider.element as HTMLElement).style.position).toBe('');
   });
 
   it('renders no divider when `columns` is omitted (no-sidebar branch is unchanged)', () => {

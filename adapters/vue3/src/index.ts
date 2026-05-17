@@ -33,3 +33,7 @@ export type {
   UseGanttSelectionOutput,
 } from './use-gantt-selection.js';
 export { useGanttSelection } from './use-gantt-selection.js';
+export type { ChartScrollState } from './use-chart-scroll-state.js';
+export { useChartScrollState } from './use-chart-scroll-state.js';
+export { useScrollSync } from './use-scroll-sync.js';
+export type { HeaderCellArg, HeaderCellClassNamesFunc } from './chronix-gantt.js';
