@@ -20,6 +20,7 @@ import {
   BAR_TEXT,
   CONTINUATION_LEFT,
   CONTINUATION_RIGHT,
+  EVENT_BAR,
   GRID_HLINE,
   GRID_VLINE,
   GRID_VLINE_DASHED,
@@ -2256,6 +2257,89 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       console.warn(
         `Phase 23 vertical-scroll-sync: kui Δ=${kuiDelta!}px chronix Δ=${chronixDelta!}px (both ≤ 1px)`,
       );
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase25-sub-threshold pointer wiggle does NOT commit a drag on either side (3 px wiggle, week view)', async ({
+    browser,
+  }) => {
+    // Phase 25's load-bearing invariant: a 3-px Pythagorean
+    // pointer-wiggle between pointerdown + pointerup should NOT
+    // commit a drag on either side (both gates suppress sub-threshold
+    // gestures; chronix at 5 px default via Phase 25 composable;
+    // k-ui at 5 px default via FeaturefulElementDragging.minDistance).
+    //
+    // Approach: locate `event-1` (shared parity-mode bar id) on each
+    // side, capture its bbox.left, drive a 3-px mouse wiggle through
+    // Playwright (pointerdown at center → pointermove +3 px →
+    // pointerup), re-read bbox.left. Delta must be ≤ 1 px on BOTH
+    // sides — confirming neither side committed a drag.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase25-sub-threshold-pointer-wiggle',
+      viewId: 'week',
+    });
+    try {
+      // Locate event-1 on each side; capture pre-gesture position.
+      const kuiBar = kuiPage.locator(`${EVENT_BAR}[data-event-id="event-1"]`).first();
+      const chronixBar = chronixPage.locator(`rect.cx-gantt-bar[data-bar-id="event-1"]`).first();
+
+      await kuiBar.waitFor({ state: 'visible' });
+      await chronixBar.waitFor({ state: 'visible' });
+
+      const kuiBefore = await kuiBar.boundingBox();
+      const chronixBefore = await chronixBar.boundingBox();
+      expect(kuiBefore, 'reference event-1 not found').not.toBeNull();
+      expect(chronixBefore, 'chronix event-1 not found').not.toBeNull();
+
+      // Drive a 3-px wiggle on each side at the bar's center.
+      // Pythagorean distance = sqrt(3² + 0²) = 3 < 5-px default
+      // threshold on both sides.
+      const kuiCenter = {
+        x: kuiBefore!.x + kuiBefore!.width / 2,
+        y: kuiBefore!.y + kuiBefore!.height / 2,
+      };
+      const chronixCenter = {
+        x: chronixBefore!.x + chronixBefore!.width / 2,
+        y: chronixBefore!.y + chronixBefore!.height / 2,
+      };
+
+      await kuiPage.mouse.move(kuiCenter.x, kuiCenter.y);
+      await kuiPage.mouse.down();
+      await kuiPage.mouse.move(kuiCenter.x + 3, kuiCenter.y);
+      await kuiPage.mouse.up();
+
+      await chronixPage.mouse.move(chronixCenter.x, chronixCenter.y);
+      await chronixPage.mouse.down();
+      await chronixPage.mouse.move(chronixCenter.x + 3, chronixCenter.y);
+      await chronixPage.mouse.up();
+
+      // Settle both pages so any rerender from the click path
+      // resolves before re-reading.
+      await Promise.all([settle(kuiPage), settle(chronixPage)]);
+
+      const kuiAfter = await kuiBar.boundingBox();
+      const chronixAfter = await chronixBar.boundingBox();
+      expect(kuiAfter, 'reference event-1 disappeared after gesture').not.toBeNull();
+      expect(chronixAfter, 'chronix event-1 disappeared after gesture').not.toBeNull();
+
+      const kuiDelta = Math.abs(kuiAfter!.x - kuiBefore!.x);
+      const chronixDelta = Math.abs(chronixAfter!.x - chronixBefore!.x);
+
+      console.warn(
+        `Phase 25 sub-threshold wiggle: kui Δ=${kuiDelta.toFixed(2)}px chronix Δ=${chronixDelta.toFixed(2)}px (both should be ≤ 1px)`,
+      );
+
+      expect(
+        kuiDelta,
+        `reference event-1 moved ${kuiDelta}px under sub-threshold wiggle (gate failed)`,
+      ).toBeLessThanOrEqual(1);
+      expect(
+        chronixDelta,
+        `chronix event-1 moved ${chronixDelta}px under sub-threshold wiggle (gate failed)`,
+      ).toBeLessThanOrEqual(1);
     } finally {
       await kuiPage.context().close();
       await chronixPage.context().close();
