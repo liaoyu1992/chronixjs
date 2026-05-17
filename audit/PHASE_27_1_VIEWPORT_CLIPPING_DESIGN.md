@@ -1,6 +1,6 @@
 # Phase 27.1 — Viewport-clipping flags + viewport-edge continuation triangles
 
-**Status**: **DRAFT (2026-05-18)** — user accepted B/A/A on 2026-05-18; mid-implementation correction discovered that k-ui's `containerWidth` is content-width (not viewport-width), so Phase 27.1's viewport-clipping is **chronix-additive** rather than a port. Section "Parity assertion plan" + "Reference behavior surface" rewritten accordingly on 2026-05-18 after Commit 2 landed; Commit 3 substitutes chronix-new declaration for the originally-planned cross-demo parity assertions.
+**Status**: **DONE (2026-05-18)** — 3 commits landed (`94d8466` design + `207fbe8` helper + adapter + `12cc570` chronix-new + parity filter + 15-PNG VRT) + this wrap-up. `/phase-close` skill walked 6/6 gates green; ci-check fully green; vitest 684 → 697 (+13: 8 helper + 5 SFC); parity-spec 54 unchanged (Phase 27 assertions updated in-place with `[data-axis-clipped="true"]` filter; chronix-new declaration substitutes for the originally-planned 2 cross-demo assertions); cross-demo VRT 27/27 green after 15-PNG chronix-side re-baseline; chronix-visual VRT 5/5 unchanged. Mid-implementation correction: k-ui's `containerWidth` is content-width (not viewport-width), so Phase 27.1's viewport-clipping is **chronix-additive** rather than a port — flipped from cross-demo parity to chronix-new declaration in `audit/PARITY_RECHECK.md` P3. See `audit/journal/2026-05-13.md` "Phase 27.1" section for full wrap-up.
 
 ## Problem
 
