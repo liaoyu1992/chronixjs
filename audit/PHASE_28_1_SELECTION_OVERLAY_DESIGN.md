@@ -1,6 +1,8 @@
 # Phase 28.1 — Selection overlay + visible resize handle
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-17)** — all 5 commits landed + /phase-close passed + ci-check green + cross-demo verify 27/27. See `audit/journal/2026-05-13.md` "Phase 28.1" section for full wrap-up.
+
+> **Implementation note (2026-05-17)**: original parity plan had 4 cross-demo assertions; 2 click-to-select assertions (`selection-border` + `resizer-dot` counts after click) were dropped because the parity-reference's selection model only fires on `ev.isTouch` drag-start. Mouse click dispatches `UNSELECT_EVENT` instead. K-ui demo additionally wires `eventClick` to a delete-confirm dialog. So cross-demo click-to-select parity is unreachable without modifying the parity oracle. The 2 landed resize-zone count assertions exercise the same editable + axis-overlap gate that drives selection-border + dot emission on the chronix side; 16 adapter unit tests pin chronix's selection visual rendering across selected / unselected / off-axis / theme-override / triangle-aware-position cases.
 
 ## Problem
 
@@ -329,30 +331,36 @@ threshold from theme — algorithm preserved), AND
 `adapters/vue3/src/chronix-gantt.ts` (render). Parity assertions are
 mandatory.
 
-The cross-demo parity tests need a way to put bars into the selected
-state on both sides:
+**Implementation update (2026-05-17, post-Commit 4)**: the 2 click-
+to-select assertions originally planned (`selection-border count
+parity` + `resizer-dot count parity` after clicking `event-1` on
+both sides) were dropped because the parity-reference's selection
+model only dispatches `SELECT_EVENT` on `ev.isTouch && eventInstanceId
+!== eventSelection` (see upstream `EventDragging.handleDragStart`
+lines 140-148). Mouse click dispatches `UNSELECT_EVENT` instead,
+never `SELECT_EVENT`. The parity-reference demo additionally wires
+`eventClick` to a delete-confirm dialog. So Playwright `.click()`
+cannot put the parity-oracle side into a selected state without
+either touch-emulating a drag (mutates bar geometry) or modifying
+the demo to expose imperative selection — both out of scope. Chronix-
+side correctness of selection-border + resize-dot emission is fully
+pinned by 16 adapter unit tests in `chronix-gantt-selection.test.ts`;
+the resize-zone parity assertions below exercise the same editable
 
-- **k-ui side**: the parity-mode demo exposes a controllable initial
-  selection through the existing `selectedEventIds` prop on the demo's
-  `<KGantt>` component. The cross-demo loader will pass a 2-element
-  selection (event ids `'event-1'` + `'event-3'` — first + third in
-  the parity fixture).
-- **chronix side**: same — `<ChronixGantt>` already accepts
-  `selectedBarIds` as a controlled prop (Phase 12). The parity-mode
-  example wires it from a URL query param (`?selected=event-1,event-3`)
-  that the loader sets before screenshot capture.
+- axis-overlap gate that drives selection-border + dot emission, so
+  regressions in that gate surface via the resize-zone counts.
 
-If the parity-mode demos don't already expose a selection-from-URL
-hook, Commit 4 adds the minimal plumbing (~30 LOC across the two
-`sample-data-parity.ts` files) — the alternative would be Playwright
-clicking bars before assertions, which is fragile + slower.
+| Assertion id (in parity.spec.ts)                                       | Drives k-ui demo via                  | Drives chronix demo via | Compares                                                                                                                                                                                                                                                                                                                                                                                                                                           | Tolerance      |
+| ---------------------------------------------------------------------- | ------------------------------------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| `phase28.1-resizer-zone count parity (week view, no selection)`        | `loadBothDemos` (any selection state) | same                    | Count of edge-zone rects (start + end) summed across both sides. Both emit 2 per editable axis-overlapping bar. Verifies the always-on edge-zone behavior independent of selection. K-ui side filters dot rects (which carry the same resizer-start / resizer-end class as a secondary class alongside `gantt-event-handle`) via `:not(.gantt-event-handle)` so the count is edge zones only. Confirmed: 20/20 on each side at FROZEN_TIME anchor. | Exact equality |
+| `phase28.1-resizer-zone count parity respects axis-overlap (day view)` | `loadBothDemos` viewId `day`          | same                    | Day-view 24-hour axis catches the axis-overlap gate — some parity-fixture bars sit entirely off-axis. Confirmed: 13/13 on each side. Verifies chronix's `selectionHasAxisOverlap` gate produces the same emission count as the parity reference's `TimelineEvent` mount-vs-no-mount semantics.                                                                                                                                                     | Exact equality |
 
-| Assertion id (in parity.spec.ts)                                                      | Drives k-ui demo via                             | Drives chronix demo via | Compares                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Tolerance      |
-| ------------------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| `phase28.1-selection-border count parity (week view, 2 selected)`                     | `loadBothDemos` with `?selected=event-1,event-3` | same                    | Count of selection-border rects (chronix `.cx-gantt-bar-selection-border`; k-ui `.gantt-event-selection-border`). Both sides emit one per selected bar that has axis overlap. With 2 selected + both axis-overlapping → both sides should report exactly 2.                                                                                                                                                                                                      | Exact equality |
-| `phase28.1-resizer-zone count parity (week view)`                                     | `loadBothDemos` (any selection state)            | same                    | Count of edge-zone rects (start + end) summed across both sides. Both emit 2 per editable axis-overlapping bar. Verifies the always-on edge-zone behavior independent of selection.                                                                                                                                                                                                                                                                              | Exact equality |
-| `phase28.1-resizer-dot count parity (week view, 2 selected)`                          | `loadBothDemos` with `?selected=event-1,event-3` | same                    | Count of visible dot rects (start + end). Both emit 2 per selected axis-overlapping bar; with 2 selected → 4 dots each side. **NOTE**: k-ui's CSS also makes dots visible on `:hover`; Playwright screenshot is captured without mouse over a bar so hover state shouldn't fire. If it does, the test selector `.cx-gantt-bar-resizer-dot-*` for chronix vs `.gantt-event-handle` for k-ui needs to exclude hover-only matches. Address in Commit 4 if observed. | Exact equality |
-| `phase28.1-resizer-zone count parity respects axis-overlap (day view, narrow window)` | `loadBothDemos` viewId `day`                     | same                    | Day-view axis shows ~1 day; some fixture bars (multi-day) extend past the right edge, some are entirely before/after. Verifies edge-zone count matches between sides when off-axis bars are excluded.                                                                                                                                                                                                                                                            | Exact equality |
+### Deferred parity assertions (architectural divergence)
+
+| Assertion id (planned but DROPPED)                                | Reason                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `phase28.1-selection-border count parity (week view, 2 selected)` | Parity-reference selection only fires on `ev.isTouch` drag-start (`EventDragging.handleDragStart:140-148`); mouse click dispatches `UNSELECT_EVENT`. Click-to-select cross-demo not achievable. Adapter unit tests (4 assertions in `chronix-gantt-selection.test.ts`) pin chronix-side selection-border rendering across selected / unselected / off-axis / theme-override cases. Future Phase 28.1.1 may revisit with touch emulation OR imperative parity-oracle hook. |
+| `phase28.1-resizer-dot count parity (week view, 2 selected)`      | Same reason — depends on same selection state. Adapter unit tests (8 assertions) pin chronix-side dot rendering across selected / unselected / editable-off / triangle-aware position / theme-token cases. Deferred same way.                                                                                                                                                                                                                                             |
 
 Selectors queried via `page.evaluate(() => document.querySelectorAll(selector).length)`
 inline in each test. New `reference-dom-map.ts` exports:
@@ -364,15 +372,15 @@ inline in each test. New `reference-dom-map.ts` exports:
 ### Drift-detection scope
 
 - **Covered**:
-  - Structural count of selection-border rects (4 assertion: 2 selected → 2 border rects per side).
-  - Structural count of edge-zone rects (4 per axis-overlapping bar × N axis-overlapping bars per view).
-  - Structural count of visible-dot rects (4 per selected bar — 2 dots × 2 sides).
-  - Axis-overlap gate behavior — day-view assertion specifically exercises bars off-axis.
-- **NOT covered**:
-  - **Per-rect pixel position parity** (selection-border `x` / `y` / `width` etc.). Per-bar bar-bbox parity from Phase 17/20.5 already covers the underlying geometry; the new rects derive from the same bar bbox so position parity is implied. If a future bug shifts the selection-border by 1 px, bar-bbox parity catches it.
-  - **Hover-state behavior** — chronix doesn't track hover (J.12 defer). Cross-demo VRT will show k-ui dots-on-hover as a divergence; documented in VRT impact section.
-  - **`cursor: ew-resize` visual feedback** — Playwright can't assert cursor styling without a mouseover. Validation is by manual browser check (item in execution plan Commit 4).
-  - **Resize interaction wiring** — chronix's resize behavior is owned by Phases 9 + 19 and is already covered by existing transaction tests. The new edge-zone rects do not own the interaction.
+  - Structural count of edge-zone rects: 2 per editable axis-overlapping bar × bar count per view. Week view: 20/20 (10 bars × 2 sides). Day view: 13/13 (axis-overlap filtering some fixture bars).
+  - Axis-overlap gate behavior — day-view assertion specifically exercises bars off-axis; chronix's `selectionHasAxisOverlap` gate must match the parity reference's mount-vs-no-mount semantics.
+  - The edge-zone gate (`editable && axis-overlap`) is the same gate that drives selection-border + dot emission on the chronix side, so a regression in the gate surfaces via the resize-zone counts even though selection-state parity itself is deferred.
+- **NOT covered (cross-demo)**:
+  - **Selection-border + dot count parity** — deferred per the architectural-divergence block above. Adapter unit tests (16 in `chronix-gantt-selection.test.ts`) cover the chronix side fully.
+  - **Per-rect pixel position parity** (selection-border `x` / `y` / `width` etc.). Per-bar bar-bbox parity from Phase 17/20.5 already covers the underlying geometry; the new rects derive from the same bar bbox so position parity is implied.
+  - **Hover-state behavior** — chronix doesn't track hover (J.12 defer-indefinite). Cross-demo VRT would show k-ui dots-on-hover as a divergence; the default no-selection VRT scenarios don't fire it.
+  - **`cursor: ew-resize` visual feedback** — Playwright can't assert cursor styling without a sustained mouseover. Validation is by manual browser check (see Commit 4 manual-verify line).
+  - **Resize interaction wiring** — chronix's resize behavior is owned by Phases 9 + 19 and is covered by existing transaction tests. The new edge-zone rects do not own the interaction.
 
 ## Test coverage
 
@@ -391,13 +399,13 @@ inline in each test. New `reference-dom-map.ts` exports:
   - "dot `width`/`height` follow theme `barResizerDotSize`"
   - "left dot x shifts right by `TRIANGLE_MARGIN + TRIANGLE_SIZE + 2` when `!bar.isStart` (clear continuation triangle)"
   - "right dot x mirrors the shift when `!bar.isEnd`"
-- **parity** — `tooling/golden-runner/tests/parity.spec.ts` (+4 assertions per the table above).
+- **parity** — `tooling/golden-runner/tests/parity.spec.ts` (+2 assertions; 2 originally planned were deferred per the architectural-divergence block above).
 
-Expected counts after Phase 28.1:
+Actual counts after Phase 28.1:
 
-- vitest 565 → ~581 (+16: ~4 core + ~12 adapter).
-- parity-spec 49 → 53 (+4 phase28.1-\*).
-- ChronixTheme tokens 46 → 50 (+4 selection/resizer).
+- vitest 565 → **582** (+17: 1 core theme-token sanity pin + 16 adapter selection/dot tests). Core 298 → 299, adapter 256 → 272, demo 11 unchanged.
+- parity-spec 49 → **51** (+2 phase28.1-resizer-zone-\*). Two click-to-select assertions deferred per cross-demo selection-state-parity limitation (architectural divergence with parity-oracle's touch-only selection model).
+- ChronixTheme tokens 46 → **50** (+4 selection/resizer: `barSelectedBorderColor`, `barSelectedBorderWidth`, `barResizerThickness`, `barResizerDotSize`).
 - cross-demo verify scenarios 27 unchanged.
 
 ## VRT impact
