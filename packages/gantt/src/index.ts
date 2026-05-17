@@ -57,6 +57,9 @@ export {
 
 export type {
   BarSlotArgs,
+  CellStateMeta,
+  DayId,
+  HeaderCellSlotArgs,
   IRCanvas,
   LinkSlotArgs,
   PointerOverlayGroup,
@@ -65,7 +68,16 @@ export type {
   SlotRenderer,
   SlotTemplate,
 } from './render/index.js';
-export { BAR_SLOT_NAME, createSlotRegistry, LINK_SLOT_NAME } from './render/index.js';
+export {
+  BAR_SLOT_NAME,
+  DAY_IDS,
+  HEADER_CELL_SLOT_NAME,
+  LINK_SLOT_NAME,
+  computeCellStateMeta,
+  createSlotRegistry,
+  getDayClassNames,
+  getSlotClassNames,
+} from './render/index.js';
 
 export type {
   BarClassNamesFunc,
