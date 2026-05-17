@@ -832,3 +832,118 @@ describe('useGanttPointer — drag/resize lifecycle emits (Phase 16)', () => {
     expect(stopOrder!).toBeLessThan(resizeOrder!);
   });
 });
+
+describe('useGanttPointer — Phase 25 drag-distance gate', () => {
+  it('default pointerMinDistance=5: 3-px Pythagorean advance leaves dragDistanceSurpassed=false', () => {
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+    });
+    // Begin at content (600, 20) inside the bar; advance by (3, 0) =
+    // Pythagorean distance 3 < threshold 5.
+    ptr.begin(600, 20);
+    expect(ptr.dragDistanceSurpassed.value).toBe(false);
+    ptr.advance(603, 20);
+    expect(ptr.dragDistanceSurpassed.value).toBe(false);
+  });
+
+  it('5-px Pythagorean advance (exact boundary) flips dragDistanceSurpassed=true', () => {
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+    });
+    // (3, 4) → sqrt(9+16) = 5. Exact boundary: distanceSq = 25 ≥ 25.
+    ptr.begin(600, 20);
+    ptr.advance(603, 24);
+    expect(ptr.dragDistanceSurpassed.value).toBe(true);
+  });
+
+  it('sticky behavior: surpass at advance 1, drift back at advance 2, flag stays true', () => {
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+    });
+    ptr.begin(600, 20);
+    // Surpass: (10, 0) Pythagorean = 10.
+    ptr.advance(610, 20);
+    expect(ptr.dragDistanceSurpassed.value).toBe(true);
+    // Drift back inside threshold: (2, 0) Pythagorean = 2.
+    ptr.advance(602, 20);
+    // Sticky — flag stays true for the rest of the gesture.
+    expect(ptr.dragDistanceSurpassed.value).toBe(true);
+  });
+
+  it('pointerMinDistance=0 disables the gate: any non-zero delta surpasses', () => {
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      pointerMinDistance: 0,
+    });
+    ptr.begin(600, 20);
+    expect(ptr.dragDistanceSurpassed.value).toBe(false);
+    // 1-px delta. With threshold 0: 1² + 0² = 1 ≥ 0² = 0 → true.
+    ptr.advance(601, 20);
+    expect(ptr.dragDistanceSurpassed.value).toBe(true);
+  });
+
+  it('Phase 16 onBarDragStart now gates on threshold (sub-threshold advances do NOT fire start)', () => {
+    const onBarDragStart = vi.fn<(p: BarDragStartCallback) => void>();
+    const ptr = useGanttPointer({
+      placedBars: () => placedBars,
+      strips: () => strips,
+      axis: () => dayAxis(),
+      barRanges: () => barRanges,
+      editable: true,
+      onBarDragStart,
+    });
+    ptr.begin(600, 20);
+    // Sub-threshold advance — Phase 16 dragStartFired stays false because
+    // Phase 25 dragDistanceSurpassed never flipped.
+    ptr.advance(602, 20);
+    expect(onBarDragStart).not.toHaveBeenCalled();
+    // Above-threshold advance flips both flags + fires start.
+    ptr.advance(610, 20);
+    expect(onBarDragStart).toHaveBeenCalledTimes(1);
+  });
+
+  it('threshold applies to all 4 transaction kinds (bar-drag / bar-resize / progress-handle / calendar-range-select)', () => {
+    // Single composable; drive each kind by varying the begin
+    // position. Assertion: dragDistanceSurpassed flips after a
+    // 10-px advance for every kind.
+    const checks: { kind: string; beginX: number; beginY: number; advanceX: number }[] = [
+      { kind: 'bar-drag', beginX: 600, beginY: 20, advanceX: 610 }, // inside bar body
+      { kind: 'bar-resize', beginX: 482, beginY: 20, advanceX: 492 }, // bar-edge-start (within 8 px)
+      { kind: 'calendar-range-select', beginX: 100, beginY: 60, advanceX: 110 }, // empty row r2
+    ];
+    for (const { kind, beginX, beginY, advanceX } of checks) {
+      const ptr = useGanttPointer({
+        placedBars: () => placedBars,
+        strips: () => strips,
+        axis: () => dayAxis(),
+        barRanges: () => barRanges,
+        editable: true,
+        selectable: true,
+      });
+      ptr.begin(beginX, beginY);
+      expect(ptr.activeTransaction.value?.kind, `kind=${kind} begin`).toBe(kind);
+      expect(ptr.dragDistanceSurpassed.value, `kind=${kind} pre-advance`).toBe(false);
+      ptr.advance(advanceX, beginY);
+      expect(ptr.dragDistanceSurpassed.value, `kind=${kind} post-advance`).toBe(true);
+    }
+    // Progress-handle kind requires more setup (overlay + progress
+    // map) — verified separately in chronix-gantt-drag-distance.test.ts
+    // via the adapter, where its hit-test reaches the handle rect.
+  });
+});

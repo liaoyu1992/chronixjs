@@ -761,6 +761,20 @@ export const ChronixGantt = defineComponent({
      */
     useLineEventColor: { type: Boolean, default: false },
     /**
+     * Phase 25: minimum Pythagorean distance (in CSS pixels) from
+     * the pointerdown origin before a pointer gesture is treated as
+     * a confirmed drag / resize / range-select. Below this threshold,
+     * the pointer-up fires `'bar-click'` / `'empty-area-click'`
+     * instead of the commit-time emit. Default 5 (matches the parity
+     * reference's `minDistance` / `eventDragMinDistance`).
+     *
+     * Set to `0` to restore the pre-Phase-25 strict-zero-delta gate
+     * (every non-zero delta commits). Applies uniformly to all 4
+     * transaction kinds; progress-handle is exempted (reaching the
+     * handle hit zone IS the intent, matching the reference).
+     */
+    pointerMinDistance: { type: Number, default: 5 },
+    /**
      * Phase 29: per-header-cell class-names callback. Fires once per
      * rendered header cell (outer band cells AND tick-row labels);
      * returned classes append to the cell's primary element. Use this
@@ -1145,6 +1159,10 @@ export const ChronixGantt = defineComponent({
       // render) and the geometric resize-edge detection — consumers
       // who widen the cue grow both halves simultaneously.
       edgeZoneWidth: () => theme.value.barResizerThickness,
+      // Phase 25: Pythagorean distance threshold (in px) below which
+      // a pointer gesture aborts as a click instead of committing.
+      // Default 5; 0 disables the gate (chronix pre-Phase-25 behavior).
+      pointerMinDistance: () => props.pointerMinDistance,
       // Phase 19: validation gate inputs.
       bars: () => props.bars,
       eventAllow: () => props.eventAllow,
@@ -1379,12 +1397,19 @@ export const ChronixGantt = defineComponent({
       // emits with this pointerup event, not the most recent pointermove.
       lastJsEvent.value = e;
       if (txn) {
-        const isNoOpDrag =
-          (txn.kind === 'bar-drag' && txn.deltaX === 0 && txn.deltaY === 0) ||
-          (txn.kind === 'bar-resize' && txn.deltaX === 0) ||
-          (txn.kind === 'calendar-range-select' &&
-            txn.currentTime.getTime() === txn.anchorTime.getTime());
-        if (isNoOpDrag) {
+        // Phase 25: sub-threshold Pythagorean distance aborts the
+        // gesture as a click — replaces chronix's pre-Phase-25
+        // strict-zero-delta gate. The composable's
+        // `dragDistanceSurpassed` is sticky-true once the pointer has
+        // ever moved past `pointerMinDistance` (default 5 px) from
+        // the pointerdown origin. Progress-handle stays exempted:
+        // reaching the handle hit zone IS the intent, so it commits
+        // regardless of distance (matches the reference's same
+        // exemption + chronix's pre-Phase-25 progress-handle
+        // behavior).
+        const isSubThresholdGesture =
+          !pointer.dragDistanceSurpassed.value && txn.kind !== 'progress-handle';
+        if (isSubThresholdGesture) {
           pointer.abort();
         } else {
           pointer.commit();

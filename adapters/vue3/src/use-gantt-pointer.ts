@@ -188,6 +188,28 @@ export interface UseGanttPointerInput {
   readonly progressHandleSize?: MaybeRefOrGetter<number>;
   /** Snap drag-time delta to this multiple. Default no snap. */
   readonly snapDurationMs?: MaybeRefOrGetter<number>;
+  /**
+   * Phase 25: minimum Pythagorean distance (in CSS pixels) from the
+   * pointerdown origin before the active transaction is treated as a
+   * confirmed drag. Below this threshold, the pointer-up aborts the
+   * transaction + the adapter fires the `bar-click` /
+   * `empty-area-click` emit instead.
+   *
+   * Default 5 (matches the parity reference's `minDistance` /
+   * `eventDragMinDistance`). Set to `0` to disable the gate (every
+   * non-zero delta commits — chronix's pre-Phase-25 behavior).
+   *
+   * Applies uniformly to all 4 transaction kinds (bar-drag,
+   * bar-resize, progress-handle, calendar-range-select). Per-
+   * transaction-kind thresholds (the reference's
+   * `eventDragMinDistance` vs `selectMinDistance` separation) are
+   * parked until consumer demand surfaces.
+   *
+   * Note: progress-handle gestures still commit regardless of
+   * distance — reaching the handle hit zone IS the intent, matching
+   * the reference's same exemption.
+   */
+  readonly pointerMinDistance?: MaybeRefOrGetter<number>;
   /** Fires after a `BarDragTransaction` commits. */
   readonly onBarDrop?: (payload: BarDropPayload) => void;
   /** Fires after a `BarResizeTransaction` commits. */
@@ -300,6 +322,22 @@ export interface UseGanttPointerOutput {
    * also fire `'bar-click'`. Phase 12 addition.
    */
   readonly wasDragCommit: ComputedRef<boolean>;
+  /**
+   * Phase 25: `true` once the active transaction's pointer has moved
+   * at least `pointerMinDistance` pixels (Pythagorean) from the
+   * pointerdown origin. STICKY: stays `true` for the rest of the
+   * gesture even if the pointer drifts back inside the threshold.
+   * Reset to `false` at each `begin()`.
+   *
+   * Read by the adapter's `onPointerup` to decide abort-vs-commit:
+   * when `false` at release time, the transaction aborts as a click
+   * (`bar-click` / `empty-area-click` emit instead of the
+   * commit-time emit); when `true`, the transaction commits.
+   *
+   * Always `false` between transactions (when `activeTransaction`
+   * is `null`).
+   */
+  readonly dragDistanceSurpassed: ComputedRef<boolean>;
 }
 
 const REQUIRE_HIT: PointerCaptureConfig = { requireInitialHit: true };
@@ -333,6 +371,21 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   // callback fires — pure 0-delta clicks leave it false so neither
   // start nor stop fires.
   const dragStartFired = ref(false);
+  // Phase 25: sticky "ever surpassed" flag for the Pythagorean
+  // distance gate. Mirrors the parity reference's
+  // `FeaturefulElementDragging.isDistanceSurpassed` instance field.
+  // Reset on each `begin()`; flipped to `true` on the first
+  // `advance()` where the pointer's Pythagorean distance from the
+  // pointerdown origin meets or exceeds `pointerMinDistance`. Stays
+  // `true` for the rest of the gesture even if the pointer drifts
+  // back below the threshold — `dragstart` cannot un-fire.
+  const dragDistanceSurpassedFlag = ref(false);
+  // Phase 25: pointerdown content-space origin tracked at the
+  // composable level so the distance gate applies uniformly across
+  // all 4 transaction kinds, including `calendar-range-select` whose
+  // transaction shape is time-domain (no deltaX/deltaY pixel fields).
+  // Reset on each `begin()` to the current pointerdown coordinates.
+  const lastBeginPx = ref<{ x: number; y: number } | null>(null);
 
   function pxPerMs(): number {
     const a = toValue(input.axis);
@@ -392,6 +445,13 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     // Phase 16: reset the start-fired latch so the first non-zero
     // advance of this new transaction can re-fire start.
     dragStartFired.value = false;
+    // Phase 25: reset the distance-surpassed sticky flag + capture
+    // the pointerdown origin so subsequent advances compute distance
+    // against a consistent reference. Origin always captured even if
+    // no transaction starts (the early-return below sets `null`
+    // transaction but the flag stays false either way).
+    dragDistanceSurpassedFlag.value = false;
+    lastBeginPx.value = { x: contentX, y: contentY };
     const overlayMap = toValue(input.overlayIdByBarId);
     const handleRects = progressHandleRectsByBarId.value;
     const hit = defaultPointerHitTester.test({
@@ -477,16 +537,40 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       });
     }
 
-    // Phase 16: lazy-fire start once the transaction has moved past
-    // zero delta. Pure 0-delta clicks (which the adapter turns into
-    // `abort()` via the noOp gate) never reach this branch — start
-    // stays unfired, stop won't fire either, matching reference parity.
-    if (!dragStartFired.value) {
+    // Phase 25: update the sticky Pythagorean-distance gate against
+    // the pointerdown origin. Once the flag flips true it stays true
+    // for the rest of the gesture, even if the pointer drifts back
+    // inside the threshold — matches the reference's
+    // `FeaturefulElementDragging.isDistanceSurpassed` semantics. The
+    // origin lives on `lastBeginPx` (captured at `begin()`) so the
+    // check applies uniformly to all 4 transaction kinds, including
+    // `calendar-range-select` whose transaction shape lacks
+    // deltaX/deltaY pixel fields.
+    if (!dragDistanceSurpassedFlag.value && lastBeginPx.value !== null) {
+      const minDistance = toValue(input.pointerMinDistance ?? 5);
+      const dx = contentX - lastBeginPx.value.x;
+      const dy = contentY - lastBeginPx.value.y;
+      // Squared comparison avoids `Math.sqrt` — same idiom as
+      // `FeaturefulElementDragging.ts:108-112`. Threshold 0 collapses
+      // to "any non-zero delta surpasses" (chronix pre-Phase-25
+      // strict-zero gate).
+      if (dx * dx + dy * dy >= minDistance * minDistance) {
+        dragDistanceSurpassedFlag.value = true;
+      }
+    }
+
+    // Phase 16 + Phase 25: lazy-fire start once the transaction's
+    // pointer has moved past the distance threshold (Phase 25 sticky
+    // flag). Pure clicks or sub-threshold wiggles never flip the
+    // flag, so start (and the symmetric stop on commit/abort) stays
+    // unfired — matching the reference where `dragstart` lives behind
+    // `handleDistanceSurpassed`.
+    if (!dragStartFired.value && dragDistanceSurpassedFlag.value) {
       const updated = transaction.value;
-      if (updated?.kind === 'bar-drag' && (updated.deltaX !== 0 || updated.deltaY !== 0)) {
+      if (updated?.kind === 'bar-drag') {
         dragStartFired.value = true;
         input.onBarDragStart?.({ barId: updated.barId });
-      } else if (updated?.kind === 'bar-resize' && updated.deltaX !== 0) {
+      } else if (updated?.kind === 'bar-resize') {
         dragStartFired.value = true;
         input.onBarResizeStart?.({ barId: updated.barId, edge: updated.edge });
       }
@@ -729,5 +813,6 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     lastHit: computed(() => lastHitResult.value),
     projectedRowId,
     wasDragCommit: computed(() => dragCommittedFlag.value),
+    dragDistanceSurpassed: computed(() => dragDistanceSurpassedFlag.value),
   };
 }
