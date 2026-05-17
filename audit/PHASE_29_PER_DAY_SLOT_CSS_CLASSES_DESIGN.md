@@ -1,6 +1,6 @@
 # Phase 29 — per-day / per-slot CSS class system + header cell slot/callback
 
-**Status**: **Approved (pending user reply)** — design only; no code yet.
+**Status**: **DONE (2026-05-17)** — all 5 commits landed + /phase-close passed (6/6 gates) + ci-check green + cross-demo verify 27/27 + chronix-visual 5/5. See `audit/journal/2026-05-13.md` "Phase 29" section for full wrap-up.
 
 > **Implementation note (2026-05-17)**: original parity plan had 2
 > assertions (`phase29-day-today class presence parity` + `phase29-day-id
@@ -394,24 +394,46 @@ them in their own output.
 
 ## Parity assertion plan — MANDATORY
 
-The day/slot class taxonomy IS parity-testable: both demos render
-the same logical cells at the same x-coordinates, and the class
-attribute can be read in the same way as Phase 22.2's today-cell
-check. The header callback + slot are chronix-additive (no parity
-equiv) and get pinned by adapter unit tests.
+**chronix-new — no parity assertion possible.** Rationale: the parity
+reference's `getDayClassNames` / `getSlotClassNames` helpers
+(`d:/work/k-ui/packages/gantt/src/component/date-rendering.ts:33-81`)
+are only invoked by its calendar-grid render path
+(`TableDateCell.tsx` / `DayCellContainer.tsx` / `TableDowCell.tsx`).
+The resource-timeline view (`resource-timeline/GanttView.tsx`) that
+chronix mirrors renders header cells through `renderTimelineHeader`'s
+hardcoded `<text class="gantt-timeline-header-cell">` path — that path
+NEVER calls `getDayClassNames`. So `.gantt-day-today` /
+`.gantt-day-{dayId}` / `.gantt-slot-*` classes are genuinely absent
+from the parity-reference demo's DOM in every view chronix exercises.
 
-| Assertion id (in parity.spec.ts)                      | Drives k-ui demo via | Drives chronix demo via | Compares                                                                                                                                                                                                                                                            | Tolerance        |
-| ----------------------------------------------------- | -------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- |
-| `phase29-day-today class presence parity (week view)` | `loadBothDemos`      | `loadBothDemos`         | The set of x-coordinates at which `.cx-gantt-day-today` / `.gantt-day-today` is emitted in the header. Both sides should mark exactly one day cell (today's), at the same x-coordinate (within `slotWidth/2` — week view tolerates the day-cell-vs-tick alignment). | `x: slotWidth/2` |
-| `phase29-day-id class set parity (week view)`         | `loadBothDemos`      | `loadBothDemos`         | The set of `{x, dayId}` pairs from header day cells. Both sides should emit `mon..sun` (or filtered) classes at the same x-coords.                                                                                                                                  | `x: 1px`         |
+chronix's adoption of the taxonomy IS the additive surface: literal
+class names ported one-for-one (with the `cx-` prefix) for consumer
+CSS portability so anyone porting a `.gantt-day-sat { background: ... }`
+selector from the parity reference's calendar views maps it cleanly
+to chronix's resource-timeline. But the EMISSION POINT is chronix-only.
 
-The 2 parity assertions cover the day-class application path
-end-to-end. Slot classes get cross-demo parity DEFERRED to
-Phase 29.1 if needed — chronix slot rects are NEW elements, the
-parity reference has no exact DOM counterpart (k-ui slots are
-`<td>` inside `<tr>`, chronix's are `<rect>` inside the body SVG),
-so equivalence by xy + class is harder to reduce to one assertion.
-Slot class application is pinned by adapter unit tests.
+Cross-CSS-portability invariant pinned by 16 core unit tests in
+`packages/gantt/src/render/cell-state-classes.test.ts` (asserts
+`DAY_IDS` matches the parity reference's Sun-anchored 7-element
+literal byte-for-byte; isToday / isPast / isFuture / dayId derivation
+correctness across boundary cases; `-other` architectural rejection
+guard). Per-view application + slot replacement + callback cascade
+pinned by 20 adapter unit tests across
+`chronix-gantt-slot-classes.test.ts`,
+`chronix-gantt-day-classes.test.ts`,
+`chronix-gantt-header-cell-callback.test.ts`, and
+`chronix-gantt-header-cell-slot.test.ts`.
+
+The `headerCellClassNamesCallback` callback and the
+`HEADER_CELL_SLOT_NAME` slot are independently chronix-additive
+(no k-ui counterpart even in the calendar-grid views — k-ui's
+`dayHeaderClassNames` callback IS analogous but never wired in
+the parity-reference's demo, so cross-demo invocation isn't a
+parity-oracle concern). Adapter unit tests cover those surfaces.
+
+Same chronix-new pattern as Phase 28.1 (selection-state — parity
+reference's selection model is touch-only) and Phase 28.3
+(callback / slot APIs — parity-reference demo doesn't wire them).
 
 ### Drift-detection scope
 

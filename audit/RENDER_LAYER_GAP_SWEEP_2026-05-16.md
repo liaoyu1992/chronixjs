@@ -158,8 +158,8 @@ Same scheme as PARITY_RECHECK.md disposition register:
 | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------ | ---------------------------- | ----------------------------------------------------------------------------------- |
 | Day view: 1 header row + hourly slots                                                                                               | `tDateProfile.slotDuration` hourly     | ✅ DONE (Phase 2/6)                                                                                    | ✅ DONE                      |                                                                                     |
 | Week view: 2 header rows + day slots + week-start emphasis                                                                          | `cellRows.length=2` + `isWeekStarts[]` | PARTIAL — chronix has week view but no week-start emphasis on grid (depends on H.1 vline-week landing) | 🔴 → **🚧 Planned Phase 26** | Bundle into Phase 26 grid lines (week-start emphasis is part of vline-week branch). |
-| Month view: 2-3 header rows + daily slots + `gantt-day-other` for non-current-month                                                 | `date-rendering.ts:52`                 | PARTIAL — chronix has month view but no `cx-gantt-day-other` class on out-of-month days                | 🔴 → **🚧 Planned Phase 29** | Folds into new Phase 29 (per-day CSS class system).                                 |
-| Per-view CSS classes: `gantt-day-{dayId}`, `gantt-day-today`, `-past`, `-future`, `-disabled`, `-other`, `gantt-slot-*` equivalents | `date-rendering.ts:33-81`              | NOT IMPLEMENTED — chronix has only `cx-gantt-today-cell` (Phase 22.2)                                  | 🔴 → **🚧 Planned Phase 29** | New phase for per-day/per-slot CSS class taxonomy.                                  |
+| Month view: 2-3 header rows + daily slots + `gantt-day-other` for non-current-month                                                 | `date-rendering.ts:52`                 | PARTIAL — chronix has month view but no `cx-gantt-day-other` class on out-of-month days                | ✅ **DONE Phase 29**         | Folds into new Phase 29 (per-day CSS class system).                                 |
+| Per-view CSS classes: `gantt-day-{dayId}`, `gantt-day-today`, `-past`, `-future`, `-disabled`, `-other`, `gantt-slot-*` equivalents | `date-rendering.ts:33-81`              | NOT IMPLEMENTED — chronix has only `cx-gantt-today-cell` (Phase 22.2)                                  | ✅ **DONE Phase 29**         | New phase for per-day/per-slot CSS class taxonomy.                                  |
 | Week-number column (`WeekNumberContainer` + `weekNumberContent` callback)                                                           | `common/WeekNumberContainer.tsx:23-53` | NOT IMPLEMENTED                                                                                        | ⏸️ **Defer-indefinite**      | Already in SILENT_GAP_SWEEP cluster "Week-numbers column" (defer-indefinite).       |
 
 ## Section J — Pointer / interaction code
@@ -374,10 +374,10 @@ Covered in Section I (Phase 29).
 
 ### N.2 — Header cell render
 
-| Item                                                                            | k-ui                             | chronix                                                        | Disposition                  | Rationale / trigger                   |
-| ------------------------------------------------------------------------------- | -------------------------------- | -------------------------------------------------------------- | ---------------------------- | ------------------------------------- |
-| TableDateCell with `dayHeaderFormat`, navLink, callback content                 | `common/TableDateCell.tsx:29-89` | PARTIAL — chronix has hardcoded rect+text; no slot or callback | 🔴 → **🚧 Planned Phase 29** | Bundle with per-day CSS class system. |
-| Header `<text>` with `clipPath` + bold first-row + truncation tooltip `<title>` | `GanttView.tsx:578-615`          | PARTIAL — chronix has text but no clip + no tooltip            | 🔴 → **🚧 Planned Phase 29** | Bundle.                               |
+| Item                                                                            | k-ui                             | chronix                                                        | Disposition          | Rationale / trigger                   |
+| ------------------------------------------------------------------------------- | -------------------------------- | -------------------------------------------------------------- | -------------------- | ------------------------------------- |
+| TableDateCell with `dayHeaderFormat`, navLink, callback content                 | `common/TableDateCell.tsx:29-89` | PARTIAL — chronix has hardcoded rect+text; no slot or callback | ✅ **DONE Phase 29** | Bundle with per-day CSS class system. |
+| Header `<text>` with `clipPath` + bold first-row + truncation tooltip `<title>` | `GanttView.tsx:578-615`          | PARTIAL — chronix has text but no clip + no tooltip            | ✅ **DONE Phase 29** | Bundle.                               |
 
 ### N.3 — Row class names callback
 
@@ -454,7 +454,7 @@ Total **new silent gaps confirmed by this sweep**: **18 distinct items** spannin
 
 **Estimated scope**: ~12-15h, ~900 LOC. **Likely splits into Phase 28.1 (selection overlay + resize handle) + Phase 28.2 (text + render callbacks)** to keep single-session discipline.
 
-### Cluster D — Per-day CSS class system (🚧 Planned Phase 29)
+### Cluster D — Per-day CSS class system (✅ DONE Phase 29)
 
 - I.5 + N.1 — `cx-gantt-day-{dayId}` / `-today` / `-past` / `-future` / `-disabled` / `-other`, equivalents for slot row
 - N.2 header cell slot / callback
