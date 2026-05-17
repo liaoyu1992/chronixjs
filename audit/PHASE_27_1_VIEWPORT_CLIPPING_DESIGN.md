@@ -1,6 +1,6 @@
 # Phase 27.1 — Viewport-clipping flags + viewport-edge continuation triangles
 
-**Status**: **DRAFT (2026-05-18)** — awaiting user review of the 3 load-bearing decisions at the bottom of this file. Implementation commits do NOT land until the user replies `按推荐继续` or overrides one of the three.
+**Status**: **DRAFT (2026-05-18)** — user accepted B/A/A on 2026-05-18; mid-implementation correction discovered that k-ui's `containerWidth` is content-width (not viewport-width), so Phase 27.1's viewport-clipping is **chronix-additive** rather than a port. Section "Parity assertion plan" + "Reference behavior surface" rewritten accordingly on 2026-05-18 after Commit 2 landed; Commit 3 substitutes chronix-new declaration for the originally-planned cross-demo parity assertions.
 
 ## Problem
 
@@ -475,13 +475,123 @@ data. Documented in the Phase 28.2.1 placeholder.
   Module-level co-location in `chronix-gantt.ts` is the current
   Phase 27 pattern; consistency wins.
 
-## Parity assertion plan — MANDATORY
+## Parity assertion plan — chronix-new declaration
 
-This phase modifies `adapters/vue3/src/chronix-gantt.ts` (render
-layer). Per Phase 27's precedent (4 parity assertions for triangle
-counts across views), Phase 27.1 adds **2 cross-demo parity
-assertions** specifically targeting viewport-clipped triangles
-under programmatic horizontal scroll.
+**Correction (2026-05-18, mid-Phase-27.1)**: while preparing the
+originally-planned cross-demo parity assertions, the prop-plumbing
+chain for k-ui's `containerWidth` was traced end-to-end and found
+to carry the **axis content width**, not the visible viewport
+width:
+
+- `d:/work/k-ui/packages/gantt/src/resource-timeline/GanttView.tsx:1542`
+  wires `containerWidth={timelineWidth}` to `<TimelineEvent>`.
+  `timelineWidth = calculateTimelineWidth(tDateProfile) = slotCount × slotMinWidth`
+  — the axis total content width.
+- The alternate path
+  `d:/work/k-ui/packages/gantt/src/timeline/TimelineLane.tsx:246`
+  reads `outerCoordCache.originClientRect.width` — that's
+  `getBoundingClientRect().width` of the timeline-content element,
+  which is full-stretched at the content width (not clipped to the
+  visible viewport).
+- Independent corroboration:
+  `d:/work/k-ui/packages/gantt/src/resource-timeline/GanttView.tsx:1471-1472`
+  sets `isClippedStart = hcoords.start < 0; isClippedEnd = hcoords.end > timelineWidth;`
+  then maps onto `modifiedSeg.isStart` / `isEnd` — proving the
+  `x < 0 || x + finalWidth > containerWidth` check at
+  `TimelineEvent.tsx:286-298` is algebraically equivalent to
+  `!isEventStart` / `!isEventEnd` when `containerWidth = timelineWidth`
+  (the OR is redundant).
+
+**Consequence**: k-ui does NOT emit additional triangles when the
+user scrolls horizontally — its triangle count is invariant under
+chart-pane scroll. Phase 27.1's viewport-aware triangle response
+to scroll has no k-ui counterpart; it is a chronix-additive UX
+enhancement, not a port.
+
+### Chronix-new declaration
+
+Phase 27.1's `data-viewport-clipped="true"` triangles (the
+sub-case where a bar is axis-inside but scrolled outside the
+visible chart-pane viewport) are **chronix-additive** behavior:
+
+- **What is new**: viewport-clipped triangles fire dynamically
+  in response to user scroll (or chart-pane resize via
+  `ResizeObserver`). The triangle apex locks to the visible
+  viewport edge in content-coords, so the indicator stays at the
+  viewport edge regardless of how far the bar has scrolled
+  offscreen. Driven by `useChartScrollState` (Phase 23) +
+  `deriveViewportClipping` (Phase 27.1) — pure render-time
+  derivation, no PlacedBar shape change.
+- **Why k-ui doesn't have it**: k-ui's
+  `<TimelineEvent containerWidth>` prop reads the axis content
+  width (`timelineWidth`), not the visible viewport width. Its
+  `containerWidth`-driven branch duplicates the axis-clipped
+  check; no scroll-aware code path exists in the reference's
+  render layer.
+- **Why chronix adds it**: in week / month / season / half-year /
+  year views, chronix's chart pane has horizontal scroll (chart
+  content > visible width). Without viewport-clipped triangles,
+  bars that scroll offscreen disappear silently with no
+  indicator. The viewport-locked triangle marks the visible
+  viewport edge so the user knows continuation exists past the
+  scroll boundary — a discoverability improvement over k-ui.
+- chronix's **axis-clipped sub-case is still a port** of k-ui's
+  `!isEventStart` / `!isEventEnd` check (Phase 27, DONE
+  2026-05-16). Only the viewport-clipped sub-case is chronix-new.
+
+### Pinning surface (drift-detection without cross-demo parity)
+
+Because no k-ui parity counterpart exists, behavior is pinned via
+internal tests rather than cross-demo assertions. The 13 tests
+landed in Commit 2 cover every load-bearing edge:
+
+- **`derive-viewport-clipping.test.ts` — 8 helper tests**: no-clip
+  baseline, left-only clip, right-only clip, both flags fire,
+  `clientWidth === 0` short-circuit, left apex formula, right apex
+  formula, strict `<` boundary.
+- **`chronix-gantt-viewport-clipping.test.ts` — 5 SFC tests**:
+  axis-only-clipped → `data-viewport-clipped="false"` at bar
+  edge; viewport-only-clipped → `data-viewport-clipped="true"` at
+  viewport edge; both-clipped same-side precedence (viewport
+  wins); scroll-event reactivity (count changes between scroll
+  positions); pre-mount `clientWidth=0` phantom suppression.
+
+### PARITY_RECHECK.md entry (lands in Commit 3)
+
+A row added under section **P3 — chronix-only feature with no
+k-ui counterpart**:
+
+| Item                                                                                | Disposition                   | Rationale                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------------------------------------------------------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Phase 27.1 viewport-clipped continuation triangles (`data-viewport-clipped="true"`) | **Reject** (chronix-additive) | k-ui's `containerWidth` prop reads axis content width (`timelineWidth`), not viewport width — its viewport-clipping check is algebraically redundant with axis-clipping. Phase 27.1 introduces scroll-aware viewport-clipped triangles via `useChartScrollState` + `deriveViewportClipping`; no k-ui counterpart. Pinning via 8 helper unit tests + 5 SFC reactivity tests. |
+
+### Drift-detection scope (internal)
+
+- **Covered by helper + SFC tests**: formula edges (strict `<`
+  vs `<=`, `clientWidth=0` pre-mount, viewport-locked apex
+  math); reactivity (scroll event triggers re-derivation); both-
+  clipped same-side precedence; phantom-triangle suppression.
+- **NOT covered** (acknowledged tradeoffs of the chronix-new
+  declaration):
+  - User-perceived visual continuity during scroll animation —
+    pinned only via VRT re-baseline + manual demo verification.
+  - Touch-scroll-driven viewport-clipping — chronix v0 uniform
+    pointer model; same native `overflow:auto` path as mouse
+    scroll, structurally identical.
+- **chronix axis-clipped sub-case continues to be cross-demo
+  parity-tested** via the 4 Phase 27 assertions (`phase27-continuation-{left,right}`
+  × {day, week, month}) — those remain green because the
+  axis-clipped branch is unchanged.
+
+---
+
+### Originally-planned cross-demo parity assertions — STALE, superseded
+
+The block below was drafted before the `containerWidth`
+plumbing trace above. It is preserved verbatim so the post-mortem
+rationale for flipping to chronix-new is visible alongside the
+original intent. **Not implemented**; superseded by the
+Chronix-new declaration above.
 
 The chronix demo's existing week view (`viewId: 'week'`) has axis
 totalWidth (~7 × day-slots × hourly-pxPerHour) > the chart-pane's

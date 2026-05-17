@@ -2211,6 +2211,15 @@ export const ChronixGantt = defineComponent({
         // clicks on the bar body underneath. `opacity: 0.8` + `fill:#000`
         // match the parity reference's translucent-black indicator
         // convention.
+        // `data-axis-clipped` reflects the Phase 27 sub-case independently
+        // of viewport-clipping. `data-viewport-clipped` reflects the
+        // Phase 27.1 sub-case. Both are independent booleans on the same
+        // polygon — a bar in a narrow viewport may be axis-clipped AND
+        // viewport-clipped on the same side (apex precedence is
+        // viewport-locked, but both flags remain visible to consumers
+        // + cross-demo parity tests). The Phase 27 parity assertion
+        // filters on `[data-axis-clipped="true"]` to isolate k-ui's
+        // axis-clipped triangle set.
         const fireLeftTriangle = !bar.isStart || viewportClip.isViewportClippedStart;
         if (fireLeftTriangle) {
           const apexX = viewportClip.isViewportClippedStart
@@ -2222,6 +2231,7 @@ export const ChronixGantt = defineComponent({
             h('polygon', {
               key: `${bar.barId}-continuation-left`,
               'data-bar-id': bar.barId,
+              'data-axis-clipped': bar.isStart ? 'false' : 'true',
               'data-viewport-clipped': viewportClip.isViewportClippedStart ? 'true' : 'false',
               class: 'cx-gantt-bar-continuation-indicator cx-gantt-bar-continuation-left',
               points: `${apexX},${centerY} ${baseX},${centerY - TRIANGLE_SIZE} ${baseX},${centerY + TRIANGLE_SIZE}`,
@@ -2242,6 +2252,7 @@ export const ChronixGantt = defineComponent({
             h('polygon', {
               key: `${bar.barId}-continuation-right`,
               'data-bar-id': bar.barId,
+              'data-axis-clipped': bar.isEnd ? 'false' : 'true',
               'data-viewport-clipped': viewportClip.isViewportClippedEnd ? 'true' : 'false',
               class: 'cx-gantt-bar-continuation-indicator cx-gantt-bar-continuation-right',
               points: `${apexX},${centerY} ${baseX},${centerY - TRIANGLE_SIZE} ${baseX},${centerY + TRIANGLE_SIZE}`,

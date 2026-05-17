@@ -1749,8 +1749,24 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
         },
         { sel: CONTINUATION_LEFT, bodySel: TIMELINE_BODY_WRAPPER },
       );
+      // Phase 27.1 introduced viewport-clipped continuation triangles
+      // (chronix-additive enhancement; k-ui's `containerWidth` is content
+      // width, not viewport width, so k-ui never emits viewport-clipped
+      // triangles). chronix tags every triangle with TWO independent
+      // booleans: `data-axis-clipped` (the Phase 27 sub-case) and
+      // `data-viewport-clipped` (the Phase 27.1 sub-case). When both
+      // fire on the same side, viewport-locked apex wins precedence,
+      // but both attributes remain visible. To keep Phase 27's axis-
+      // clipped parity assertion meaningful, filter chronix's selector
+      // to `data-axis-clipped="true"` — that matches k-ui's only-axis-
+      // clipped triangle set exactly. Phase 27.1's viewport-clipped
+      // triangles are pinned via internal tests, not cross-demo parity
+      // (see PARITY_RECHECK.md P3 row).
       const chronixCount = await chronixPage.evaluate(
-        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-continuation-left').length,
+        () =>
+          document.querySelectorAll(
+            'svg.cx-gantt-body .cx-gantt-bar-continuation-left[data-axis-clipped="true"]',
+          ).length,
       );
       console.warn(
         `Phase 27 continuation-left count (day): kui=${kuiCount} chronix=${chronixCount}`,
@@ -1778,9 +1794,12 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
         },
         { sel: CONTINUATION_RIGHT, bodySel: TIMELINE_BODY_WRAPPER },
       );
+      // Phase 27.1 filter: see comment in left-side day-view assertion above.
       const chronixCount = await chronixPage.evaluate(
         () =>
-          document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-continuation-right').length,
+          document.querySelectorAll(
+            'svg.cx-gantt-body .cx-gantt-bar-continuation-right[data-axis-clipped="true"]',
+          ).length,
       );
       console.warn(
         `Phase 27 continuation-right count (day): kui=${kuiCount} chronix=${chronixCount}`,
@@ -1809,8 +1828,12 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
         },
         { sel: CONTINUATION_LEFT, bodySel: TIMELINE_BODY_WRAPPER },
       );
+      // Phase 27.1 filter: see comment in left-side day-view assertion above.
       const chronixCount = await chronixPage.evaluate(
-        () => document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-continuation-left').length,
+        () =>
+          document.querySelectorAll(
+            'svg.cx-gantt-body .cx-gantt-bar-continuation-left[data-axis-clipped="true"]',
+          ).length,
       );
       console.warn(
         `Phase 27 continuation-left count (week): kui=${kuiCount} chronix=${chronixCount}`,
@@ -1846,10 +1869,13 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
           bodySel: TIMELINE_BODY_WRAPPER,
         },
       );
+      // Phase 27.1 filter: see comment in left-side day-view assertion above.
+      // Combined left + right axis-only count for parity vs k-ui's total.
       const chronixTotal = await chronixPage.evaluate(
         () =>
-          document.querySelectorAll('svg.cx-gantt-body .cx-gantt-bar-continuation-indicator')
-            .length,
+          document.querySelectorAll(
+            'svg.cx-gantt-body .cx-gantt-bar-continuation-indicator[data-axis-clipped="true"]',
+          ).length,
       );
       console.warn(
         `Phase 27 continuation total count (month): kui=${kuiTotal} chronix=${chronixTotal}`,
