@@ -219,11 +219,12 @@ body {
 
 .cx-gantt-wrapper {
   background: #ffffff;
-  /* The wrapper is the scroll container (overflow:auto is set inline by
-     the library). Capping max-height here is what actually engages the
-     vertical scroll for long bar lists and lets the sticky header
-     anchor to this scrollport instead of the page. */
-  max-height: 70vh;
+  /* Phase 23: the chart-pane (NOT the wrapper) owns vertical scroll
+     now. The `max-body-height="70vh"` prop on `<ChronixGantt>` sets
+     grid-template-rows row 2 to 70vh; both the chart-pane and the
+     sidebar-pane inherit that cap and engage vertical scroll above
+     it, synced via useScrollSync. No CSS max-height needed on the
+     wrapper. */
 }
 
 /* Phase 20: bar fill / stroke moved to theme tokens (applied inline

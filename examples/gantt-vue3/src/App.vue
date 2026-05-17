@@ -435,6 +435,7 @@ function resetBars(): void {
           :axis-input="axisInput"
           :columns="columns"
           :links="initialLinks"
+          max-body-height="70vh"
           :selected-bar-ids="selection.selectedBarIds.value"
           :editable="cfg.editable.value"
           :selectable="cfg.selectable.value"
