@@ -2123,4 +2123,39 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
   // the chronix demo's parity mode. With both sides carrying
   // links, the 2 useLineEventColor assertions (link-color set +
   // marker-def color set) become straightforward.
+
+  // Phase 29 architectural divergence: no cross-demo parity
+  // assertion for the per-day/per-slot CSS class system or the
+  // header-cell slot/callback. The day/slot class taxonomy
+  // (`gantt-day-{dayId}`, `gantt-day-today`, `gantt-slot-*`, etc.)
+  // IS defined in the parity reference's `component/date-rendering.ts`
+  // helpers, but those helpers are only invoked by `TableDateCell` /
+  // `DayCellContainer` / `TableDowCell` — calendar-grid / day-cell
+  // views the chronix demo does NOT mirror. The reference's
+  // `resource-timeline/GanttView.tsx` renders header cells via its
+  // own hardcoded `<text class="gantt-timeline-header-cell">` path
+  // that never consults `getDayClassNames`. So `.gantt-day-today` is
+  // genuinely absent from the parity-reference demo's DOM in any
+  // view chronix exercises.
+  //
+  // chronix's adoption of the class taxonomy IS the additive
+  // surface — it lets consumers port CSS that targets `.gantt-day-sat`
+  // / `.gantt-day-today` / etc. (familiar to anyone who has used the
+  // parity reference's calendar views) and apply it to chronix's
+  // resource-timeline render. The literal class names are sourced
+  // from the parity reference (one-for-one, with the chronix `cx-`
+  // prefix), but their emission point is chronix-additive.
+  //
+  // The 16 core tests in
+  // `packages/gantt/src/render/cell-state-classes.test.ts` pin
+  // chronix's class derivation against the reference's `DAY_IDS`
+  // order verbatim (Sun-anchored) — that protects the cross-CSS-
+  // portability invariant without needing a DOM-level cross-demo
+  // assertion. The 20 adapter tests across
+  // `chronix-gantt-slot-classes.test.ts`,
+  // `chronix-gantt-day-classes.test.ts`,
+  // `chronix-gantt-header-cell-callback.test.ts`, and
+  // `chronix-gantt-header-cell-slot.test.ts` pin per-view
+  // application, the `-other` architectural rejection, the
+  // callback cascade, and the slot replacement semantics.
 });

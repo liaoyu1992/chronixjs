@@ -2,6 +2,25 @@
 
 **Status**: **Approved (pending user reply)** — design only; no code yet.
 
+> **Implementation note (2026-05-17)**: original parity plan had 2
+> assertions (`phase29-day-today class presence parity` + `phase29-day-id
+class set parity`, both week view). Both dropped during Commit 4 because
+> the parity reference's `getDayClassNames` helper is only invoked by its
+> calendar-grid views (`TableDateCell` / `DayCellContainer` /
+> `TableDowCell`) — the resource-timeline view chronix mirrors renders
+> header cells through `GanttView.renderTimelineHeader`'s hardcoded
+> `<text>` path that never consults the helper. So `.gantt-day-today`
+> never appears in the parity-reference demo's DOM. chronix's adoption of
+> the class taxonomy IS the additive surface — literal class names come
+> from the parity reference one-for-one (with `cx-` prefix) for CSS
+> portability, but the emission point is chronix-additive. 16 core tests
+>
+> - 20 adapter tests pin chronix-side correctness; the cross-CSS-
+>   portability invariant (chronix class names match the parity reference's
+>   `DAY_IDS` order verbatim) is pinned in the core unit suite. Parity-spec
+>   count stays at 51 (+0 instead of +2). Same pattern as Phase 28.1
+>   (selection-state) and Phase 28.3 (callback / slot APIs).
+
 ## Problem
 
 Two related render-layer gaps from `audit/RENDER_LAYER_GAP_SWEEP_2026-05-16.md`
