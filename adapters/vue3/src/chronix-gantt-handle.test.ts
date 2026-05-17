@@ -134,16 +134,19 @@ describe('<ChronixGantt> imperative handle (Phase 24)', () => {
     });
   });
 
-  describe('scrollToDate(date) writes wrapper.scrollLeft', () => {
+  describe('scrollToDate(date) writes chart-pane scrollLeft', () => {
     it('writes a numeric scrollLeft proportional to the date offset', () => {
+      // Phase 23 updated `scrollToDateImpl` to target the chart-pane
+      // (was wrapper pre-Phase-23). chart-pane owns horizontal scroll
+      // under dual-scrollport; wrapper no longer has `overflow: auto`.
       const wrapper = mount(ChronixGantt, { props: { bars, rows, axisInput: baseAxisInput } });
-      const wrapperEl = wrapper.find('.cx-gantt-wrapper').element as HTMLDivElement;
+      const paneEl = wrapper.find('div.cx-gantt-chart-pane').element as HTMLDivElement;
       // jsdom doesn't lay out so scrollLeft is just a settable number;
       // assert we wrote SOMETHING numeric and not NaN.
       const handle = getHandle(wrapper);
       handle.scrollToDate(new Date('2026-05-20T00:00:00Z'));
-      expect(typeof wrapperEl.scrollLeft).toBe('number');
-      expect(Number.isFinite(wrapperEl.scrollLeft)).toBe(true);
+      expect(typeof paneEl.scrollLeft).toBe('number');
+      expect(Number.isFinite(paneEl.scrollLeft)).toBe(true);
     });
   });
 

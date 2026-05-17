@@ -28,6 +28,8 @@ import {
   RESIZER_END,
   RESIZER_START,
   RESOURCE_ROW,
+  TIMELINE_BODY_LEFT,
+  TIMELINE_BODY_RIGHT,
   TIMELINE_BODY_WRAPPER,
   TODAY_CELL_BODY,
   TODAY_LINE,
@@ -1420,25 +1422,27 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
     }
   });
 
-  test('phase24-handle.scrollToDate — chronix wrapper.scrollLeft becomes non-zero after handle call', async ({
+  test('phase24-handle.scrollToDate — chronix chart-pane scrollLeft becomes non-zero after handle call', async ({
     browser,
   }) => {
     // chronix-side assertion only: `handle.scrollToDate(anchor+1d)`
-    // computes x via the axis and writes wrapperRef.scrollLeft (Phase
-    // 24 contract). On a week view starting today, anchor+1d lands a
-    // full day-slot width inside the chart, so scrollLeft should be
-    // positive after the click.
+    // computes x via the axis and writes the chart-pane's scrollLeft
+    // (Phase 24 contract; updated Phase 23 to target chart-pane since
+    // dual-scrollport moved horizontal scroll ownership from wrapper
+    // to chart-pane). On a week view starting today, anchor+1d lands
+    // a full day-slot width inside the chart, so chart-pane scrollLeft
+    // should be positive after the click.
     //
     // K-ui's `api.scrollToTime` uses an async `_scrollRequest` trigger
     // + reducer-driven scroll-restoration on an internal element that
     // changes across k-ui versions. Cross-demo parity for the scroll
-    // BEHAVIOR is parked: chronix's contract is "write scrollLeft on
-    // the wrapper", k-ui's contract is "dispatch a scroll-request and
-    // let the scroll-restoration reducer settle it" — equivalent user
-    // outcome, different internal mechanism. The unit-test in
-    // chronix-gantt-handle.test.ts already pins the wrapper.scrollLeft
-    // write; this cross-demo assertion confirms it survives a full
-    // mount + click pathway.
+    // BEHAVIOR is parked: chronix's contract is "write chart-pane's
+    // scrollLeft directly", k-ui's contract is "dispatch a scroll-
+    // request and let the scroll-restoration reducer settle it" —
+    // equivalent user outcome, different internal mechanism. The
+    // unit-test in chronix-gantt-handle.test.ts already pins the
+    // scrollLeft write; this cross-demo assertion confirms it survives
+    // a full mount + click pathway.
     const { kuiPage, chronixPage } = await loadBothDemos(browser, {
       id: 'phase24-handle-scrollToDate-parity',
       viewId: 'week',
@@ -1450,15 +1454,17 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       await chronixPage.waitForTimeout(50);
 
       const chronixScrollLeft = await chronixPage.evaluate(() => {
-        const wrap = document.querySelector<HTMLElement>('.cx-gantt-wrapper');
-        return wrap?.scrollLeft ?? 0;
+        const pane = document.querySelector<HTMLElement>('div.cx-gantt-chart-pane');
+        return pane?.scrollLeft ?? 0;
       });
 
-      console.warn(`Phase 24 handle.scrollToDate chronix scrollLeft=${chronixScrollLeft}`);
+      console.warn(
+        `Phase 24 handle.scrollToDate chronix chart-pane scrollLeft=${chronixScrollLeft}`,
+      );
 
       expect(
         chronixScrollLeft,
-        'chronix wrapper did not scroll on handle.scrollToDate',
+        'chronix chart-pane did not scroll on handle.scrollToDate',
       ).toBeGreaterThan(0);
     } finally {
       await kuiPage.context().close();
@@ -2123,6 +2129,138 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
   // the chronix demo's parity mode. With both sides carrying
   // links, the 2 useLineEventColor assertions (link-color set +
   // marker-def color set) become straightforward.
+
+  test('phase23-dual-scrollport DOM presence parity (both sides have 2 overflow scroll containers, week view)', async ({
+    browser,
+  }) => {
+    // The dual-scrollport invariant: both demos render exactly TWO
+    // sibling scroll containers (sidebar pane + chart pane), each
+    // with `overflow: auto` (or `scroll`) in computed style. chronix
+    // calls them `cx-gantt-sidebar-pane` + `cx-gantt-chart-pane`;
+    // parity reference calls them `gantt-timeline-body-left` +
+    // `gantt-timeline-body-right`. Computed-style readback IS the
+    // parity-stable check — both browsers normalize `overflow: auto`
+    // identically regardless of whether it was set via inline style
+    // or stylesheet.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase23-dual-scrollport-presence',
+      viewId: 'week',
+    });
+    try {
+      const kuiPanes = await kuiPage.evaluate(
+        ({ leftSel, rightSel }) => {
+          const left = document.querySelector(leftSel);
+          const right = document.querySelector(rightSel);
+          if (!left || !right) return null;
+          const leftOverflow = getComputedStyle(left).overflow;
+          const rightOverflow = getComputedStyle(right).overflow;
+          return { leftOverflow, rightOverflow };
+        },
+        { leftSel: TIMELINE_BODY_LEFT, rightSel: TIMELINE_BODY_RIGHT },
+      );
+      const chronixPanes = await chronixPage.evaluate(() => {
+        const sidebar = document.querySelector('div.cx-gantt-sidebar-pane');
+        const chart = document.querySelector('div.cx-gantt-chart-pane');
+        if (!sidebar || !chart) return null;
+        return {
+          leftOverflow: getComputedStyle(sidebar).overflow,
+          rightOverflow: getComputedStyle(chart).overflow,
+        };
+      });
+      expect(kuiPanes, 'reference demo missing left/right scroll panes').not.toBeNull();
+      expect(chronixPanes, 'chronix demo missing sidebar/chart scroll panes').not.toBeNull();
+      // Both sides should emit `auto` or `scroll` on both panes. The
+      // exact value can differ between auto/scroll (browser may
+      // normalize) but neither side should be `visible` / `hidden`.
+      const acceptable = new Set(['auto', 'scroll']);
+      expect(
+        acceptable.has(kuiPanes!.leftOverflow),
+        `reference left pane overflow: ${kuiPanes!.leftOverflow}`,
+      ).toBe(true);
+      expect(
+        acceptable.has(kuiPanes!.rightOverflow),
+        `reference right pane overflow: ${kuiPanes!.rightOverflow}`,
+      ).toBe(true);
+      expect(
+        acceptable.has(chronixPanes!.leftOverflow),
+        `chronix sidebar pane overflow: ${chronixPanes!.leftOverflow}`,
+      ).toBe(true);
+      expect(
+        acceptable.has(chronixPanes!.rightOverflow),
+        `chronix chart pane overflow: ${chronixPanes!.rightOverflow}`,
+      ).toBe(true);
+      console.warn(
+        `Phase 23 dual-scrollport presence: kui={left:${kuiPanes!.leftOverflow}, right:${kuiPanes!.rightOverflow}} chronix={sidebar:${chronixPanes!.leftOverflow}, chart:${chronixPanes!.rightOverflow}}`,
+      );
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase23-vertical-scroll-sync lockstep parity (both sides mirror chartPane.scrollTop to sidebar pane, week view)', async ({
+    browser,
+  }) => {
+    // The dual-scrollport vertical sync invariant: when the chart-side
+    // pane scrolls vertically, the sidebar pane mirrors its scrollTop
+    // within a rAF tick. Same in reverse. Drive a programmatic
+    // `scrollTo({ top: 100 })` on each side's chart pane and assert
+    // the sidebar pane catches up. Then reverse direction.
+    //
+    // The test uses `maxBodyHeight=70vh` (chronix default in the demo)
+    // / k-ui's inherent scroll cap so that vertical scroll actually
+    // engages — without engagement the scrollTop write is no-op and
+    // the assertion would be vacuous.
+    const { kuiPage, chronixPage } = await loadBothDemos(browser, {
+      id: 'phase23-vertical-scroll-sync',
+      viewId: 'week',
+    });
+    try {
+      // chronix side — drive chart-pane vertical scroll → sidebar mirrors.
+      const chronixDelta = await chronixPage.evaluate(async () => {
+        const chart = document.querySelector<HTMLElement>('div.cx-gantt-chart-pane');
+        const sidebar = document.querySelector<HTMLElement>('div.cx-gantt-sidebar-pane');
+        if (!chart || !sidebar) return null;
+        chart.scrollTop = 100;
+        chart.dispatchEvent(new Event('scroll'));
+        await new Promise<void>((r) => requestAnimationFrame(() => r()));
+        return Math.abs(sidebar.scrollTop - chart.scrollTop);
+      });
+      // k-ui side — drive its chart-pane vertical scroll → sidebar mirrors.
+      const kuiDelta = await kuiPage.evaluate(
+        async ({ leftSel, rightSel }) => {
+          const left = document.querySelector<HTMLElement>(leftSel);
+          const right = document.querySelector<HTMLElement>(rightSel);
+          if (!left || !right) return null;
+          right.scrollTop = 100;
+          right.dispatchEvent(new Event('scroll'));
+          await new Promise<void>((r) => requestAnimationFrame(() => r()));
+          return Math.abs(left.scrollTop - right.scrollTop);
+        },
+        { leftSel: TIMELINE_BODY_LEFT, rightSel: TIMELINE_BODY_RIGHT },
+      );
+
+      expect(chronixDelta, 'chronix sync lookup failed').not.toBeNull();
+      expect(kuiDelta, 'reference sync lookup failed').not.toBeNull();
+      // Tolerance 1px — both sides should sync within native browser
+      // scroll-event precision. Larger deltas signal the sync handler
+      // didn't fire or fired with the wrong source.
+      expect(
+        chronixDelta!,
+        `chronix sidebar.scrollTop drifted from chart.scrollTop by ${chronixDelta!}px`,
+      ).toBeLessThanOrEqual(1);
+      expect(
+        kuiDelta!,
+        `reference left.scrollTop drifted from right.scrollTop by ${kuiDelta!}px`,
+      ).toBeLessThanOrEqual(1);
+      console.warn(
+        `Phase 23 vertical-scroll-sync: kui Δ=${kuiDelta!}px chronix Δ=${chronixDelta!}px (both ≤ 1px)`,
+      );
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
 
   // Phase 29 architectural divergence: no cross-demo parity
   // assertion for the per-day/per-slot CSS class system or the

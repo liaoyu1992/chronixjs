@@ -29,6 +29,15 @@ export const CHART_ROOT = '.demo-app-main';
 /** Inner timeline body wrapper — the scrollable surface, full content width. */
 export const TIMELINE_BODY_WRAPPER = '.gantt-timeline-body-wrapper';
 
+/**
+ * Phase 23: parity reference's left-side scroll pane (sidebar /
+ * resource panel scroll container, `overflow: auto`). Chronix's
+ * equivalent under dual-scrollport is `.cx-gantt-sidebar-pane`.
+ * Both sides render a sibling sidebar scroll container alongside the
+ * chart-body container; their vertical scrollTops sync in lockstep.
+ */
+export const TIMELINE_BODY_LEFT = '.gantt-timeline-body-left';
+
 /** Header wrapper — pixel-mirror of body wrapper, mounted above for tick labels. */
 export const TIMELINE_HEADER_WRAPPER = '.gantt-timeline-header-wrapper';
 
