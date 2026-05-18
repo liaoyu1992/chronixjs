@@ -1,6 +1,6 @@
 # Phase 28.3.1 — Link parity fixture + cross-demo useLineEventColor assertions
 
-**Status**: DESIGN (awaiting user approval of 3 load-bearing decisions before implementation).
+**Status**: **DONE (2026-05-18)** — all 3 commits landed (`b75565b` Commit 2 fixture + demo wiring + `665ea29` Commit 3 2 parity assertions + per-event color fixture re-mirror) + Phase 28.2.2 hotfix (`9432c68`, separate concern bundled in same session) + this wrap-up. `/phase-close` skill walked 6/6 gates green; ci-check fully green; vitest 712 unchanged (Phase 28.3.1 added 0 new vitest — pure testing-infrastructure; Phase 28.2.2 hotfix added +4); parity-spec 54 → 56 (+2 useLineEventColor per-link stroke + marker-def); cross-demo verify 27/27 green WITHOUT incremental re-baseline (Phase 28.2.2's 15-PNG re-baseline absorbed any chronix-side parity-mode rendering delta); chronix-visual 5/5 unchanged. See `audit/journal/2026-05-13.md` "Phase 28.3.1" section for full wrap-up.
 
 ## Problem
 
