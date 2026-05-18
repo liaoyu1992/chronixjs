@@ -1,9 +1,6 @@
 # Phase 28.2.1 — Viewport-aware bar title + progress-dot positioning
 
-**Status**: **DRAFT (2026-05-18)** — awaiting user review of the 3
-load-bearing decisions at the bottom of this file. Implementation
-commits do NOT land until the user replies `按推荐继续` or overrides
-one of the three.
+**Status**: **DONE (2026-05-18)** — 3 commits landed (`f31297b` design + `0e2da73` helper + adapter + `314dcb3` chronix-new declaration) + this wrap-up. `/phase-close` skill walked 6/6 gates green; ci-check fully green; vitest 697 → 708 (+11: 8 helper + 3 SFC); parity-spec 54 unchanged (chronix-new declaration substitutes for the originally-planned cross-demo assertions; inherits Phase 27.1's reasoning); cross-demo VRT 27/27 green WITHOUT re-baseline; chronix-visual VRT 5/5 unchanged. **0-VRT phase** — predicted 8-15 PNG re-baselines, actual 0 (Playwright capture's `ResizeObserver`-not-fired-yet timing short-circuits `deriveViewportClipping`, falling back to existing axis-only paths). Behavior IS exercised in real browsers + pinned via SFC tests. See `audit/journal/2026-05-13.md` "Phase 28.2.1" section for full wrap-up.
 
 ## Problem
 
