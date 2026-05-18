@@ -12,9 +12,9 @@
     "index.cjs"
   ],
   "dependencies": {
-    "stylelint-config-recommended": "^14.0.1",
-    "stylelint-config-recommended-scss": "^14.1.0",
-    "stylelint-order": "^6.0.4"
+    "stylelint-config-recommended": "^18.0.0",
+    "stylelint-config-recommended-scss": "^17.0.1",
+    "stylelint-order": "^8.1.1"
   },
   "peerDependencies": {
     "stylelint": "^16.0.0"
