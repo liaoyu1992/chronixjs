@@ -5,12 +5,26 @@
  * `clientWidth` from `useChartScrollState` (Phase 23) and feeds
  * them in alongside the bar's live render geometry.
  *
- * `isViewportClippedStart` fires when the bar's left edge is to
- * the LEFT of the visible viewport — i.e. the user has scrolled
- * right past the bar's start. Independent of Phase 27's
- * axis-clipping flag (`bar.isStart`): a bar can be inside the
- * axis (`bar.isStart === true`) but scrolled out of view
- * (`isViewportClippedStart === true`).
+ * `isViewportClippedStart` fires when the bar OVERLAPS the visible
+ * viewport AND its left edge is to the LEFT of the viewport — i.e.
+ * the user has scrolled right past the bar's start but the bar
+ * still has visible width inside the viewport. Independent of
+ * Phase 27's axis-clipping flag (`bar.isStart`): a bar can be
+ * inside the axis (`bar.isStart === true`) but partially scrolled
+ * out of view (`isViewportClippedStart === true`).
+ *
+ * Phase 28.2.2 correctness guard: bars that fall ENTIRELY outside
+ * the visible viewport (both edges past the same viewport boundary)
+ * yield BOTH flags `false`. Without this guard, an offscreen bar's
+ * non-overlapping edge would still trip the per-edge flag (e.g. a
+ * bar fully right of the viewport had `isViewportClippedEnd === true`),
+ * causing downstream consumers (`deriveEdgePaddedX`) to produce a
+ * viewport-locked title / dot position on one edge and a default
+ * position on the other — yielding negative `availableWidth` and
+ * silently suppressing the title text for any wide bar scrolled
+ * out of view. The parity reference (k-ui) is scroll-invariant for
+ * title positioning, so this guard restores cross-demo bar-text
+ * count parity.
  *
  * `clientWidth === 0` short-circuits both viewport-clipped checks
  * to `false` — this is the pre-mount frame before the chart-pane's
@@ -59,9 +73,18 @@ export function deriveViewportClipping(
     };
   }
   const viewportRight = scrollLeft + clientWidth;
+  // Phase 28.2.2: bar must actually OVERLAP the viewport before
+  // either viewport-clipped flag fires. A bar entirely offscreen
+  // (renderX + renderWidth <= scrollLeft, i.e. fully left of
+  // viewport, OR renderX >= viewportRight, fully right of viewport)
+  // returns all-false so downstream `deriveEdgePaddedX` consumers
+  // fall through to the default / axis-clipped branches instead of
+  // generating a viewport-locked position for a bar that has no
+  // visible pixels.
+  const overlapsViewport = renderX < viewportRight && renderX + renderWidth > scrollLeft;
   return {
-    isViewportClippedStart: renderX < scrollLeft,
-    isViewportClippedEnd: renderX + renderWidth > viewportRight,
+    isViewportClippedStart: overlapsViewport && renderX < scrollLeft,
+    isViewportClippedEnd: overlapsViewport && renderX + renderWidth > viewportRight,
     viewportLockedLeftApexX: scrollLeft + triangleMargin,
     viewportLockedRightApexX: viewportRight - triangleMargin,
   };

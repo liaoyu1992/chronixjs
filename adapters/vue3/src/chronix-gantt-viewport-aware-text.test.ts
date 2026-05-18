@@ -129,6 +129,36 @@ describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning —
     expect(Number(dotEl.attributes('x'))).toBe(309);
   });
 
+  it('Phase 28.2.2: partial-overlap bar (right edge offscreen-right, left edge inside viewport) keeps default title-start at bar edge', async () => {
+    // Bar at hours 1..16 (axis-inside). renderX = 60, renderWidth = 900.
+    // Scroll to scrollLeft=0, clientWidth=200 → viewport [0, 200). Bar
+    // overlaps viewport on left only (60 < 200; 960 > 200). Only
+    // `isViewportClippedEnd` fires — `titleViewportSpan` is FALSE so
+    // BOTH titleStartX + titleEndX use default math. Without the
+    // Phase 28.2.2 fix, titleEndX would lock to viewportRight - 11 = 189
+    // and titleStartX would stay at renderX + 8 = 68 → availableWidth =
+    // 189 - 68 = 121, BUT `truncateBarText` would still produce a tiny
+    // truncated string. The regression manifested when the visible
+    // portion (140 px) was narrow enough that the truncate gate's
+    // `maxChars <= 3` short-circuit returned '' → no text. With the
+    // fix, titleEndX = renderX + renderWidth - 4 = 956 → availableWidth
+    // = 956 - 68 = 888 → full title fits.
+    const wrapper = mount(ChronixGantt, {
+      props: {
+        bars: [bar('partial-right', 1, 16, 'long enough title for truncation tests')],
+        rows,
+        axisInput,
+      },
+    });
+    driveChartScroll(wrapper, 0, 200, roCallbackHolder.cb);
+    await nextTick();
+
+    const titleEl = wrapper.find('text.cx-gantt-bar-text');
+    expect(titleEl.exists()).toBe(true);
+    // Default math: titleStartX = renderX + TITLE_LEFT_PADDING = 60 + 8 = 68.
+    expect(Number(titleEl.attributes('x'))).toBe(68);
+  });
+
   it('underlying resize edge-zone hit-test rect stays at bar geometric edge under viewport-clip (visual + hit-test diverge by design)', async () => {
     // Phase 28.2.1 deliberately keeps the resize edge-zone rect
     // (cx-gantt-bar-resizer-start) at renderX regardless of viewport

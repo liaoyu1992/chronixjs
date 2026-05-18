@@ -2292,6 +2292,19 @@ export const ChronixGantt = defineComponent({
         // when both fire on same side) matches Phase 27.1's apex
         // precedence — title stays user-visible at the viewport edge.
         //
+        // Phase 28.2.2: title-side viewport-locking fires ONLY when
+        // the bar SPANS the entire viewport (both edges past their
+        // respective viewport boundaries). Partial-overlap cases
+        // (e.g. bar's left in viewport, right offscreen-right) keep
+        // default positioning so the title naturally appears at the
+        // bar's edge — matches the parity reference's scroll-invariant
+        // title behavior + restores cross-demo bar-text count parity.
+        // Triangles + progress-dots keep their per-side viewport-lock
+        // semantics (those are continuation indicators that should
+        // appear at the viewport edge whenever the bar extends past it).
+        const titleViewportSpan =
+          viewportClip.isViewportClippedStart && viewportClip.isViewportClippedEnd;
+        //
         // Truncation via `truncateBarText` (char-count + ellipsis,
         // ported verbatim from the parity reference). `<text>` uses
         // `text-anchor="start"` + `dominant-baseline="middle"` so
@@ -2318,7 +2331,7 @@ export const ChronixGantt = defineComponent({
             renderX,
             viewportClip.viewportLockedLeftApexX,
             !bar.isStart,
-            viewportClip.isViewportClippedStart,
+            titleViewportSpan,
             TITLE_LEFT_PADDING,
             TRIANGLE_MARGIN,
             TRIANGLE_SIZE,
@@ -2329,7 +2342,7 @@ export const ChronixGantt = defineComponent({
             renderX + renderWidth,
             viewportClip.viewportLockedRightApexX,
             !bar.isEnd,
-            viewportClip.isViewportClippedEnd,
+            titleViewportSpan,
             TITLE_RIGHT_PADDING,
             TRIANGLE_MARGIN,
             TRIANGLE_SIZE,

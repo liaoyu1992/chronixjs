@@ -63,4 +63,37 @@ describe('deriveViewportClipping — Phase 27.1', () => {
     const rightBoundary = deriveViewportClipping(50, 400, 50, 400, TRIANGLE_MARGIN);
     expect(rightBoundary.isViewportClippedEnd).toBe(false);
   });
+
+  it('Phase 28.2.2: bar fully right of viewport yields both flags false', () => {
+    // viewport: [0, 800); bar: [1000, 2000) — entirely offscreen-right.
+    // Without the overlap guard, isViewportClippedEnd would fire (the
+    // bar's right edge 2000 > viewportRight 800) and downstream
+    // deriveEdgePaddedX would produce a viewport-locked title-end
+    // position while the title-start defaults to renderX+8 = 1008 →
+    // negative availableWidth → text suppressed for the entire bar.
+    const result = deriveViewportClipping(1000, 1000, 0, 800, TRIANGLE_MARGIN);
+    expect(result.isViewportClippedStart).toBe(false);
+    expect(result.isViewportClippedEnd).toBe(false);
+  });
+
+  it('Phase 28.2.2: bar fully left of viewport yields both flags false', () => {
+    // viewport: [500, 1300); bar: [0, 400) — entirely offscreen-left
+    // (right edge 400 < scrollLeft 500). Without the overlap guard,
+    // isViewportClippedStart would fire (renderX 0 < scrollLeft 500)
+    // and downstream consumers would lock the title-start to the
+    // viewport's left edge while the title-end stays at the bar's
+    // offscreen-left renderX+renderWidth-4 → negative availableWidth.
+    const result = deriveViewportClipping(0, 400, 500, 800, TRIANGLE_MARGIN);
+    expect(result.isViewportClippedStart).toBe(false);
+    expect(result.isViewportClippedEnd).toBe(false);
+  });
+
+  it('Phase 28.2.2: bar with right edge EXACTLY at scrollLeft yields no clip (boundary)', () => {
+    // viewport: [500, 1300); bar: [100, 500) — right edge sits EXACTLY
+    // on scrollLeft. Strict `>` overlap check means no overlap; both
+    // flags stay false.
+    const result = deriveViewportClipping(100, 400, 500, 800, TRIANGLE_MARGIN);
+    expect(result.isViewportClippedStart).toBe(false);
+    expect(result.isViewportClippedEnd).toBe(false);
+  });
 });
