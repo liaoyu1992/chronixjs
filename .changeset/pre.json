@@ -1,0 +1,15 @@
+{
+  "mode": "pre",
+  "tag": "alpha",
+  "initialVersions": {
+    "@chronixjs/gantt-vue3": "0.0.0",
+    "@chronixjs/example-gantt-vue3": "0.0.0",
+    "@chronixjs/gantt": "0.0.0",
+    "@chronixjs/eslint-config": "0.0.0",
+    "@chronixjs/golden-runner": "0.0.0",
+    "@chronixjs/stylelint-config": "0.0.0"
+  },
+  "changesets": [
+    "initial-alpha"
+  ]
+}

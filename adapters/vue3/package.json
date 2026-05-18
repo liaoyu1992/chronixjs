@@ -1,6 +1,6 @@
 {
   "name": "@chronixjs/gantt-vue3",
-  "version": "0.0.0",
+  "version": "0.1.0-alpha.0",
   "description": "Vue 3 adapter for @chronixjs/gantt — composable + component wrappers over the framework-agnostic core",
   "license": "MIT",
   "author": "liaoyu1992",
