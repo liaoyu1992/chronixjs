@@ -7,7 +7,7 @@ import {
 import { expect, test } from '@playwright/test';
 
 import { CHART_SELECTOR, FROZEN_TIME_ISO, VIEWPORT } from '../src/config.js';
-import { buildParityEvents } from '../src/parity-events.js';
+import { buildParityEvents, buildParityLinks } from '../src/parity-events.js';
 import {
   diffBarsSnapshots,
   extractBarsSnapshot,
@@ -2138,47 +2138,172 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
   // and dots emission on the chronix side — so a regression in that
   // gate would surface via the resize-zone assertions.
 
-  // Phase 28.3 architectural divergence: cross-demo parity for the
-  // 4 new customization surfaces (barClassNamesCallback,
-  // onLineCallback, useLineEventColor, link slot) is NOT asserted
-  // for two distinct reasons:
+  // Phase 28.3 architectural divergence: cross-demo parity for 3 of
+  // the 4 customization surfaces shipped in Phase 28.3
+  // (`barClassNamesCallback`, `onLineCallback`, link slot) is NOT
+  // asserted because they are chronix-additive consumer hooks the
+  // parity-reference demo doesn't wire (no `eventClassNames` in the
+  // demo; `onLine` registered but no-op; no slot system upstream).
+  // 19 adapter unit tests across
+  // `adapters/vue3/src/chronix-gantt-bar-classnames.test.ts`,
+  // `chronix-gantt-link-callbacks.test.ts`, and
+  // `chronix-gantt-link-slot.test.ts` pin the chronix-side
+  // correctness across cascade order, threading, and slot
+  // replacement.
   //
-  // 1. **`barClassNamesCallback` + `onLineCallback` + link slot**
-  //    are chronix-additive consumer hooks. The parity-reference
-  //    demo's `eventClassNames` is not wired (no per-event class
-  //    callback in the default `DemoApp.vue` setup); the parity-
-  //    reference's `onLine` is registered but defaults to a no-op
-  //    in the demo. Cross-demo testing would require modifying
-  //    both demos to wire identical callbacks — chronix-additive
-  //    customization paths aren't a parity-oracle concern. 19
-  //    adapter unit tests across
-  //    `adapters/vue3/src/chronix-gantt-bar-classnames.test.ts`,
-  //    `chronix-gantt-link-callbacks.test.ts`, and
-  //    `chronix-gantt-link-slot.test.ts` pin the chronix-side
-  //    correctness across cascade order, threading, and slot
-  //    replacement.
-  //
-  // 2. **`useLineEventColor`** IS testable in principle (parity-
-  //    reference's demo defaults it to `true`; chronix's demo now
-  //    has a `?useLineEventColor=true` toggle), but the chronix
-  //    parity-mode dataset (`PARITY_RESOURCE_IDS` + `buildParityEvents`)
-  //    carries no `LinkSpec[]` — the parity fixture mirrors only
-  //    the 25 events' geometry, NOT the 33 dependency entries
-  //    from the parity-reference's demo. Extending the fixture
-  //    with dependencies is a non-trivial sub-task (matching
-  //    upstream event ids + dependency directions verbatim) that
-  //    would inflate Phase 28.3 past single-session scope. Pinned
-  //    instead by 9 adapter unit tests in
-  //    `chronix-gantt-link-callbacks.test.ts` covering
-  //    colorOverride > useLineEventColor > theme cascade,
-  //    callback-color-overrides-cascade composition, and marker
-  //    def color emission for the post-callback color.
-  //
-  // Future Phase 28.3.1 candidates: extend the parity fixture
-  // with dependency arrays + thread `sampleLinksParity` through
-  // the chronix demo's parity mode. With both sides carrying
-  // links, the 2 useLineEventColor assertions (link-color set +
-  // marker-def color set) become straightforward.
+  // The 4th surface, `useLineEventColor`, is cross-demo-pinned by
+  // the 2 assertions immediately below (Phase 28.3.1 CLOSED). The
+  // parity fixture extension (8-edge `PARITY_LINKS` subset in
+  // `tooling/golden-runner/src/parity-events.ts` + per-event
+  // `backgroundColor` mirroring the reference fixture's per-event
+  // colors) makes the source-bar-color → line-stroke chain
+  // cross-demo-comparable in TRUE mode.
+
+  test('phase28.3-useLineEventColor per-link stroke parity (week view)', async ({ browser }) => {
+    // Phase 28.3.1: both demos drive `useLineEventColor: true` (the
+    // reference demo defaults to `true`; chronix opts in via the
+    // `?useLineEventColor=true` URL flag). For each link in the
+    // 8-edge parity fixture, chronix's link stroke (read from the
+    // `<path data-link-id="link-event-N-event-M">`) MUST equal the
+    // parity-reference's source bar fill (read from the `<g
+    // data-event-id="event-N">`'s inner rect). Per-link id-paired —
+    // does NOT rely on set-equality (k-ui's full 22-edge graph is a
+    // superset of chronix's 8-edge subset, and some k-ui targets fall
+    // outside the visible window in week view so their dependency
+    // lines aren't rendered, breaking set comparison structurally).
+    //
+    // Drift-detection scope: the source-bar-color → line-stroke
+    // cascade in chronix (`chronix-gantt.ts:2647-2649` —
+    // `colorOverride > useLineEventColor source → theme.linkDefaultColor`)
+    // resolves to the same color the reference's `getEventColor()`
+    // lookup at `ResourceTimelineDependencies.tsx:2337-2339` produces
+    // for the same source event. If either side regresses the
+    // cascade, paired colors diverge.
+    const { kuiPage, chronixPage, kuiChart } = await loadBothDemos(browser, {
+      id: 'phase28.3-useLineEventColor-link-stroke-week',
+      viewId: 'week',
+      chronixUrlExtras: 'useLineEventColor=true&priorityCallback=true',
+    });
+    try {
+      const parityLinks = buildParityLinks();
+      // Read k-ui source bar fills via `extractBarsSnapshot` so the
+      // widest-wins dedup (k-ui's `[data-event-id]` matches overlays
+      // alongside the main bar rect, so a naive
+      // `querySelector('rect')` returns inconsistent fills).
+      const kuiBars = await extractBarsSnapshot('kui', kuiChart);
+      const kuiFillById = new Map<string, string>(kuiBars.map((b) => [b.id, b.fill]));
+      // Read chronix link strokes indexed by link id.
+      const chronixStrokeByLinkId = new Map<string, string>(
+        await chronixPage.evaluate(() => {
+          const out: [string, string][] = [];
+          document.querySelectorAll<SVGPathElement>('path.cx-gantt-link').forEach((p) => {
+            const id = p.getAttribute('data-link-id');
+            if (id === null) return;
+            out.push([id, getComputedStyle(p).stroke]);
+          });
+          return out;
+        }),
+      );
+
+      expect(parityLinks.length, 'PARITY_LINKS empty').toBeGreaterThan(0);
+      const mismatches: string[] = [];
+      let comparedCount = 0;
+      for (const link of parityLinks) {
+        const expectedFill = kuiFillById.get(link.fromBarId);
+        const actualStroke = chronixStrokeByLinkId.get(link.id);
+        if (expectedFill === undefined) {
+          // K-ui side didn't render the source bar — skip silently
+          // (parity-mode demo might filter bars by visible window).
+          continue;
+        }
+        if (actualStroke === undefined) {
+          mismatches.push(`${link.id}: chronix link not rendered (source=${link.fromBarId})`);
+          continue;
+        }
+        comparedCount += 1;
+        if (actualStroke !== expectedFill) {
+          mismatches.push(
+            `${link.id}: chronix stroke=${actualStroke} vs kui source-bar fill=${expectedFill}`,
+          );
+        }
+      }
+
+      console.warn(
+        `Phase 28.3.1 per-link stroke parity (week): compared ${comparedCount}/${parityLinks.length} links`,
+      );
+      if (mismatches.length > 0) {
+        console.warn(`mismatches:\n  ${mismatches.join('\n  ')}`);
+      }
+      expect(comparedCount, 'no links compared (k-ui source bars missing)').toBeGreaterThan(0);
+      expect(mismatches).toEqual([]);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
+
+  test('phase28.3-useLineEventColor marker-def per-link parity (week view)', async ({
+    browser,
+  }) => {
+    // Same demo state as the previous assertion. For each link in
+    // the parity fixture, validate chronix emits a `<marker>` def
+    // whose fill matches the source bar's color — chronix's marker
+    // `<defs>` collection at chronix-gantt.ts:2719-2751 builds one
+    // marker per (markerType × resolved-color) pair, so every link's
+    // resolved stroke color should also have a matching marker fill.
+    // Per-link verification (not set-equality) — same reasoning as
+    // above: k-ui's full marker set is a superset; per-link checks
+    // are robust to the chronix-vs-kui link-subset asymmetry.
+    //
+    // The chronix `<marker>` element's `id` includes a stable color
+    // hash; rather than parse that, we collect ALL chronix marker
+    // fills then verify each parity link's expected color is present.
+    const { kuiPage, chronixPage, kuiChart } = await loadBothDemos(browser, {
+      id: 'phase28.3-useLineEventColor-marker-defs-week',
+      viewId: 'week',
+      chronixUrlExtras: 'useLineEventColor=true&priorityCallback=true',
+    });
+    try {
+      const parityLinks = buildParityLinks();
+      const kuiBars = await extractBarsSnapshot('kui', kuiChart);
+      const kuiFillById = new Map<string, string>(kuiBars.map((b) => [b.id, b.fill]));
+      const chronixMarkerFills = new Set<string>(
+        await chronixPage.evaluate(() => {
+          const out: string[] = [];
+          document.querySelectorAll<SVGMarkerElement>('defs marker').forEach((m) => {
+            m.querySelectorAll<SVGElement>('path, polygon, circle').forEach((c) => {
+              const f = getComputedStyle(c).fill;
+              if (f && f !== 'none' && f !== 'rgba(0, 0, 0, 0)') out.push(f);
+            });
+          });
+          return out;
+        }),
+      );
+
+      expect(parityLinks.length).toBeGreaterThan(0);
+      const missing: string[] = [];
+      let comparedCount = 0;
+      for (const link of parityLinks) {
+        const expectedFill = kuiFillById.get(link.fromBarId);
+        if (expectedFill === undefined) continue;
+        comparedCount += 1;
+        if (!chronixMarkerFills.has(expectedFill)) {
+          missing.push(
+            `${link.id}: expected marker fill ${expectedFill} (source=${link.fromBarId})`,
+          );
+        }
+      }
+      console.warn(
+        `Phase 28.3.1 marker-def parity (week): compared ${comparedCount}/${parityLinks.length} links; chronix marker fills=${JSON.stringify([...chronixMarkerFills])}`,
+      );
+      if (missing.length > 0) console.warn(`missing markers:\n  ${missing.join('\n  ')}`);
+      expect(comparedCount).toBeGreaterThan(0);
+      expect(missing).toEqual([]);
+    } finally {
+      await kuiPage.context().close();
+      await chronixPage.context().close();
+    }
+  });
 
   test('phase23-dual-scrollport DOM presence parity (both sides have 2 overflow scroll containers, week view)', async ({
     browser,

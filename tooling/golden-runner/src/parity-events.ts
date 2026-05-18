@@ -148,20 +148,26 @@ export function buildParityEvents(todayMs: number): readonly ParityEvent[] {
     ...(progressValue !== undefined ? { progressValue } : {}),
     ...(backgroundColor !== undefined ? { backgroundColor } : {}),
   });
-  // Titles + per-event backgrounds mirror the parity-reference demo's
-  // event entries. `backgroundColor` populates for events touched by
-  // `PARITY_LINKS` (Phase 28.3.1) using the reference fixture's
-  // per-event color verbatim so cross-demo `useLineEventColor` color
-  // sets match.
+  // Phase 28.3.1: `backgroundColor` populates for events touched by
+  // `PARITY_LINKS`. Values mirror the parity reference's ACTUALLY-
+  // RENDERED bar fill (read from `.gantt-event-background` rects on
+  // a running parity-reference demo), not the per-event
+  // `backgroundColor` field from the upstream demo source: the
+  // reference applies a priority-driven color resolution that
+  // overrides the spec'd backgroundColor for many events (high =
+  // `#ff3b32` red, medium = `#fff3e0` cream, low → falls back to
+  // chart default OR retains spec'd bg for some events). Cross-demo
+  // `useLineEventColor` color-set parity requires matching the
+  // OBSERVED rendered color, not the spec'd value.
   return [
     E('event-1', '32', 'A33机型-大修项目-阶段1', -5, 8, -2, 18, 60, '#ff3b32'),
-    E('event-2', '25', 'A33-发动机检查', -3, 9, +1, 17, 40, '#ff9800'),
-    E('event-3', '25', 'A33-起落架维护', +2, 8, +5, 16, 0, '#2196f3'),
-    E('event-4', '16', 'A33-液压系统检修', -2, 10, +2, 15, undefined, '#4caf50'),
+    E('event-2', '25', 'A33-发动机检查', -3, 9, +1, 17, 40, '#ff3b32'),
+    E('event-3', '25', 'A33-起落架维护', +2, 8, +5, 16, 0, '#fff3e0'),
+    E('event-4', '16', 'A33-液压系统检修', -2, 10, +2, 15, undefined, '#fff3e0'),
     E('event-5', '16', 'A33-电气系统检查', +3, 9, +7, 17),
     E('event-6', '19', 'A32-机身检查', -7, 8, -3, 18),
-    E('event-7', '19', 'A32-发动机大修', -1, 9, +10, 16, undefined, '#f44336'),
-    E('event-8', '20', 'A32-73N-综合检查', 0, 8, +5, 18, undefined, '#00bcd4'),
+    E('event-7', '19', 'A32-发动机大修', -1, 9, +10, 16, undefined, '#ff3b32'),
+    E('event-8', '20', 'A32-73N-综合检查', 0, 8, +5, 18, undefined, '#fff3e0'),
     E('event-9', '18', 'A32-航电系统升级', +1, 10, +7, 15),
     E('event-10', '21', '73M-73N-发动机更换', -5, 8, +3, 18),
     E('event-11', '21', '73M-73N-系统测试', +4, 9, +14, 17),
