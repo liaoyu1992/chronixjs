@@ -32,7 +32,7 @@ import { computed, ref } from 'vue';
 
 import { bool, describeConfigSchema, enumOf, useDemoConfig } from './demo-config';
 import { sampleBars, sampleLinks, sampleRows, todayLocalMidnight } from './sample-data';
-import { sampleBarsParity, sampleRowsParity } from './sample-data-parity';
+import { sampleBarsParity, sampleLinksParity, sampleRowsParity } from './sample-data-parity';
 import {
   PARITY_REFERENCE_COLOR,
   THEMED_BAR_BACKGROUND,
@@ -92,9 +92,11 @@ const cfg = useDemoConfig(DEMO_SCHEMA);
 
 const initialBars = cfg.parity.value ? sampleBarsParity : sampleBars;
 const initialRows = cfg.parity.value ? sampleRowsParity : sampleRows;
-// Parity-mode hides the demo's dependency links — k-ui's links don't
-// map 1:1 to chronix `LinkSpec` shapes and styling parity is parked.
-const initialLinks = cfg.parity.value ? [] : sampleLinks;
+// Phase 28.3.1: parity mode wires the curated 8-edge parity link set
+// (`sampleLinksParity`) so cross-demo `useLineEventColor` assertions
+// have a non-empty dependency graph to compare. Default (non-parity)
+// mode keeps the original `sampleLinks` set.
+const initialLinks = cfg.parity.value ? sampleLinksParity : sampleLinks;
 
 // Resource-panel column descriptors. Three columns demonstrate
 // Phase 5.x's vGrouping rowspan merge: 地区 + 基地 are flagged

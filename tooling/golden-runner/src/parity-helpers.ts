@@ -73,6 +73,15 @@ export interface ParityScenario {
   /** Human-readable id, used in failure messages. */
   readonly id: string;
   readonly viewId: ChronixViewId;
+  /**
+   * Phase 28.3.1: additional `key=val&key=val` URL params for the
+   * chronix demo (k-ui side unchanged — the reference demo has no
+   * URL-config layer). When set, `loadBothDemos` appends them after
+   * the mandatory `parity=true` flag so chronix opts into per-test
+   * features (e.g. `useLineEventColor=true&priorityCallback=true`).
+   * Existing call sites omit this field → behavior unchanged.
+   */
+  readonly chronixUrlExtras?: string;
 }
 
 export interface BothDemos {
@@ -133,8 +142,12 @@ export async function loadBothDemos(
   await chronixPage.clock.install({ time: new Date(FROZEN_TIME_ISO) });
 
   // Navigate. chronix gets `?parity=true` so the demo loads the
-  // k-ui-equivalent sample dataset.
-  await Promise.all([kuiPage.goto('/'), chronixPage.goto('/?parity=true')]);
+  // k-ui-equivalent sample dataset. Phase 28.3.1: append any
+  // scenario-supplied URL extras after the mandatory `parity=true`.
+  const chronixPath = scenario.chronixUrlExtras
+    ? `/?parity=true&${scenario.chronixUrlExtras}`
+    : '/?parity=true';
+  await Promise.all([kuiPage.goto('/'), chronixPage.goto(chronixPath)]);
 
   // Wait for both charts to mount.
   const kuiChart = kuiPage.locator(CHART_SELECTOR);

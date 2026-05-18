@@ -1026,22 +1026,35 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
       const kuiSnap = await extractBarsSnapshot('kui', kuiChart);
       const chronixSnap = await extractBarsSnapshot('chronix', chronixChart);
 
-      const expectedRgb = hexToRgbString('#3788d8');
-      expect(expectedRgb).not.toBeNull();
+      const defaultRgb = hexToRgbString('#3788d8');
+      expect(defaultRgb).not.toBeNull();
+
+      // Phase 28.3.1: expected per-bar fill is the per-event
+      // backgroundColor from the parity fixture (8-event subset
+      // touched by `PARITY_LINKS`) OR the parity-mode prop default
+      // (`#3788d8`) for any event the fixture leaves uncolored.
+      const expectedFillById = new Map<string, string>();
+      for (const evt of buildParityEvents(0)) {
+        const hex = evt.backgroundColor ?? '#3788d8';
+        const rgb = hexToRgbString(hex);
+        if (rgb !== null) expectedFillById.set(evt.id, rgb);
+      }
 
       const kuiById = new Map(kuiSnap.map((b) => [b.id, b]));
       const chronixById = new Map(chronixSnap.map((b) => [b.id, b]));
 
-      // Compare across paired bars. Chronix bars should all paint
-      // `rgb(55, 136, 216)` because parity mode pins the prop.
+      // Compare across paired bars. Chronix bars paint either their
+      // per-event `style.backgroundColor` (Phase 28.3.1 — wins via
+      // Layer 3 cascade) or the parity-mode prop default.
       const mismatches: string[] = [];
       let comparedCount = 0;
       for (const [id, chronixBar] of chronixById) {
         const kuiBar = kuiById.get(id);
         if (!kuiBar) continue;
         comparedCount += 1;
-        if (chronixBar.fill !== expectedRgb) {
-          mismatches.push(`${id}: chronix fill=${chronixBar.fill} expected=${expectedRgb}`);
+        const expected = expectedFillById.get(id) ?? defaultRgb;
+        if (chronixBar.fill !== expected) {
+          mismatches.push(`${id}: chronix fill=${chronixBar.fill} expected=${expected}`);
         }
         // The reference's bar fill may or may not match its own
         // `eventBorderColor` default depending on event metadata — log
@@ -1050,7 +1063,7 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
 
       console.warn(
         `cross-demo default bar fill: compared ${comparedCount} paired bars; ` +
-          `expected chronix fill='${expectedRgb}'`,
+          `default chronix fill='${defaultRgb}' + per-event overrides`,
       );
       if (mismatches.length > 0) {
         console.warn(`mismatches:\n  ${mismatches.join('\n  ')}`);
@@ -1109,29 +1122,39 @@ test.describe('cross-demo bar fill parity (Phase 20)', () => {
 
       const chronixSnap = await extractBarsSnapshot('chronix', chronixChart);
 
-      // The parity dataset (sample-data-parity.ts) has no priority
-      // metadata, so the callback returns `undefined` for every bar
-      // → fill stays at the parity-mode default `#3788d8`. The
-      // expected rgb is identical to the default-color test —
-      // proving the priority callback is exercised but defers when
-      // metadata is absent, which is the parity-equivalent of the
-      // reference's `priority === undefined ? undefined :
-      // PRIORITY_COLOR[priority]` callback path.
-      const expectedRgb = hexToRgbString('#3788d8');
+      // Phase 28.3.1: the parity fixture now carries per-event
+      // `backgroundColor` for events that appear as endpoints in
+      // `PARITY_LINKS` (8-edge subset for `useLineEventColor`
+      // coverage). Those bars resolve to their per-event color via
+      // Layer 3 (BarSpec.style.backgroundColor) — wins over the
+      // Layer 2 prop default `#3788d8`. Events untouched by parity
+      // links still fall through to `#3788d8`. The priority
+      // callback continues to return `undefined` (parity events
+      // carry no `priority` extendedProp), so Layer 4 stays inert.
+      //
+      // Expected per-bar fill: lookup the bar's id in the parity
+      // event set; use its `backgroundColor` if present, otherwise
+      // the parity-mode default.
+      const defaultRgb = hexToRgbString('#3788d8');
+      const expectedFillById = new Map<string, string>();
+      for (const evt of buildParityEvents(0)) {
+        const hex = evt.backgroundColor ?? '#3788d8';
+        const rgb = hexToRgbString(hex);
+        if (rgb !== null) expectedFillById.set(evt.id, rgb);
+      }
       const distinctFills = new Set(chronixSnap.map((b) => b.fill));
 
       console.warn(
         `cross-demo callback parity: ${chronixSnap.length} chronix bars; ` +
-          `distinct fills=${[...distinctFills].join(', ')}; expected=${expectedRgb}`,
+          `distinct fills=${[...distinctFills].join(', ')}; default=${defaultRgb}`,
       );
 
       expect(chronixSnap.length).toBeGreaterThan(0);
-      // Every chronix bar should paint the parity-mode default
-      // because the parity dataset has no `priority` extendedProps
-      // → callback returns undefined → cascade falls through to
-      // the prop-layer `'#3788d8'`.
+      // Each chronix bar should paint either its per-event color
+      // (for link-endpoint events) or the parity-mode prop default.
       for (const bar of chronixSnap) {
-        expect(bar.fill).toBe(expectedRgb);
+        const expected = expectedFillById.get(bar.id) ?? defaultRgb;
+        expect(bar.fill, `bar ${bar.id} expected ${expected}`).toBe(expected);
       }
     } finally {
       await kuiPage.context().close();

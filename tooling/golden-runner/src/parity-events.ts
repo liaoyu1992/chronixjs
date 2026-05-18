@@ -79,16 +79,29 @@ export interface ParityEvent {
   readonly resourceId: string;
   readonly startMs: number;
   readonly endMs: number;
-  /** 0..100 progress percentage; undefined when k-ui demo's event has no progress field. */
+  /** 0..100 progress percentage; undefined when the parity-reference event has no progress field. */
   readonly progressValue?: number;
   /**
-   * Phase 28.2: bar title text. Mirrors the k-ui demo's per-event
-   * `title` field at `examples/gantt/vue3/src/DemoApp.vue:691-1271`
-   * so cross-demo content parity (Set of truncated text contents)
-   * holds. Always present — every event in `generateTestEvents()`
-   * carries a title.
+   * Phase 28.2: bar title text. Mirrors the parity-reference demo's
+   * per-event `title` field so cross-demo content parity (Set of
+   * truncated text contents) holds. Always present — every event
+   * in the reference fixture carries a title.
    */
   readonly title: string;
+  /**
+   * Phase 28.3.1: per-event bar background color. Populated only for
+   * events that appear as the source OR target of an entry in
+   * `PARITY_LINKS`, so the demo paints those bars in distinct
+   * per-event colors — required for cross-demo `useLineEventColor`
+   * parity (different source bars → different line stroke colors).
+   *
+   * Events not referenced by any parity link leave this `undefined`
+   * and continue to inherit the chart-level prop color
+   * (`PARITY_REFERENCE_COLOR = '#3788d8'`) the existing parity-mode
+   * tests assume. This keeps Phase 28.3.1's fixture impact scoped to
+   * the link-cascade coverage path.
+   */
+  readonly backgroundColor?: string;
 }
 
 /**
@@ -105,10 +118,13 @@ function eventEpoch(todayMs: number, dayOffset: number, hour: number, minute = 0
 
 /**
  * Build the 25-event parity dataset anchored at `todayMs` (local
- * midnight). Each entry corresponds to one event in the k-ui demo's
- * `generateTestEvents()` output; the (id, resourceId, startMs, endMs)
- * fields are the cross-demo identity tuple. Progress values mirror
- * the k-ui demo's progress fields where present.
+ * midnight). Each entry corresponds to one event in the parity-
+ * reference demo's event-generator output; the
+ * (id, resourceId, startMs, endMs) fields are the cross-demo
+ * identity tuple. Progress values mirror the reference fixture's
+ * progress fields where present. Per-event `backgroundColor` values
+ * (Phase 28.3.1) populate only for events that appear as endpoints
+ * in `PARITY_LINKS` — see the `ParityEvent.backgroundColor` JSDoc.
  */
 export function buildParityEvents(todayMs: number): readonly ParityEvent[] {
   const E = (
@@ -120,6 +136,7 @@ export function buildParityEvents(todayMs: number): readonly ParityEvent[] {
     ed: number,
     eh: number,
     progressValue?: number,
+    backgroundColor?: string,
     sm = 0,
     em = 0,
   ): ParityEvent => ({
@@ -129,18 +146,22 @@ export function buildParityEvents(todayMs: number): readonly ParityEvent[] {
     startMs: eventEpoch(todayMs, sd, sh, sm),
     endMs: eventEpoch(todayMs, ed, eh, em),
     ...(progressValue !== undefined ? { progressValue } : {}),
+    ...(backgroundColor !== undefined ? { backgroundColor } : {}),
   });
-  // Titles mirror `examples/gantt/vue3/src/DemoApp.vue:691-1271`
-  // event-by-event so cross-demo content parity (Phase 28.2) holds.
+  // Titles + per-event backgrounds mirror the parity-reference demo's
+  // event entries. `backgroundColor` populates for events touched by
+  // `PARITY_LINKS` (Phase 28.3.1) using the reference fixture's
+  // per-event color verbatim so cross-demo `useLineEventColor` color
+  // sets match.
   return [
-    E('event-1', '32', 'A33机型-大修项目-阶段1', -5, 8, -2, 18, 60),
-    E('event-2', '25', 'A33-发动机检查', -3, 9, +1, 17, 40),
-    E('event-3', '25', 'A33-起落架维护', +2, 8, +5, 16, 0),
-    E('event-4', '16', 'A33-液压系统检修', -2, 10, +2, 15),
+    E('event-1', '32', 'A33机型-大修项目-阶段1', -5, 8, -2, 18, 60, '#ff3b32'),
+    E('event-2', '25', 'A33-发动机检查', -3, 9, +1, 17, 40, '#ff9800'),
+    E('event-3', '25', 'A33-起落架维护', +2, 8, +5, 16, 0, '#2196f3'),
+    E('event-4', '16', 'A33-液压系统检修', -2, 10, +2, 15, undefined, '#4caf50'),
     E('event-5', '16', 'A33-电气系统检查', +3, 9, +7, 17),
     E('event-6', '19', 'A32-机身检查', -7, 8, -3, 18),
-    E('event-7', '19', 'A32-发动机大修', -1, 9, +10, 16),
-    E('event-8', '20', 'A32-73N-综合检查', 0, 8, +5, 18),
+    E('event-7', '19', 'A32-发动机大修', -1, 9, +10, 16, undefined, '#f44336'),
+    E('event-8', '20', 'A32-73N-综合检查', 0, 8, +5, 18, undefined, '#00bcd4'),
     E('event-9', '18', 'A32-航电系统升级', +1, 10, +7, 15),
     E('event-10', '21', '73M-73N-发动机更换', -5, 8, +3, 18),
     E('event-11', '21', '73M-73N-系统测试', +4, 9, +14, 17),
@@ -154,9 +175,65 @@ export function buildParityEvents(todayMs: number): readonly ParityEvent[] {
     E('event-19', '9', '多机型-最终验收', +15, 9, +30, 16),
     E('event-20', '28', '紧急维修-故障排除', -1, 14, +2, 20),
     E('event-21', '10', '紧急维修-部件更换', 0, 13, +3, 19),
-    E('event-22', '31', '长期停场-定期检查', -7, 8, +20, 18),
-    E('event-23', '11', '长期停场-维护保养', -5, 9, +25, 17),
+    E('event-22', '31', '长期停场-定期检查', -7, 8, +20, 18, undefined, '#5c6bc0'),
+    E('event-23', '11', '长期停场-维护保养', -5, 9, +25, 17, undefined, '#7e57c2'),
     E('event-24', '27', '封存-预处理', +5, 8, +14, 16),
     E('event-25', '12', '封存-最终处理', +15, 9, +30, 17),
   ];
+}
+
+/**
+ * Phase 28.3.1: per-link parity fixture entry. Cross-demo identity
+ * tuple = `(fromBarId, toBarId)`; both sides resolve the same source
+ * + target bar (parity events use stable `event-N` ids). Routing +
+ * marker shape are not part of the identity — v0 fixture pins both
+ * to a single value to keep the marker-def set tractable.
+ */
+export interface ParityLink {
+  /** Composed as `link-${fromBarId}-${toBarId}`. */
+  readonly id: string;
+  readonly fromBarId: string;
+  readonly toBarId: string;
+}
+
+/**
+ * Phase 28.3.1: curated 8-edge subset of the parity-reference demo's
+ * ~22 dependency edges. Selection criteria (per
+ * `audit/PHASE_28_3_1_LINK_PARITY_FIXTURE_DESIGN.md` Decision 1):
+ *
+ *   1. Source bars span ≥3 distinct per-event colors so the
+ *      `useLineEventColor: true` cascade produces a non-trivial
+ *      stroke-color set (avoids the single-color trivial case).
+ *   2. Routes cross multiple resource rows so links visibly route
+ *      across the chart in cross-demo screenshot captures.
+ *   3. Source + target events both fall inside the rendered axis
+ *      window across day / week / month views (~-7..+30 day offset
+ *      from the frozen anchor; all 8 selected event-pairs qualify).
+ *   4. Count moderate (~8) so the cross-demo assertions stay fast
+ *      and the cross-demo VRT re-baseline burden stays small.
+ *
+ * Distinct source-bar colors covered: red (`#ff3b32`, `#f44336`),
+ * orange (`#ff9800`), green (`#4caf50`), cyan (`#00bcd4`), indigo
+ * (`#5c6bc0`), deep-purple (`#7e57c2`) — 7 distinct hex values
+ * across 8 source-bar references.
+ */
+export const PARITY_LINKS: readonly ParityLink[] = [
+  { id: 'link-event-1-event-2', fromBarId: 'event-1', toBarId: 'event-2' },
+  { id: 'link-event-1-event-4', fromBarId: 'event-1', toBarId: 'event-4' },
+  { id: 'link-event-2-event-3', fromBarId: 'event-2', toBarId: 'event-3' },
+  { id: 'link-event-4-event-5', fromBarId: 'event-4', toBarId: 'event-5' },
+  { id: 'link-event-2-event-5', fromBarId: 'event-2', toBarId: 'event-5' },
+  { id: 'link-event-7-event-8', fromBarId: 'event-7', toBarId: 'event-8' },
+  { id: 'link-event-22-event-23', fromBarId: 'event-22', toBarId: 'event-23' },
+  { id: 'link-event-23-event-24', fromBarId: 'event-23', toBarId: 'event-24' },
+];
+
+/**
+ * Phase 28.3.1: return the parity link set. Currently a thin wrapper
+ * around `PARITY_LINKS` for symmetry with `buildParityEvents()`;
+ * the function form leaves room for future per-anchor / per-view
+ * filtering without breaking call sites.
+ */
+export function buildParityLinks(): readonly ParityLink[] {
+  return PARITY_LINKS;
 }

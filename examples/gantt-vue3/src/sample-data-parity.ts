@@ -1,12 +1,14 @@
 import {
   PARITY_RESOURCE_IDS,
   buildParityEvents,
+  buildParityLinks,
   type ParityEvent,
+  type ParityLink,
 } from '@chronixjs/golden-runner/parity-events';
 
 import { todayLocalMidnight } from './sample-data';
 
-import type { BarSpec, RowSpec } from '@chronixjs/gantt';
+import type { BarSpec, LinkSpec, RowSpec } from '@chronixjs/gantt';
 
 /**
  * Sample data for the chronix demo's **parity mode** (URL query
@@ -56,10 +58,18 @@ function parityEventToBar(event: ParityEvent): BarSpec {
       end: new Date(event.endMs),
     },
     dprIntent: 'crisp-pixel',
-    // Phase 28.2: bar title from the parity fixture so chronix's
-    // bar-text auto-render emits the same per-bar string the k-ui
-    // demo paints. Required for cross-demo content-parity assertion.
+    // Phase 28.2: bar title from the parity fixture so the chronix
+    // bar-text auto-render emits the same per-bar string the parity
+    // reference paints. Required for cross-demo content-parity.
     title: event.title,
+    // Phase 28.3.1: per-event bar background from the parity fixture
+    // (populates only for events touched by `PARITY_LINKS`). Threads
+    // into `BarSpec.style.backgroundColor` which wins over the
+    // chart-level `barBackgroundColor` prop via the Phase 20 cascade
+    // — required for `useLineEventColor` cross-demo color-set parity.
+    ...(event.backgroundColor !== undefined
+      ? { style: { backgroundColor: event.backgroundColor } }
+      : {}),
     ...(event.progressValue !== undefined
       ? {
           progress: {
@@ -67,6 +77,16 @@ function parityEventToBar(event: ParityEvent): BarSpec {
           },
         }
       : {}),
+  };
+}
+
+function parityLinkToSpec(link: ParityLink): LinkSpec {
+  return {
+    id: link.id,
+    fromBarId: link.fromBarId,
+    toBarId: link.toBarId,
+    routing: 'square',
+    marker: 'arrow',
   };
 }
 
@@ -84,3 +104,12 @@ export function buildSampleBarsParity(todayMs: number): readonly BarSpec[] {
 export const sampleBarsParity: readonly BarSpec[] = buildSampleBarsParity(
   todayLocalMidnight().getTime(),
 );
+
+/**
+ * Phase 28.3.1: parity-mode link set, mirroring the 8-edge curated
+ * subset declared in `@chronixjs/golden-runner/parity-events`.
+ * Threaded through the chronix demo's parity mode so cross-demo
+ * `useLineEventColor` assertions see equivalent dependency graphs
+ * on both sides.
+ */
+export const sampleLinksParity: readonly LinkSpec[] = buildParityLinks().map(parityLinkToSpec);
