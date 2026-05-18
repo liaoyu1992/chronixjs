@@ -28,6 +28,7 @@ import {
   type VNode,
 } from 'vue';
 
+import { deriveEdgePaddedX } from './derive-edge-padded-x.js';
 import { deriveViewportClipping } from './derive-viewport-clipping.js';
 import { useChartScrollState } from './use-chart-scroll-state.js';
 import { useGanttLayout } from './use-gantt-layout.js';
@@ -2276,11 +2277,20 @@ export const ChronixGantt = defineComponent({
         // (`availableWidth >= 10`) skips when continuation triangles
         // eat most of the title's space.
         //
-        // Title position adapts to continuation triangles (Phase 27):
-        // when `!bar.isStart`, `leftPadding = TRIANGLE_MARGIN +
-        // TRIANGLE_SIZE + TITLE_TRIANGLE_GAP = 11 px`; same on the
-        // right when `!bar.isEnd`. Otherwise the parity reference's
-        // 8 px left + 4 px right insets apply.
+        // Title position adapts to continuation triangles via the
+        // pure helper `deriveEdgePaddedX` (Phase 28.2.1). Three-way
+        // branch per side:
+        //   - viewport-clipped (Phase 27.1 sub-case): title-start
+        //     locks past the viewport-locked triangle's base at
+        //     `viewportLockedApex + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP`.
+        //   - axis-clipped (Phase 27 sub-case): title-start at
+        //     `renderX + TRIANGLE_MARGIN + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP
+        //     = renderX + 11 px`.
+        //   - default: title-start at `renderX + TITLE_LEFT_PADDING
+        //     = renderX + 8 px`.
+        // Symmetric on the right. Precedence (viewport-clipped wins
+        // when both fire on same side) matches Phase 27.1's apex
+        // precedence — title stays user-visible at the viewport edge.
         //
         // Truncation via `truncateBarText` (char-count + ellipsis,
         // ported verbatim from the parity reference). `<text>` uses
@@ -2303,14 +2313,28 @@ export const ChronixGantt = defineComponent({
         const titleHasAxisOverlap = bar.x < a.totalWidth && bar.x + bar.width > 0;
         const title = sourceBar?.title;
         if (titleHasAxisOverlap && title && title.length > 0 && renderWidth > 30) {
-          const leftPadding = !bar.isStart
-            ? TRIANGLE_MARGIN + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP
-            : TITLE_LEFT_PADDING;
-          const rightPadding = !bar.isEnd
-            ? TRIANGLE_MARGIN + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP
-            : TITLE_RIGHT_PADDING;
-          const titleStartX = renderX + leftPadding;
-          const titleEndX = renderX + renderWidth - rightPadding;
+          const titleStartX = deriveEdgePaddedX(
+            'start',
+            renderX,
+            viewportClip.viewportLockedLeftApexX,
+            !bar.isStart,
+            viewportClip.isViewportClippedStart,
+            TITLE_LEFT_PADDING,
+            TRIANGLE_MARGIN,
+            TRIANGLE_SIZE,
+            TITLE_TRIANGLE_GAP,
+          );
+          const titleEndX = deriveEdgePaddedX(
+            'end',
+            renderX + renderWidth,
+            viewportClip.viewportLockedRightApexX,
+            !bar.isEnd,
+            viewportClip.isViewportClippedEnd,
+            TITLE_RIGHT_PADDING,
+            TRIANGLE_MARGIN,
+            TRIANGLE_SIZE,
+            TITLE_TRIANGLE_GAP,
+          );
           const availableWidth = Math.max(0, titleEndX - titleStartX);
           if (availableWidth >= 10) {
             const truncated = truncateBarText(title, availableWidth, resolvedStyle.fontSize);
@@ -2506,16 +2530,37 @@ export const ChronixGantt = defineComponent({
           // editable AND has axis-overlap. White fill + bar's resolved
           // border color stroke, 8 × 8 px, 1-px inset from each edge
           // (or shifted inward past a continuation triangle when one
-          // is present on the same side).
+          // is present on the same side). Phase 28.2.1: viewport-
+          // clipped sub-case via `deriveEdgePaddedX` shifts the visible
+          // dot to viewport edge; underlying edge-zone hit-test rect
+          // (above) stays at the bar's actual geometric edge, so
+          // resize gestures still target the bar's real boundary.
           if (isSelected && props.editable) {
             const dotSize = t.barResizerDotSize;
             const dotY = renderY + (bar.height - dotSize) / 2;
-            const leftDotX = !bar.isStart
-              ? renderX + TRIANGLE_MARGIN + TRIANGLE_SIZE + DOT_TRIANGLE_GAP
-              : renderX + DOT_EDGE_INSET;
-            const rightDotX = !bar.isEnd
-              ? renderX + renderWidth - TRIANGLE_MARGIN - TRIANGLE_SIZE - DOT_TRIANGLE_GAP - dotSize
-              : renderX + renderWidth - DOT_EDGE_INSET - dotSize;
+            const leftDotX = deriveEdgePaddedX(
+              'start',
+              renderX,
+              viewportClip.viewportLockedLeftApexX,
+              !bar.isStart,
+              viewportClip.isViewportClippedStart,
+              DOT_EDGE_INSET,
+              TRIANGLE_MARGIN,
+              TRIANGLE_SIZE,
+              DOT_TRIANGLE_GAP,
+            );
+            const rightDotX =
+              deriveEdgePaddedX(
+                'end',
+                renderX + renderWidth,
+                viewportClip.viewportLockedRightApexX,
+                !bar.isEnd,
+                viewportClip.isViewportClippedEnd,
+                DOT_EDGE_INSET,
+                TRIANGLE_MARGIN,
+                TRIANGLE_SIZE,
+                DOT_TRIANGLE_GAP,
+              ) - dotSize;
             nodes.push(
               h('rect', {
                 key: `${bar.barId}-resizer-dot-start`,
