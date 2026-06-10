@@ -3,3 +3,4 @@ packages:
   - 'adapters/*'
   - 'examples/*'
   - 'tooling/*'
+  - 'docs'

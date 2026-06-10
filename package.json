@@ -34,6 +34,9 @@
     "clean": "turbo run clean && rimraf node_modules",
     "audit:names": "node scripts/check-banned-names.mjs --all",
     "ci-check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm audit:names",
+    "docs:dev": "pnpm --filter @chronixjs/docs docs:dev",
+    "docs:build": "pnpm --filter @chronixjs/docs docs:build",
+    "docs:preview": "pnpm --filter @chronixjs/docs docs:preview",
     "prepare": "husky"
   },
   "devDependencies": {

@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": ".vitepress/dist",
+    "types": ["node"],
+    "paths": {
+      "@chronixjs/ui": ["../packages/ui/src"],
+      "@chronixjs/gantt": ["../packages/gantt/src"],
+      "@chronixjs/table": ["../packages/table/src"],
+      "@chronixjs/cx-kit": ["../packages/cx-kit/src"]
+    }
+  },
+  "include": [".vitepress/**/*.ts", ".vitepress/**/*.vue"],
+  "exclude": ["node_modules", ".vitepress/dist", ".vitepress/cache"]
+}
