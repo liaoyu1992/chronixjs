@@ -1,8 +1,8 @@
-# Scrollbar
+# Scrollbar 滚动条
 
-Custom-styled scrollbar container with configurable trigger mode.
+自定义样式的滚动条容器，支持可配置的触发模式。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Custom-styled scrollbar container with configurable trigger mode.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -59,7 +59,7 @@ export function App() {
 
 :::
 
-## Horizontal Scrolling
+## 横向滚动
 
 ::: code-group
 
@@ -112,17 +112,17 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                | Default   | Description                 |
-| ------------- | ------------------- | --------- | --------------------------- |
-| `trigger`     | `'hover' \| 'none'` | `'hover'` | When to show the scrollbar  |
-| `xScrollable` | `boolean`           | `false`   | Enable horizontal scrolling |
+| 属性          | 类型                | 默认值    | 说明           |
+| ------------- | ------------------- | --------- | -------------- |
+| `trigger`     | `'hover' \| 'none'` | `'hover'` | 何时显示滚动条 |
+| `xScrollable` | `boolean`           | `false`   | 启用横向滚动   |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description        |
-| --------- | ------------------ |
-| `default` | Scrollable content |
+| 插槽      | 说明       |
+| --------- | ---------- |
+| `default` | 可滚动内容 |

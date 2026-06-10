@@ -1,8 +1,8 @@
-# Form
+# Form 表单
 
-Form layout with validation support, label positioning, and field-level rules.
+表单布局组件，支持验证、标签定位和字段级规则。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Form layout with validation support, label positioning, and field-level rules.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -148,11 +148,11 @@ export function App() {
 
 :::
 
-## Label Placement
+## 标签位置
 
-Labels can be placed above the field (default) or to the left.
+标签可以放在字段上方（默认）或左侧。
 
-### Top Labels (default)
+### 顶部标签（默认）
 
 ::: code-group
 
@@ -228,7 +228,7 @@ export function App() {
 
 :::
 
-### Left Labels
+### 左侧标签
 
 ::: code-group
 
@@ -304,9 +304,9 @@ export function App() {
 
 :::
 
-## Inline Form
+## 行内表单
 
-Use the `inline` prop to display form items in a horizontal row.
+使用 `inline` 属性将表单项水平排列。
 
 ::: code-group
 
@@ -399,42 +399,42 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### ChronixForm Props
+### ChronixForm 属性 (Props)
 
-| Prop              | Type                                                 | Default     | Description            |
-| ----------------- | ---------------------------------------------------- | ----------- | ---------------------- |
-| `model`           | `Record<string, unknown>`                            | `{}`        | Form data model        |
-| `rules`           | `Record<string, ValidationRule \| ValidationRule[]>` | `undefined` | Validation rules       |
-| `labelPlacement`  | `'left' \| 'top'`                                    | `'top'`     | Label position         |
-| `labelWidth`      | `number \| string`                                   | `undefined` | Label width            |
-| `labelAlign`      | `'left' \| 'right'`                                  | `'left'`    | Label alignment        |
-| `inline`          | `boolean`                                            | `false`     | Inline layout          |
-| `size`            | `'small' \| 'medium' \| 'large'`                     | `undefined` | Component size         |
-| `disabled`        | `boolean`                                            | `false`     | Disable all fields     |
-| `showFeedback`    | `boolean`                                            | `true`      | Show error messages    |
-| `showRequireMark` | `boolean`                                            | `true`      | Show required asterisk |
+| Prop              | 类型                                                 | 默认值      | 描述             |
+| ----------------- | ---------------------------------------------------- | ----------- | ---------------- |
+| `model`           | `Record<string, unknown>`                            | `{}`        | 表单数据模型     |
+| `rules`           | `Record<string, ValidationRule \| ValidationRule[]>` | `undefined` | 验证规则         |
+| `labelPlacement`  | `'left' \| 'top'`                                    | `'top'`     | 标签位置         |
+| `labelWidth`      | `number \| string`                                   | `undefined` | 标签宽度         |
+| `labelAlign`      | `'left' \| 'right'`                                  | `'left'`    | 标签对齐方式     |
+| `inline`          | `boolean`                                            | `false`     | 行内布局         |
+| `size`            | `'small' \| 'medium' \| 'large'`                     | `undefined` | 组件尺寸         |
+| `disabled`        | `boolean`                                            | `false`     | 禁用所有字段     |
+| `showFeedback`    | `boolean`                                            | `true`      | 显示错误信息     |
+| `showRequireMark` | `boolean`                                            | `true`      | 显示必填星号标记 |
 
-### ChronixFormItem Props
+### ChronixFormItem 属性 (Props)
 
-| Prop           | Type                                 | Default     | Description          |
-| -------------- | ------------------------------------ | ----------- | -------------------- |
-| `label`        | `string`                             | `undefined` | Field label          |
-| `path`         | `string`                             | `undefined` | Field path in model  |
-| `rule`         | `ValidationRule \| ValidationRule[]` | `undefined` | Field-level rules    |
-| `required`     | `boolean`                            | `false`     | Mark as required     |
-| `showFeedback` | `boolean`                            | `true`      | Show error for field |
+| Prop           | 类型                                 | 默认值      | 描述             |
+| -------------- | ------------------------------------ | ----------- | ---------------- |
+| `label`        | `string`                             | `undefined` | 字段标签         |
+| `path`         | `string`                             | `undefined` | 模型中的字段路径 |
+| `rule`         | `ValidationRule \| ValidationRule[]` | `undefined` | 字段级验证规则   |
+| `required`     | `boolean`                            | `false`     | 标记为必填       |
+| `showFeedback` | `boolean`                            | `true`      | 显示字段错误信息 |
 
-### Exposed Methods
+### 暴露的方法 (Methods)
 
-| Method                | Description                          |
-| --------------------- | ------------------------------------ |
-| `validate()`          | Validate all fields, returns Promise |
-| `restoreValidation()` | Clear all validation errors          |
+| Method                | 描述                       |
+| --------------------- | -------------------------- |
+| `validate()`          | 验证所有字段，返回 Promise |
+| `restoreValidation()` | 清除所有验证错误           |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                   |
-| --------- | ----------------------------- |
-| `default` | Field control area (FormItem) |
+| Slot      | 描述                     |
+| --------- | ------------------------ |
+| `default` | 字段控件区域（FormItem） |

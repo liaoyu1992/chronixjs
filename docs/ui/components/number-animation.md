@@ -1,8 +1,8 @@
-# Number Animation
+# Number Animation 数字动画
 
-Animated number display that tweens from one value to another over a configurable duration.
+动画数字显示组件，可在配置的持续时间内从一个值平滑过渡到另一个值。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Animated number display that tweens from one value to another over a configurabl
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## With Precision and Separator
+## 精度与分隔符
 
 ::: code-group
 
@@ -84,16 +84,16 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop            | Type      | Default | Description                  |
-| --------------- | --------- | ------- | ---------------------------- |
-| `from`          | `number`  | `0`     | Start value                  |
-| `to`            | `number`  | `0`     | End value                    |
-| `duration`      | `number`  | `2000`  | Animation duration in ms     |
-| `precision`     | `number`  | `0`     | Decimal precision            |
-| `active`        | `boolean` | `true`  | Whether animation is running |
-| `showSeparator` | `boolean` | `false` | Show thousands separator     |
-| `locale`        | `string`  | —       | Locale for number formatting |
+| 属性            | 类型      | 默认值  | 说明                 |
+| --------------- | --------- | ------- | -------------------- |
+| `from`          | `number`  | `0`     | 起始值               |
+| `to`            | `number`  | `0`     | 目标值               |
+| `duration`      | `number`  | `2000`  | 动画持续时间（毫秒） |
+| `precision`     | `number`  | `0`     | 小数精度             |
+| `active`        | `boolean` | `true`  | 动画是否正在运行     |
+| `showSeparator` | `boolean` | `false` | 显示千位分隔符       |
+| `locale`        | `string`  | —       | 数字格式化的区域设置 |

@@ -1,22 +1,22 @@
-# Virtual List
+# 虚拟列表
 
-High-performance virtualized list for rendering large datasets. Only the items visible in the viewport (plus a small overscan buffer) are rendered, keeping DOM size constant regardless of data length.
+用于渲染大型数据集的高性能虚拟列表。仅渲染视口中可见的项（加上少量的预渲染缓冲），无论数据长度如何，DOM 大小始终保持恒定。
 
-## Install
+## 安装
 
 ```bash
 pnpm add @chronixjs/cx-kit
 ```
 
-## Overview
+## 概述
 
-`computeVirtualWindow` is a **pure function** — given the current scroll position and viewport dimensions, it returns the slice of items to render and the CSS offsets needed to position them. It has no framework dependencies and no side effects.
+`computeVirtualWindow` 是一个**纯函数** — 给定当前滚动位置和视口尺寸，它返回需要渲染的项切片以及定位它们所需的 CSS 偏移量。它没有框架依赖，也没有副作用。
 
 ```ts
 import { computeVirtualWindow } from '@chronixjs/cx-kit';
 ```
 
-## Basic Usage
+## 基本用法
 
 ```ts
 import { computeVirtualWindow } from '@chronixjs/cx-kit';
@@ -37,11 +37,11 @@ console.log(result);
 // }
 ```
 
-Then render only the items from `startIndex` to `endIndex`, positioned inside a container with `height: totalHeightPx` and the list offset by `offsetTopPx`.
+然后仅渲染从 `startIndex` 到 `endIndex` 的项，将它们放置在一个高度为 `totalHeightPx` 的容器中，列表偏移量为 `offsetTopPx`。
 
-## With Overscan
+## 预渲染（Overscan）
 
-Add `overscan` to render extra items above and below the visible window, reducing blank flashes during fast scrolling:
+添加 `overscan` 以在可见窗口的上方和下方渲染额外的项，减少快速滚动时的空白闪烁：
 
 ```ts
 const result = computeVirtualWindow({
@@ -49,11 +49,11 @@ const result = computeVirtualWindow({
   itemHeightPx: 40,
   scrollTop: 800,
   viewportHeight: 600,
-  overscan: 5, // render 5 extra items on each side
+  overscan: 5, // 在每侧额外渲染 5 项
 });
 ```
 
-## Framework Examples
+## 框架示例
 
 ### Vue 3
 
@@ -271,27 +271,27 @@ export function VirtualList() {
 }
 ```
 
-## API Reference
+## API 参考
 
 ### `computeVirtualWindow(input)`
 
-Returns the virtual window describing which items to render and how to position them.
+返回描述需要渲染哪些项以及如何定位它们的虚拟窗口。
 
-#### Input
+#### 输入
 
-| Property         | Type     | Default | Description                         |
-| ---------------- | -------- | ------- | ----------------------------------- |
-| `totalItemCount` | `number` | —       | Total number of items in the list   |
-| `itemHeightPx`   | `number` | —       | Fixed height of each item in pixels |
-| `scrollTop`      | `number` | —       | Current scroll offset in pixels     |
-| `viewportHeight` | `number` | —       | Visible viewport height in pixels   |
-| `overscan`       | `number` | `3`     | Extra items to render above & below |
+| 属性             | 类型     | 默认值 | 描述                     |
+| ---------------- | -------- | ------ | ------------------------ |
+| `totalItemCount` | `number` | —      | 列表中的总项数           |
+| `itemHeightPx`   | `number` | —      | 每项的固定高度（像素）   |
+| `scrollTop`      | `number` | —      | 当前滚动偏移量（像素）   |
+| `viewportHeight` | `number` | —      | 可见视口高度（像素）     |
+| `overscan`       | `number` | `3`    | 上方和下方额外渲染的项数 |
 
-#### Output
+#### 输出
 
-| Property        | Type     | Description                                 |
-| --------------- | -------- | ------------------------------------------- |
-| `startIndex`    | `number` | Index of the first visible item (inclusive) |
-| `endIndex`      | `number` | Index of the last visible item (inclusive)  |
-| `offsetTopPx`   | `number` | Top offset for the rendered content (px)    |
-| `totalHeightPx` | `number` | Total height of the full list (px)          |
+| 属性            | 类型     | 描述                         |
+| --------------- | -------- | ---------------------------- |
+| `startIndex`    | `number` | 第一个可见项的索引（包含）   |
+| `endIndex`      | `number` | 最后一个可见项的索引（包含） |
+| `offsetTopPx`   | `number` | 渲染内容的顶部偏移量（px）   |
+| `totalHeightPx` | `number` | 完整列表的总高度（px）       |

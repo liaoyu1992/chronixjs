@@ -1,8 +1,8 @@
-# Layout
+# Layout 布局
 
-A page layout system with Header, Sider, Content, and Footer areas.
+包含 Header、Sider、Content 和 Footer 区域的页面布局系统。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ A page layout system with Header, Sider, Content, and Footer areas.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-A classic page layout with header, sider, content, and footer:
+经典的页面布局，包含头部、侧边栏、内容和底部：
 
 ::: code-group
 
@@ -100,9 +100,9 @@ export function App() {
 
 :::
 
-## Collapsible Sider
+## 可折叠侧边栏
 
-Use the `collapsible` and `collapsed` props to create a sider that can be toggled:
+使用 `collapsible` 和 `collapsed` 属性创建可切换的侧边栏：
 
 ::: code-group
 
@@ -187,21 +187,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Layout Props
+### Layout 属性 (Props)
 
-| Prop       | Type                     | Default    | Description     |
-| ---------- | ------------------------ | ---------- | --------------- |
-| `hasSider` | `boolean`                | `false`    | Has sider child |
-| `position` | `'static' \| 'absolute'` | `'static'` | Position mode   |
+| Prop       | 类型                     | 默认值     | 描述               |
+| ---------- | ------------------------ | ---------- | ------------------ |
+| `hasSider` | `boolean`                | `false`    | 是否有侧边栏子元素 |
+| `position` | `'static' \| 'absolute'` | `'static'` | 定位模式           |
 
-### LayoutSider Props
+### LayoutSider 属性 (Props)
 
-| Prop             | Type                | Default  | Description     |
-| ---------------- | ------------------- | -------- | --------------- |
-| `width`          | `number \| string`  | `200`    | Expanded width  |
-| `collapsedWidth` | `number \| string`  | `48`     | Collapsed width |
-| `collapsed`      | `boolean`           | `false`  | Collapsed state |
-| `collapsible`    | `boolean`           | `false`  | Show trigger    |
-| `placement`      | `'left' \| 'right'` | `'left'` | Sider side      |
+| Prop             | 类型                | 默认值   | 描述               |
+| ---------------- | ------------------- | -------- | ------------------ |
+| `width`          | `number \| string`  | `200`    | 展开时的宽度       |
+| `collapsedWidth` | `number \| string`  | `48`     | 折叠时的宽度       |
+| `collapsed`      | `boolean`           | `false`  | 折叠状态           |
+| `collapsible`    | `boolean`           | `false`  | 是否显示折叠触发器 |
+| `placement`      | `'left' \| 'right'` | `'left'` | 侧边栏位置         |

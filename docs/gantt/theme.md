@@ -1,8 +1,8 @@
-# Gantt Theme
+# 甘特图主题
 
-Customize the Gantt chart appearance using the `ChronixTheme` interface. Pass a partial theme object to override only the tokens you need — all others fall back to defaults.
+使用 `ChronixTheme` 接口自定义甘特图外观。传入部分主题对象仅覆盖所需的令牌，其余令牌将使用默认值。
 
-## Basic Usage
+## 基本用法
 
 ::: code-group
 
@@ -16,7 +16,7 @@ import { ChronixGantt } from '@chronixjs/gantt-vue3';
 import type { ChronixTheme } from '@chronixjs/gantt';
 
 const customTheme: Partial<ChronixTheme> = {
-  barBackgroundColor: '#6366f1', // Indigo bars
+  barBackgroundColor: '#6366f1', // 靛蓝色条形
   barBorderColor: '#4f46e5',
   barTextColor: '#ffffff',
   chartBackground: '#f8fafc',
@@ -68,7 +68,7 @@ export function App() {
 
 :::
 
-## Dark Mode Example
+## 暗色模式示例
 
 ```typescript
 const darkTheme: Partial<ChronixTheme> = {
@@ -98,108 +98,108 @@ const darkTheme: Partial<ChronixTheme> = {
 };
 ```
 
-## Complete Theme Tokens
+## 完整主题令牌
 
-### Chart
+### 图表
 
-| Token             | Default     | Description                |
-| ----------------- | ----------- | -------------------------- |
-| `chartBackground` | `'#ffffff'` | Main chart area background |
+| 令牌              | 默认值      | 描述           |
+| ----------------- | ----------- | -------------- |
+| `chartBackground` | `'#ffffff'` | 主图表区域背景 |
 
-### Header Band
+### 头部区域
 
-| Token              | Default     | Description                |
-| ------------------ | ----------- | -------------------------- |
-| `headerBackground` | `'#ffffff'` | Header row background      |
-| `headerCellFill`   | `'#f9fafb'` | Individual cell background |
-| `headerCellStroke` | `'#d1d5db'` | Cell border color          |
-| `headerCellLabel`  | `'#374151'` | Cell text color            |
-| `headerTickStroke` | `'#d1d5db'` | Tick mark stroke color     |
-| `headerTickLabel`  | `'#6b7280'` | Tick mark label color      |
-| `headerDivider`    | `'#9ca3af'` | Header/body divider color  |
+| 令牌               | 默认值      | 描述                |
+| ------------------ | ----------- | ------------------- |
+| `headerBackground` | `'#ffffff'` | 头部行背景          |
+| `headerCellFill`   | `'#f9fafb'` | 单元格背景          |
+| `headerCellStroke` | `'#d1d5db'` | 单元格边框颜色      |
+| `headerCellLabel`  | `'#374151'` | 单元格文本颜色      |
+| `headerTickStroke` | `'#d1d5db'` | 刻度线颜色          |
+| `headerTickLabel`  | `'#6b7280'` | 刻度标签颜色        |
+| `headerDivider`    | `'#9ca3af'` | 头部/主体分隔线颜色 |
 
-### Bar Styling
+### 条形样式
 
-| Token                | Default     | Description              |
-| -------------------- | ----------- | ------------------------ |
-| `barBackgroundColor` | `'#3b82f6'` | Default bar fill color   |
-| `barBorderColor`     | `'#1e40af'` | Default bar border color |
-| `barTextColor`       | `'#ffffff'` | Default bar text color   |
-| `barFontSize`        | `12`        | Bar text font size (px)  |
-| `barFontWeight`      | `400`       | Bar text font weight     |
+| 令牌                 | 默认值      | 描述              |
+| -------------------- | ----------- | ----------------- |
+| `barBackgroundColor` | `'#3b82f6'` | 默认条形填充颜色  |
+| `barBorderColor`     | `'#1e40af'` | 默认条形边框颜色  |
+| `barTextColor`       | `'#ffffff'` | 默认条形文本颜色  |
+| `barFontSize`        | `12`        | 条形文本字号 (px) |
+| `barFontWeight`      | `400`       | 条形文本字重      |
 
-### Bar Selection & Resize
+### 条形选择与调整大小
 
-| Token                    | Default             | Description               |
-| ------------------------ | ------------------- | ------------------------- |
-| `barSelectedBorderColor` | `'rgba(0,0,0,0.3)'` | Selected bar border       |
-| `barSelectedBorderWidth` | `2`                 | Selected bar border width |
-| `barResizerThickness`    | `8`                 | Resize handle thickness   |
-| `barResizerDotSize`      | `8`                 | Resize handle dot size    |
+| 令牌                     | 默认值              | 描述                 |
+| ------------------------ | ------------------- | -------------------- |
+| `barSelectedBorderColor` | `'rgba(0,0,0,0.3)'` | 选中条形边框         |
+| `barSelectedBorderWidth` | `2`                 | 选中条形边框宽度     |
+| `barResizerThickness`    | `8`                 | 调整大小手柄厚度     |
+| `barResizerDotSize`      | `8`                 | 调整大小手柄圆点大小 |
 
-### Progress Overlay
+### 进度覆盖层
 
-| Token                       | Default     | Description              |
-| --------------------------- | ----------- | ------------------------ |
-| `progressFill`              | `'#10b981'` | Progress bar fill color  |
-| `progressFillOpacity`       | `0.35`      | Progress fill opacity    |
-| `progressHandleFill`        | `'#059669'` | Drag handle fill         |
-| `progressHandleStroke`      | `'#ffffff'` | Drag handle border       |
-| `progressHandleStrokeWidth` | `1`         | Drag handle stroke width |
-| `progressLabel`             | `'#064e3b'` | Progress text color      |
-| `progressLabelFontSize`     | `11`        | Progress text size (px)  |
-| `progressLabelFontWeight`   | `600`       | Progress text weight     |
+| 令牌                        | 默认值      | 描述              |
+| --------------------------- | ----------- | ----------------- |
+| `progressFill`              | `'#10b981'` | 进度条填充颜色    |
+| `progressFillOpacity`       | `0.35`      | 进度填充不透明度  |
+| `progressHandleFill`        | `'#059669'` | 拖拽手柄填充      |
+| `progressHandleStroke`      | `'#ffffff'` | 拖拽手柄边框      |
+| `progressHandleStrokeWidth` | `1`         | 拖拽手柄边框宽度  |
+| `progressLabel`             | `'#064e3b'` | 进度文本颜色      |
+| `progressLabelFontSize`     | `11`        | 进度文本字号 (px) |
+| `progressLabelFontWeight`   | `600`       | 进度文本字重      |
 
-### Grid Lines
+### 网格线
 
-| Token                    | Default  | Description                  |
-| ------------------------ | -------- | ---------------------------- |
-| `gridLineColor`          | `'#ddd'` | Vertical grid line color     |
-| `gridLineWeekStartColor` | `'#bbb'` | Week-start grid line color   |
-| `gridLineRowRuleColor`   | `'#ddd'` | Horizontal row divider color |
+| 令牌                     | 默认值   | 描述             |
+| ------------------------ | -------- | ---------------- |
+| `gridLineColor`          | `'#ddd'` | 垂直网格线颜色   |
+| `gridLineWeekStartColor` | `'#bbb'` | 周起始网格线颜色 |
+| `gridLineRowRuleColor`   | `'#ddd'` | 水平行分隔线颜色 |
 
-### Sidebar
+### 侧边栏
 
-| Token                     | Default     | Description         |
-| ------------------------- | ----------- | ------------------- |
-| `sidebarBackground`       | `'#ffffff'` | Sidebar background  |
-| `sidebarHeaderCellLabel`  | `'#374151'` | Header cell text    |
-| `sidebarHeaderCellBorder` | `'#d1d5db'` | Header cell border  |
-| `sidebarHeaderDivider`    | `'#9ca3af'` | Header/body divider |
-| `sidebarBodyCellLabel`    | `'#1f2937'` | Body cell text      |
-| `sidebarBodyCellBorder`   | `'#e5e7eb'` | Body cell border    |
+| 令牌                      | 默认值      | 描述            |
+| ------------------------- | ----------- | --------------- |
+| `sidebarBackground`       | `'#ffffff'` | 侧边栏背景      |
+| `sidebarHeaderCellLabel`  | `'#374151'` | 头部单元格文本  |
+| `sidebarHeaderCellBorder` | `'#d1d5db'` | 头部单元格边框  |
+| `sidebarHeaderDivider`    | `'#9ca3af'` | 头部/主体分隔线 |
+| `sidebarBodyCellLabel`    | `'#1f2937'` | 主体单元格文本  |
+| `sidebarBodyCellBorder`   | `'#e5e7eb'` | 主体单元格边框  |
 
-### Links
+### 连线
 
-| Token              | Default     | Description        |
-| ------------------ | ----------- | ------------------ |
-| `linkDefaultColor` | `'#3788d8'` | Default link color |
-| `linkStrokeWidth`  | `1.5`       | Link stroke width  |
+| 令牌               | 默认值      | 描述         |
+| ------------------ | ----------- | ------------ |
+| `linkDefaultColor` | `'#3788d8'` | 默认连线颜色 |
+| `linkStrokeWidth`  | `1.5`       | 连线描边宽度 |
 
-### Today Indicators
+### 今日标记
 
-| Token              | Default                  | Description             |
-| ------------------ | ------------------------ | ----------------------- |
-| `todayLineColor`   | `'#ff6b6b'`              | Today marker line color |
-| `todayCellBgColor` | `'rgba(255,220,40,.15)'` | Today column background |
+| 令牌               | 默认值                   | 描述           |
+| ------------------ | ------------------------ | -------------- |
+| `todayLineColor`   | `'#ff6b6b'`              | 今日标记线颜色 |
+| `todayCellBgColor` | `'rgba(255,220,40,.15)'` | 今日列背景色   |
 
-### Toolbar
+### 工具栏
 
-| Token                   | Default     | Description           |
-| ----------------------- | ----------- | --------------------- |
-| `toolbarBg`             | `'#ffffff'` | Toolbar background    |
-| `toolbarButtonBg`       | `'#f9fafb'` | Button background     |
-| `toolbarButtonBgActive` | `'#3b82f6'` | Active/pressed button |
-| `toolbarButtonBorder`   | `'#d1d5db'` | Button border         |
-| `toolbarButtonColor`    | `'#374151'` | Button text color     |
-| `toolbarTitleColor`     | `'#111827'` | Title text color      |
+| 令牌                    | 默认值      | 描述          |
+| ----------------------- | ----------- | ------------- |
+| `toolbarBg`             | `'#ffffff'` | 工具栏背景    |
+| `toolbarButtonBg`       | `'#f9fafb'` | 按钮背景      |
+| `toolbarButtonBgActive` | `'#3b82f6'` | 激活/按下按钮 |
+| `toolbarButtonBorder`   | `'#d1d5db'` | 按钮边框      |
+| `toolbarButtonColor`    | `'#374151'` | 按钮文本颜色  |
+| `toolbarTitleColor`     | `'#111827'` | 标题文本颜色  |
 
-### Typography
+### 排版
 
-| Token                     | Default | Description                 |
-| ------------------------- | ------- | --------------------------- |
-| `tickLabelFontSize`       | `10`    | Tick label size (px)        |
-| `headerCellLabelFontSize` | `11`    | Header cell label size (px) |
-| `sidebarHeaderFontSize`   | `11`    | Sidebar header size (px)    |
-| `sidebarHeaderFontWeight` | `600`   | Sidebar header weight       |
-| `sidebarBodyFontSize`     | `12`    | Sidebar body size (px)      |
+| 令牌                      | 默认值 | 描述                    |
+| ------------------------- | ------ | ----------------------- |
+| `tickLabelFontSize`       | `10`   | 刻度标签字号 (px)       |
+| `headerCellLabelFontSize` | `11`   | 头部单元格标签字号 (px) |
+| `sidebarHeaderFontSize`   | `11`   | 侧边栏头部字号 (px)     |
+| `sidebarHeaderFontWeight` | `600`  | 侧边栏头部字重          |
+| `sidebarBodyFontSize`     | `12`   | 侧边栏主体字号 (px)     |

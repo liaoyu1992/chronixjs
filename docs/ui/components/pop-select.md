@@ -1,8 +1,8 @@
-# Pop Select
+# Pop Select 弹出选择
 
-Option-list popup surface wrapping Popover for simple single-select from a dropdown.
+基于 Popover 封装的选项列表弹出面板，用于简单的下拉单选。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Option-list popup surface wrapping Popover for simple single-select from a dropd
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -104,40 +104,40 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop         | Type                         | Default          | Description                 |
-| ------------ | ---------------------------- | ---------------- | --------------------------- |
-| `value`      | `string \| undefined`        | `undefined`      | Selected option value       |
-| `options`    | `readonly PopSelectOption[]` | `[]`             | Available options           |
-| `show`       | `boolean \| undefined`       | `undefined`      | Controlled popup visibility |
-| `trigger`    | `'click' \| 'hover'`         | `'click'`        | Popup trigger mode          |
-| `placement`  | `PopupPlacement`             | `'bottom-start'` | Popup placement             |
-| `offset`     | `number`                     | `4`              | Distance from trigger in px |
-| `flip`       | `boolean`                    | `true`           | Auto-flip when overflowing  |
-| `widthMatch` | `boolean`                    | `false`          | Match trigger width         |
-| `disabled`   | `boolean`                    | `false`          | Disable the select          |
+| 属性         | 类型                         | 默认值           | 说明                   |
+| ------------ | ---------------------------- | ---------------- | ---------------------- |
+| `value`      | `string \| undefined`        | `undefined`      | 选中的选项值           |
+| `options`    | `readonly PopSelectOption[]` | `[]`             | 可用选项               |
+| `show`       | `boolean \| undefined`       | `undefined`      | 受控的弹窗显示状态     |
+| `trigger`    | `'click' \| 'hover'`         | `'click'`        | 弹窗触发模式           |
+| `placement`  | `PopupPlacement`             | `'bottom-start'` | 弹出位置               |
+| `offset`     | `number`                     | `4`              | 与触发元素的距离（px） |
+| `flip`       | `boolean`                    | `true`           | 溢出时自动翻转         |
+| `widthMatch` | `boolean`                    | `false`          | 匹配触发元素宽度       |
+| `disabled`   | `boolean`                    | `false`          | 禁用选择器             |
 
 ### PopSelectOption
 
-| Property   | Type      | Description         |
-| ---------- | --------- | ------------------- |
-| `key`      | `string`  | Unique identifier   |
-| `label`    | `string`  | Display text        |
-| `value`    | `string`  | Option value        |
-| `disabled` | `boolean` | Disable this option |
+| 属性       | 类型      | 说明       |
+| ---------- | --------- | ---------- |
+| `key`      | `string`  | 唯一标识   |
+| `label`    | `string`  | 显示文本   |
+| `value`    | `string`  | 选项值     |
+| `disabled` | `boolean` | 禁用此选项 |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload   | Description                         |
-| -------------- | --------- | ----------------------------------- |
-| `update:value` | `string`  | Fires when selection changes        |
-| `update:show`  | `boolean` | Fires when popup visibility changes |
+| 事件           | 载荷      | 说明                   |
+| -------------- | --------- | ---------------------- |
+| `update:value` | `string`  | 选中值变化时触发       |
+| `update:show`  | `boolean` | 弹窗显示状态变化时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description     |
-| --------- | --------------- |
-| `default` | Trigger element |
+| 插槽      | 说明     |
+| --------- | -------- |
+| `default` | 触发元素 |

@@ -1,8 +1,8 @@
-# Descriptions
+# Descriptions 描述列表
 
-Multi-column key-value display for presenting structured data in a grid layout.
+多列键值对展示，用于在网格布局中呈现结构化数据。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Multi-column key-value display for presenting structured data in a grid layout.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -74,7 +74,7 @@ export function App() {
 
 :::
 
-## Bordered
+## 带边框
 
 ::: code-group
 
@@ -134,7 +134,7 @@ export function App() {
 
 :::
 
-## Label Placement Top
+## 标签置顶
 
 ::: code-group
 
@@ -191,30 +191,30 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop             | Type                             | Default     | Description                        |
-| ---------------- | -------------------------------- | ----------- | ---------------------------------- |
-| `items`          | `readonly DescriptionItem[]`     | `[]`        | Array of label-value items         |
-| `columns`        | `number`                         | `3`         | Number of grid columns             |
-| `bordered`       | `boolean`                        | `false`     | Show table-like borders            |
-| `labelPlacement` | `'left' \| 'top'`                | `'left'`    | Position of label within each item |
-| `size`           | `'small' \| 'medium' \| 'large'` | `'medium'`  | Padding scale                      |
-| `title`          | `string \| undefined`            | `undefined` | Optional header title              |
+| 属性             | 类型                             | 默认值      | 说明             |
+| ---------------- | -------------------------------- | ----------- | ---------------- |
+| `items`          | `readonly DescriptionItem[]`     | `[]`        | 标签-值项数组    |
+| `columns`        | `number`                         | `3`         | 网格列数         |
+| `bordered`       | `boolean`                        | `false`     | 显示表格样式边框 |
+| `labelPlacement` | `'left' \| 'top'`                | `'left'`    | 每项中标签的位置 |
+| `size`           | `'small' \| 'medium' \| 'large'` | `'medium'`  | 内边距大小       |
+| `title`          | `string \| undefined`            | `undefined` | 可选的标题       |
 
 ### DescriptionItem
 
-| Property | Type     | Default | Description                       |
-| -------- | -------- | ------- | --------------------------------- |
-| `key`    | `string` | —       | Unique key for rendering          |
-| `label`  | `string` | —       | Label text                        |
-| `value`  | `string` | —       | Value text                        |
-| `span`   | `number` | `1`     | Number of columns this item spans |
+| 属性    | 类型     | 默认值 | 说明           |
+| ------- | -------- | ------ | -------------- |
+| `key`   | `string` | —      | 渲染用的唯一键 |
+| `label` | `string` | —      | 标签文本       |
+| `value` | `string` | —      | 值文本         |
+| `span`  | `number` | `1`    | 该项占据的列数 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot    | Description                           |
-| ------- | ------------------------------------- |
-| `title` | Custom title content (overrides prop) |
+| 插槽    | 说明                               |
+| ------- | ---------------------------------- |
+| `title` | 自定义标题内容（覆盖 prop 属性值） |

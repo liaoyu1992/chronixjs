@@ -1,8 +1,8 @@
-# Dynamic Input
+# Dynamic Input 动态输入
 
-Dynamic list of input values where the user can add or remove items.
+动态输入值列表，用户可以添加或删除项目。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Dynamic list of input values where the user can add or remove items.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -60,20 +60,20 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                  | Default     | Description                |
-| ------------- | --------------------- | ----------- | -------------------------- |
-| `value`       | `readonly unknown[]`  | `[]`        | Array of values            |
-| `min`         | `number`              | `0`         | Minimum number of items    |
-| `max`         | `number \| undefined` | `undefined` | Maximum number of items    |
-| `disabled`    | `boolean`             | `false`     | Disable all inputs         |
-| `placeholder` | `string`              | `''`        | Placeholder for each input |
+| Prop          | 类型                  | 默认值      | 描述                 |
+| ------------- | --------------------- | ----------- | -------------------- |
+| `value`       | `readonly unknown[]`  | `[]`        | 值数组               |
+| `min`         | `number`              | `0`         | 最少项目数           |
+| `max`         | `number \| undefined` | `undefined` | 最多项目数           |
+| `disabled`    | `boolean`             | `false`     | 禁用所有输入框       |
+| `placeholder` | `string`              | `''`        | 每个输入框的占位文本 |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload     | Description             |
-| -------------- | ----------- | ----------------------- |
-| `update:value` | `unknown[]` | Fires when items change |
+| Event          | Payload     | 描述           |
+| -------------- | ----------- | -------------- |
+| `update:value` | `unknown[]` | 项目变化时触发 |

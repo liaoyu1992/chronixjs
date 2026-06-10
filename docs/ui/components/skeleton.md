@@ -1,8 +1,8 @@
-# Skeleton
+# Skeleton 骨架屏
 
-A shimmering placeholder for content loading states.
+用于内容加载状态的闪烁占位符。
 
-## Install
+## 安装
 
 ::: code-group
 <<< @/snippets/vue3/install-ui.md
@@ -10,7 +10,7 @@ A shimmering placeholder for content loading states.
 <<< @/snippets/react/install-ui.md
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -62,9 +62,9 @@ export function App() {
 
 :::
 
-## Shapes
+## 形状
 
-Three built-in shapes: `text` (default) renders a line, `rect` renders a rectangle, and `circle` renders a circle.
+三种内置形状：`text`（默认）渲染一行文本，`rect` 渲染矩形，`circle` 渲染圆形。
 
 ::: code-group
 
@@ -116,9 +116,9 @@ export function App() {
 
 :::
 
-## Custom Dimensions
+## 自定义尺寸
 
-Set explicit `width` and `height` values. You can pass numbers (pixels) or strings (e.g. `"50%"`).
+设置显式的 `width` 和 `height` 值。可以传入数字（像素）或字符串（例如 `"50%"`）。
 
 ::: code-group
 
@@ -170,9 +170,9 @@ export function App() {
 
 :::
 
-## Without Animation
+## 无动画
 
-Disable the shimmer effect by setting `animated` to `false`.
+设置 `animated` 为 `false` 可禁用闪烁效果。
 
 ::: code-group
 
@@ -224,14 +224,14 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                           | Default     | Description       |
-| ---------- | ------------------------------ | ----------- | ----------------- |
-| `shape`    | `'text' \| 'rect' \| 'circle'` | `'text'`    | Skeleton shape    |
-| `width`    | `string \| number`             | `undefined` | Custom width      |
-| `height`   | `string \| number`             | `undefined` | Custom height     |
-| `animated` | `boolean`                      | `true`      | Shimmer animation |
-| `round`    | `boolean`                      | `false`     | Pill-shaped ends  |
+| 属性       | 类型                           | 默认值      | 说明       |
+| ---------- | ------------------------------ | ----------- | ---------- |
+| `shape`    | `'text' \| 'rect' \| 'circle'` | `'text'`    | 骨架屏形状 |
+| `width`    | `string \| number`             | `undefined` | 自定义宽度 |
+| `height`   | `string \| number`             | `undefined` | 自定义高度 |
+| `animated` | `boolean`                      | `true`      | 闪烁动画   |
+| `round`    | `boolean`                      | `false`     | 胶囊形两端 |

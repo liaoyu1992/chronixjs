@@ -1,8 +1,8 @@
-# Input OTP
+# Input OTP 验证码输入
 
-One-time-password entry surface with N independent cells sharing a single controlled value.
+一次性密码输入组件，包含 N 个独立单元格共享一个受控值。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ One-time-password entry surface with N independent cells sharing a single contro
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -73,20 +73,20 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                  | Default     | Description           |
-| ---------- | --------------------- | ----------- | --------------------- |
-| `value`    | `string`              | `''`        | Current OTP value     |
-| `length`   | `number`              | `6`         | Number of input cells |
-| `disabled` | `boolean`             | `false`     | Disable all cells     |
-| `error`    | `string \| undefined` | `undefined` | Error message         |
+| Prop       | 类型                  | 默认值      | 描述           |
+| ---------- | --------------------- | ----------- | -------------- |
+| `value`    | `string`              | `''`        | 当前 OTP 值    |
+| `length`   | `number`              | `6`         | 输入单元格数量 |
+| `disabled` | `boolean`             | `false`     | 禁用所有单元格 |
+| `error`    | `string \| undefined` | `undefined` | 错误信息       |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload  | Description                             |
-| -------------- | -------- | --------------------------------------- |
-| `update:value` | `string` | Fires when value changes                |
-| `complete`     | `string` | Fires when value length equals `length` |
+| Event          | Payload  | 描述                       |
+| -------------- | -------- | -------------------------- |
+| `update:value` | `string` | 值变化时触发               |
+| `complete`     | `string` | 值长度等于 `length` 时触发 |

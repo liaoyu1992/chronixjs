@@ -1,8 +1,8 @@
-# Float Button
+# Float Button 浮动按钮
 
-Floating action button anchored to a viewport corner with optional tooltip.
+固定在视口角落的浮动操作按钮，支持可选提示信息。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Floating action button anchored to a viewport corner with optional tooltip.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## Square Shape with Description
+## 方形带描述
 
 ::: code-group
 
@@ -84,30 +84,30 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                     | Default     | Description                             |
-| ------------- | ------------------------ | ----------- | --------------------------------------- |
-| `shape`       | `'circle' \| 'square'`   | `'circle'`  | Button shape                            |
-| `type`        | `'default' \| 'primary'` | `'default'` | Button style type                       |
-| `right`       | `number`                 | `24`        | Distance from viewport right edge (px)  |
-| `bottom`      | `number`                 | `24`        | Distance from viewport bottom edge (px) |
-| `top`         | `number \| undefined`    | `undefined` | Override bottom when set                |
-| `left`        | `number \| undefined`    | `undefined` | Override right when set                 |
-| `icon`        | `string \| undefined`    | `undefined` | Icon registry name                      |
-| `tooltip`     | `string \| undefined`    | `undefined` | Hover tooltip text                      |
-| `description` | `string \| undefined`    | `undefined` | Short text beneath/next to icon         |
+| Prop          | 类型                     | 默认值      | 描述                    |
+| ------------- | ------------------------ | ----------- | ----------------------- |
+| `shape`       | `'circle' \| 'square'`   | `'circle'`  | 按钮形状                |
+| `type`        | `'default' \| 'primary'` | `'default'` | 按钮样式类型            |
+| `right`       | `number`                 | `24`        | 距视口右边缘的距离 (px) |
+| `bottom`      | `number`                 | `24`        | 距视口底边缘的距离 (px) |
+| `top`         | `number \| undefined`    | `undefined` | 设置后覆盖 bottom       |
+| `left`        | `number \| undefined`    | `undefined` | 设置后覆盖 right        |
+| `icon`        | `string \| undefined`    | `undefined` | 图标注册表名称          |
+| `tooltip`     | `string \| undefined`    | `undefined` | 悬停提示文本            |
+| `description` | `string \| undefined`    | `undefined` | 图标下方/旁边的简短文本 |
 
-### Events
+### 事件 (Events)
 
-| Event   | Payload      | Description               |
-| ------- | ------------ | ------------------------- |
-| `click` | `MouseEvent` | Fires when button clicked |
+| Event   | Payload      | 描述             |
+| ------- | ------------ | ---------------- |
+| `click` | `MouseEvent` | 按钮被点击时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description         |
-| --------- | ------------------- |
-| `default` | Custom icon content |
+| Slot      | 描述           |
+| --------- | -------------- |
+| `default` | 自定义图标内容 |

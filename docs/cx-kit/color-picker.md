@@ -1,28 +1,28 @@
-# Color Picker
+# 颜色选择器
 
-Headless color picker primitives for HSV/RGB/HEX color manipulation and position mapping. Pure functions for color-space conversion and computing colors from UI positions (saturation/value square and hue strip).
+用于 HSV/RGB/HEX 颜色操作和位置映射的无头颜色选择器原语。提供用于色彩空间转换以及从 UI 位置（饱和度/明度方块和色相条）计算颜色的纯函数。
 
-## Install
+## 安装
 
 ```bash
 pnpm add @chronixjs/cx-kit
 ```
 
-## Overview
+## 概述
 
-Two groups of functions:
+两组函数：
 
-**Color conversion:**
+**颜色转换：**
 
-- `rgbToHsv` / `hsvToRgb` — convert between RGB and HSV color spaces
-- `rgbToHex` / `hexToRgb` — convert between RGB and HEX strings
+- `rgbToHsv` / `hsvToRgb` — 在 RGB 和 HSV 色彩空间之间转换
+- `rgbToHex` / `hexToRgb` — 在 RGB 和 HEX 字符串之间转换
 
-**Position mapping:**
+**位置映射：**
 
-- `computeHsvAtSquarePosition` — map a point on the saturation/value square to an HSV color
-- `computeHueAtStripPosition` — map a point on the hue strip to a hue value
-- `computeSquarePositionForHsv` — map an HSV color to a point on the saturation/value square
-- `computeStripPositionForHue` — map a hue to a position on the hue strip
+- `computeHsvAtSquarePosition` — 将饱和度/明度方块上的点映射为 HSV 颜色
+- `computeHueAtStripPosition` — 将色相条上的点映射为色相值
+- `computeSquarePositionForHsv` — 将 HSV 颜色映射为饱和度/明度方块上的点
+- `computeStripPositionForHue` — 将色相映射为色相条上的位置
 
 ```ts
 import {
@@ -37,7 +37,7 @@ import {
 } from '@chronixjs/cx-kit';
 ```
 
-## Color Conversion
+## 颜色转换
 
 ### RGB → HSV
 
@@ -78,11 +78,11 @@ const invalid = hexToRgb('not-a-color');
 // invalid → null
 ```
 
-## Position Mapping
+## 位置映射
 
-### Color from Square Position
+### 从方块位置获取颜色
 
-The saturation/value (SV) square maps X to saturation and Y to value:
+饱和度/明度 (SV) 方块将 X 映射到饱和度，Y 映射到明度：
 
 ```ts
 import { computeHsvAtSquarePosition } from '@chronixjs/cx-kit';
@@ -97,9 +97,9 @@ const hsv = computeHsvAtSquarePosition({
 // hsv → { h: 210, s: 0.5, v: 0.75 }
 ```
 
-### Hue from Strip Position
+### 从色条位置获取色相
 
-The hue strip maps a vertical position to a hue (0–360):
+色相条将垂直位置映射为色相值（0–360）：
 
 ```ts
 import { computeHueAtStripPosition } from '@chronixjs/cx-kit';
@@ -111,9 +111,9 @@ const hue = computeHueAtStripPosition({
 // hue → 180
 ```
 
-### Square Position for HSV
+### 根据 HSV 获取方块位置
 
-Inverse mapping — given an HSV color, find where to place the indicator on the SV square:
+反向映射 — 给定 HSV 颜色，找到指示器在 SV 方块上的位置：
 
 ```ts
 import { computeSquarePositionForHsv } from '@chronixjs/cx-kit';
@@ -126,9 +126,9 @@ const pos = computeSquarePositionForHsv({
 // pos → { positionPxX: 128, positionPxY: 64 }
 ```
 
-### Strip Position for Hue
+### 根据色相获取色条位置
 
-Inverse mapping — given a hue, find where to place the indicator on the hue strip:
+反向映射 — 给定色相，找到指示器在色相条上的位置：
 
 ```ts
 import { computeStripPositionForHue } from '@chronixjs/cx-kit';
@@ -140,14 +140,14 @@ const px = computeStripPositionForHue({
 // px → 128
 ```
 
-## Framework Examples
+## 框架示例
 
 ### Vue 3
 
 ```vue
 <template>
   <div class="color-picker">
-    <!-- SV Square -->
+    <!-- SV 方块 -->
     <div
       ref="squareRef"
       class="sv-square"
@@ -157,12 +157,12 @@ const px = computeStripPositionForHue({
       <div class="sv-indicator" :style="{ left: svPos.x + 'px', top: svPos.y + 'px' }" />
     </div>
 
-    <!-- Hue Strip -->
+    <!-- 色相条 -->
     <div ref="stripRef" class="hue-strip" @mousedown="onStripDown">
       <div class="hue-indicator" :style="{ top: stripPos + 'px' }" />
     </div>
 
-    <!-- Output -->
+    <!-- 输出 -->
     <div class="color-preview" :style="{ backgroundColor: hexColor }" />
     <span>{{ hexColor }}</span>
   </div>
@@ -387,13 +387,13 @@ export function ColorPicker() {
 }
 ```
 
-## API Reference
+## API 参考
 
-### Color Conversion
+### 颜色转换
 
 #### `rgbToHsv(rgb)` / `hsvToRgb(hsv)`
 
-Convert between RGB and HSV color spaces.
+在 RGB 和 HSV 色彩空间之间转换。
 
 ```ts
 interface Rgb {
@@ -410,75 +410,75 @@ interface Hsv {
 
 #### `rgbToHex(rgb)`
 
-Convert RGB to a hex string. **Returns:** `string` (e.g. `'#ff8000'`).
+将 RGB 转换为十六进制字符串。**返回：** `string`（例如 `'#ff8000'`）。
 
 #### `hexToRgb(hex)`
 
-Parse a hex string to RGB. **Returns:** `Rgb | null` — `null` if the string is invalid.
+将十六进制字符串解析为 RGB。**返回：** `Rgb | null` — 如果字符串无效则返回 `null`。
 
-### Position Mapping
+### 位置映射
 
 #### `computeHsvAtSquarePosition(input)`
 
-Map a point on the SV square to an HSV color.
+将 SV 方块上的点映射为 HSV 颜色。
 
-| Property         | Type     | Default | Description              |
-| ---------------- | -------- | ------- | ------------------------ |
-| `positionPxX`    | `number` | —       | X position on the square |
-| `positionPxY`    | `number` | —       | Y position on the square |
-| `squareWidthPx`  | `number` | —       | Square width in pixels   |
-| `squareHeightPx` | `number` | —       | Square height in pixels  |
-| `currentHue`     | `number` | —       | Current hue (0–360)      |
+| 属性             | 类型     | 默认值 | 描述              |
+| ---------------- | -------- | ------ | ----------------- |
+| `positionPxX`    | `number` | —      | 方块上的 X 位置   |
+| `positionPxY`    | `number` | —      | 方块上的 Y 位置   |
+| `squareWidthPx`  | `number` | —      | 方块宽度（像素）  |
+| `squareHeightPx` | `number` | —      | 方块高度（像素）  |
+| `currentHue`     | `number` | —      | 当前色相（0–360） |
 
-**Returns:** `Hsv`
+**返回：** `Hsv`
 
 #### `computeHueAtStripPosition(input)`
 
-Map a point on the hue strip to a hue value.
+将色相条上的点映射为色相值。
 
-| Property      | Type     | Default | Description              |
-| ------------- | -------- | ------- | ------------------------ |
-| `positionPx`  | `number` | —       | Position along the strip |
-| `stripSizePx` | `number` | —       | Strip length in pixels   |
+| 属性          | 类型     | 默认值 | 描述             |
+| ------------- | -------- | ------ | ---------------- |
+| `positionPx`  | `number` | —      | 沿色条的位置     |
+| `stripSizePx` | `number` | —      | 色条长度（像素） |
 
-**Returns:** `number` — hue (0–360)
+**返回：** `number` — 色相值（0–360）
 
 #### `computeSquarePositionForHsv(input)`
 
-Map an HSV color to a point on the SV square.
+将 HSV 颜色映射为 SV 方块上的点。
 
-| Property         | Type     | Default | Description             |
-| ---------------- | -------- | ------- | ----------------------- |
-| `hsv`            | `Hsv`    | —       | The HSV color           |
-| `squareWidthPx`  | `number` | —       | Square width in pixels  |
-| `squareHeightPx` | `number` | —       | Square height in pixels |
+| 属性             | 类型     | 默认值 | 描述             |
+| ---------------- | -------- | ------ | ---------------- |
+| `hsv`            | `Hsv`    | —      | HSV 颜色         |
+| `squareWidthPx`  | `number` | —      | 方块宽度（像素） |
+| `squareHeightPx` | `number` | —      | 方块高度（像素） |
 
-**Returns:** `{ positionPxX: number; positionPxY: number }`
+**返回：** `{ positionPxX: number; positionPxY: number }`
 
 #### `computeStripPositionForHue(input)`
 
-Map a hue to a position on the hue strip.
+将色相映射为色相条上的位置。
 
-| Property      | Type     | Default | Description            |
-| ------------- | -------- | ------- | ---------------------- |
-| `hue`         | `number` | —       | Hue value (0–360)      |
-| `stripSizePx` | `number` | —       | Strip length in pixels |
+| 属性          | 类型     | 默认值 | 描述             |
+| ------------- | -------- | ------ | ---------------- |
+| `hue`         | `number` | —      | 色相值（0–360）  |
+| `stripSizePx` | `number` | —      | 色条长度（像素） |
 
-**Returns:** `number` — position in pixels
+**返回：** `number` — 位置（像素）
 
-### Types
+### 类型
 
 ```ts
 interface Rgb {
-  readonly r: number; // 0–255 integer
+  readonly r: number; // 0–255 整数
   readonly g: number;
   readonly b: number;
 }
 
 interface Hsv {
-  readonly h: number; // 0–360 degrees
-  readonly s: number; // 0–1 inclusive
-  readonly v: number; // 0–1 inclusive
+  readonly h: number; // 0–360 度
+  readonly s: number; // 0–1 包含
+  readonly v: number; // 0–1 包含
 }
 
 interface SquarePosition {

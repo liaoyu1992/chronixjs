@@ -1,8 +1,8 @@
-# Tag
+# Tag 标签
 
-Tags are used for labeling, categorization, and small inline markers. They support semantic colors, sizes, closability, and pill-shaped rounding.
+标签用于标记、分类和小型行内标记。支持语义颜色、尺寸、可关闭和胶囊形圆角。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Tags are used for labeling, categorization, and small inline markers. They suppo
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -61,7 +61,7 @@ export function App() {
 
 :::
 
-## Tag Types
+## 标签类型
 
 ::: code-group
 
@@ -119,7 +119,7 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
 ::: code-group
 
@@ -168,9 +168,9 @@ export function App() {
 
 :::
 
-## Closable
+## 可关闭
 
-Tags can show a close button. Listen for the `close` event to remove them:
+标签可以显示关闭按钮。监听 `close` 事件来移除标签：
 
 ::: code-group
 
@@ -220,7 +220,7 @@ export function App() {
 
 :::
 
-## Round (Pill)
+## 胶囊形
 
 ::: code-group
 
@@ -259,7 +259,7 @@ export function App() {
 
 :::
 
-## Disabled
+## 禁用状态
 
 ::: code-group
 
@@ -298,21 +298,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                                                                    | Default     | Description             |
-| ---------- | ----------------------------------------------------------------------- | ----------- | ----------------------- |
-| `type`     | `'default' \| 'primary' \| 'info' \| 'success' \| 'warning' \| 'error'` | `'default'` | Tag style type          |
-| `size`     | `'small' \| 'medium' \| 'large'`                                        | `'medium'`  | Tag size                |
-| `bordered` | `boolean`                                                               | `true`      | Show border             |
-| `round`    | `boolean`                                                               | `false`     | Pill-shaped corners     |
-| `closable` | `boolean`                                                               | `false`     | Show close button       |
-| `disabled` | `boolean`                                                               | `false`     | Non-interactive + muted |
+| 属性       | 类型                                                                    | 默认值      | 说明            |
+| ---------- | ----------------------------------------------------------------------- | ----------- | --------------- |
+| `type`     | `'default' \| 'primary' \| 'info' \| 'success' \| 'warning' \| 'error'` | `'default'` | 标签样式类型    |
+| `size`     | `'small' \| 'medium' \| 'large'`                                        | `'medium'`  | 标签尺寸        |
+| `bordered` | `boolean`                                                               | `true`      | 显示边框        |
+| `round`    | `boolean`                                                               | `false`     | 胶囊形圆角      |
+| `closable` | `boolean`                                                               | `false`     | 显示关闭按钮    |
+| `disabled` | `boolean`                                                               | `false`     | 不可交互 + 变淡 |
 
-### Events
+### 事件 (Events)
 
-| Event   | Payload      | Description          |
-| ------- | ------------ | -------------------- |
-| `close` | `MouseEvent` | Close button clicked |
+| 事件    | 载荷         | 说明         |
+| ------- | ------------ | ------------ |
+| `close` | `MouseEvent` | 点击关闭按钮 |

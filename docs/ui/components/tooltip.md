@@ -1,8 +1,8 @@
-# Tooltip
+# Tooltip 文字提示
 
-A text-only popup for brief hints on hover.
+鼠标悬停时显示的纯文本弹出提示。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ A text-only popup for brief hints on hover.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-Wrap any element with `CxTooltip` and set the `content` prop to the hint text. The tooltip appears on hover by default.
+使用 `CxTooltip` 包裹任意元素，并通过 `content` 属性设置提示文本。默认在鼠标悬停时显示。
 
 ::: code-group
 
@@ -62,11 +62,11 @@ export function App() {
 
 :::
 
-## Placements
+## 弹出位置
 
-The tooltip popup supports 12 placement positions. The default is `top`.
+提示框支持 12 个弹出位置。默认为 `top`（顶部）。
 
-Available placements: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end`.
+可用位置：`top`、`top-start`、`top-end`、`bottom`、`bottom-start`、`bottom-end`、`left`、`left-start`、`left-end`、`right`、`right-start`、`right-end`。
 
 ::: code-group
 
@@ -145,28 +145,28 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                                        | Default     | Description           |
-| ----------- | ------------------------------------------- | ----------- | --------------------- |
-| `content`   | `string`                                    | `''`        | Tooltip text          |
-| `show`      | `boolean`                                   | `undefined` | Controlled visibility |
-| `trigger`   | `'hover' \| 'click' \| 'focus' \| 'manual'` | `'hover'`   | Trigger mode          |
-| `placement` | `PopupPlacement`                            | `'top'`     | Popup position        |
-| `offset`    | `number`                                    | `6`         | Gap in px             |
-| `flip`      | `boolean`                                   | `true`      | Auto-flip placement   |
-| `disabled`  | `boolean`                                   | `false`     | Disable tooltip       |
+| 属性        | 类型                                        | 默认值      | 说明             |
+| ----------- | ------------------------------------------- | ----------- | ---------------- |
+| `content`   | `string`                                    | `''`        | 提示文本         |
+| `show`      | `boolean`                                   | `undefined` | 受控的可见性     |
+| `trigger`   | `'hover' \| 'click' \| 'focus' \| 'manual'` | `'hover'`   | 触发方式         |
+| `placement` | `PopupPlacement`                            | `'top'`     | 弹出位置         |
+| `offset`    | `number`                                    | `6`         | 间距（像素）     |
+| `flip`      | `boolean`                                   | `true`      | 自动翻转弹出位置 |
+| `disabled`  | `boolean`                                   | `false`     | 禁用提示         |
 
-### Events
+### 事件 (Events)
 
-| Event         | Payload   | Description        |
-| ------------- | --------- | ------------------ |
-| `update:show` | `boolean` | Visibility changed |
+| 事件          | 载荷      | 说明             |
+| ------------- | --------- | ---------------- |
+| `update:show` | `boolean` | 可见性变化时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description     |
-| --------- | --------------- |
-| `default` | Trigger element |
+| 插槽      | 说明     |
+| --------- | -------- |
+| `default` | 触发元素 |

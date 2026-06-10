@@ -1,8 +1,8 @@
-# Menu
+# Menu 菜单
 
-A hierarchical navigation menu with horizontal and vertical modes.
+层级式导航菜单，支持水平和垂直模式。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A hierarchical navigation menu with horizontal and vertical modes.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -79,9 +79,9 @@ export function App() {
 
 :::
 
-## Horizontal Mode
+## 水平模式
 
-Use `mode="horizontal"` for a top navigation bar.
+使用 `mode="horizontal"` 创建顶部导航栏。
 
 ::: code-group
 
@@ -149,9 +149,9 @@ export function App() {
 
 :::
 
-## Nested Items
+## 嵌套菜单项
 
-Use the `children` array to create sub-menus.
+使用 `children` 数组创建子菜单。
 
 ::: code-group
 
@@ -264,9 +264,9 @@ export function App() {
 
 :::
 
-## Collapsed
+## 折叠模式
 
-Use `collapsed` to render icon-only mode, ideal for sidebar layouts.
+使用 `collapsed` 渲染为仅图标模式，适用于侧边栏布局。
 
 ::: code-group
 
@@ -348,9 +348,9 @@ export function App() {
 
 :::
 
-## Disabled
+## 禁用状态
 
-Disable individual menu items or the entire menu.
+禁用单个菜单项或整个菜单。
 
 ::: code-group
 
@@ -415,31 +415,31 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                         | Default      | Description         |
-| ----------- | ---------------------------- | ------------ | ------------------- |
-| `value`     | `string`                     | `undefined`  | Active item key     |
-| `items`     | `MenuItem[]`                 | `[]`         | Menu tree items     |
-| `mode`      | `'horizontal' \| 'vertical'` | `'vertical'` | Layout mode         |
-| `collapsed` | `boolean`                    | `false`      | Icon-only mode      |
-| `disabled`  | `boolean`                    | `false`      | Disable entire menu |
+| Prop        | 类型                         | 默认值       | 描述             |
+| ----------- | ---------------------------- | ------------ | ---------------- |
+| `value`     | `string`                     | `undefined`  | 当前激活项的 key |
+| `items`     | `MenuItem[]`                 | `[]`         | 菜单树形数据     |
+| `mode`      | `'horizontal' \| 'vertical'` | `'vertical'` | 布局模式         |
+| `collapsed` | `boolean`                    | `false`      | 仅图标模式       |
+| `disabled`  | `boolean`                    | `false`      | 禁用整个菜单     |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload    | Description         |
-| -------------- | ---------- | ------------------- |
-| `update:value` | `string`   | Active item changed |
-| `select`       | `MenuItem` | Item selected       |
+| Event          | Payload    | 描述             |
+| -------------- | ---------- | ---------------- |
+| `update:value` | `string`   | 激活项变化时触发 |
+| `select`       | `MenuItem` | 选中菜单项时触发 |
 
 ### MenuItem
 
-| Property   | Type         | Default     | Description           |
-| ---------- | ------------ | ----------- | --------------------- |
-| `key`      | `string`     | (required)  | Unique item key       |
-| `label`    | `string`     | `''`        | Display label         |
-| `icon`     | `string`     | `undefined` | Icon registry name    |
-| `disabled` | `boolean`    | `false`     | Disable this item     |
-| `children` | `MenuItem[]` | `undefined` | Nested sub-menu items |
+| Property   | 类型         | 默认值      | 描述           |
+| ---------- | ------------ | ----------- | -------------- |
+| `key`      | `string`     | (必需)      | 唯一标识       |
+| `label`    | `string`     | `''`        | 显示标签       |
+| `icon`     | `string`     | `undefined` | 图标注册表名称 |
+| `disabled` | `boolean`    | `false`     | 是否禁用该项   |
+| `children` | `MenuItem[]` | `undefined` | 嵌套子菜单项   |

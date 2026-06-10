@@ -1,8 +1,8 @@
-# Transfer
+# Transfer 穿梭框
 
-A dual-panel transfer component for moving items between source and target lists.
+双面板穿梭组件，用于在源列表和目标列表之间移动选项。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ A dual-panel transfer component for moving items between source and target lists
 
 :::
 
-## Basic Usage
+## 基础用法
 
-A transfer with selectable options that can be moved between source and target panels.
+带有可选择选项的穿梭框，可以在源面板和目标面板之间移动。
 
 ::: code-group
 
@@ -88,9 +88,9 @@ export function App() {
 
 :::
 
-## Filterable
+## 可搜索
 
-Enable search filters on both panels with `filterable` and customize placeholders with `source-filter-placeholder` and `target-filter-placeholder`.
+使用 `filterable` 在两个面板上启用搜索过滤，并通过 `source-filter-placeholder` 和 `target-filter-placeholder` 自定义占位文本。
 
 ::: code-group
 
@@ -189,9 +189,9 @@ export function App() {
 
 :::
 
-## Custom Titles
+## 自定义标题
 
-Customize the panel titles with `source-title` and `target-title`.
+使用 `source-title` 和 `target-title` 自定义面板标题。
 
 ::: code-group
 
@@ -281,23 +281,23 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop                      | Type                   | Default    | Description               |
-| ------------------------- | ---------------------- | ---------- | ------------------------- |
-| `value`                   | `(string \| number)[]` | `[]`       | Selected (target) values  |
-| `options`                 | `TransferOption[]`     | `[]`       | All available options     |
-| `disabled`                | `boolean`              | `false`    | Disable transfer          |
-| `filterable`              | `boolean`              | `false`    | Enable search filter      |
-| `sourceTitle`             | `string`               | `'Source'` | Source panel title        |
-| `targetTitle`             | `string`               | `'Target'` | Target panel title        |
-| `sourceFilterPlaceholder` | `string`               | `''`       | Source filter placeholder |
-| `targetFilterPlaceholder` | `string`               | `''`       | Target filter placeholder |
+| 属性                      | 类型                   | 默认值     | 说明                   |
+| ------------------------- | ---------------------- | ---------- | ---------------------- |
+| `value`                   | `(string \| number)[]` | `[]`       | 已选（目标）值数组     |
+| `options`                 | `TransferOption[]`     | `[]`       | 所有可选项             |
+| `disabled`                | `boolean`              | `false`    | 禁用穿梭框             |
+| `filterable`              | `boolean`              | `false`    | 启用搜索过滤           |
+| `sourceTitle`             | `string`               | `'Source'` | 源面板标题             |
+| `targetTitle`             | `string`               | `'Target'` | 目标面板标题           |
+| `sourceFilterPlaceholder` | `string`               | `''`       | 源面板搜索框占位文本   |
+| `targetFilterPlaceholder` | `string`               | `''`       | 目标面板搜索框占位文本 |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload                | Description       |
-| -------------- | ---------------------- | ----------------- |
-| `update:value` | `(string \| number)[]` | Selection changed |
+| 事件           | 载荷                   | 说明           |
+| -------------- | ---------------------- | -------------- |
+| `update:value` | `(string \| number)[]` | 选项变化时触发 |

@@ -1,8 +1,8 @@
-# Autocomplete
+# Autocomplete 自动补全
 
-Text-entry with consumer-supplied options and built-in substring filtering.
+带有用户自定义选项和内置子串过滤的文本输入组件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Text-entry with consumer-supplied options and built-in substring filtering.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -84,30 +84,30 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                             | Default     | Description         |
-| ------------- | -------------------------------- | ----------- | ------------------- |
-| `value`       | `string`                         | `''`        | Current input value |
-| `options`     | `readonly AutoCompleteOption[]`  | `[]`        | Available options   |
-| `placeholder` | `string \| undefined`            | `undefined` | Input placeholder   |
-| `disabled`    | `boolean`                        | `false`     | Disable the input   |
-| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | Input size          |
-| `error`       | `string \| undefined`            | `undefined` | Error message       |
+| 属性          | 类型                             | 默认值      | 说明         |
+| ------------- | -------------------------------- | ----------- | ------------ |
+| `value`       | `string`                         | `''`        | 当前输入值   |
+| `options`     | `readonly AutoCompleteOption[]`  | `[]`        | 可用选项列表 |
+| `placeholder` | `string \| undefined`            | `undefined` | 输入占位文本 |
+| `disabled`    | `boolean`                        | `false`     | 禁用输入框   |
+| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | 输入框尺寸   |
+| `error`       | `string \| undefined`            | `undefined` | 错误提示信息 |
 
 ### AutoCompleteOption
 
-| Property | Type     | Description       |
-| -------- | -------- | ----------------- |
-| `key`    | `string` | Unique identifier |
-| `label`  | `string` | Display text      |
-| `value`  | `string` | Option value      |
+| 属性    | 类型     | 说明       |
+| ------- | -------- | ---------- |
+| `key`   | `string` | 唯一标识符 |
+| `label` | `string` | 显示文本   |
+| `value` | `string` | 选项值     |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload              | Description                      |
-| -------------- | -------------------- | -------------------------------- |
-| `update:value` | `string`             | Fires when input value changes   |
-| `select`       | `AutoCompleteOption` | Fires when an option is selected |
+| 事件           | 载荷                 | 说明               |
+| -------------- | -------------------- | ------------------ |
+| `update:value` | `string`             | 输入值变化时触发   |
+| `select`       | `AutoCompleteOption` | 选择某个选项时触发 |

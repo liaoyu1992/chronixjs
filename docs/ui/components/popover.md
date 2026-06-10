@@ -1,8 +1,8 @@
-# Popover
+# Popover 气泡卡片
 
-A popup surface for rich content, triggered by hover or click.
+用于富内容的弹出面板，通过悬停或点击触发。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ A popup surface for rich content, triggered by hover or click.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-Wrap any trigger element with `CxPopover`. Use the `content` slot (Vue) or `content` prop (React) to provide the popover body.
+使用 `CxPopover` 包裹任意触发元素。使用 `content` 插槽（Vue）或 `content` 属性（React）提供气泡卡片内容。
 
 ::: code-group
 
@@ -72,11 +72,11 @@ export function App() {
 
 :::
 
-## Trigger Modes
+## 触发模式
 
-Use the `trigger` prop to control how the popover opens. The default is `hover`.
+使用 `trigger` 属性控制气泡卡片的打开方式。默认为 `hover`。
 
-### Click Trigger
+### 点击触发
 
 ::: code-group
 
@@ -132,7 +132,7 @@ export function App() {
 
 :::
 
-### Focus Trigger
+### 焦点触发
 
 ::: code-group
 
@@ -188,11 +188,11 @@ export function App() {
 
 :::
 
-## Placements
+## 弹出位置
 
-The popover popup supports 12 placement positions. The default is `bottom`.
+气泡卡片支持 12 个弹出位置。默认为 `bottom`。
 
-Available placements: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end`.
+可用位置：`top`、`top-start`、`top-end`、`bottom`、`bottom-start`、`bottom-end`、`left`、`left-start`、`left-end`、`right`、`right-start`、`right-end`。
 
 ::: code-group
 
@@ -248,29 +248,29 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop         | Type                                        | Default     | Description           |
-| ------------ | ------------------------------------------- | ----------- | --------------------- |
-| `show`       | `boolean`                                   | `undefined` | Controlled visibility |
-| `trigger`    | `'hover' \| 'click' \| 'focus' \| 'manual'` | `'hover'`   | Trigger mode          |
-| `placement`  | `PopupPlacement`                            | `'bottom'`  | Popup position        |
-| `offset`     | `number`                                    | `4`         | Gap in px             |
-| `flip`       | `boolean`                                   | `true`      | Auto-flip placement   |
-| `widthMatch` | `boolean`                                   | `false`     | Match anchor width    |
-| `disabled`   | `boolean`                                   | `false`     | Disable popover       |
+| 属性         | 类型                                        | 默认值      | 说明           |
+| ------------ | ------------------------------------------- | ----------- | -------------- |
+| `show`       | `boolean`                                   | `undefined` | 受控的显示状态 |
+| `trigger`    | `'hover' \| 'click' \| 'focus' \| 'manual'` | `'hover'`   | 触发模式       |
+| `placement`  | `PopupPlacement`                            | `'bottom'`  | 弹出位置       |
+| `offset`     | `number`                                    | `4`         | 间距（px）     |
+| `flip`       | `boolean`                                   | `true`      | 自动翻转位置   |
+| `widthMatch` | `boolean`                                   | `false`     | 匹配锚点宽度   |
+| `disabled`   | `boolean`                                   | `false`     | 禁用气泡卡片   |
 
-### Events
+### 事件 (Events)
 
-| Event         | Payload   | Description        |
-| ------------- | --------- | ------------------ |
-| `update:show` | `boolean` | Visibility changed |
+| 事件          | 载荷      | 说明         |
+| ------------- | --------- | ------------ |
+| `update:show` | `boolean` | 显示状态变化 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description          |
-| --------- | -------------------- |
-| `default` | Trigger element      |
-| `content` | Popover body content |
+| 插槽      | 说明         |
+| --------- | ------------ |
+| `default` | 触发元素     |
+| `content` | 气泡卡片内容 |

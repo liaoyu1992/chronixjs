@@ -1,215 +1,215 @@
-# Gantt API Reference
+# 甘特图 API 参考
 
-Complete API reference for the Gantt chart component.
+甘特图组件的完整 API 参考。
 
-## Component Props
+## 组件属性
 
-### Core Data
+### 核心数据
 
-| Prop        | Type                    | Required | Default | Description                |
-| ----------- | ----------------------- | -------- | ------- | -------------------------- |
-| `bars`      | `readonly BarSpec[]`    | ✅       | —       | Array of bar definitions   |
-| `rows`      | `readonly RowSpec[]`    | ✅       | —       | Array of row definitions   |
-| `axisInput` | `AxisRangePlanInput`    | ✅       | —       | View & date configuration  |
-| `links`     | `readonly LinkSpec[]`   |          | `[]`    | Dependency links           |
-| `columns`   | `readonly ColumnSpec[]` |          | `[]`    | Sidebar column definitions |
+| 属性        | 类型                    | 必填 | 默认值 | 描述           |
+| ----------- | ----------------------- | ---- | ------ | -------------- |
+| `bars`      | `readonly BarSpec[]`    | ✅   | —      | 条形定义数组   |
+| `rows`      | `readonly RowSpec[]`    | ✅   | —      | 行定义数组     |
+| `axisInput` | `AxisRangePlanInput`    | ✅   | —      | 视图与日期配置 |
+| `links`     | `readonly LinkSpec[]`   |      | `[]`   | 依赖连线       |
+| `columns`   | `readonly ColumnSpec[]` |      | `[]`   | 侧边栏列定义   |
 
-### Layout Dimensions
+### 布局尺寸
 
-| Prop                 | Type     | Default | Description                  |
-| -------------------- | -------- | ------- | ---------------------------- |
-| `barHeight`          | `number` | `30`    | Bar height in pixels         |
-| `barVerticalPadding` | `number` | `4`     | Vertical padding inside bars |
-| `rowSpacing`         | `number` | `1`     | Space between rows           |
-| `defaultRowHeight`   | `number` | `38`    | Default row height           |
-| `headerHeight`       | `number` | `24`    | Header band height           |
-| `headerRowHeight`    | `number` | `20`    | Individual header row height |
-| `maxBodyHeight`      | `string` | —       | Max chart body height (CSS)  |
+| 属性                 | 类型     | 默认值 | 描述                   |
+| -------------------- | -------- | ------ | ---------------------- |
+| `barHeight`          | `number` | `30`   | 条形高度 (px)          |
+| `barVerticalPadding` | `number` | `4`    | 条形内部垂直内边距     |
+| `rowSpacing`         | `number` | `1`    | 行间距                 |
+| `defaultRowHeight`   | `number` | `38`   | 默认行高               |
+| `headerHeight`       | `number` | `24`   | 头部区域高度           |
+| `headerRowHeight`    | `number` | `20`   | 单个头部行高度         |
+| `maxBodyHeight`      | `string` | —      | 最大图表主体高度 (CSS) |
 
-### Interactivity
+### 交互性
 
-| Prop                    | Type      | Default | Description                   |
-| ----------------------- | --------- | ------- | ----------------------------- |
-| `editable`              | `boolean` | `false` | Enable drag/resize/progress   |
-| `eventStartEditable`    | `boolean` | `true`  | Allow drag-to-move            |
-| `eventDurationEditable` | `boolean` | `true`  | Allow resize handles          |
-| `selectable`            | `boolean` | `false` | Allow range selection         |
-| `snapDurationMs`        | `number`  | `0`     | Snap duration in milliseconds |
-| `progressHandleSize`    | `number`  | `12`    | Progress drag handle size     |
-| `pointerMinDistance`    | `number`  | `5`     | Min drag distance threshold   |
+| 属性                    | 类型      | 默认值  | 描述                   |
+| ----------------------- | --------- | ------- | ---------------------- |
+| `editable`              | `boolean` | `false` | 启用拖拽/调整大小/进度 |
+| `eventStartEditable`    | `boolean` | `true`  | 允许拖拽移动           |
+| `eventDurationEditable` | `boolean` | `true`  | 允许调整大小手柄       |
+| `selectable`            | `boolean` | `false` | 允许范围选择           |
+| `snapDurationMs`        | `number`  | `0`     | 吸附持续时间（毫秒）   |
+| `progressHandleSize`    | `number`  | `12`    | 进度拖拽手柄大小       |
+| `pointerMinDistance`    | `number`  | `5`     | 最小拖拽距离阈值       |
 
-### Selection
+### 选择
 
-| Prop             | Type                | Default | Description                    |
-| ---------------- | ------------------- | ------- | ------------------------------ |
-| `selectedBarIds` | `readonly string[]` | `[]`    | Programmatically selected bars |
+| 属性             | 类型                | 默认值 | 描述             |
+| ---------------- | ------------------- | ------ | ---------------- |
+| `selectedBarIds` | `readonly string[]` | `[]`   | 编程式选中的条形 |
 
-### Validation
+### 校验
 
-| Prop               | Type                          | Description                  |
-| ------------------ | ----------------------------- | ---------------------------- |
-| `eventAllow`       | `EventAllowFunc`              | Custom drop allow/deny       |
-| `selectAllow`      | `SelectAllowFunc`             | Custom select allow/deny     |
-| `eventOverlap`     | `boolean \| EventOverlapFunc` | Overlap policy for drops     |
-| `eventConstraint`  | `EventConstraint`             | Restrict drops to range/rows |
-| `selectOverlap`    | `boolean \| EventOverlapFunc` | Overlap policy for selection |
-| `selectConstraint` | `EventConstraint`             | Restrict selection range     |
+| 属性               | 类型                          | 描述                  |
+| ------------------ | ----------------------------- | --------------------- |
+| `eventAllow`       | `EventAllowFunc`              | 自定义放置允许/拒绝   |
+| `selectAllow`      | `SelectAllowFunc`             | 自定义选择允许/拒绝   |
+| `eventOverlap`     | `boolean \| EventOverlapFunc` | 放置的重叠策略        |
+| `eventConstraint`  | `EventConstraint`             | 限制放置到特定范围/行 |
+| `selectOverlap`    | `boolean \| EventOverlapFunc` | 选择的重叠策略        |
+| `selectConstraint` | `EventConstraint`             | 限制选择范围          |
 
-### Bar Styling
+### 条形样式
 
-| Prop                         | Type                | Description                   |
-| ---------------------------- | ------------------- | ----------------------------- |
-| `barColor`                   | `string`            | Global bar color (all states) |
-| `barBackgroundColor`         | `string`            | Global bar fill               |
-| `barBorderColor`             | `string`            | Global bar border             |
-| `barTextColor`               | `string`            | Global bar text               |
-| `barBackgroundColorCallback` | `BarColorFunc`      | Dynamic fill callback         |
-| `barBorderColorCallback`     | `BarColorFunc`      | Dynamic border callback       |
-| `barTextColorCallback`       | `BarColorFunc`      | Dynamic text callback         |
-| `barFontSizeCallback`        | `BarFontSizeFunc`   | Dynamic font size callback    |
-| `barFontWeightCallback`      | `BarFontWeightFunc` | Dynamic font weight callback  |
-| `barClassNamesCallback`      | `BarClassNamesFunc` | Dynamic CSS class callback    |
+| 属性                         | 类型                | 描述                     |
+| ---------------------------- | ------------------- | ------------------------ |
+| `barColor`                   | `string`            | 全局条形颜色（所有状态） |
+| `barBackgroundColor`         | `string`            | 全局条形填充             |
+| `barBorderColor`             | `string`            | 全局条形边框             |
+| `barTextColor`               | `string`            | 全局条形文本             |
+| `barBackgroundColorCallback` | `BarColorFunc`      | 动态填充回调             |
+| `barBorderColorCallback`     | `BarColorFunc`      | 动态边框回调             |
+| `barTextColorCallback`       | `BarColorFunc`      | 动态文本回调             |
+| `barFontSizeCallback`        | `BarFontSizeFunc`   | 动态字号回调             |
+| `barFontWeightCallback`      | `BarFontWeightFunc` | 动态字重回调             |
+| `barClassNamesCallback`      | `BarClassNamesFunc` | 动态 CSS 类名回调        |
 
-### Link Styling
+### 连线样式
 
-| Prop                | Type             | Description               |
-| ------------------- | ---------------- | ------------------------- |
-| `onLineCallback`    | `LinkRenderFunc` | Dynamic link color/marker |
-| `useLineEventColor` | `boolean`        | Use event color for links |
+| 属性                | 类型             | 描述                     |
+| ------------------- | ---------------- | ------------------------ |
+| `onLineCallback`    | `LinkRenderFunc` | 动态连线颜色/标记        |
+| `useLineEventColor` | `boolean`        | 使用事件颜色作为连线颜色 |
 
-### Theme & Appearance
+### 主题与外观
 
-| Prop    | Type                    | Default | Description           |
-| ------- | ----------------------- | ------- | --------------------- |
-| `theme` | `Partial<ChronixTheme>` | —       | Theme token overrides |
+| 属性    | 类型                    | 默认值 | 描述         |
+| ------- | ----------------------- | ------ | ------------ |
+| `theme` | `Partial<ChronixTheme>` | —      | 主题令牌覆盖 |
 
-### Header
+### 头部
 
-| Prop                           | Type                       | Default | Description                 |
-| ------------------------------ | -------------------------- | ------- | --------------------------- |
-| `headerCellClassNamesCallback` | `HeaderCellClassNamesFunc` | —       | Dynamic header cell classes |
-| `headerToolbar`                | `ToolbarInput \| false`    | `false` | Toolbar configuration       |
+| 属性                           | 类型                       | 默认值  | 描述               |
+| ------------------------------ | -------------------------- | ------- | ------------------ |
+| `headerCellClassNamesCallback` | `HeaderCellClassNamesFunc` | —       | 动态头部单元格类名 |
+| `headerToolbar`                | `ToolbarInput \| false`    | `false` | 工具栏配置         |
 
-### Today Indicators
+### 今日标记
 
-| Prop          | Type                           | Default | Description            |
-| ------------- | ------------------------------ | ------- | ---------------------- |
-| `todayLine`   | `TodayLineOption \| boolean`   | `false` | Show today marker line |
-| `todayCellBg` | `TodayCellBgOption \| boolean` | `false` | Highlight today column |
+| 属性          | 类型                           | 默认值  | 描述           |
+| ------------- | ------------------------------ | ------- | -------------- |
+| `todayLine`   | `TodayLineOption \| boolean`   | `false` | 显示今日标记线 |
+| `todayCellBg` | `TodayCellBgOption \| boolean` | `false` | 高亮今日列     |
 
-## Component Events
+## 组件事件
 
-### Bar Interaction Events
+### 条形交互事件
 
-| Event              | Payload Type            | Description                 |
-| ------------------ | ----------------------- | --------------------------- |
-| `bar-drop`         | `BarDropPayload`        | Bar dropped at new position |
-| `bar-resize`       | `BarResizePayload`      | Bar resized                 |
-| `bar-progress`     | `BarProgressPayload`    | Progress changed            |
-| `bar-click`        | `BarClickPayload`       | Bar clicked                 |
-| `bar-dragstart`    | `BarDragStartPayload`   | Bar drag started            |
-| `bar-dragstop`     | `BarDragStopPayload`    | Bar drag ended              |
-| `bar-resizestart`  | `BarResizeStartPayload` | Bar resize started          |
-| `bar-resizestop`   | `BarResizeStopPayload`  | Bar resize ended            |
-| `bar-mouseenter`   | `BarClickPayload`       | Mouse entered bar           |
-| `bar-mouseleave`   | `BarClickPayload`       | Mouse left bar              |
-| `empty-area-click` | `EmptyAreaClickPayload` | Empty area clicked          |
+| 事件               | 负载类型                | 描述             |
+| ------------------ | ----------------------- | ---------------- |
+| `bar-drop`         | `BarDropPayload`        | 条形放置到新位置 |
+| `bar-resize`       | `BarResizePayload`      | 条形调整大小     |
+| `bar-progress`     | `BarProgressPayload`    | 进度变更         |
+| `bar-click`        | `BarClickPayload`       | 条形被点击       |
+| `bar-dragstart`    | `BarDragStartPayload`   | 条形拖拽开始     |
+| `bar-dragstop`     | `BarDragStopPayload`    | 条形拖拽结束     |
+| `bar-resizestart`  | `BarResizeStartPayload` | 条形调整大小开始 |
+| `bar-resizestop`   | `BarResizeStopPayload`  | 条形调整大小结束 |
+| `bar-mouseenter`   | `BarClickPayload`       | 鼠标进入条形     |
+| `bar-mouseleave`   | `BarClickPayload`       | 鼠标离开条形     |
+| `empty-area-click` | `EmptyAreaClickPayload` | 空白区域被点击   |
 
-### Validation Rejection Events
+### 校验拒绝事件
 
-| Event                 | Payload Type               | Description                   |
-| --------------------- | -------------------------- | ----------------------------- |
-| `bar-drop-rejected`   | `BarDropRejectedPayload`   | Drop rejected by validation   |
-| `bar-resize-rejected` | `BarResizeRejectedPayload` | Resize rejected by validation |
-| `select-rejected`     | `SelectRejectedPayload`    | Select rejected by validation |
+| 事件                  | 负载类型                   | 描述               |
+| --------------------- | -------------------------- | ------------------ |
+| `bar-drop-rejected`   | `BarDropRejectedPayload`   | 放置被校验拒绝     |
+| `bar-resize-rejected` | `BarResizeRejectedPayload` | 调整大小被校验拒绝 |
+| `select-rejected`     | `SelectRejectedPayload`    | 选择被校验拒绝     |
 
-### Other Events
+### 其他事件
 
-| Event              | Payload Type         | Description                 |
-| ------------------ | -------------------- | --------------------------- |
-| `select`           | `SelectPayload`      | Range selected              |
-| `link-orphan`      | `string`             | Link references missing bar |
-| `update:axisInput` | `AxisRangePlanInput` | View/date changed           |
+| 事件               | 负载类型             | 描述                   |
+| ------------------ | -------------------- | ---------------------- |
+| `select`           | `SelectPayload`      | 范围被选中             |
+| `link-orphan`      | `string`             | 连线引用了不存在的条形 |
+| `update:axisInput` | `AxisRangePlanInput` | 视图/日期变更          |
 
-## Event Payloads
+## 事件负载
 
 ### BarDropPayload
 
-| Field      | Type        | Description         |
-| ---------- | ----------- | ------------------- |
-| `barId`    | `string`    | Moved bar ID        |
-| `oldRange` | `TimeRange` | Previous time range |
-| `newRange` | `TimeRange` | New time range      |
-| `oldRowId` | `string`    | Previous row ID     |
-| `newRowId` | `string`    | New row ID          |
+| 字段       | 类型        | 描述           |
+| ---------- | ----------- | -------------- |
+| `barId`    | `string`    | 移动的条形 ID  |
+| `oldRange` | `TimeRange` | 之前的时间范围 |
+| `newRange` | `TimeRange` | 新的时间范围   |
+| `oldRowId` | `string`    | 之前的行 ID    |
+| `newRowId` | `string`    | 新的行 ID      |
 
 ### BarResizePayload
 
-| Field      | Type               | Description            |
-| ---------- | ------------------ | ---------------------- |
-| `barId`    | `string`           | Resized bar ID         |
-| `edge`     | `'start' \| 'end'` | Which edge was resized |
-| `oldRange` | `TimeRange`        | Previous time range    |
-| `newRange` | `TimeRange`        | New time range         |
+| 字段       | 类型               | 描述              |
+| ---------- | ------------------ | ----------------- |
+| `barId`    | `string`           | 调整大小的条形 ID |
+| `edge`     | `'start' \| 'end'` | 被调整的边        |
+| `oldRange` | `TimeRange`        | 之前的时间范围    |
+| `newRange` | `TimeRange`        | 新的时间范围      |
 
 ### BarProgressPayload
 
-| Field         | Type     | Description               |
-| ------------- | -------- | ------------------------- |
-| `barId`       | `string` | Bar ID                    |
-| `oldProgress` | `number` | Previous progress (0–100) |
-| `newProgress` | `number` | New progress (0–100)      |
+| 字段          | 类型     | 描述               |
+| ------------- | -------- | ------------------ |
+| `barId`       | `string` | 条形 ID            |
+| `oldProgress` | `number` | 之前的进度 (0–100) |
+| `newProgress` | `number` | 新的进度 (0–100)   |
 
 ### SelectPayload
 
-| Field   | Type        | Description         |
-| ------- | ----------- | ------------------- |
-| `rowId` | `string`    | Selected row ID     |
-| `range` | `TimeRange` | Selected time range |
+| 字段    | 类型        | 描述           |
+| ------- | ----------- | -------------- |
+| `rowId` | `string`    | 选中的行 ID    |
+| `range` | `TimeRange` | 选中的时间范围 |
 
 ### BarClickPayload
 
-| Field         | Type         | Description    |
-| ------------- | ------------ | -------------- |
-| `barId`       | `string`     | Clicked bar ID |
-| `nativeEvent` | `MouseEvent` | Original event |
+| 字段          | 类型         | 描述            |
+| ------------- | ------------ | --------------- |
+| `barId`       | `string`     | 被点击的条形 ID |
+| `nativeEvent` | `MouseEvent` | 原始事件        |
 
-## GanttHandle (Imperative API)
+## GanttHandle（命令式 API）
 
-Access via template ref or `table-ready` event.
+通过模板引用或 `table-ready` 事件访问。
 
-### Navigation
+### 导航
 
-| Method                  | Description                      |
-| ----------------------- | -------------------------------- |
-| `changeView(viewId)`    | Switch view level                |
-| `prev()`                | Previous time span               |
-| `next()`                | Next time span                   |
-| `today()`               | Jump to today                    |
-| `gotoDate(date)`        | Navigate to date                 |
-| `incrementDate(delta)`  | Shift by custom offset           |
-| `getDate()`             | Current anchor date              |
-| `zoomTo(date, viewId?)` | Zoom and center                  |
-| `scrollToDate(date)`    | Scroll to date (no state change) |
+| 方法                    | 描述                         |
+| ----------------------- | ---------------------------- |
+| `changeView(viewId)`    | 切换视图级别                 |
+| `prev()`                | 上一个时间段                 |
+| `next()`                | 下一个时间段                 |
+| `today()`               | 跳转到今天                   |
+| `gotoDate(date)`        | 导航到指定日期               |
+| `incrementDate(delta)`  | 按自定义偏移量移动           |
+| `getDate()`             | 获取当前锚点日期             |
+| `zoomTo(date, viewId?)` | 缩放并居中                   |
+| `scrollToDate(date)`    | 滚动到指定日期（不改变状态） |
 
-### Data Access
+### 数据访问
 
-| Method               | Return Type            | Description     |
-| -------------------- | ---------------------- | --------------- |
-| `getBarById(id)`     | `BarSpec \| undefined` | Lookup by ID    |
-| `getBars()`          | `readonly BarSpec[]`   | All bars        |
-| `getBarTable()`      | `BarTable`             | Bar data table  |
-| `getRowDataSource()` | `RowDataSource`        | Row data source |
-| `getLinkTable()`     | `LinkTable`            | Link data table |
+| 方法                 | 返回类型               | 描述       |
+| -------------------- | ---------------------- | ---------- |
+| `getBarById(id)`     | `BarSpec \| undefined` | 按 ID 查找 |
+| `getBars()`          | `readonly BarSpec[]`   | 所有条形   |
+| `getBarTable()`      | `BarTable`             | 条形数据表 |
+| `getRowDataSource()` | `RowDataSource`        | 行数据源   |
+| `getLinkTable()`     | `LinkTable`            | 连线数据表 |
 
-### Events
+### 事件
 
-| Method                       | Description                   |
-| ---------------------------- | ----------------------------- |
-| `subscribe(event, listener)` | Subscribe to an event         |
-| `hitTestFromClient(x, y)`    | Get time/row at screen coords |
+| 方法                         | 描述                        |
+| ---------------------------- | --------------------------- |
+| `subscribe(event, listener)` | 订阅事件                    |
+| `hitTestFromClient(x, y)`    | 获取屏幕坐标处的时间/行信息 |
 
-## Core Types
+## 核心类型
 
 ### BarSpec
 

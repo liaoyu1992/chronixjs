@@ -1,8 +1,8 @@
-# Divider
+# Divider 分割线
 
-A visual separator line with optional title.
+带有可选标题的可视分割线。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ A visual separator line with optional title.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-A simple horizontal divider between content blocks.
+内容块之间的简单水平分割线。
 
 ::: code-group
 
@@ -68,11 +68,11 @@ export function App() {
 
 :::
 
-## With Title
+## 带标题
 
-Place text inside the divider using the default slot. Use `title-placement` to control alignment.
+通过默认插槽在分割线中放置文本。使用 `title-placement` 控制对齐方式。
 
-### Left
+### 左对齐
 
 ::: code-group
 
@@ -124,7 +124,7 @@ export function App() {
 
 :::
 
-### Center
+### 居中
 
 ::: code-group
 
@@ -176,7 +176,7 @@ export function App() {
 
 :::
 
-### Right
+### 右对齐
 
 ::: code-group
 
@@ -228,9 +228,9 @@ export function App() {
 
 :::
 
-## Vertical
+## 垂直分割
 
-Use `vertical` to render a vertical divider between inline elements.
+使用 `vertical` 属性在行内元素之间渲染垂直分割线。
 
 ::: code-group
 
@@ -288,9 +288,9 @@ export function App() {
 
 :::
 
-## Dashed
+## 虚线
 
-Use `dashed` to render a dashed line instead of solid.
+使用 `dashed` 属性渲染虚线而非实线。
 
 ::: code-group
 
@@ -342,18 +342,18 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop             | Type                            | Default    | Description       |
-| ---------------- | ------------------------------- | ---------- | ----------------- |
-| `vertical`       | `boolean`                       | `false`    | Vertical divider  |
-| `titlePlacement` | `'left' \| 'center' \| 'right'` | `'center'` | Title position    |
-| `dashed`         | `boolean`                       | `false`    | Dashed line style |
+| 属性             | 类型                            | 默认值     | 说明       |
+| ---------------- | ------------------------------- | ---------- | ---------- |
+| `vertical`       | `boolean`                       | `false`    | 垂直分割线 |
+| `titlePlacement` | `'left' \| 'center' \| 'right'` | `'center'` | 标题位置   |
+| `dashed`         | `boolean`                       | `false`    | 虚线样式   |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description           |
-| --------- | --------------------- |
-| `default` | Divider title content |
+| 插槽      | 说明           |
+| --------- | -------------- |
+| `default` | 分割线标题内容 |

@@ -1,8 +1,8 @@
-# Icon Wrapper
+# Icon Wrapper 图标包装器
 
-Sizing and coloring wrapper for arbitrary icon content.
+为任意图标内容提供尺寸和颜色包装。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Sizing and coloring wrapper for arbitrary icon content.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -59,17 +59,17 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop    | Type                  | Default     | Description                   |
-| ------- | --------------------- | ----------- | ----------------------------- |
-| `size`  | `number`              | `24`        | Width + height in px          |
-| `color` | `string \| undefined` | `undefined` | CSS color; undefined inherits |
+| Prop    | 类型                  | 默认值      | 描述                           |
+| ------- | --------------------- | ----------- | ------------------------------ |
+| `size`  | `number`              | `24`        | 宽高（像素）                   |
+| `color` | `string \| undefined` | `undefined` | CSS 颜色；未定义时继承父级颜色 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description  |
-| --------- | ------------ |
-| `default` | Icon content |
+| Slot      | 描述     |
+| --------- | -------- |
+| `default` | 图标内容 |

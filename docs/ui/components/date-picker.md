@@ -1,8 +1,8 @@
-# Date Picker
+# DatePicker 日期选择器
 
-A date selection calendar with format control and date disabling.
+带有格式控制和日期禁用功能的日期选择日历。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A date selection calendar with format control and date disabling.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -63,9 +63,9 @@ export function App() {
 
 :::
 
-## Format
+## 格式化
 
-Customize the display format using date-fns format strings. The default is `yyyy-MM-dd`.
+使用 date-fns 格式字符串自定义显示格式。默认为 `yyyy-MM-dd`。
 
 ::: code-group
 
@@ -149,9 +149,9 @@ export function App() {
 
 :::
 
-## Disabled Dates
+## 禁用日期
 
-Use the `isDateDisabled` callback to prevent selecting specific dates. The example below disables all weekends.
+使用 `isDateDisabled` 回调函数来阻止选择特定日期。下面的示例禁用了所有周末。
 
 ::: code-group
 
@@ -223,9 +223,9 @@ export function App() {
 
 :::
 
-## Clearable
+## 可清除
 
-Add `clearable` to let users clear the selected date.
+添加 `clearable` 属性让用户可以清除已选日期。
 
 ::: code-group
 
@@ -276,23 +276,23 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop             | Type                      | Default          | Description              |
-| ---------------- | ------------------------- | ---------------- | ------------------------ |
-| `value`          | `Date \| undefined`       | `undefined`      | Selected date            |
-| `format`         | `string`                  | `'yyyy-MM-dd'`   | date-fns format string   |
-| `placeholder`    | `string`                  | `''`             | Placeholder text         |
-| `disabled`       | `boolean`                 | `false`          | Disable picker           |
-| `clearable`      | `boolean`                 | `false`          | Show clear icon          |
-| `placement`      | `PopupPlacement`          | `'bottom-start'` | Calendar position        |
-| `firstDayOfWeek` | `number`                  | `0`              | First day (0=Sun, 1=Mon) |
-| `isDateDisabled` | `(date: Date) => boolean` | `undefined`      | Date disable callback    |
+| 属性             | 类型                      | 默认值           | 说明                           |
+| ---------------- | ------------------------- | ---------------- | ------------------------------ |
+| `value`          | `Date \| undefined`       | `undefined`      | 选中的日期                     |
+| `format`         | `string`                  | `'yyyy-MM-dd'`   | date-fns 格式字符串            |
+| `placeholder`    | `string`                  | `''`             | 占位文本                       |
+| `disabled`       | `boolean`                 | `false`          | 禁用选择器                     |
+| `clearable`      | `boolean`                 | `false`          | 显示清除图标                   |
+| `placement`      | `PopupPlacement`          | `'bottom-start'` | 日历弹出位置                   |
+| `firstDayOfWeek` | `number`                  | `0`              | 一周的第一天（0=周日，1=周一） |
+| `isDateDisabled` | `(date: Date) => boolean` | `undefined`      | 日期禁用回调函数               |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload             | Description  |
-| -------------- | ------------------- | ------------ |
-| `update:value` | `Date \| undefined` | Date changed |
+| 事件           | 载荷                | 说明           |
+| -------------- | ------------------- | -------------- |
+| `update:value` | `Date \| undefined` | 日期变化时触发 |

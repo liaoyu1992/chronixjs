@@ -1,20 +1,20 @@
-# Input Range
+# 范围输入
 
-Headless dual-handle range input primitive. Provides pure functions for computing which handle to drag, mapping positions to values, and handling keyboard events — maintaining the invariant `low <= high`.
+无头双手柄范围输入原语。提供纯函数用于计算拖拽哪个手柄、将位置映射到值以及处理键盘事件 — 始终保持 `low <= high` 的不变量。
 
-## Install
+## 安装
 
 ```bash
 pnpm add @chronixjs/cx-kit
 ```
 
-## Overview
+## 概述
 
-Three pure functions:
+三个纯函数：
 
-- **`computeRangeClosestHandle`** — determine which handle is closest to a click position
-- **`computeRangeValueAtPosition`** — map a pixel position to a `RangeValue`, updating only the active handle
-- **`computeRangeValueOnKey`** — compute the next `RangeValue` for a keyboard event
+- **`computeRangeClosestHandle`** — 确定哪个手柄最接近点击位置
+- **`computeRangeValueAtPosition`** — 将像素位置映射为 `RangeValue`，仅更新活动手柄
+- **`computeRangeValueOnKey`** — 为键盘事件计算下一个 `RangeValue`
 
 ```ts
 import {
@@ -24,9 +24,9 @@ import {
 } from '@chronixjs/cx-kit';
 ```
 
-## Core Concept
+## 核心概念
 
-A `RangeValue` represents the two-handle state:
+`RangeValue` 表示双手柄状态：
 
 ```ts
 interface RangeValue {
@@ -35,13 +35,13 @@ interface RangeValue {
 }
 ```
 
-The invariant `low <= high` is always maintained — the functions will swap values if needed.
+始终维持 `low <= high` 的不变量 — 函数会在需要时交换值。
 
-## Basic Usage
+## 基本用法
 
-### Choose the Active Handle
+### 选择活动手柄
 
-When the user clicks on the track, determine which handle to activate:
+当用户点击轨道时，确定激活哪个手柄：
 
 ```ts
 import { computeRangeClosestHandle } from '@chronixjs/cx-kit';
@@ -53,12 +53,12 @@ const handle = computeRangeClosestHandle({
   min: 0,
   max: 100,
 });
-// handle → 'low' (click was closer to the low handle)
+// handle → 'low'（点击位置更接近 low 手柄）
 ```
 
-### Value from Position
+### 从位置获取值
 
-Compute the new range when dragging a handle to a position:
+拖拽手柄到某个位置时计算新的范围：
 
 ```ts
 import { computeRangeValueAtPosition } from '@chronixjs/cx-kit';
@@ -75,7 +75,7 @@ const newRange = computeRangeValueAtPosition({
 // newRange → { low: 20, high: 67 }
 ```
 
-### Keyboard Navigation
+### 键盘导航
 
 ```ts
 import { computeRangeValueOnKey } from '@chronixjs/cx-kit';
@@ -91,9 +91,9 @@ const next = computeRangeValueOnKey({
 // next → { low: 25, high: 80 }
 ```
 
-Returns `null` if the key is not recognized.
+如果按键不被识别则返回 `null`。
 
-## Framework Examples
+## 框架示例
 
 ### Vue 3
 
@@ -326,59 +326,59 @@ export function RangeSlider() {
 }
 ```
 
-## API Reference
+## API 参考
 
 ### `computeRangeClosestHandle(input)`
 
-Determines which handle is nearest to a given pixel position.
+确定哪个手柄最接近给定的像素位置。
 
-| Property       | Type         | Default | Description                    |
-| -------------- | ------------ | ------- | ------------------------------ |
-| `positionPx`   | `number`     | —       | Click position along the track |
-| `currentRange` | `RangeValue` | —       | Current `{ low, high }` values |
-| `trackSizePx`  | `number`     | —       | Total track width in pixels    |
-| `min`          | `number`     | —       | Minimum value                  |
-| `max`          | `number`     | —       | Maximum value                  |
+| 属性           | 类型         | 默认值 | 描述                      |
+| -------------- | ------------ | ------ | ------------------------- |
+| `positionPx`   | `number`     | —      | 沿轨道的点击位置          |
+| `currentRange` | `RangeValue` | —      | 当前的 `{ low, high }` 值 |
+| `trackSizePx`  | `number`     | —      | 轨道总宽度（像素）        |
+| `min`          | `number`     | —      | 最小值                    |
+| `max`          | `number`     | —      | 最大值                    |
 
-**Returns:** `'low' | 'high'`
+**返回：** `'low' | 'high'`
 
 ---
 
 ### `computeRangeValueAtPosition(input)`
 
-Computes the new `RangeValue` when a handle is dragged to a position.
+当手柄拖拽到某个位置时，计算新的 `RangeValue`。
 
-| Property       | Type              | Default | Description                      |
-| -------------- | ----------------- | ------- | -------------------------------- |
-| `positionPx`   | `number`          | —       | Pointer position along the track |
-| `activeHandle` | `'low' \| 'high'` | —       | Which handle is being dragged    |
-| `currentRange` | `RangeValue`      | —       | Current `{ low, high }` values   |
-| `trackSizePx`  | `number`          | —       | Total track width in pixels      |
-| `min`          | `number`          | —       | Minimum value                    |
-| `max`          | `number`          | —       | Maximum value                    |
-| `step`         | `number`          | —       | Step increment                   |
+| 属性           | 类型              | 默认值 | 描述                      |
+| -------------- | ----------------- | ------ | ------------------------- |
+| `positionPx`   | `number`          | —      | 沿轨道的指针位置          |
+| `activeHandle` | `'low' \| 'high'` | —      | 正在拖拽的手柄            |
+| `currentRange` | `RangeValue`      | —      | 当前的 `{ low, high }` 值 |
+| `trackSizePx`  | `number`          | —      | 轨道总宽度（像素）        |
+| `min`          | `number`          | —      | 最小值                    |
+| `max`          | `number`          | —      | 最大值                    |
+| `step`         | `number`          | —      | 步进增量                  |
 
-**Returns:** `RangeValue` — updated `{ low, high }`, maintaining `low <= high`.
+**返回：** `RangeValue` — 更新后的 `{ low, high }`，维持 `low <= high`。
 
 ---
 
 ### `computeRangeValueOnKey(input)`
 
-Computes the next `RangeValue` for a keyboard event.
+为键盘事件计算下一个 `RangeValue`。
 
-| Property              | Type              | Default | Description                    |
-| --------------------- | ----------------- | ------- | ------------------------------ |
-| `key`                 | `string`          | —       | Keyboard key (`e.key`)         |
-| `activeHandle`        | `'low' \| 'high'` | —       | Which handle has focus         |
-| `currentRange`        | `RangeValue`      | —       | Current `{ low, high }` values |
-| `min`                 | `number`          | —       | Minimum value                  |
-| `max`                 | `number`          | —       | Maximum value                  |
-| `step`                | `number`          | —       | Step increment                 |
-| `largeStepMultiplier` | `number`          | `10`    | Multiplier for PageUp/PageDown |
+| 属性                  | 类型              | 默认值 | 描述                      |
+| --------------------- | ----------------- | ------ | ------------------------- |
+| `key`                 | `string`          | —      | 键盘按键 (`e.key`)        |
+| `activeHandle`        | `'low' \| 'high'` | —      | 获得焦点的手柄            |
+| `currentRange`        | `RangeValue`      | —      | 当前的 `{ low, high }` 值 |
+| `min`                 | `number`          | —      | 最小值                    |
+| `max`                 | `number`          | —      | 最大值                    |
+| `step`                | `number`          | —      | 步进增量                  |
+| `largeStepMultiplier` | `number`          | `10`   | PageUp/PageDown 的乘数    |
 
-**Returns:** `RangeValue | null` — updated range, or `null` if key is not recognized.
+**返回：** `RangeValue | null` — 更新后的范围，如果按键不被识别则返回 `null`。
 
-### Types
+### 类型
 
 ```ts
 type RangeHandle = 'low' | 'high';

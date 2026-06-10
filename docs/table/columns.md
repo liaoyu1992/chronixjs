@@ -1,8 +1,8 @@
-# Columns
+# 列配置
 
-Column definitions control how data is displayed, formatted, and interacted with in the table. Each column is described by a `ColumnSpec` object.
+列定义控制表格中数据的展示、格式化和交互方式。每列由一个 `ColumnSpec` 对象描述。
 
-## Basic Usage
+## 基本用法
 
 ::: code-group
 
@@ -77,90 +77,90 @@ export function App() {
 
 :::
 
-## ColumnSpec Reference
+## ColumnSpec 参考
 
-### Identity & Display
+### 标识与显示
 
-| Prop         | Type      | Default | Description                         |
-| ------------ | --------- | ------- | ----------------------------------- |
-| `id`         | `string`  | —       | **Required.** Unique column ID      |
-| `field`      | `string`  |         | Data field key from `RowSpec.data`  |
-| `headerName` | `string`  |         | Header cell display text            |
-| `type`       | `string`  |         | Column type hint (e.g. `'numeric'`) |
-| `hide`       | `boolean` | `false` | Hide the column                     |
+| 属性         | 类型      | 默认值  | 描述                          |
+| ------------ | --------- | ------- | ----------------------------- |
+| `id`         | `string`  | —       | **必填。** 唯一的列标识       |
+| `field`      | `string`  |         | `RowSpec.data` 中的数据字段键 |
+| `headerName` | `string`  |         | 表头单元格显示文本            |
+| `type`       | `string`  |         | 列类型提示（如 `'numeric'`）  |
+| `hide`       | `boolean` | `false` | 隐藏该列                      |
 
-### Sizing
+### 尺寸
 
-| Prop       | Type     | Default | Description                      |
-| ---------- | -------- | ------- | -------------------------------- |
-| `width`    | `number` |         | Fixed width in pixels            |
-| `minWidth` | `number` |         | Minimum column width             |
-| `maxWidth` | `number` |         | Maximum column width             |
-| `flex`     | `number` |         | Flex grow factor for auto-sizing |
+| 属性       | 类型     | 默认值 | 描述                 |
+| ---------- | -------- | ------ | -------------------- |
+| `width`    | `number` |        | 固定宽度（像素）     |
+| `minWidth` | `number` |        | 最小列宽             |
+| `maxWidth` | `number` |        | 最大列宽             |
+| `flex`     | `number` |        | 自适应尺寸的弹性因子 |
 
-### Sorting & Filtering
+### 排序与筛选
 
-| Prop         | Type                         | Default | Description                 |
-| ------------ | ---------------------------- | ------- | --------------------------- |
-| `sortable`   | `boolean`                    | `false` | Enable column sorting       |
-| `comparator` | `(a, b, args) => number`     |         | Custom sort comparator      |
-| `filterable` | `boolean`                    | `false` | Show filter for this column |
-| `filterUi`   | `'text' \| 'set' \| 'multi'` |         | Filter UI type              |
+| 属性         | 类型                         | 默认值  | 描述               |
+| ------------ | ---------------------------- | ------- | ------------------ |
+| `sortable`   | `boolean`                    | `false` | 启用列排序         |
+| `comparator` | `(a, b, args) => number`     |         | 自定义排序比较函数 |
+| `filterable` | `boolean`                    | `false` | 为该列显示筛选     |
+| `filterUi`   | `'text' \| 'set' \| 'multi'` |         | 筛选界面类型       |
 
-### Value Transforms
+### 值转换
 
-| Prop             | Type                | Description               |
-| ---------------- | ------------------- | ------------------------- |
-| `valueGetter`    | `(args) => unknown` | Custom value accessor     |
-| `valueFormatter` | `(args) => string`  | Format cell display value |
+| 属性             | 类型                | 描述               |
+| ---------------- | ------------------- | ------------------ |
+| `valueGetter`    | `(args) => unknown` | 自定义值获取器     |
+| `valueFormatter` | `(args) => string`  | 格式化单元格显示值 |
 
-### Editing
+### 编辑
 
-| Prop             | Type                                                    | Description         |
-| ---------------- | ------------------------------------------------------- | ------------------- |
-| `editable`       | `boolean`                                               | Enable cell editing |
-| `validator`      | `(value, row) => string \| EditValidationError \| null` | Sync validation     |
-| `validatorAsync` | `(value, row) => Promise<...>`                          | Async validation    |
+| 属性             | 类型                                                    | 描述           |
+| ---------------- | ------------------------------------------------------- | -------------- |
+| `editable`       | `boolean`                                               | 启用单元格编辑 |
+| `validator`      | `(value, row) => string \| EditValidationError \| null` | 同步校验       |
+| `validatorAsync` | `(value, row) => Promise<...>`                          | 异步校验       |
 
-### Layout
+### 布局
 
-| Prop           | Type                        | Default | Description        |
-| -------------- | --------------------------- | ------- | ------------------ |
-| `pinned`       | `'left' \| 'right' \| null` |         | Pin column to side |
-| `resizable`    | `boolean`                   |         | Allow user resize  |
-| `reorderable`  | `boolean`                   |         | Allow drag reorder |
-| `autosizeable` | `boolean`                   |         | Allow auto-sizing  |
-| `wrapText`     | `boolean`                   |         | Wrap long text     |
+| 属性           | 类型                        | 默认值 | 描述             |
+| -------------- | --------------------------- | ------ | ---------------- |
+| `pinned`       | `'left' \| 'right' \| null` |        | 将列固定到侧边   |
+| `resizable`    | `boolean`                   |        | 允许用户调整大小 |
+| `reorderable`  | `boolean`                   |        | 允许拖拽排序     |
+| `autosizeable` | `boolean`                   |        | 允许自适应大小   |
+| `wrapText`     | `boolean`                   |        | 自动换行         |
 
-### Special Columns
+### 特殊列
 
-| Prop            | Type      | Description                         |
-| --------------- | --------- | ----------------------------------- |
-| `rowDragHandle` | `boolean` | Show drag handle for row reordering |
-| `rowNumber`     | `boolean` | Show row index                      |
-| `treeColumn`    | `boolean` | Show tree expand/collapse chevron   |
+| 属性            | 类型      | 描述                         |
+| --------------- | --------- | ---------------------------- |
+| `rowDragHandle` | `boolean` | 显示用于行重新排序的拖拽手柄 |
+| `rowNumber`     | `boolean` | 显示行号                     |
+| `treeColumn`    | `boolean` | 显示树形展开/折叠箭头        |
 
-### Header Groups
+### 表头分组
 
-| Prop          | Type                          | Description                       |
-| ------------- | ----------------------------- | --------------------------------- |
-| `headerGroup` | `string \| readonly string[]` | Group columns under shared header |
+| 属性          | 类型                          | 描述                 |
+| ------------- | ----------------------------- | -------------------- |
+| `headerGroup` | `string \| readonly string[]` | 将列归组到共享表头下 |
 
-### Styling
+### 样式
 
-| Prop        | Type                                                   | Description         |
-| ----------- | ------------------------------------------------------ | ------------------- |
-| `cellClass` | `string \| string[] \| ((args) => string \| string[])` | Custom cell classes |
+| 属性        | 类型                                                   | 描述             |
+| ----------- | ------------------------------------------------------ | ---------------- |
+| `cellClass` | `string \| string[] \| ((args) => string \| string[])` | 自定义单元格类名 |
 
-### Export
+### 导出
 
-| Prop          | Type          | Description                  |
-| ------------- | ------------- | ---------------------------- |
-| `exportStyle` | `ExportStyle` | Per-column export formatting |
+| 属性          | 类型          | 描述           |
+| ------------- | ------------- | -------------- |
+| `exportStyle` | `ExportStyle` | 单列导出格式化 |
 
-## Custom Value Formatting
+## 自定义值格式化
 
-Use `valueFormatter` to transform raw data for display:
+使用 `valueFormatter` 转换原始数据用于显示：
 
 ```typescript
 const columns: ColumnSpec[] = [
@@ -183,9 +183,9 @@ const columns: ColumnSpec[] = [
 ];
 ```
 
-## Custom Value Accessor
+## 自定义值获取器
 
-Use `valueGetter` when the displayed value isn't a direct field mapping:
+当显示值不是直接字段映射时，使用 `valueGetter`：
 
 ```typescript
 const columns: ColumnSpec[] = [
@@ -200,9 +200,9 @@ const columns: ColumnSpec[] = [
 ];
 ```
 
-## Header Groups
+## 表头分组
 
-Group multiple columns under a shared header:
+将多个列归组到共享表头下：
 
 ```typescript
 const columns: ColumnSpec[] = [
@@ -213,7 +213,7 @@ const columns: ColumnSpec[] = [
 ];
 ```
 
-Multi-level groups use an array:
+多层分组使用数组：
 
 ```typescript
 {
@@ -221,9 +221,9 @@ Multi-level groups use an array:
 }
 ```
 
-## Column Visibility
+## 列可见性
 
-Hide columns from display:
+隐藏列：
 
 ```typescript
 const columns: ColumnSpec[] = [
@@ -232,7 +232,7 @@ const columns: ColumnSpec[] = [
 ];
 ```
 
-Use `showColumnVisibilityMenu` prop or `TableHandle` to toggle visibility at runtime:
+使用 `showColumnVisibilityMenu` 属性或 `TableHandle` 在运行时切换可见性：
 
 ::: code-group
 
@@ -258,7 +258,7 @@ function onTableReady(handle: TableHandle) {
   tableHandle.value = handle;
 }
 
-// Toggle column visibility programmatically
+// 通过编程方式切换列可见性
 function toggleColumn(colId: string) {
   tableHandle.value?.toggleColumnVisibility(colId);
 }

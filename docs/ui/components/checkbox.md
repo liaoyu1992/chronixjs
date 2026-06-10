@@ -1,8 +1,8 @@
-# Checkbox
+# Checkbox 复选框
 
-Checkbox component with support for indeterminate state, labels, and validation errors.
+复选框组件，支持半选状态、标签和校验错误。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Checkbox component with support for indeterminate state, labels, and validation 
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -59,9 +59,9 @@ export function App() {
 
 :::
 
-## Custom Label Slot
+## 自定义标签插槽
 
-Use the default slot for rich label content:
+使用默认插槽实现富文本标签内容：
 
 ::: code-group
 
@@ -88,9 +88,9 @@ const checked = ref(false);
 
 :::
 
-## Indeterminate State
+## 半选状态
 
-The indeterminate state shows a horizontal bar, useful for "select all" scenarios:
+半选状态显示一条横线，适用于"全选"场景：
 
 ::: code-group
 
@@ -110,7 +110,7 @@ import { CxCheckbox } from '@chronixjs/ui-vue3';
 
 :::
 
-## Disabled
+## 禁用状态
 
 ::: code-group
 
@@ -130,7 +130,7 @@ import { CxCheckbox } from '@chronixjs/ui-vue3';
 
 :::
 
-## Error State
+## 错误状态
 
 ::: code-group
 
@@ -153,26 +153,26 @@ const agreed = ref(false);
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop            | Type      | Default     | Description             |
-| --------------- | --------- | ----------- | ----------------------- |
-| `checked`       | `boolean` | `false`     | Checked state (v-model) |
-| `indeterminate` | `boolean` | `false`     | Indeterminate (—) state |
-| `disabled`      | `boolean` | `false`     | Disable the checkbox    |
-| `label`         | `string`  | `undefined` | Label text              |
-| `error`         | `string`  | `undefined` | Error message           |
+| 属性            | 类型      | 默认值      | 说明               |
+| --------------- | --------- | ----------- | ------------------ |
+| `checked`       | `boolean` | `false`     | 选中状态 (v-model) |
+| `indeterminate` | `boolean` | `false`     | 半选（—）状态      |
+| `disabled`      | `boolean` | `false`     | 禁用复选框         |
+| `label`         | `string`  | `undefined` | 标签文本           |
+| `error`         | `string`  | `undefined` | 错误提示信息       |
 
-### Events
+### 事件 (Events)
 
-| Event            | Payload   | Description             |
-| ---------------- | --------- | ----------------------- |
-| `update:checked` | `boolean` | State changed (v-model) |
+| 事件             | 载荷      | 说明                 |
+| ---------------- | --------- | -------------------- |
+| `update:checked` | `boolean` | 状态变化时 (v-model) |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                                  |
-| --------- | -------------------------------------------- |
-| `default` | Custom label content (replaces `label` prop) |
+| 插槽      | 说明                                |
+| --------- | ----------------------------------- |
+| `default` | 自定义标签内容（替代 `label` 属性） |

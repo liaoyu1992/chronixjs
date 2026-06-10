@@ -1,8 +1,8 @@
-# Element
+# Element 元素
 
-Generic Chronix-themed HTML element wrapper with configurable tag.
+通用的 Chronix 主题 HTML 元素包装器，支持自定义标签名。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Generic Chronix-themed HTML element wrapper with configurable tag.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -57,17 +57,17 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop     | Type      | Default  | Description               |
-| -------- | --------- | -------- | ------------------------- |
-| `tag`    | `string`  | `'span'` | HTML tag to render        |
-| `inline` | `boolean` | `false`  | Display as inline element |
+| Prop     | 类型      | 默认值   | 描述                 |
+| -------- | --------- | -------- | -------------------- |
+| `tag`    | `string`  | `'span'` | 要渲染的 HTML 标签名 |
+| `inline` | `boolean` | `false`  | 是否以内联元素显示   |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description     |
-| --------- | --------------- |
-| `default` | Element content |
+| Slot      | 描述     |
+| --------- | -------- |
+| `default` | 元素内容 |

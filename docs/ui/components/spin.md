@@ -1,8 +1,8 @@
-# Spin
+# Spin 加载
 
-Loading-state indicator with an indeterminate rotating spinner and optional description.
+带不确定旋转动画和可选描述文本的加载状态指示器。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Loading-state indicator with an indeterminate rotating spinner and optional desc
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
 ::: code-group
 
@@ -98,12 +98,12 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                             | Default     | Description                       |
-| ------------- | -------------------------------- | ----------- | --------------------------------- |
-| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | Spinner size                      |
-| `show`        | `boolean`                        | `true`      | Toggle visibility without unmount |
-| `description` | `string \| undefined`            | `undefined` | Text below the spinner            |
+| 属性          | 类型                             | 默认值      | 说明                 |
+| ------------- | -------------------------------- | ----------- | -------------------- |
+| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | 加载指示器大小       |
+| `show`        | `boolean`                        | `true`      | 切换可见性（不卸载） |
+| `description` | `string \| undefined`            | `undefined` | 加载指示器下方文字   |

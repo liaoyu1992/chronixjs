@@ -1,8 +1,8 @@
-# Image
+# Image 图片
 
-An enhanced image component with lazy loading, fallback, and preview support.
+增强的图片组件，支持懒加载、回退和预览功能。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ An enhanced image component with lazy loading, fallback, and preview support.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -51,9 +51,9 @@ export function App() {
 
 :::
 
-## Object Fit
+## 适配方式
 
-Control how the image fits its container using the `objectFit` prop:
+使用 `objectFit` 属性控制图片如何适应容器：
 
 ::: code-group
 
@@ -158,9 +158,9 @@ export function App() {
 
 :::
 
-## Previewable
+## 图片预览
 
-Enable lightbox preview on click with the `previewable` prop:
+使用 `previewable` 属性启用点击灯箱预览：
 
 ::: code-group
 
@@ -199,9 +199,9 @@ export function App() {
 
 :::
 
-## With Fallback
+## 回退图片
 
-Show a fallback image when the source fails to load:
+当源图片加载失败时显示回退图片：
 
 ::: code-group
 
@@ -258,17 +258,17 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                                                       | Default     | Description             |
-| ------------- | ---------------------------------------------------------- | ----------- | ----------------------- |
-| `src`         | `string`                                                   | `''`        | Image source URL        |
-| `alt`         | `string`                                                   | `undefined` | Alt text                |
-| `width`       | `number \| string`                                         | `undefined` | Image width             |
-| `height`      | `number \| string`                                         | `undefined` | Image height            |
-| `objectFit`   | `'fill' \| 'contain' \| 'cover' \| 'none' \| 'scale-down'` | `'cover'`   | CSS object-fit          |
-| `previewable` | `boolean`                                                  | `false`     | Enable lightbox preview |
-| `lazy`        | `boolean`                                                  | `true`      | Native lazy loading     |
-| `fallback`    | `string`                                                   | `undefined` | Fallback src on error   |
+| Prop          | 类型                                                       | 默认值      | 描述                     |
+| ------------- | ---------------------------------------------------------- | ----------- | ------------------------ |
+| `src`         | `string`                                                   | `''`        | 图片源 URL               |
+| `alt`         | `string`                                                   | `undefined` | 替代文本                 |
+| `width`       | `number \| string`                                         | `undefined` | 图片宽度                 |
+| `height`      | `number \| string`                                         | `undefined` | 图片高度                 |
+| `objectFit`   | `'fill' \| 'contain' \| 'cover' \| 'none' \| 'scale-down'` | `'cover'`   | CSS object-fit           |
+| `previewable` | `boolean`                                                  | `false`     | 启用灯箱预览             |
+| `lazy`        | `boolean`                                                  | `true`      | 原生懒加载               |
+| `fallback`    | `string`                                                   | `undefined` | 加载失败时的回退图片地址 |

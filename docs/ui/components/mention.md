@@ -1,8 +1,8 @@
-# Mention
+# Mention 提及
 
-Textarea with `@trigger` detection that opens a Select-style dropdown.
+带有 `@trigger` 检测的文本域，打开 Select 风格的下拉菜单。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Textarea with `@trigger` detection that opens a Select-style dropdown.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -85,23 +85,23 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                           | Default          | Description                   |
-| ------------- | ------------------------------ | ---------------- | ----------------------------- |
-| `value`       | `string`                       | `''`             | Textarea content              |
-| `options`     | `readonly SelectOption[]`      | `[]`             | Mentionable options           |
-| `trigger`     | `string`                       | `'@'`            | Trigger character             |
-| `placement`   | `PopupPlacement`               | `'bottom-start'` | Dropdown placement            |
-| `disabled`    | `boolean`                      | `false`          | Disable the textarea          |
-| `placeholder` | `string`                       | `''`             | Textarea placeholder          |
-| `sources`     | `readonly MentionSource[]`     | `[]`             | Multi-source trigger mappings |
-| `filter`      | `MentionFilterFn \| undefined` | `undefined`      | Custom filter function        |
+| Prop          | 类型                           | 默认值           | 描述             |
+| ------------- | ------------------------------ | ---------------- | ---------------- |
+| `value`       | `string`                       | `''`             | 文本域内容       |
+| `options`     | `readonly SelectOption[]`      | `[]`             | 可提及的选项列表 |
+| `trigger`     | `string`                       | `'@'`            | 触发字符         |
+| `placement`   | `PopupPlacement`               | `'bottom-start'` | 下拉菜单位置     |
+| `disabled`    | `boolean`                      | `false`          | 是否禁用文本域   |
+| `placeholder` | `string`                       | `''`             | 文本域占位文本   |
+| `sources`     | `readonly MentionSource[]`     | `[]`             | 多源触发映射     |
+| `filter`      | `MentionFilterFn \| undefined` | `undefined`      | 自定义过滤函数   |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload  | Description                       |
-| -------------- | -------- | --------------------------------- |
-| `update:value` | `string` | Fires when textarea value changes |
+| Event          | Payload  | 描述               |
+| -------------- | -------- | ------------------ |
+| `update:value` | `string` | 文本域值变化时触发 |

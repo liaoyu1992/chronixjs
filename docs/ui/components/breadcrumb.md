@@ -1,8 +1,8 @@
-# Breadcrumb
+# Breadcrumb 面包屑
 
-Hierarchical path navigation showing the user's current location within a page hierarchy.
+层级路径导航，显示用户在页面层级中的当前位置。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Hierarchical path navigation showing the user's current location within a page h
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -74,7 +74,7 @@ export function App() {
 
 :::
 
-## Custom Separator
+## 自定义分隔符
 
 ::: code-group
 
@@ -131,7 +131,7 @@ export function App() {
 
 :::
 
-## Handling Item Click
+## 处理项点击
 
 ::: code-group
 
@@ -201,32 +201,32 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                        | Default | Description                      |
-| ----------- | --------------------------- | ------- | -------------------------------- |
-| `items`     | `readonly BreadcrumbItem[]` | `[]`    | Ordered list of breadcrumb items |
-| `separator` | `string`                    | `'/'`   | Separator string between items   |
+| 属性        | 类型                        | 默认值 | 说明                 |
+| ----------- | --------------------------- | ------ | -------------------- |
+| `items`     | `readonly BreadcrumbItem[]` | `[]`   | 有序的面包屑项列表   |
+| `separator` | `string`                    | `'/'`  | 项之间的分隔符字符串 |
 
 ### BreadcrumbItem
 
-| Property    | Type                  | Default     | Description                             |
-| ----------- | --------------------- | ----------- | --------------------------------------- |
-| `key`       | `string`              | —           | Unique key for rendering                |
-| `label`     | `string`              | —           | Display text                            |
-| `href`      | `string \| undefined` | `undefined` | When set, renders as `<a>` link         |
-| `clickable` | `boolean`             | `false`     | Forces clickability even without `href` |
+| 属性        | 类型                  | 默认值      | 说明                         |
+| ----------- | --------------------- | ----------- | ---------------------------- |
+| `key`       | `string`              | —           | 渲染用的唯一标识             |
+| `label`     | `string`              | —           | 显示文本                     |
+| `href`      | `string \| undefined` | `undefined` | 设置后渲染为 `<a>` 链接      |
+| `clickable` | `boolean`             | `false`     | 即使没有 `href` 也强制可点击 |
 
-### Events
+### 事件 (Events)
 
-| Event        | Payload          | Description                            |
-| ------------ | ---------------- | -------------------------------------- |
-| `item-click` | `BreadcrumbItem` | Fired when a clickable item is clicked |
+| 事件         | 载荷             | 说明                 |
+| ------------ | ---------------- | -------------------- |
+| `item-click` | `BreadcrumbItem` | 可点击项被点击时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot        | Description                    |
-| ----------- | ------------------------------ |
-| `separator` | Custom separator between items |
+| 插槽        | 说明                 |
+| ----------- | -------------------- |
+| `separator` | 项之间的自定义分隔符 |

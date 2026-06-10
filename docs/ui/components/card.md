@@ -1,8 +1,8 @@
-# Card
+# Card 卡片
 
-A flexible container with optional header, body, and footer areas.
+灵活的容器组件，支持可选的头部、主体和底部区域。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A flexible container with optional header, body, and footer areas.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## With Title and Footer
+## 带标题和底部
 
 ::: code-group
 
@@ -94,7 +94,7 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
 ::: code-group
 
@@ -143,7 +143,7 @@ export function App() {
 
 :::
 
-## Hoverable
+## 悬浮效果
 
 ::: code-group
 
@@ -178,21 +178,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                             | Default     | Description          |
-| ----------- | -------------------------------- | ----------- | -------------------- |
-| `size`      | `'small' \| 'medium' \| 'large'` | `'medium'`  | Card size            |
-| `title`     | `string`                         | `undefined` | Card title           |
-| `bordered`  | `boolean`                        | `true`      | Show border          |
-| `hoverable` | `boolean`                        | `false`     | Show shadow on hover |
-| `embedded`  | `boolean`                        | `false`     | Flat embedded style  |
+| 属性        | 类型                             | 默认值      | 说明               |
+| ----------- | -------------------------------- | ----------- | ------------------ |
+| `size`      | `'small' \| 'medium' \| 'large'` | `'medium'`  | 卡片尺寸           |
+| `title`     | `string`                         | `undefined` | 卡片标题           |
+| `bordered`  | `boolean`                        | `true`      | 显示边框           |
+| `hoverable` | `boolean`                        | `false`     | 鼠标悬浮时显示阴影 |
+| `embedded`  | `boolean`                        | `false`     | 扁平嵌入式样式     |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description       |
-| --------- | ----------------- |
-| `default` | Card body content |
-| `footer`  | Card footer area  |
+| 插槽      | 说明         |
+| --------- | ------------ |
+| `default` | 卡片主体内容 |
+| `footer`  | 卡片底部区域 |

@@ -1,8 +1,8 @@
-# Drawer
+# Drawer 抽屉
 
-A slide-in panel from the viewport edge with overlay.
+从视口边缘滑入的面板，带有遮罩层。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A slide-in panel from the viewport edge with overlay.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -80,11 +80,11 @@ export function App() {
 
 :::
 
-## Placements
+## 弹出方向
 
-The drawer slides in from the viewport edge specified by `placement`. The default is `right`.
+抽屉从 `placement` 指定的视口边缘滑入。默认为 `right`（右侧）。
 
-### Left
+### 左侧
 
 ::: code-group
 
@@ -150,7 +150,7 @@ export function App() {
 
 :::
 
-### Top
+### 顶部
 
 ::: code-group
 
@@ -216,7 +216,7 @@ export function App() {
 
 :::
 
-### Bottom
+### 底部
 
 ::: code-group
 
@@ -282,9 +282,9 @@ export function App() {
 
 :::
 
-## Custom Size
+## 自定义尺寸
 
-Use `width` for left/right drawers and `height` for top/bottom drawers.
+左右抽屉使用 `width` 属性，上下抽屉使用 `height` 属性。
 
 ::: code-group
 
@@ -383,9 +383,9 @@ export function App() {
 
 :::
 
-## Without Mask
+## 无遮罩
 
-Disable the backdrop overlay and prevent closing on mask click.
+禁用背景遮罩层，并阻止点击遮罩关闭。
 
 ::: code-group
 
@@ -457,31 +457,31 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop           | Type                                     | Default     | Description           |
+| 属性           | 类型                                     | 默认值      | 说明                  |
 | -------------- | ---------------------------------------- | ----------- | --------------------- |
-| `show`         | `boolean`                                | `undefined` | Controlled visibility |
-| `placement`    | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'`   | Slide direction       |
-| `title`        | `string`                                 | `undefined` | Drawer title          |
-| `mask`         | `boolean`                                | `true`      | Show backdrop         |
-| `maskClosable` | `boolean`                                | `true`      | Close on mask click   |
-| `escClosable`  | `boolean`                                | `true`      | Close on Escape       |
-| `width`        | `number \| string`                       | `400`       | Width (left/right)    |
-| `height`       | `number \| string`                       | `400`       | Height (top/bottom)   |
-| `disabled`     | `boolean`                                | `false`     | Disable interaction   |
+| `show`         | `boolean`                                | `undefined` | 受控的可见性          |
+| `placement`    | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'`   | 滑入方向              |
+| `title`        | `string`                                 | `undefined` | 抽屉标题              |
+| `mask`         | `boolean`                                | `true`      | 显示背景遮罩          |
+| `maskClosable` | `boolean`                                | `true`      | 点击遮罩关闭          |
+| `escClosable`  | `boolean`                                | `true`      | 按 Escape 键关闭      |
+| `width`        | `number \| string`                       | `400`       | 宽度（左侧/右侧抽屉） |
+| `height`       | `number \| string`                       | `400`       | 高度（顶部/底部抽屉） |
+| `disabled`     | `boolean`                                | `false`     | 禁用交互              |
 
-### Events
+### 事件 (Events)
 
-| Event         | Payload                             | Description        |
-| ------------- | ----------------------------------- | ------------------ |
-| `update:show` | `boolean`                           | Visibility changed |
-| `close`       | `'mask' \| 'esc' \| 'close-button'` | Close reason       |
+| 事件          | 载荷                                | 说明             |
+| ------------- | ----------------------------------- | ---------------- |
+| `update:show` | `boolean`                           | 可见性变化时触发 |
+| `close`       | `'mask' \| 'esc' \| 'close-button'` | 关闭原因         |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description         |
-| --------- | ------------------- |
-| `default` | Drawer body content |
+| 插槽      | 说明         |
+| --------- | ------------ |
+| `default` | 抽屉主体内容 |

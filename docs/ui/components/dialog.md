@@ -1,8 +1,8 @@
-# Dialog
+# Dialog 对话框
 
-Modal dialog with imperative API for confirmations and alerts.
+带有命令式 API 的模态对话框，用于确认和提示。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ Modal dialog with imperative API for confirmations and alerts.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-This component uses an imperative API via a composable / hook. Call the returned methods to show dialogs programmatically.
+该组件使用通过 composable / hook 调用的命令式 API。调用返回的方法以编程方式显示对话框。
 
 ::: code-group
 
@@ -86,9 +86,9 @@ export function App() {
 
 :::
 
-## Dialog Types
+## 对话框类型
 
-Use different methods to display dialogs with appropriate semantic styling.
+使用不同的方法来显示具有相应语义样式的对话框。
 
 ::: code-group
 
@@ -232,9 +232,9 @@ export function App() {
 
 :::
 
-## Custom Dialog
+## 自定义对话框
 
-Use `dialog.create()` for full control over the dialog type and content.
+使用 `dialog.create()` 可以完全控制对话框类型和内容。
 
 ::: code-group
 
@@ -310,27 +310,27 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Methods
+### 方法 (Methods)
 
-| Method             | Description            |
-| ------------------ | ---------------------- |
-| `create(options)`  | Create custom dialog   |
-| `info(options)`    | Info dialog            |
-| `success(options)` | Success dialog         |
-| `warning(options)` | Warning dialog         |
-| `error(options)`   | Error dialog           |
-| `destroy(id)`      | Remove specific dialog |
-| `destroyAll()`     | Clear all dialogs      |
+| 方法               | 说明             |
+| ------------------ | ---------------- |
+| `create(options)`  | 创建自定义对话框 |
+| `info(options)`    | 信息对话框       |
+| `success(options)` | 成功对话框       |
+| `warning(options)` | 警告对话框       |
+| `error(options)`   | 错误对话框       |
+| `destroy(id)`      | 移除指定对话框   |
+| `destroyAll()`     | 清除所有对话框   |
 
 ### DialogCreateOptions
 
-| Prop           | Type                                                       | Default     | Description             |
-| -------------- | ---------------------------------------------------------- | ----------- | ----------------------- |
-| `title`        | `string`                                                   | `undefined` | Dialog title            |
-| `content`      | `string`                                                   | —           | Body content (required) |
-| `type`         | `'default' \| 'info' \| 'success' \| 'warning' \| 'error'` | `'default'` | Dialog type             |
-| `positiveText` | `string`                                                   | `undefined` | Confirm button label    |
-| `negativeText` | `string`                                                   | `undefined` | Cancel button label     |
-| `closable`     | `boolean`                                                  | `true`      | Show close button       |
+| 属性           | 类型                                                       | 默认值      | 说明             |
+| -------------- | ---------------------------------------------------------- | ----------- | ---------------- |
+| `title`        | `string`                                                   | `undefined` | 对话框标题       |
+| `content`      | `string`                                                   | —           | 正文内容（必填） |
+| `type`         | `'default' \| 'info' \| 'success' \| 'warning' \| 'error'` | `'default'` | 对话框类型       |
+| `positiveText` | `string`                                                   | `undefined` | 确认按钮文本     |
+| `negativeText` | `string`                                                   | `undefined` | 取消按钮文本     |
+| `closable`     | `boolean`                                                  | `true`      | 显示关闭按钮     |

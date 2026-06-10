@@ -1,8 +1,8 @@
-# Calendar
+# Calendar 日历
 
-Standalone calendar (always visible, no popup) for date selection.
+独立日历（始终可见，无弹窗），用于日期选择。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Standalone calendar (always visible, no popup) for date selection.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -60,7 +60,7 @@ export function App() {
 
 :::
 
-## Disabled Dates
+## 禁用日期
 
 ::: code-group
 
@@ -122,18 +122,18 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop             | Type                      | Default     | Description                        |
-| ---------------- | ------------------------- | ----------- | ---------------------------------- |
-| `value`          | `Date \| undefined`       | `undefined` | Currently selected date            |
-| `disabled`       | `boolean`                 | `false`     | Disable the entire calendar        |
-| `isDateDisabled` | `(date: Date) => boolean` | `undefined` | Callback to disable specific dates |
+| 属性             | 类型                      | 默认值      | 说明                   |
+| ---------------- | ------------------------- | ----------- | ---------------------- |
+| `value`          | `Date \| undefined`       | `undefined` | 当前选中的日期         |
+| `disabled`       | `boolean`                 | `false`     | 禁用整个日历           |
+| `isDateDisabled` | `(date: Date) => boolean` | `undefined` | 禁用特定日期的回调函数 |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload             | Description                   |
-| -------------- | ------------------- | ----------------------------- |
-| `update:value` | `Date \| undefined` | Fires when a date is selected |
+| 事件           | 载荷                | 说明           |
+| -------------- | ------------------- | -------------- |
+| `update:value` | `Date \| undefined` | 选择日期时触发 |

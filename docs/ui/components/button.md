@@ -1,8 +1,8 @@
-# Button
+# Button 按钮
 
-A versatile button component with multiple types, sizes, and states.
+功能丰富的按钮组件，支持多种类型、尺寸和状态。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A versatile button component with multiple types, sizes, and states.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## Button Types
+## 按钮类型
 
 ::: code-group
 
@@ -107,7 +107,7 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
 ::: code-group
 
@@ -156,9 +156,9 @@ export function App() {
 
 :::
 
-## States
+## 状态
 
-### Disabled
+### 禁用状态
 
 ::: code-group
 
@@ -197,7 +197,7 @@ export function App() {
 
 :::
 
-### Loading
+### 加载中
 
 ::: code-group
 
@@ -236,22 +236,22 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                                                                     | Default     | Description           |
-| ---------- | ------------------------------------------------------------------------ | ----------- | --------------------- |
-| `type`     | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'default'` | Button style type     |
-| `size`     | `'small' \| 'medium' \| 'large'`                                         | `'medium'`  | Button size           |
-| `disabled` | `boolean`                                                                | `false`     | Disable the button    |
-| `loading`  | `boolean`                                                                | `false`     | Show loading spinner  |
-| `block`    | `boolean`                                                                | `false`     | Full-width button     |
-| `plain`    | `boolean`                                                                | `false`     | Outlined style        |
-| `round`    | `boolean`                                                                | `false`     | Fully rounded corners |
+| 属性       | 类型                                                                     | 默认值      | 说明           |
+| ---------- | ------------------------------------------------------------------------ | ----------- | -------------- |
+| `type`     | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'default'` | 按钮样式类型   |
+| `size`     | `'small' \| 'medium' \| 'large'`                                         | `'medium'`  | 按钮尺寸       |
+| `disabled` | `boolean`                                                                | `false`     | 禁用按钮       |
+| `loading`  | `boolean`                                                                | `false`     | 显示加载旋转器 |
+| `block`    | `boolean`                                                                | `false`     | 撑满整行宽度   |
+| `plain`    | `boolean`                                                                | `false`     | 描边样式       |
+| `round`    | `boolean`                                                                | `false`     | 完全圆角       |
 
-### Events
+### 事件 (Events)
 
-| Event   | Payload | Description        |
-| ------- | ------- | ------------------ |
-| `click` | `Event` | Fired when clicked |
+| 事件    | 载荷    | 说明       |
+| ------- | ------- | ---------- |
+| `click` | `Event` | 点击时触发 |

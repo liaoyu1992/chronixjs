@@ -1,345 +1,345 @@
-# Table API Reference
+# API 参考
 
-Complete API reference for the data table component.
+数据表格组件的完整 API 参考。
 
-## Component Props
+## 组件属性
 
-### Required
+### 必填
 
-| Prop      | Type                    | Description        |
-| --------- | ----------------------- | ------------------ |
-| `columns` | `readonly ColumnSpec[]` | Column definitions |
-| `rows`    | `readonly RowSpec[]`    | Row data           |
+| 属性      | 类型                    | 描述   |
+| --------- | ----------------------- | ------ |
+| `columns` | `readonly ColumnSpec[]` | 列定义 |
+| `rows`    | `readonly RowSpec[]`    | 行数据 |
 
-### Theme & Appearance
+### 主题与外观
 
-| Prop                  | Type                         | Default | Description                  |
-| --------------------- | ---------------------------- | ------- | ---------------------------- |
-| `theme`               | `Partial<ChronixTableTheme>` | —       | Theme token overrides        |
-| `enableRowAutoHeight` | `boolean`                    | `false` | Auto row height from content |
-| `maxRowAutoHeightPx`  | `number`                     |         | Max auto row height          |
+| 属性                  | 类型                         | 默认值  | 描述                 |
+| --------------------- | ---------------------------- | ------- | -------------------- |
+| `theme`               | `Partial<ChronixTableTheme>` | —       | 主题令牌覆盖         |
+| `enableRowAutoHeight` | `boolean`                    | `false` | 根据内容自动调整行高 |
+| `maxRowAutoHeightPx`  | `number`                     |         | 最大自动行高         |
 
-### Sorting & Filtering
+### 排序与筛选
 
-| Prop                           | Type            | Default | Description                         |
-| ------------------------------ | --------------- | ------- | ----------------------------------- |
-| `showFilterRow`                | `boolean`       | `false` | Show filter row below header        |
-| `multiFilterDefaultMode`       | `'AND' \| 'OR'` | `'AND'` | Default multi-filter mode           |
-| `setFilterVirtualizeThreshold` | `number`        |         | Virtualize set filter above N items |
-| `numberFilterShowRangeSlider`  | `boolean`       | `false` | Show range slider in number filter  |
+| 属性                           | 类型            | 默认值  | 描述                          |
+| ------------------------------ | --------------- | ------- | ----------------------------- |
+| `showFilterRow`                | `boolean`       | `false` | 在表头下方显示筛选行          |
+| `multiFilterDefaultMode`       | `'AND' \| 'OR'` | `'AND'` | 默认多条件筛选模式            |
+| `setFilterVirtualizeThreshold` | `number`        |         | 集合筛选超过 N 项时启用虚拟化 |
+| `numberFilterShowRangeSlider`  | `boolean`       | `false` | 在数字筛选中显示范围滑块      |
 
-### Editing & Validation
+### 编辑与校验
 
-| Prop                   | Type                                 | Default           | Description             |
-| ---------------------- | ------------------------------------ | ----------------- | ----------------------- |
-| `rowValidators`        | `readonly RowValidator[]`            |                   | Row-level validators    |
-| `pasteValidatorPolicy` | `'skip-rejected' \| 'allow-invalid'` | `'skip-rejected'` | Paste validation policy |
+| 属性                   | 类型                                 | 默认值            | 描述         |
+| ---------------------- | ------------------------------------ | ----------------- | ------------ |
+| `rowValidators`        | `readonly RowValidator[]`            |                   | 行级校验器   |
+| `pasteValidatorPolicy` | `'skip-rejected' \| 'allow-invalid'` | `'skip-rejected'` | 粘贴校验策略 |
 
-### Footer & Menus
+### 底部与菜单
 
-| Prop                       | Type      | Default | Description                   |
-| -------------------------- | --------- | ------- | ----------------------------- |
-| `showFooterRow`            | `boolean` | `false` | Show footer row               |
-| `showColumnVisibilityMenu` | `boolean` | `false` | Show column visibility toggle |
-| `showColumnHeaderMenu`     | `boolean` | `false` | Show column header menus      |
-| `showStatusBar`            | `boolean` | `false` | Show status bar               |
+| 属性                       | 类型      | 默认值  | 描述             |
+| -------------------------- | --------- | ------- | ---------------- |
+| `showFooterRow`            | `boolean` | `false` | 显示底部行       |
+| `showColumnVisibilityMenu` | `boolean` | `false` | 显示列可见性切换 |
+| `showColumnHeaderMenu`     | `boolean` | `false` | 显示列表头菜单   |
+| `showStatusBar`            | `boolean` | `false` | 显示状态栏       |
 
-### Keyboard & Navigation
+### 键盘与导航
 
-| Prop                       | Type      | Default | Description                 |
-| -------------------------- | --------- | ------- | --------------------------- |
-| `enableKeyboardNavigation` | `boolean` | `false` | Enable keyboard navigation  |
-| `enableKeyboardAutoScroll` | `boolean` | `false` | Auto-scroll on keyboard nav |
+| 属性                       | 类型      | 默认值  | 描述               |
+| -------------------------- | --------- | ------- | ------------------ |
+| `enableKeyboardNavigation` | `boolean` | `false` | 启用键盘导航       |
+| `enableKeyboardAutoScroll` | `boolean` | `false` | 键盘导航时自动滚动 |
 
-### Tree Data
+### 树形数据
 
-| Prop                    | Type                           | Default | Description              |
-| ----------------------- | ------------------------------ | ------- | ------------------------ |
-| `expandedRowIds`        | `readonly string[]`            |         | Controlled expanded rows |
-| `defaultExpandedRowIds` | `readonly string[]`            | `[]`    | Initial expanded rows    |
-| `defaultExpandedDepth`  | `number`                       |         | Auto-expand to depth N   |
-| `childrenLoader`        | `(args) => Promise<RowSpec[]>` |         | Async children loader    |
+| 属性                    | 类型                           | 默认值 | 描述              |
+| ----------------------- | ------------------------------ | ------ | ----------------- |
+| `expandedRowIds`        | `readonly string[]`            |        | 受控的展开行      |
+| `defaultExpandedRowIds` | `readonly string[]`            | `[]`   | 初始展开行        |
+| `defaultExpandedDepth`  | `number`                       |        | 自动展开到第 N 层 |
+| `childrenLoader`        | `(args) => Promise<RowSpec[]>` |        | 异步子节点加载器  |
 
-### Selection
+### 选择
 
-| Prop              | Type                            | Default  | Description            |
-| ----------------- | ------------------------------- | -------- | ---------------------- |
-| `selectionMode`   | `'none' \| 'single' \| 'multi'` | `'none'` | Selection mode         |
-| `selectionColumn` | `SelectionColumnConfig`         |          | Checkbox column config |
+| 属性              | 类型                            | 默认值   | 描述         |
+| ----------------- | ------------------------------- | -------- | ------------ |
+| `selectionMode`   | `'none' \| 'single' \| 'multi'` | `'none'` | 选择模式     |
+| `selectionColumn` | `SelectionColumnConfig`         |          | 复选框列配置 |
 
-### Pagination
+### 分页
 
-| Prop                      | Type                | Default | Description           |
-| ------------------------- | ------------------- | ------- | --------------------- |
-| `paginationEnabled`       | `boolean`           | `false` | Enable pagination     |
-| `initialPageSize`         | `number`            | `20`    | Initial page size     |
-| `pageSizeOptions`         | `readonly number[]` |         | Page size choices     |
-| `paginationSiblingCount`  | `number`            |         | Sibling page buttons  |
-| `paginationBoundaryCount` | `number`            |         | Boundary page buttons |
+| 属性                      | 类型                | 默认值  | 描述           |
+| ------------------------- | ------------------- | ------- | -------------- |
+| `paginationEnabled`       | `boolean`           | `false` | 启用分页       |
+| `initialPageSize`         | `number`            | `20`    | 初始每页条数   |
+| `pageSizeOptions`         | `readonly number[]` |         | 每页条数选项   |
+| `paginationSiblingCount`  | `number`            |         | 相邻页码按钮数 |
+| `paginationBoundaryCount` | `number`            |         | 边界页码按钮数 |
 
-### Row Drag
+### 行拖拽
 
-| Prop                | Type                      | Description               |
-| ------------------- | ------------------------- | ------------------------- |
-| `rowDragColumn`     | `RowDragColumnConfig`     | Drag column configuration |
-| `rowDragAutoScroll` | `RowDragAutoScrollConfig` | Auto-scroll on drag       |
+| 属性                | 类型                      | 描述           |
+| ------------------- | ------------------------- | -------------- |
+| `rowDragColumn`     | `RowDragColumnConfig`     | 拖拽列配置     |
+| `rowDragAutoScroll` | `RowDragAutoScrollConfig` | 拖拽时自动滚动 |
 
-### Cell Range
+### 单元格范围
 
-| Prop                 | Type                  | Default  | Description              |
-| -------------------- | --------------------- | -------- | ------------------------ |
-| `cellRangeSelection` | `'none' \| 'enabled'` | `'none'` | Enable cell range select |
+| 属性                 | 类型                  | 默认值   | 描述               |
+| -------------------- | --------------------- | -------- | ------------------ |
+| `cellRangeSelection` | `'none' \| 'enabled'` | `'none'` | 启用单元格范围选择 |
 
-### Undo/Redo
+### 撤销/重做
 
-| Prop                  | Type      | Default | Description              |
-| --------------------- | --------- | ------- | ------------------------ |
-| `enableUndoHistory`   | `boolean` | `false` | Enable undo/redo         |
-| `undoHistoryMaxDepth` | `number`  |         | Max undo history entries |
+| 属性                  | 类型      | 默认值  | 描述               |
+| --------------------- | --------- | ------- | ------------------ |
+| `enableUndoHistory`   | `boolean` | `false` | 启用撤销/重做      |
+| `undoHistoryMaxDepth` | `number`  |         | 最大撤销历史条目数 |
 
-### Loading & Overlays
+### 加载与遮罩层
 
-| Prop             | Type              | Default | Description            |
-| ---------------- | ----------------- | ------- | ---------------------- |
-| `loading`        | `boolean`         | `false` | Show loading state     |
-| `loadingOverlay` | `string \| VNode` |         | Custom loading overlay |
-| `noRowsOverlay`  | `string \| VNode` |         | Custom no-rows overlay |
+| 属性             | 类型              | 默认值  | 描述             |
+| ---------------- | ----------------- | ------- | ---------------- |
+| `loading`        | `boolean`         | `false` | 显示加载状态     |
+| `loadingOverlay` | `string \| VNode` |         | 自定义加载遮罩   |
+| `noRowsOverlay`  | `string \| VNode` |         | 自定义空数据遮罩 |
 
-### Server-Side Data
+### 服务端数据
 
-| Prop                            | Type                           | Default        | Description           |
-| ------------------------------- | ------------------------------ | -------------- | --------------------- |
-| `rowModelType`                  | `'clientSide' \| 'serverSide'` | `'clientSide'` | Data model type       |
-| `serverSideDataSource`          | `ServerSideDataSource`         |                | Server data provider  |
-| `cacheBlockSize`                | `number`                       | `100`          | Rows per server block |
-| `serverSideMaxBlocksInCache`    | `number`                       |                | Max cached blocks     |
-| `serverSidePrefetchAheadBlocks` | `number`                       |                | Blocks to prefetch    |
+| 属性                            | 类型                           | 默认值         | 描述               |
+| ------------------------------- | ------------------------------ | -------------- | ------------------ |
+| `rowModelType`                  | `'clientSide' \| 'serverSide'` | `'clientSide'` | 数据模型类型       |
+| `serverSideDataSource`          | `ServerSideDataSource`         |                | 服务端数据提供者   |
+| `cacheBlockSize`                | `number`                       | `100`          | 每个服务端块的行数 |
+| `serverSideMaxBlocksInCache`    | `number`                       |                | 最大缓存块数       |
+| `serverSidePrefetchAheadBlocks` | `number`                       |                | 预取块数           |
 
-### Cell Style Editor
+### 单元格样式编辑器
 
-| Prop                         | Type                                        | Description              |
-| ---------------------------- | ------------------------------------------- | ------------------------ |
-| `enableCellStyleEditor`      | `boolean`                                   | Enable cell style editor |
-| `cellStyleByRowIdColId`      | `Record<string, Record<string, CellStyle>>` | Initial cell styles      |
-| `cellStylePresetColors`      | `readonly string[]`                         | Preset color palette     |
-| `cellStyleRecentColorsLimit` | `number`                                    | Recent colors limit      |
+| 属性                         | 类型                                        | 描述                 |
+| ---------------------------- | ------------------------------------------- | -------------------- |
+| `enableCellStyleEditor`      | `boolean`                                   | 启用单元格样式编辑器 |
+| `cellStyleByRowIdColId`      | `Record<string, Record<string, CellStyle>>` | 初始单元格样式       |
+| `cellStylePresetColors`      | `readonly string[]`                         | 预设调色板           |
+| `cellStyleRecentColorsLimit` | `number`                                    | 最近使用颜色上限     |
 
-### Tool Panels & Context Menu
+### 工具面板与右键菜单
 
-| Prop          | Type                        | Description              |
-| ------------- | --------------------------- | ------------------------ |
-| `toolPanel`   | `ToolPanelConfig`           | Side panel configuration |
-| `contextMenu` | `ContextMenuConfig \| null` | Right-click menu         |
+| 属性          | 类型                        | 描述         |
+| ------------- | --------------------------- | ------------ |
+| `toolPanel`   | `ToolPanelConfig`           | 侧边面板配置 |
+| `contextMenu` | `ContextMenuConfig \| null` | 右键菜单     |
 
-## Component Events
+## 组件事件
 
-### Cell & Row Events
+### 单元格与行事件
 
-| Event           | Payload Type          | Description         |
-| --------------- | --------------------- | ------------------- |
-| `cell-click`    | `CellClickPayload`    | Cell clicked        |
-| `cell-dblclick` | `CellDblclickPayload` | Cell double-clicked |
-| `row-click`     | `RowClickPayload`     | Row clicked         |
+| 事件            | 载荷类型              | 描述         |
+| --------------- | --------------------- | ------------ |
+| `cell-click`    | `CellClickPayload`    | 单元格被点击 |
+| `cell-dblclick` | `CellDblclickPayload` | 单元格双击   |
+| `row-click`     | `RowClickPayload`     | 行被点击     |
 
-### Header Events
+### 表头事件
 
-| Event                | Payload Type              | Description          |
-| -------------------- | ------------------------- | -------------------- |
-| `header-click`       | `HeaderClickPayload`      | Header cell clicked  |
-| `header-group-click` | `HeaderGroupClickPayload` | Header group clicked |
+| 事件                 | 载荷类型                  | 描述             |
+| -------------------- | ------------------------- | ---------------- |
+| `header-click`       | `HeaderClickPayload`      | 表头单元格被点击 |
+| `header-group-click` | `HeaderGroupClickPayload` | 表头分组被点击   |
 
-### Sort & Filter
+### 排序与筛选
 
-| Event           | Payload Type          | Description          |
-| --------------- | --------------------- | -------------------- |
-| `sort-change`   | `SortChangePayload`   | Sort state changed   |
-| `filter-change` | `FilterChangePayload` | Filter state changed |
+| 事件            | 载荷类型              | 描述         |
+| --------------- | --------------------- | ------------ |
+| `sort-change`   | `SortChangePayload`   | 排序状态变更 |
+| `filter-change` | `FilterChangePayload` | 筛选状态变更 |
 
-### Selection
+### 选择
 
-| Event              | Payload Type             | Description       |
-| ------------------ | ------------------------ | ----------------- |
-| `selection-change` | `SelectionChangePayload` | Selection changed |
+| 事件               | 载荷类型                 | 描述     |
+| ------------------ | ------------------------ | -------- |
+| `selection-change` | `SelectionChangePayload` | 选择变更 |
 
-### Pagination
+### 分页
 
-| Event         | Payload Type        | Description  |
-| ------------- | ------------------- | ------------ |
-| `page-change` | `PageChangePayload` | Page changed |
+| 事件          | 载荷类型            | 描述     |
+| ------------- | ------------------- | -------- |
+| `page-change` | `PageChangePayload` | 页码变更 |
 
-### Editing
+### 编辑
 
-| Event               | Payload Type             | Description          |
-| ------------------- | ------------------------ | -------------------- |
-| `cell-edit-start`   | `CellEditStartPayload`   | Cell editing started |
-| `cell-edit-stop`    | `CellEditStopPayload`    | Cell editing stopped |
-| `cell-value-change` | `CellValueChangePayload` | Cell value committed |
-
-### Column Operations
-
-| Event                      | Payload Type                    | Description         |
-| -------------------------- | ------------------------------- | ------------------- |
-| `column-width-change`      | `ColumnWidthChangePayload`      | Column resized      |
-| `column-order-change`      | `ColumnOrderChangePayload`      | Column reordered    |
-| `column-visibility-change` | `ColumnVisibilityChangePayload` | Column hidden/shown |
-
-### Row Operations
-
-| Event                | Payload Type              | Description       |
-| -------------------- | ------------------------- | ----------------- |
-| `row-order-change`   | `RowOrderChangePayload`   | Row reordered     |
-| `active-cell-change` | `ActiveCellChangePayload` | Active cell moved |
-
-### Lifecycle
-
-| Event         | Payload Type  | Description                     |
-| ------------- | ------------- | ------------------------------- |
-| `table-ready` | `TableHandle` | Table initialized, handle ready |
-
-## TableHandle (Imperative API)
-
-### Data Access
-
-| Method                 | Return Type           | Description           |
-| ---------------------- | --------------------- | --------------------- |
-| `getColumnTable()`     | `ColumnTable`         | Column data table     |
-| `getRowDataSource()`   | `RowDataSource`       | Row data source       |
-| `getResolvedWidth(id)` | `number \| undefined` | Resolved column width |
-
-### Sort
-
-| Method      | Signature                                | Description        |
-| ----------- | ---------------------------------------- | ------------------ |
-| `getSort`   | `() => readonly SortSpec[]`              | Current sort state |
-| `setSort`   | `(spec: SortSpec \| SortSpec[] \| null)` | Apply sort         |
-| `clearSort` | `() => void`                             | Clear all sorting  |
-
-### Filter
-
-| Method                            | Description                      |
-| --------------------------------- | -------------------------------- |
-| `getFilter()`                     | Get current filter specs         |
-| `setFilter(spec)`                 | Apply filter spec(s)             |
-| `clearFilter()`                   | Remove all filters               |
-| `getAdvancedFilter()`             | Get expression filter            |
-| `setAdvancedFilter(expr)`         | Apply expression filter          |
-| `parseAndSetAdvancedFilter(text)` | Parse and apply text filter      |
-| `getColumnUniqueValues(colId)`    | Get unique values for set filter |
-
-### Quick Find
-
-| Method                     | Description         |
-| -------------------------- | ------------------- |
-| `getQuickFindText()`       | Current search text |
-| `setQuickFindText(text)`   | Set search text     |
-| `getQuickFindMatchCount()` | Number of matches   |
-
-### Selection
-
-| Method                   | Description              |
-| ------------------------ | ------------------------ |
-| `getSelectedRowIds()`    | Get selected row IDs     |
-| `setSelectedRowIds(ids)` | Set selected rows        |
-| `clearSelection()`       | Clear all selection      |
-| `isRowSelected(rowId)`   | Check if row is selected |
-
-### Pagination
-
-| Method            | Description         |
-| ----------------- | ------------------- |
-| `getPage()`       | Current page number |
-| `setPage(n)`      | Go to page          |
-| `getPageSize()`   | Current page size   |
-| `setPageSize(n)`  | Change page size    |
-| `getTotalPages()` | Total page count    |
-
-### Editing
-
-| Method                           | Description           |
-| -------------------------------- | --------------------- |
-| `startEditingCell(rowId, colId)` | Start editing a cell  |
-| `commitEditingCell()`            | Commit current edit   |
-| `cancelEditingCell()`            | Cancel current edit   |
-| `getEditingCell()`               | Current editing state |
-| `setEditingCellDraft(value)`     | Set draft value       |
-
-### Column Operations
-
-| Method                               | Description              |
-| ------------------------------------ | ------------------------ |
-| `startResizingColumn(colId)`         | Start column resize      |
-| `commitColumnResize()`               | Commit resize            |
-| `cancelColumnResize()`               | Cancel resize            |
-| `startMovingColumn(colId)`           | Start column move        |
-| `commitColumnMove(target, position)` | Commit move              |
-| `cancelColumnMove()`                 | Cancel move              |
-| `autosizeColumn(colId)`              | Auto-size one column     |
-| `autosizeAllColumns()`               | Auto-size all columns    |
-| `setColumnVisibility(colId, hidden)` | Show/hide column         |
-| `toggleColumnVisibility(colId)`      | Toggle column visibility |
-
-### Row Operations
-
-| Method                            | Description     |
-| --------------------------------- | --------------- |
-| `startMovingRow(rowId)`           | Start row move  |
-| `commitRowMove(target, position)` | Commit row move |
-| `cancelRowMove()`                 | Cancel row move |
-
-### Cell Range
-
-| Method                          | Description             |
-| ------------------------------- | ----------------------- |
-| `setCellRange(range)`           | Select a cell range     |
-| `clearCellRange()`              | Clear range selection   |
-| `getCellRange()`                | Current range           |
-| `copyCellRangeToClipboard()`    | Copy range to clipboard |
-| `pasteCellRangeFromClipboard()` | Paste from clipboard    |
-| `fillCellRange(targetCell)`     | Fill-handle drag        |
-
-### Undo / Redo
-
-| Method           | Description             |
-| ---------------- | ----------------------- |
-| `undo()`         | Undo last change        |
-| `redo()`         | Redo last undone change |
-| `canUndo()`      | Has undo available      |
-| `canRedo()`      | Has redo available      |
-| `clearHistory()` | Clear undo history      |
-
-### Export
-
-| Method                   | Description                |
-| ------------------------ | -------------------------- |
-| `exportToCsv(options?)`  | Export to CSV string       |
-| `exportToXlsx(options?)` | Export to XLSX ArrayBuffer |
-
-### Server-Side
-
-| Method                                | Description                 |
-| ------------------------------------- | --------------------------- |
-| `refreshServerSideRows()`             | Refresh all data            |
-| `invalidateServerSideBlocks(indices)` | Invalidate specific blocks  |
-| `getServerSideTotalRowCount()`        | Total server-side row count |
-| `getServerSideBlockState(index)`      | Block loading state         |
-
-### Tool Panels
-
-| Method                   | Description             |
+| 事件                | 载荷类型                 | 描述           |
+| ------------------- | ------------------------ | -------------- |
+| `cell-edit-start`   | `CellEditStartPayload`   | 单元格开始编辑 |
+| `cell-edit-stop`    | `CellEditStopPayload`    | 单元格停止编辑 |
+| `cell-value-change` | `CellValueChangePayload` | 单元格值已提交 |
+
+### 列操作
+
+| 事件                       | 载荷类型                        | 描述        |
+| -------------------------- | ------------------------------- | ----------- |
+| `column-width-change`      | `ColumnWidthChangePayload`      | 列宽调整    |
+| `column-order-change`      | `ColumnOrderChangePayload`      | 列重排序    |
+| `column-visibility-change` | `ColumnVisibilityChangePayload` | 列显示/隐藏 |
+
+### 行操作
+
+| 事件                 | 载荷类型                  | 描述           |
+| -------------------- | ------------------------- | -------------- |
+| `row-order-change`   | `RowOrderChangePayload`   | 行重排序       |
+| `active-cell-change` | `ActiveCellChangePayload` | 活动单元格移动 |
+
+### 生命周期
+
+| 事件          | 载荷类型      | 描述                     |
+| ------------- | ------------- | ------------------------ |
+| `table-ready` | `TableHandle` | 表格已初始化，句柄已就绪 |
+
+## TableHandle（命令式 API）
+
+### 数据访问
+
+| 方法                   | 返回类型              | 描述         |
+| ---------------------- | --------------------- | ------------ |
+| `getColumnTable()`     | `ColumnTable`         | 列数据表     |
+| `getRowDataSource()`   | `RowDataSource`       | 行数据源     |
+| `getResolvedWidth(id)` | `number \| undefined` | 已解析的列宽 |
+
+### 排序
+
+| 方法        | 签名                                     | 描述         |
+| ----------- | ---------------------------------------- | ------------ |
+| `getSort`   | `() => readonly SortSpec[]`              | 当前排序状态 |
+| `setSort`   | `(spec: SortSpec \| SortSpec[] \| null)` | 应用排序     |
+| `clearSort` | `() => void`                             | 清除所有排序 |
+
+### 筛选
+
+| 方法                              | 描述                 |
+| --------------------------------- | -------------------- |
+| `getFilter()`                     | 获取当前筛选规格     |
+| `setFilter(spec)`                 | 应用筛选规格         |
+| `clearFilter()`                   | 移除所有筛选         |
+| `getAdvancedFilter()`             | 获取表达式筛选       |
+| `setAdvancedFilter(expr)`         | 应用表达式筛选       |
+| `parseAndSetAdvancedFilter(text)` | 解析并应用文本筛选   |
+| `getColumnUniqueValues(colId)`    | 获取集合筛选的唯一值 |
+
+### 快速查找
+
+| 方法                       | 描述         |
+| -------------------------- | ------------ |
+| `getQuickFindText()`       | 当前搜索文本 |
+| `setQuickFindText(text)`   | 设置搜索文本 |
+| `getQuickFindMatchCount()` | 匹配数量     |
+
+### 选择
+
+| 方法                     | 描述             |
+| ------------------------ | ---------------- |
+| `getSelectedRowIds()`    | 获取已选行 ID    |
+| `setSelectedRowIds(ids)` | 设置已选行       |
+| `clearSelection()`       | 清除所有选择     |
+| `isRowSelected(rowId)`   | 检查行是否已选中 |
+
+### 分页
+
+| 方法              | 描述         |
+| ----------------- | ------------ |
+| `getPage()`       | 当前页码     |
+| `setPage(n)`      | 跳转到指定页 |
+| `getPageSize()`   | 当前每页条数 |
+| `setPageSize(n)`  | 更改每页条数 |
+| `getTotalPages()` | 总页数       |
+
+### 编辑
+
+| 方法                             | 描述           |
+| -------------------------------- | -------------- |
+| `startEditingCell(rowId, colId)` | 开始编辑单元格 |
+| `commitEditingCell()`            | 提交当前编辑   |
+| `cancelEditingCell()`            | 取消当前编辑   |
+| `getEditingCell()`               | 当前编辑状态   |
+| `setEditingCellDraft(value)`     | 设置草稿值     |
+
+### 列操作
+
+| 方法                                 | 描述             |
+| ------------------------------------ | ---------------- |
+| `startResizingColumn(colId)`         | 开始调整列宽     |
+| `commitColumnResize()`               | 提交列宽调整     |
+| `cancelColumnResize()`               | 取消列宽调整     |
+| `startMovingColumn(colId)`           | 开始移动列       |
+| `commitColumnMove(target, position)` | 提交列移动       |
+| `cancelColumnMove()`                 | 取消列移动       |
+| `autosizeColumn(colId)`              | 自适应单列宽度   |
+| `autosizeAllColumns()`               | 自适应所有列宽度 |
+| `setColumnVisibility(colId, hidden)` | 显示/隐藏列      |
+| `toggleColumnVisibility(colId)`      | 切换列可见性     |
+
+### 行操作
+
+| 方法                              | 描述       |
+| --------------------------------- | ---------- |
+| `startMovingRow(rowId)`           | 开始移动行 |
+| `commitRowMove(target, position)` | 提交行移动 |
+| `cancelRowMove()`                 | 取消行移动 |
+
+### 单元格范围
+
+| 方法                            | 描述             |
+| ------------------------------- | ---------------- |
+| `setCellRange(range)`           | 选择单元格范围   |
+| `clearCellRange()`              | 清除范围选择     |
+| `getCellRange()`                | 当前范围         |
+| `copyCellRangeToClipboard()`    | 复制范围到剪贴板 |
+| `pasteCellRangeFromClipboard()` | 从剪贴板粘贴     |
+| `fillCellRange(targetCell)`     | 填充手柄拖拽     |
+
+### 撤销 / 重做
+
+| 方法             | 描述             |
+| ---------------- | ---------------- |
+| `undo()`         | 撤销上次更改     |
+| `redo()`         | 重做上次撤销     |
+| `canUndo()`      | 是否有可撤销操作 |
+| `canRedo()`      | 是否有可重做操作 |
+| `clearHistory()` | 清除撤销历史     |
+
+### 导出
+
+| 方法                     | 描述                    |
 | ------------------------ | ----------------------- |
-| `openToolPanel(id)`      | Open a tool panel       |
-| `closeToolPanel()`       | Close active tool panel |
-| `getActiveToolPanelId()` | Current open panel ID   |
+| `exportToCsv(options?)`  | 导出为 CSV 字符串       |
+| `exportToXlsx(options?)` | 导出为 XLSX ArrayBuffer |
 
-### Cell Style
+### 服务端
 
-| Method                      | Description            |
-| --------------------------- | ---------------------- |
-| `openCellStyleEditor(r, c)` | Open cell style editor |
-| `closeCellStyleEditor()`    | Close editor           |
-| `getCellStyleMap()`         | All cell styles        |
+| 方法                                  | 描述         |
+| ------------------------------------- | ------------ |
+| `refreshServerSideRows()`             | 刷新所有数据 |
+| `invalidateServerSideBlocks(indices)` | 使指定块失效 |
+| `getServerSideTotalRowCount()`        | 服务端总行数 |
+| `getServerSideBlockState(index)`      | 块加载状态   |
 
-## Core Types
+### 工具面板
+
+| 方法                     | 描述              |
+| ------------------------ | ----------------- |
+| `openToolPanel(id)`      | 打开工具面板      |
+| `closeToolPanel()`       | 关闭活动工具面板  |
+| `getActiveToolPanelId()` | 当前打开的面板 ID |
+
+### 单元格样式
+
+| 方法                        | 描述                 |
+| --------------------------- | -------------------- |
+| `openCellStyleEditor(r, c)` | 打开单元格样式编辑器 |
+| `closeCellStyleEditor()`    | 关闭编辑器           |
+| `getCellStyleMap()`         | 所有单元格样式       |
+
+## 核心类型
 
 ### ColumnSpec
 
@@ -406,7 +406,7 @@ interface SortSpec {
 }
 ```
 
-### FilterSpec (union)
+### FilterSpec（联合类型）
 
 ```typescript
 type FilterSpec =

@@ -1,8 +1,8 @@
-# Gradient Text
+# Gradient Text 渐变文字
 
-Text with CSS linear-gradient applied via `background-clip: text`.
+通过 `background-clip: text` 实现 CSS 线性渐变文字效果。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Text with CSS linear-gradient applied via `background-clip: text`.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## Custom Direction
+## 自定义方向
 
 ::: code-group
 
@@ -84,12 +84,12 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                        | Default                  | Description                   |
-| ----------- | --------------------------- | ------------------------ | ----------------------------- |
-| `value`     | `string`                    | `''`                     | Text content                  |
-| `colors`    | `readonly [string, string]` | `['#3b82f6', '#a855f7']` | Gradient start and end colors |
-| `direction` | `number`                    | `90`                     | Gradient direction in degrees |
+| Prop        | 类型                        | 默认值                   | 描述               |
+| ----------- | --------------------------- | ------------------------ | ------------------ |
+| `value`     | `string`                    | `''`                     | 文本内容           |
+| `colors`    | `readonly [string, string]` | `['#3b82f6', '#a855f7']` | 渐变起始和结束颜色 |
+| `direction` | `number`                    | `90`                     | 渐变方向（角度）   |

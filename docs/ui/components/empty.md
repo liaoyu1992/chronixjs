@@ -1,8 +1,8 @@
-# Empty
+# Empty 空状态
 
-A placeholder component for empty states with an icon and description.
+空状态占位组件，包含图标和描述文本。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ A placeholder component for empty states with an icon and description.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-Simple empty state with default description:
+使用默认描述的简单空状态：
 
 ::: code-group
 
@@ -53,9 +53,9 @@ export function App() {
 
 :::
 
-## Custom Description
+## 自定义描述
 
-Set a custom description text for the empty state:
+为空状态设置自定义描述文本：
 
 ::: code-group
 
@@ -92,9 +92,9 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
-Use the `size` prop to control the empty state size:
+使用 `size` 属性控制空状态的大小：
 
 ::: code-group
 
@@ -145,11 +145,11 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                             | Default     | Description      |
-| ------------- | -------------------------------- | ----------- | ---------------- |
-| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | Empty size       |
-| `description` | `string`                         | `'No data'` | Description text |
+| Prop          | 类型                             | 默认值      | 描述       |
+| ------------- | -------------------------------- | ----------- | ---------- |
+| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | 空状态大小 |
+| `description` | `string`                         | `'No data'` | 描述文本   |

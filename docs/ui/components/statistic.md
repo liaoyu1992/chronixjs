@@ -1,8 +1,8 @@
-# Statistic
+# Statistic 统计数值
 
-Numeric display for dashboards and KPI summaries with optional prefix/suffix.
+用于仪表板和 KPI 摘要的数值展示组件，支持可选的前缀/后缀。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Numeric display for dashboards and KPI summaries with optional prefix/suffix.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## With Precision
+## 精度
 
 ::: code-group
 
@@ -84,7 +84,7 @@ export function App() {
 
 :::
 
-## With Prefix and Suffix
+## 前缀和后缀
 
 ::: code-group
 
@@ -127,20 +127,20 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                            | Default     | Description                                    |
-| ------------- | ------------------------------- | ----------- | ---------------------------------------------- |
-| `label`       | `string \| undefined`           | `undefined` | Heading label above the value                  |
-| `value`       | `number \| string \| undefined` | `undefined` | Display value; numbers pass through formatting |
-| `precision`   | `number \| undefined`           | `undefined` | Decimal precision for numeric values           |
-| `tabularNums` | `boolean`                       | `true`      | Use `tabular-nums` for aligned digit widths    |
+| 属性          | 类型                            | 默认值      | 说明                             |
+| ------------- | ------------------------------- | ----------- | -------------------------------- |
+| `label`       | `string \| undefined`           | `undefined` | 数值上方的标题标签               |
+| `value`       | `number \| string \| undefined` | `undefined` | 显示值；数字会经过格式化处理     |
+| `precision`   | `number \| undefined`           | `undefined` | 数值的小数精度                   |
+| `tabularNums` | `boolean`                       | `true`      | 使用 `tabular-nums` 对齐数字宽度 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot     | Description                       |
-| -------- | --------------------------------- |
-| `prefix` | Content rendered before the value |
-| `suffix` | Content rendered after the value  |
+| 插槽     | 说明             |
+| -------- | ---------------- |
+| `prefix` | 数值前渲染的内容 |
+| `suffix` | 数值后渲染的内容 |

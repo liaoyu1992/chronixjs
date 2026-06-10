@@ -1,8 +1,8 @@
-# Dropdown
+# Dropdown 下拉菜单
 
-A popup menu triggered by hover, click, or focus with keyboard navigation.
+通过悬停、点击或聚焦触发的弹出菜单，支持键盘导航。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A popup menu triggered by hover, click, or focus with keyboard navigation.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -96,11 +96,11 @@ export function App() {
 
 :::
 
-## Trigger Modes
+## 触发方式
 
-Use the `trigger` prop to control how the dropdown opens. The default is `click`.
+使用 `trigger` 属性控制下拉菜单的打开方式。默认值为 `click`。
 
-### Click Trigger (default)
+### 点击触发（默认）
 
 ::: code-group
 
@@ -179,7 +179,7 @@ export function App() {
 
 :::
 
-### Hover Trigger
+### 悬停触发
 
 ::: code-group
 
@@ -261,11 +261,11 @@ export function App() {
 
 :::
 
-## Placements
+## 弹出位置
 
-The dropdown popup supports 12 placement positions. The default is `bottom-start`.
+下拉弹窗支持 12 个弹出位置。默认值为 `bottom-start`。
 
-Available placements: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `bottom-end`, `left`, `left-start`, `left-end`, `right`, `right-start`, `right-end`.
+可用位置：`top`、`top-start`、`top-end`、`bottom`、`bottom-start`、`bottom-end`、`left`、`left-start`、`left-end`、`right`、`right-start`、`right-end`。
 
 ::: code-group
 
@@ -344,7 +344,7 @@ export function App() {
 
 :::
 
-## Disabled
+## 禁用状态
 
 ::: code-group
 
@@ -401,27 +401,27 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                                        | Default          | Description           |
-| ----------- | ------------------------------------------- | ---------------- | --------------------- |
-| `show`      | `boolean`                                   | `undefined`      | Controlled visibility |
-| `trigger`   | `'hover' \| 'click' \| 'focus' \| 'manual'` | `'click'`        | Trigger mode          |
-| `placement` | `PopupPlacement`                            | `'bottom-start'` | Popup position        |
-| `options`   | `DropdownOption[]`                          | `[]`             | Option list           |
-| `disabled`  | `boolean`                                   | `false`          | Disable dropdown      |
+| Prop        | 类型                                        | 默认值           | 描述             |
+| ----------- | ------------------------------------------- | ---------------- | ---------------- |
+| `show`      | `boolean`                                   | `undefined`      | 受控显示状态     |
+| `trigger`   | `'hover' \| 'click' \| 'focus' \| 'manual'` | `'click'`        | 触发方式         |
+| `placement` | `PopupPlacement`                            | `'bottom-start'` | 弹出位置         |
+| `options`   | `DropdownOption[]`                          | `[]`             | 选项列表         |
+| `disabled`  | `boolean`                                   | `false`          | 是否禁用下拉菜单 |
 
-### Events
+### 事件 (Events)
 
-| Event         | Payload          | Description        |
+| Event         | Payload          | 描述               |
 | ------------- | ---------------- | ------------------ |
-| `update:show` | `boolean`        | Visibility changed |
-| `select`      | `DropdownOption` | Option selected    |
+| `update:show` | `boolean`        | 显示状态变化时触发 |
+| `select`      | `DropdownOption` | 选中选项时触发     |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description     |
-| --------- | --------------- |
-| `default` | Trigger element |
+| Slot      | 描述       |
+| --------- | ---------- |
+| `default` | 触发器元素 |

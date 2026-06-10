@@ -1,27 +1,27 @@
-# Autocomplete
+# 自动补全
 
-Headless autocomplete primitive for type-ahead search with match highlighting. Pure function that filters and ranks items, returning match spans for highlighting.
+用于前置搜索和匹配高亮的无头自动补全原语。纯函数用于过滤和排序项，并返回匹配区间用于高亮显示。
 
-## Install
+## 安装
 
 ```bash
 pnpm add @chronixjs/cx-kit
 ```
 
-## Overview
+## 概述
 
-Two pure functions:
+两个纯函数：
 
-- **`filterAutocompleteItems`** — filter and rank items by query, with match spans for highlighting
-- **`computeMatchSpans`** — compute highlight spans for arbitrary text/query pairs
+- **`filterAutocompleteItems`** — 根据查询过滤和排序项，并返回匹配区间用于高亮
+- **`computeMatchSpans`** — 为任意文本/查询对计算高亮区间
 
 ```ts
 import { filterAutocompleteItems, computeMatchSpans } from '@chronixjs/cx-kit';
 ```
 
-## Basic Usage
+## 基本用法
 
-### Filter Items
+### 过滤项
 
 ```ts
 import { filterAutocompleteItems } from '@chronixjs/cx-kit';
@@ -51,21 +51,21 @@ const matches = filterAutocompleteItems({
 // ]
 ```
 
-### Match Modes
+### 匹配模式
 
-**Prefix** — matches items where the text starts with the query:
+**前缀匹配（Prefix）** — 匹配文本以查询开头的项：
 
 ```ts
 const prefixMatches = filterAutocompleteItems({
   items: fruits,
   query: 'ap',
   getText: (item) => item.name,
-  matchMode: 'prefix', // default
+  matchMode: 'prefix', // 默认
 });
 // Apple, Apricot
 ```
 
-**Substring** — matches items where the query appears anywhere:
+**子串匹配（Substring）** — 匹配查询出现在任意位置的项：
 
 ```ts
 const substringMatches = filterAutocompleteItems({
@@ -77,9 +77,9 @@ const substringMatches = filterAutocompleteItems({
 // Banana
 ```
 
-### Compute Match Spans
+### 计算匹配区间
 
-Use `computeMatchSpans` to get highlight ranges for any text/query pair:
+使用 `computeMatchSpans` 获取任意文本/查询对的高亮范围：
 
 ```ts
 import { computeMatchSpans } from '@chronixjs/cx-kit';
@@ -88,9 +88,9 @@ const spans = computeMatchSpans('Blueberry', 'berry', 'substring');
 // spans → [{ start: 4, end: 9 }]
 ```
 
-## Rendering Highlights
+## 渲染高亮
 
-Use `matchSpans` to highlight matched portions in your UI:
+使用 `matchSpans` 在 UI 中高亮显示匹配的部分：
 
 ### Vue 3
 
@@ -238,21 +238,21 @@ export function AutocompleteDemo() {
 }
 ```
 
-## Async Data
+## 异步数据
 
-Combine with async loading for server-side search:
+结合异步加载实现服务端搜索：
 
 ```ts
-import { ref, watch } from 'vue'; // or useState/useEffect in React
+import { ref, watch } from 'vue'; // 或 React 中的 useState/useEffect
 import { filterAutocompleteItems } from '@chronixjs/cx-kit';
 
-// Example: debounce + async fetch
+// 示例：防抖 + 异步获取
 async function searchProducts(query: string) {
-  // Fetch from API
+  // 从 API 获取数据
   const response = await fetch(`/api/products?q=${encodeURIComponent(query)}`);
   const products = await response.json();
 
-  // Re-filter locally for match spans (server may not return spans)
+  // 在本地重新过滤以获取匹配区间（服务端可能不返回区间）
   return filterAutocompleteItems({
     items: products,
     query,
@@ -262,53 +262,53 @@ async function searchProducts(query: string) {
 }
 ```
 
-## API Reference
+## API 参考
 
 ### `filterAutocompleteItems<T>(input)`
 
-Filters, ranks, and annotates items with match spans.
+过滤、排序并为项添加匹配区间标注。
 
-#### Input
+#### 输入
 
-| Property    | Type                      | Default    | Description                       |
-| ----------- | ------------------------- | ---------- | --------------------------------- |
-| `items`     | `readonly T[]`            | —          | The full list of items            |
-| `query`     | `string`                  | —          | Search query                      |
-| `getText`   | `(item: T) => string`     | —          | Extract searchable text from item |
-| `matchMode` | `'prefix' \| 'substring'` | `'prefix'` | How to match the query            |
+| 属性        | 类型                      | 默认值     | 描述                 |
+| ----------- | ------------------------- | ---------- | -------------------- |
+| `items`     | `readonly T[]`            | —          | 完整的项列表         |
+| `query`     | `string`                  | —          | 搜索查询             |
+| `getText`   | `(item: T) => string`     | —          | 从项中提取可搜索文本 |
+| `matchMode` | `'prefix' \| 'substring'` | `'prefix'` | 匹配查询的方式       |
 
-**Returns:** `readonly AutocompleteMatch<T>[]` — sorted by score (lower is better).
+**返回：** `readonly AutocompleteMatch<T>[]` — 按 score 排序（越小越匹配）。
 
 #### AutocompleteMatch
 
-| Property     | Type                   | Description                      |
-| ------------ | ---------------------- | -------------------------------- |
-| `item`       | `T`                    | The original item                |
-| `score`      | `number`               | Sort rank (lower = better match) |
-| `matchSpans` | `readonly MatchSpan[]` | Ranges to highlight              |
+| 属性         | 类型                   | 描述                   |
+| ------------ | ---------------------- | ---------------------- |
+| `item`       | `T`                    | 原始项                 |
+| `score`      | `number`               | 排序分数，越小匹配越好 |
+| `matchSpans` | `readonly MatchSpan[]` | 需要高亮的范围         |
 
 #### MatchSpan
 
-| Property | Type     | Description                          |
-| -------- | -------- | ------------------------------------ |
-| `start`  | `number` | Start index of the match (inclusive) |
-| `end`    | `number` | End index of the match (exclusive)   |
+| 属性    | 类型     | 描述                     |
+| ------- | -------- | ------------------------ |
+| `start` | `number` | 匹配的起始索引（包含）   |
+| `end`   | `number` | 匹配的结束索引（不包含） |
 
 ---
 
 ### `computeMatchSpans(text, query, matchMode?)`
 
-Compute highlight spans for any text/query pair.
+为任意文本/查询对计算高亮区间。
 
-| Parameter   | Type                      | Default       | Description       |
-| ----------- | ------------------------- | ------------- | ----------------- |
-| `text`      | `string`                  | —             | Text to search in |
-| `query`     | `string`                  | —             | Query to find     |
-| `matchMode` | `'prefix' \| 'substring'` | `'substring'` | Match mode        |
+| 参数        | 类型                      | 默认值        | 描述         |
+| ----------- | ------------------------- | ------------- | ------------ |
+| `text`      | `string`                  | —             | 要搜索的文本 |
+| `query`     | `string`                  | —             | 要查找的查询 |
+| `matchMode` | `'prefix' \| 'substring'` | `'substring'` | 匹配模式     |
 
-**Returns:** `readonly MatchSpan[]`
+**返回：** `readonly MatchSpan[]`
 
-### Types
+### 类型
 
 ```ts
 type AutocompleteMatchMode = 'prefix' | 'substring';

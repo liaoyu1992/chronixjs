@@ -1,8 +1,8 @@
-# Timeline
+# Timeline 时间线
 
-A chronological event display with colored indicators and connecting lines.
+带有彩色指示器和连接线的按时间顺序展示事件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A chronological event display with colored indicators and connecting lines.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -127,9 +127,9 @@ export function App() {
 
 :::
 
-## Custom Colors
+## 自定义颜色
 
-Use the `color` field on each item to set the indicator color. Available colors are `default`, `success`, `warning`, `error`, and `info`.
+使用每项的 `color` 字段设置指示器颜色。可用颜色为 `default`、`success`、`warning`、`error` 和 `info`。
 
 ::: code-group
 
@@ -284,9 +284,9 @@ export function App() {
 
 :::
 
-## Dashed Line
+## 虚线
 
-Use `lineType: 'dashed'` on a timeline item to render a dashed connecting line instead of the default solid line.
+在时间线项上使用 `lineType: 'dashed'` 来渲染虚线连接线，替代默认的实线。
 
 ::: code-group
 
@@ -402,21 +402,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop    | Type             | Default | Description      |
-| ------- | ---------------- | ------- | ---------------- |
-| `items` | `TimelineItem[]` | `[]`    | Timeline entries |
+| 属性    | 类型             | 默认值 | 说明           |
+| ------- | ---------------- | ------ | -------------- |
+| `items` | `TimelineItem[]` | `[]`   | 时间线条目数组 |
 
-### TimelineItem Interface
+### TimelineItem 接口
 
-| Field         | Type                                                       | Default     | Description       |
-| ------------- | ---------------------------------------------------------- | ----------- | ----------------- |
-| `key`         | `string`                                                   | --          | Unique key        |
-| `title`       | `string`                                                   | --          | Event title       |
-| `description` | `string`                                                   | `undefined` | Event description |
-| `timestamp`   | `string`                                                   | `undefined` | Timestamp text    |
-| `color`       | `'default' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | Indicator color   |
-| `lineType`    | `'default' \| 'dashed'`                                    | `'default'` | Line style        |
+| 字段          | 类型                                                       | 默认值      | 说明       |
+| ------------- | ---------------------------------------------------------- | ----------- | ---------- |
+| `key`         | `string`                                                   | --          | 唯一键     |
+| `title`       | `string`                                                   | --          | 事件标题   |
+| `description` | `string`                                                   | `undefined` | 事件描述   |
+| `timestamp`   | `string`                                                   | `undefined` | 时间戳文本 |
+| `color`       | `'default' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | 指示器颜色 |
+| `lineType`    | `'default' \| 'dashed'`                                    | `'default'` | 线条样式   |

@@ -1,8 +1,8 @@
-# Tree
+# Tree 树
 
-Hierarchical tree view with expand/collapse, selection, drag-and-drop reorder, virtual scrolling, and async loading.
+层级树形视图，支持展开/收起、选择、拖拽排序、虚拟滚动和异步加载。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Hierarchical tree view with expand/collapse, selection, drag-and-drop reorder, v
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -117,47 +117,47 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop                | Type                                                    | Default     | Description                  |
-| ------------------- | ------------------------------------------------------- | ----------- | ---------------------------- |
-| `value`             | `string \| undefined`                                   | `undefined` | Selected node key            |
-| `items`             | `readonly TreeNodeSpec<TreeNodeData>[]`                 | `[]`        | Tree data                    |
-| `expandedKeys`      | `ReadonlySet<string> \| readonly string[] \| undefined` | `undefined` | Controlled expanded keys     |
-| `selectable`        | `boolean`                                               | `true`      | Allow node selection         |
-| `defaultExpandAll`  | `boolean`                                               | `false`     | Expand all nodes on mount    |
-| `draggable`         | `boolean`                                               | `false`     | Enable drag-and-drop reorder |
-| `virtual`           | `boolean`                                               | `false`     | Enable virtual scrolling     |
-| `virtualItemHeight` | `number`                                                | `28`        | Row height for virtual mode  |
-| `height`            | `number \| string \| undefined`                         | `undefined` | Container height             |
-| `loadChildren`      | `(node) => Promise<...>`                                | `undefined` | Async children loader        |
-| `filter`            | `string \| undefined`                                   | `undefined` | Filter string                |
-| `disabled`          | `boolean`                                               | `false`     | Disable the entire tree      |
+| 属性                | 类型                                                    | 默认值      | 说明               |
+| ------------------- | ------------------------------------------------------- | ----------- | ------------------ |
+| `value`             | `string \| undefined`                                   | `undefined` | 选中的节点键       |
+| `items`             | `readonly TreeNodeSpec<TreeNodeData>[]`                 | `[]`        | 树形数据           |
+| `expandedKeys`      | `ReadonlySet<string> \| readonly string[] \| undefined` | `undefined` | 受控的已展开键     |
+| `selectable`        | `boolean`                                               | `true`      | 允许节点选择       |
+| `defaultExpandAll`  | `boolean`                                               | `false`     | 挂载时展开所有节点 |
+| `draggable`         | `boolean`                                               | `false`     | 启用拖拽排序       |
+| `virtual`           | `boolean`                                               | `false`     | 启用虚拟滚动       |
+| `virtualItemHeight` | `number`                                                | `28`        | 虚拟模式下的行高   |
+| `height`            | `number \| string \| undefined`                         | `undefined` | 容器高度           |
+| `loadChildren`      | `(node) => Promise<...>`                                | `undefined` | 异步子节点加载器   |
+| `filter`            | `string \| undefined`                                   | `undefined` | 过滤字符串         |
+| `disabled`          | `boolean`                                               | `false`     | 禁用整棵树         |
 
 ### TreeNodeData
 
-| Property   | Type                   | Description           |
-| ---------- | ---------------------- | --------------------- |
-| `label`    | `string`               | Display text          |
-| `icon`     | `string \| undefined`  | Optional icon name    |
-| `disabled` | `boolean \| undefined` | Disable specific node |
-| `isLeaf`   | `boolean \| undefined` | Force leaf node       |
+| 属性       | 类型                   | 说明         |
+| ---------- | ---------------------- | ------------ |
+| `label`    | `string`               | 显示文本     |
+| `icon`     | `string \| undefined`  | 可选图标名称 |
+| `disabled` | `boolean \| undefined` | 禁用特定节点 |
+| `isLeaf`   | `boolean \| undefined` | 强制为叶节点 |
 
-### Events
+### 事件 (Events)
 
-| Event                 | Payload                             | Description                       |
-| --------------------- | ----------------------------------- | --------------------------------- |
-| `update:value`        | `string`                            | Fires when selection changes      |
-| `update:expandedKeys` | `ReadonlySet<string>`               | Fires when expansion changes      |
-| `select`              | `(key: string, node: TreeNodeSpec)` | Fires when a node is selected     |
-| `reorder`             | `readonly TreeNodeSpec[]`           | Fires after drag-and-drop reorder |
+| 事件                  | 载荷                                | 说明                |
+| --------------------- | ----------------------------------- | ------------------- |
+| `update:value`        | `string`                            | 选择变化时触发      |
+| `update:expandedKeys` | `ReadonlySet<string>`               | 展开/收起变化时触发 |
+| `select`              | `(key: string, node: TreeNodeSpec)` | 节点被选中时触发    |
+| `reorder`             | `readonly TreeNodeSpec[]`           | 拖拽排序后触发      |
 
 ### TreeNodeSpec
 
-| Property   | Type                         | Description          |
-| ---------- | ---------------------------- | -------------------- |
-| `key`      | `string \| number`           | Unique identifier    |
-| `data`     | `T`                          | User payload         |
-| `children` | `readonly TreeNodeSpec<T>[]` | Optional child nodes |
+| 属性       | 类型                         | 说明         |
+| ---------- | ---------------------------- | ------------ |
+| `key`      | `string \| number`           | 唯一标识符   |
+| `data`     | `T`                          | 用户数据载荷 |
+| `children` | `readonly TreeNodeSpec<T>[]` | 可选的子节点 |

@@ -1,20 +1,20 @@
-# Slider
+# 滑块
 
-Headless slider primitives for building custom slider components. Pure functions handle value computation, position mapping, and keyboard interaction — you control the rendering.
+用于构建自定义滑块组件的无头滑块原语。纯函数处理值计算、位置映射和键盘交互 — 你完全控制渲染。
 
-## Install
+## 安装
 
 ```bash
 pnpm add @chronixjs/cx-kit
 ```
 
-## Overview
+## 概述
 
-Three pure functions:
+三个纯函数：
 
-- **`computeSliderValueAtPosition`** — map a pixel position on the track to a value
-- **`computeSliderPositionForValue`** — map a value to a pixel position on the track
-- **`computeSliderValueOnKey`** — compute the next value for a keyboard event
+- **`computeSliderValueAtPosition`** — 将轨道上的像素位置映射到值
+- **`computeSliderPositionForValue`** — 将值映射到轨道上的像素位置
+- **`computeSliderValueOnKey`** — 为键盘事件计算下一个值
 
 ```ts
 import {
@@ -24,11 +24,11 @@ import {
 } from '@chronixjs/cx-kit';
 ```
 
-## Basic Usage
+## 基本用法
 
-### Value from Position
+### 从位置获取值
 
-Compute the slider value from a pointer position on the track:
+根据轨道上的指针位置计算滑块值：
 
 ```ts
 const value = computeSliderValueAtPosition({
@@ -41,9 +41,9 @@ const value = computeSliderValueAtPosition({
 // value → 50
 ```
 
-### Position from Value
+### 从值获取位置
 
-Compute where to place the thumb for a given value:
+计算给定值对应的滑块位置：
 
 ```ts
 const position = computeSliderPositionForValue({
@@ -55,9 +55,9 @@ const position = computeSliderPositionForValue({
 // position → 225
 ```
 
-### Keyboard Navigation
+### 键盘导航
 
-Compute the next value when a key is pressed. Supports `ArrowUp`, `ArrowDown`, `ArrowLeft`, `ArrowRight`, `Home`, `End`, `PageUp`, `PageDown`:
+按键时计算下一个值。支持 `ArrowUp`、`ArrowDown`、`ArrowLeft`、`ArrowRight`、`Home`、`End`、`PageUp`、`PageDown`：
 
 ```ts
 const nextValue = computeSliderValueOnKey({
@@ -70,11 +70,11 @@ const nextValue = computeSliderValueOnKey({
 // nextValue → 55
 ```
 
-Returns `null` if the key is not recognized.
+如果按键不被识别则返回 `null`。
 
-### Page Steps
+### Page 步进
 
-`PageUp` and `PageDown` jump by `step * largeStepMultiplier` (default multiplier is 10):
+`PageUp` 和 `PageDown` 按 `step * largeStepMultiplier` 跳跃（默认乘数为 10）：
 
 ```ts
 const jumped = computeSliderValueOnKey({
@@ -88,7 +88,7 @@ const jumped = computeSliderValueOnKey({
 // jumped → 60
 ```
 
-## Framework Examples
+## 框架示例
 
 ### Vue 3
 
@@ -286,63 +286,63 @@ export function Slider() {
 }
 ```
 
-## API Reference
+## API 参考
 
 ### `computeSliderValueAtPosition(input)`
 
-Maps a pixel position to a snapped slider value.
+将像素位置映射到对齐后的滑块值。
 
-| Property      | Type     | Default | Description                      |
-| ------------- | -------- | ------- | -------------------------------- |
-| `positionPx`  | `number` | —       | Pointer position along the track |
-| `trackSizePx` | `number` | —       | Total track width in pixels      |
-| `min`         | `number` | —       | Minimum value                    |
-| `max`         | `number` | —       | Maximum value                    |
-| `step`        | `number` | —       | Step increment                   |
+| 属性          | 类型     | 默认值 | 描述               |
+| ------------- | -------- | ------ | ------------------ |
+| `positionPx`  | `number` | —      | 沿轨道的指针位置   |
+| `trackSizePx` | `number` | —      | 轨道总宽度（像素） |
+| `min`         | `number` | —      | 最小值             |
+| `max`         | `number` | —      | 最大值             |
+| `step`        | `number` | —      | 步进增量           |
 
-**Returns:** `number` — the snapped value, clamped to `[min, max]`.
+**返回：** `number` — 对齐后的值，限制在 `[min, max]` 范围内。
 
 ---
 
 ### `computeSliderPositionForValue(input)`
 
-Maps a slider value to a pixel position on the track.
+将滑块值映射到轨道上的像素位置。
 
-| Property      | Type     | Default | Description                 |
-| ------------- | -------- | ------- | --------------------------- |
-| `value`       | `number` | —       | Current slider value        |
-| `min`         | `number` | —       | Minimum value               |
-| `max`         | `number` | —       | Maximum value               |
-| `trackSizePx` | `number` | —       | Total track width in pixels |
+| 属性          | 类型     | 默认值 | 描述               |
+| ------------- | -------- | ------ | ------------------ |
+| `value`       | `number` | —      | 当前滑块值         |
+| `min`         | `number` | —      | 最小值             |
+| `max`         | `number` | —      | 最大值             |
+| `trackSizePx` | `number` | —      | 轨道总宽度（像素） |
 
-**Returns:** `number` — pixel position along the track.
+**返回：** `number` — 沿轨道的像素位置。
 
 ---
 
 ### `computeSliderValueOnKey(input)`
 
-Computes the next value for a keyboard event.
+为键盘事件计算下一个值。
 
-| Property              | Type     | Default | Description                    |
-| --------------------- | -------- | ------- | ------------------------------ |
-| `key`                 | `string` | —       | Keyboard key (`e.key`)         |
-| `currentValue`        | `number` | —       | Current slider value           |
-| `min`                 | `number` | —       | Minimum value                  |
-| `max`                 | `number` | —       | Maximum value                  |
-| `step`                | `number` | —       | Step increment                 |
-| `largeStepMultiplier` | `number` | `10`    | Multiplier for PageUp/PageDown |
+| 属性                  | 类型     | 默认值 | 描述                   |
+| --------------------- | -------- | ------ | ---------------------- |
+| `key`                 | `string` | —      | 键盘按键 (`e.key`)     |
+| `currentValue`        | `number` | —      | 当前滑块值             |
+| `min`                 | `number` | —      | 最小值                 |
+| `max`                 | `number` | —      | 最大值                 |
+| `step`                | `number` | —      | 步进增量               |
+| `largeStepMultiplier` | `number` | `10`   | PageUp/PageDown 的乘数 |
 
-**Returns:** `number | null` — the next value, or `null` if the key is not recognized.
+**返回：** `number | null` — 下一个值，如果按键不被识别则返回 `null`。
 
-#### Supported Keys
+#### 支持的按键
 
-| Key          | Action                           |
-| ------------ | -------------------------------- |
-| `ArrowRight` | Step up                          |
-| `ArrowUp`    | Step up                          |
-| `ArrowLeft`  | Step down                        |
-| `ArrowDown`  | Step down                        |
-| `PageUp`     | Jump up by `step × multiplier`   |
-| `PageDown`   | Jump down by `step × multiplier` |
-| `Home`       | Set to `min`                     |
-| `End`        | Set to `max`                     |
+| 按键         | 操作                            |
+| ------------ | ------------------------------- |
+| `ArrowRight` | 增加一步                        |
+| `ArrowUp`    | 增加一步                        |
+| `ArrowLeft`  | 减少一步                        |
+| `ArrowDown`  | 减少一步                        |
+| `PageUp`     | 按 `step × multiplier` 向上跳跃 |
+| `PageDown`   | 按 `step × multiplier` 向下跳跃 |
+| `Home`       | 设置为 `min`                    |
+| `End`        | 设置为 `max`                    |

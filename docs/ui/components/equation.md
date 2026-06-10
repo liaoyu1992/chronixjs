@@ -1,8 +1,8 @@
-# Equation
+# Equation 公式
 
-MathML renderer — injects markup inside a native `<math>` element.
+MathML 渲染器，在原生 `<math>` 元素内注入标记。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ MathML renderer — injects markup inside a native `<math>` element.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -67,11 +67,11 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop      | Type                  | Default    | Description                    |
-| --------- | --------------------- | ---------- | ------------------------------ |
-| `value`   | `string`              | `''`       | MathML markup string           |
-| `display` | `'inline' \| 'block'` | `'inline'` | Display mode (inline or block) |
+| Prop      | 类型                  | 默认值     | 描述                   |
+| --------- | --------------------- | ---------- | ---------------------- |
+| `value`   | `string`              | `''`       | MathML 标记字符串      |
+| `display` | `'inline' \| 'block'` | `'inline'` | 显示模式（行内或块级） |

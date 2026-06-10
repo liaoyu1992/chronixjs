@@ -1,8 +1,8 @@
-# Alert
+# Alert 警告
 
-Displays important messages with semantic types (info, success, warning, error).
+展示带有语义类型（info、success、warning、error）的重要消息。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Displays important messages with semantic types (info, success, warning, error).
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## Alert Types
+## 警告类型
 
 ::: code-group
 
@@ -104,7 +104,7 @@ export function App() {
 
 :::
 
-## With Title
+## 带标题
 
 ::: code-group
 
@@ -143,7 +143,7 @@ export function App() {
 
 :::
 
-## Closable
+## 可关闭
 
 ::: code-group
 
@@ -182,25 +182,25 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                                                       | Default     | Description         |
-| ---------- | ---------------------------------------------------------- | ----------- | ------------------- |
-| `type`     | `'default' \| 'info' \| 'success' \| 'warning' \| 'error'` | `'default'` | Alert semantic type |
-| `title`    | `string`                                                   | `undefined` | Optional title text |
-| `closable` | `boolean`                                                  | `false`     | Show close button   |
-| `bordered` | `boolean`                                                  | `true`      | Show border         |
+| 属性       | 类型                                                       | 默认值      | 说明           |
+| ---------- | ---------------------------------------------------------- | ----------- | -------------- |
+| `type`     | `'default' \| 'info' \| 'success' \| 'warning' \| 'error'` | `'default'` | 警告的语义类型 |
+| `title`    | `string`                                                   | `undefined` | 可选标题文本   |
+| `closable` | `boolean`                                                  | `false`     | 显示关闭按钮   |
+| `bordered` | `boolean`                                                  | `true`      | 显示边框       |
 
-### Events
+### 事件 (Events)
 
-| Event   | Payload      | Description                     |
-| ------- | ------------ | ------------------------------- |
-| `close` | `MouseEvent` | Fired when close button clicked |
+| 事件    | 载荷         | 说明               |
+| ------- | ------------ | ------------------ |
+| `close` | `MouseEvent` | 点击关闭按钮时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description        |
-| --------- | ------------------ |
-| `default` | Alert body content |
+| 插槽      | 说明         |
+| --------- | ------------ |
+| `default` | 警告正文内容 |

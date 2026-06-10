@@ -1,17 +1,17 @@
-# Gantt Chart
+# 甘特图
 
-A high-performance, framework-agnostic Gantt chart component with drag/resize, dependency links, and 6 timeline views.
+高性能、框架无关的甘特图组件，支持拖拽/调整大小、依赖连线以及 6 种时间线视图。
 
-## Features
+## 功能特性
 
-- **6 Timeline Views** — hour, day, week, month, quarter, year
-- **Drag & Resize** — interactive bar manipulation with snap-to-grid
-- **Dependency Lines** — finish-to-start, start-to-start, finish-to-finish, start-to-finish
-- **Theme Tokens** — fully customizable via CSS custom properties
-- **Slot Registry** — extendable rendering slots for custom bar content
-- **3 Framework Adapters** — Vue 3, Vue 2.7, React 18
+- **6 种时间线视图** — 小时、天、周、月、季度、年
+- **拖拽与调整大小** — 支持吸附网格的交互式条形操作
+- **依赖连线** — 完成-开始、开始-开始、完成-完成、开始-完成
+- **主题令牌** — 通过 CSS 自定义属性完全可定制
+- **插槽注册** — 可扩展的渲染插槽，用于自定义条形内容
+- **3 个框架适配器** — Vue 3、Vue 2.7、React 18
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -29,7 +29,7 @@ pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18
 
 :::
 
-## Basic Usage
+## 基本用法
 
 ::: code-group
 
@@ -88,10 +88,10 @@ export function App() {
 
 :::
 
-## Next Steps
+## 下一步
 
-- [Getting Started](/gantt/getting-started) — detailed setup guide
-- [Bars](/gantt/bars) — bar configuration and customization
-- [Links & Dependencies](/gantt/links) — connecting tasks
-- [Timeline Views](/gantt/views) — switching between views
-- [Theme](/gantt/theme) — styling and theming
+- [快速开始](/gantt/getting-started) — 详细安装指南
+- [条形图](/gantt/bars) — 条形图配置与自定义
+- [依赖](/gantt/links) — 连接任务
+- [时间线视图](/gantt/views) — 切换视图
+- [主题](/gantt/theme) — 样式与主题

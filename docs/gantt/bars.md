@@ -1,10 +1,10 @@
-# Bars
+# 条形图
 
-Bars represent tasks in the Gantt chart timeline. Each bar corresponds to a task and visually spans from its start date to its end date. Bars support drag-to-move, resize, and progress adjustment.
+条形图表示甘特图时间线中的任务。每个条形对应一个任务，在视觉上从其开始日期延伸到结束日期。条形图支持拖拽移动、调整大小和进度调整。
 
 ## BarSpec
 
-Every bar is defined by a `BarSpec` object:
+每个条形由一个 `BarSpec` 对象定义：
 
 ```typescript
 import type { BarSpec } from '@chronixjs/gantt';
@@ -18,18 +18,18 @@ const bar: BarSpec = {
 };
 ```
 
-| Field           | Type                                       | Required | Description                          |
-| --------------- | ------------------------------------------ | -------- | ------------------------------------ |
-| `id`            | `string`                                   | ✅       | Unique bar identifier                |
-| `rowId`         | `string`                                   | ✅       | Which row this bar belongs to        |
-| `range`         | `{ start: Date; end: Date }`               | ✅       | Time span                            |
-| `title`         | `string`                                   |          | Display text rendered inside the bar |
-| `style`         | `BarStyleOverrides`                        |          | Per-bar color overrides              |
-| `progress`      | `BarProgress`                              |          | Progress indicator configuration     |
-| `dprIntent`     | `'crisp-pixel' \| 'subpixel' \| 'inherit'` | ✅       | Pixel-alignment intent               |
-| `extendedProps` | `Record<string, unknown>`                  |          | Opaque user data payload             |
+| 字段            | 类型                                       | 必填 | 描述                   |
+| --------------- | ------------------------------------------ | ---- | ---------------------- |
+| `id`            | `string`                                   | ✅   | 唯一条形标识符         |
+| `rowId`         | `string`                                   | ✅   | 此条形所属的行         |
+| `range`         | `{ start: Date; end: Date }`               | ✅   | 时间跨度               |
+| `title`         | `string`                                   |      | 在条形内渲染的显示文本 |
+| `style`         | `BarStyleOverrides`                        |      | 单个条形的颜色覆盖     |
+| `progress`      | `BarProgress`                              |      | 进度指示器配置         |
+| `dprIntent`     | `'crisp-pixel' \| 'subpixel' \| 'inherit'` | ✅   | 像素对齐意图           |
+| `extendedProps` | `Record<string, unknown>`                  |      | 不透明的用户数据负载   |
 
-## Basic Usage
+## 基本用法
 
 ::: code-group
 
@@ -140,9 +140,9 @@ export function App() {
 
 :::
 
-## Per-Bar Styling
+## 单条形样式
 
-Override colors on individual bars with `BarStyleOverrides`:
+使用 `BarStyleOverrides` 覆盖单个条形的颜色：
 
 ```typescript
 const bars: BarSpec[] = [
@@ -161,15 +161,15 @@ const bars: BarSpec[] = [
 ];
 ```
 
-| Field             | Type     | Description      |
-| ----------------- | -------- | ---------------- |
-| `backgroundColor` | `string` | Bar fill color   |
-| `borderColor`     | `string` | Bar border color |
-| `textColor`       | `string` | Bar text color   |
+| 字段              | 类型     | 描述         |
+| ----------------- | -------- | ------------ |
+| `backgroundColor` | `string` | 条形填充颜色 |
+| `borderColor`     | `string` | 条形边框颜色 |
+| `textColor`       | `string` | 条形文本颜色 |
 
-## Progress Indicator
+## 进度指示器
 
-Add a progress overlay to any bar:
+为任意条形添加进度覆盖层：
 
 ```typescript
 const bars: BarSpec[] = [
@@ -181,25 +181,25 @@ const bars: BarSpec[] = [
     dprIntent: 'crisp-pixel',
     progress: {
       value: 65, // 0–100
-      showText: true, // Show percentage label
-      textFormat: '{value}% complete', // Template string
-      backgroundColor: '#10b981', // Optional fill color
+      showText: true, // 显示百分比标签
+      textFormat: '{value}% complete', // 模板字符串
+      backgroundColor: '#10b981', // 可选填充颜色
     },
   },
 ];
 ```
 
-| Field             | Type      | Default | Description                      |
-| ----------------- | --------- | ------- | -------------------------------- |
-| `value`           | `number`  | —       | Progress percentage (0–100)      |
-| `backgroundColor` | `string`  |         | Progress fill color              |
-| `textColor`       | `string`  |         | Progress text color              |
-| `textFormat`      | `string`  |         | Template (`{value}` placeholder) |
-| `showText`        | `boolean` | `true`  | Show percentage label            |
+| 字段              | 类型      | 默认值 | 描述                     |
+| ----------------- | --------- | ------ | ------------------------ |
+| `value`           | `number`  | —      | 进度百分比 (0–100)       |
+| `backgroundColor` | `string`  |        | 进度填充颜色             |
+| `textColor`       | `string`  |        | 进度文本颜色             |
+| `textFormat`      | `string`  |        | 模板（`{value}` 占位符） |
+| `showText`        | `boolean` | `true` | 显示百分比标签           |
 
-## Styling Callbacks
+## 样式回调
 
-For dynamic styling based on bar state, use callback props:
+根据条形状态进行动态样式设置，使用回调属性：
 
 ::: code-group
 
@@ -220,7 +220,7 @@ import type { BarColorFunc } from '@chronixjs/gantt';
 const getBarColor: BarColorFunc = (arg) => {
   if (arg.isSelected) return '#1e40af';
   if (arg.bar.progress && arg.bar.progress.value > 80) return '#10b981';
-  return undefined; // fall back to default
+  return undefined; // 使用默认值
 };
 </script>
 ```
@@ -248,9 +248,9 @@ export function App() {
 
 :::
 
-Available callback props:
+可用的回调属性：
 
-| Prop                         | Signature                                               |
+| 属性                         | 签名                                                    |
 | ---------------------------- | ------------------------------------------------------- |
 | `barBackgroundColorCallback` | `(arg: BarStyleArg) => string \| undefined`             |
 | `barBorderColorCallback`     | `(arg: BarStyleArg) => string \| undefined`             |
@@ -259,9 +259,9 @@ Available callback props:
 | `barFontWeightCallback`      | `(arg: BarStyleArg) => number \| string \| undefined`   |
 | `barClassNamesCallback`      | `(arg: BarStyleArg) => string \| string[] \| undefined` |
 
-## Drag & Drop
+## 拖拽与放置
 
-Enable interactive bar editing with `editable`:
+使用 `editable` 启用交互式条形编辑：
 
 ::: code-group
 
@@ -322,9 +322,9 @@ export function App() {
 
 :::
 
-### Event Payloads
+### 事件负载
 
-| Event           | Payload Fields                                                 |
+| 事件            | 负载字段                                                       |
 | --------------- | -------------------------------------------------------------- |
 | `bar-drop`      | `barId`, `oldRange`, `newRange`, `oldRowId`, `newRowId`        |
 | `bar-resize`    | `barId`, `edge` (`'start'` \| `'end'`), `oldRange`, `newRange` |
@@ -333,9 +333,9 @@ export function App() {
 | `bar-dragstart` | `barId`, `nativeEvent`                                         |
 | `bar-dragstop`  | `barId`, `nativeEvent`                                         |
 
-## Validation
+## 校验
 
-Control which interactions are allowed using validation props:
+使用校验属性控制允许的交互：
 
 ::: code-group
 
@@ -356,18 +356,18 @@ Control which interactions are allowed using validation props:
 import { ChronixGantt } from '@chronixjs/gantt-vue3';
 import type { EventAllowFunc } from '@chronixjs/gantt';
 
-// Only allow drops on weekdays
+// 仅允许在工作日放置
 const allowDrop: EventAllowFunc = (proposal, movingBar) => {
   const day = proposal.range.start.getDay();
-  return day !== 0 && day !== 6; // Not Sunday or Saturday
+  return day !== 0 && day !== 6; // 不在周日或周六
 };
 </script>
 ```
 
 :::
 
-| Prop              | Type                          | Description                        |
-| ----------------- | ----------------------------- | ---------------------------------- |
-| `eventOverlap`    | `boolean \| EventOverlapFunc` | Prevent bars from overlapping      |
-| `eventAllow`      | `EventAllowFunc`              | Custom allow/deny callback         |
-| `eventConstraint` | `EventConstraint`             | Restrict to a time range / row IDs |
+| 属性              | 类型                          | 描述                      |
+| ----------------- | ----------------------------- | ------------------------- |
+| `eventOverlap`    | `boolean \| EventOverlapFunc` | 防止条形重叠              |
+| `eventAllow`      | `EventAllowFunc`              | 自定义允许/拒绝回调       |
+| `eventConstraint` | `EventConstraint`             | 限制到特定时间范围或行 ID |

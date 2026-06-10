@@ -1,8 +1,8 @@
-# Slider
+# Slider 滑块
 
-Single or range slider with optional marks and tooltips.
+单滑块或范围滑块，支持可选的刻度标记和工具提示。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Single or range slider with optional marks and tooltips.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -60,7 +60,7 @@ export function App() {
 
 :::
 
-## Range Mode
+## 范围模式
 
 ::: code-group
 
@@ -106,24 +106,24 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                         | Default | Description                      |
-| ---------- | ---------------------------- | ------- | -------------------------------- |
-| `value`    | `number \| [number, number]` | `0`     | Current value (single or range)  |
-| `range`    | `boolean`                    | `false` | Enable dual-handle range mode    |
-| `min`      | `number`                     | `0`     | Minimum value                    |
-| `max`      | `number`                     | `100`   | Maximum value                    |
-| `step`     | `number`                     | `1`     | Step between values              |
-| `marks`    | `Record<number, SliderMark>` | `{}`    | Labeled marks at specific values |
-| `disabled` | `boolean`                    | `false` | Disable the slider               |
-| `tooltip`  | `boolean`                    | `true`  | Show tooltip on hover            |
-| `vertical` | `boolean`                    | `false` | Vertical orientation             |
+| 属性       | 类型                         | 默认值  | 说明                 |
+| ---------- | ---------------------------- | ------- | -------------------- |
+| `value`    | `number \| [number, number]` | `0`     | 当前值（单个或范围） |
+| `range`    | `boolean`                    | `false` | 启用双滑块范围模式   |
+| `min`      | `number`                     | `0`     | 最小值               |
+| `max`      | `number`                     | `100`   | 最大值               |
+| `step`     | `number`                     | `1`     | 步长                 |
+| `marks`    | `Record<number, SliderMark>` | `{}`    | 特定值的标签标记     |
+| `disabled` | `boolean`                    | `false` | 禁用滑块             |
+| `tooltip`  | `boolean`                    | `true`  | 悬停时显示工具提示   |
+| `vertical` | `boolean`                    | `false` | 垂直方向             |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload                      | Description              |
-| -------------- | ---------------------------- | ------------------------ |
-| `update:value` | `number \| [number, number]` | Fires when value changes |
+| 事件           | 载荷                         | 说明         |
+| -------------- | ---------------------------- | ------------ |
+| `update:value` | `number \| [number, number]` | 值变化时触发 |

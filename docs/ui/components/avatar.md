@@ -1,8 +1,8 @@
-# Avatar
+# Avatar 头像
 
-An avatar component for displaying user profile images, initials, or fallback content.
+用于展示用户头像图片、首字母缩写或回退内容的头像组件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ An avatar component for displaying user profile images, initials, or fallback co
 
 :::
 
-## Basic Usage
+## 基础用法
 
-### Image Avatar
+### 图片头像
 
 ::: code-group
 
@@ -51,9 +51,9 @@ export function App() {
 
 :::
 
-### Text Avatar
+### 文字头像
 
-When `src` is not provided or the image fails to load, the avatar displays the `text` prop as initials:
+当未提供 `src` 或图片加载失败时，头像会显示 `text` 属性作为首字母缩写：
 
 ::: code-group
 
@@ -88,9 +88,9 @@ export function App() {
 
 :::
 
-### Fallback Slot
+### 回退插槽
 
-When neither `src` nor `text` is provided, the default slot is rendered:
+当 `src` 和 `text` 均未提供时，将渲染默认插槽内容：
 
 ::: code-group
 
@@ -129,7 +129,7 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
 ::: code-group
 
@@ -178,7 +178,7 @@ export function App() {
 
 :::
 
-## Shapes
+## 形状
 
 ::: code-group
 
@@ -227,27 +227,27 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop    | Type                              | Default     | Description                                       |
-| ------- | --------------------------------- | ----------- | ------------------------------------------------- |
-| `src`   | `string`                          | `undefined` | Image URL                                         |
-| `text`  | `string`                          | `undefined` | Fallback text (e.g. initials) shown when no image |
-| `size`  | `number`                          | `40`        | Avatar size in pixels                             |
-| `shape` | `'circle' \| 'square' \| 'round'` | `'circle'`  | Avatar shape — circle, square, or rounded corners |
+| 属性    | 类型                              | 默认值      | 说明                                   |
+| ------- | --------------------------------- | ----------- | -------------------------------------- |
+| `src`   | `string`                          | `undefined` | 图片 URL                               |
+| `text`  | `string`                          | `undefined` | 回退文本（如首字母缩写），无图片时显示 |
+| `size`  | `number`                          | `40`        | 头像大小（像素）                       |
+| `shape` | `'circle' \| 'square' \| 'round'` | `'circle'`  | 头像形状 — 圆形、方形或圆角            |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                                          |
-| --------- | ---------------------------------------------------- |
-| `default` | Fallback content when no `src` or `text` is provided |
+| 插槽      | 说明                                |
+| --------- | ----------------------------------- |
+| `default` | 未提供 `src` 或 `text` 时的回退内容 |
 
-### Render Logic
+### 渲染逻辑
 
-The avatar follows this priority for display:
+头像的显示遵循以下优先级：
 
-1. **Image** — if `src` is provided and the image loads successfully, renders an `<img>`
-2. **Text** — if `text` is provided (or image fails), renders the text string
-3. **Slot** — if neither `src` nor `text` is available, renders the default slot
+1. **图片** — 如果提供了 `src` 且图片加载成功，渲染 `<img>`
+2. **文字** — 如果提供了 `text`（或图片加载失败），渲染文字字符串
+3. **插槽** — 如果 `src` 和 `text` 均不可用，渲染默认插槽

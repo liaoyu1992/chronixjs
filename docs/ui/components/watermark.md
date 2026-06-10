@@ -1,8 +1,8 @@
-# Watermark
+# Watermark 水印
 
-Repeating overlay watermark for DRAFT / CONFIDENTIAL / user-ID watermarking on content.
+重复叠加的水印，用于在内容上显示 DRAFT / CONFIDENTIAL / 用户 ID 等水印。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Repeating overlay watermark for DRAFT / CONFIDENTIAL / user-ID watermarking on c
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -63,7 +63,7 @@ export function App() {
 
 :::
 
-## Custom Style
+## 自定义样式
 
 ::: code-group
 
@@ -136,22 +136,22 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type     | Default       | Description                       |
-| ---------- | -------- | ------------- | --------------------------------- |
-| `content`  | `string` | `'Watermark'` | Watermark text in each tile       |
-| `width`    | `number` | `200`         | Tile width in pixels              |
-| `height`   | `number` | `80`          | Tile height in pixels             |
-| `rotate`   | `number` | `-22`         | Rotation angle in degrees         |
-| `fontSize` | `number` | `16`          | Font size in pixels               |
-| `color`    | `string` | `'#000000'`   | Fill color for the watermark text |
-| `opacity`  | `number` | `0.15`        | Fill opacity (0..1)               |
+| 属性       | 类型     | 默认值        | 说明                 |
+| ---------- | -------- | ------------- | -------------------- |
+| `content`  | `string` | `'Watermark'` | 每个瓦片中的水印文本 |
+| `width`    | `number` | `200`         | 瓦片宽度（像素）     |
+| `height`   | `number` | `80`          | 瓦片高度（像素）     |
+| `rotate`   | `number` | `-22`         | 旋转角度（度）       |
+| `fontSize` | `number` | `16`          | 字体大小（像素）     |
+| `color`    | `string` | `'#000000'`   | 水印文本的填充颜色   |
+| `opacity`  | `number` | `0.15`        | 填充不透明度（0-1）  |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                         |
-| --------- | ----------------------------------- |
-| `default` | Content to overlay the watermark on |
+| 插槽      | 说明             |
+| --------- | ---------------- |
+| `default` | 被水印覆盖的内容 |

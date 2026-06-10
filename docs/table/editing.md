@@ -1,10 +1,10 @@
-# Inline Editing
+# 编辑
 
-Enable cell-level editing with validation support. Double-click a cell or use keyboard navigation to start editing.
+启用单元格级编辑，支持校验。双击单元格或使用键盘导航开始编辑。
 
-## Basic Editing
+## 基本编辑
 
-Set `editable: true` on columns to enable editing:
+在列上设置 `editable: true` 以启用编辑：
 
 ::: code-group
 
@@ -37,7 +37,7 @@ const rows = ref<RowSpec[]>([
 
 function onCellChange(payload) {
   console.log(`Changed [${payload.column.id}]: ${payload.oldValue} → ${payload.newValue}`);
-  // Update your data source
+  // 更新你的数据源
 }
 
 function onEditStart(payload) {
@@ -109,9 +109,9 @@ export function App() {
 
 :::
 
-## Cell Validation
+## 单元格校验
 
-Add validators to columns to enforce data integrity:
+为列添加校验器以确保数据完整性：
 
 ```typescript
 import type { ColumnSpec, EditValidationError } from '@chronixjs/table';
@@ -127,7 +127,7 @@ const columns: ColumnSpec[] = [
       if (!str.includes('@')) {
         return { reason: 'Invalid email address', code: 'INVALID_EMAIL' };
       }
-      return null; // Valid
+      return null; // 有效
     },
   },
   {
@@ -146,9 +146,9 @@ const columns: ColumnSpec[] = [
 ];
 ```
 
-### Async Validation
+### 异步校验
 
-Use `validatorAsync` for server-side validation:
+使用 `validatorAsync` 进行服务端校验：
 
 ```typescript
 const columns: ColumnSpec[] = [
@@ -173,14 +173,14 @@ const columns: ColumnSpec[] = [
 
 ```typescript
 interface EditValidationError {
-  readonly reason: string; // Human-readable error message
-  readonly code?: string; // Optional machine-readable error code
+  readonly reason: string; // 人类可读的错误信息
+  readonly code?: string; // 可选的机器可读错误代码
 }
 ```
 
-## Row Validation
+## 行校验
 
-Validate entire rows with `rowValidators`:
+使用 `rowValidators` 校验整行数据：
 
 ::: code-group
 
@@ -213,29 +213,29 @@ const rowValidators: RowValidator[] = [
 
 :::
 
-## Editing Events
+## 编辑事件
 
-| Event               | Payload Fields                                                | Description     |
-| ------------------- | ------------------------------------------------------------- | --------------- |
-| `cell-edit-start`   | `row`, `column`, `baseValue`, `draftValue`                    | Editing started |
-| `cell-edit-stop`    | `row`, `column`, `committed`, `finalValue`, `validationError` | Editing stopped |
-| `cell-value-change` | `row`, `column`, `oldValue`, `newValue`                       | Value committed |
+| 事件                | 载荷字段                                                      | 描述     |
+| ------------------- | ------------------------------------------------------------- | -------- |
+| `cell-edit-start`   | `row`, `column`, `baseValue`, `draftValue`                    | 开始编辑 |
+| `cell-edit-stop`    | `row`, `column`, `committed`, `finalValue`, `validationError` | 停止编辑 |
+| `cell-value-change` | `row`, `column`, `oldValue`, `newValue`                       | 值已提交 |
 
-## Programmatic Editing
+## 编程式编辑
 
-Control editing via `TableHandle`:
+通过 `TableHandle` 控制编辑：
 
-| Method                           | Description                   |
-| -------------------------------- | ----------------------------- |
-| `startEditingCell(rowId, colId)` | Start editing a specific cell |
-| `commitEditingCell()`            | Commit the current edit       |
-| `cancelEditingCell()`            | Cancel the current edit       |
-| `getEditingCell()`               | Get current editing state     |
-| `setEditingCellDraft(value)`     | Set draft value               |
+| 方法                             | 描述               |
+| -------------------------------- | ------------------ |
+| `startEditingCell(rowId, colId)` | 开始编辑指定单元格 |
+| `commitEditingCell()`            | 提交当前编辑       |
+| `cancelEditingCell()`            | 取消当前编辑       |
+| `getEditingCell()`               | 获取当前编辑状态   |
+| `setEditingCellDraft(value)`     | 设置草稿值         |
 
-## Undo / Redo
+## 撤销 / 重做
 
-Enable undo/redo for edit operations:
+为编辑操作启用撤销/重做：
 
 ::: code-group
 
