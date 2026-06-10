@@ -29,3 +29,7 @@ goldens/.cache
 .claude/scheduled_tasks.json
 .claude/*.jsonl
 .history
+
+# Docs
+docs/.vitepress/dist
+docs/.vitepress/cache
