@@ -1,0 +1,26 @@
+{
+  "id": "wheel-scroll-right",
+  "description": "Horizontal wheel scroll on day-view timeline body (+400px x)",
+  "viewToggleLabel": "日",
+  "frozenTime": "2026-05-13T00:00:00.000Z",
+  "entries": [
+    {
+      "kind": "snapshot",
+      "keyframeId": "before"
+    },
+    {
+      "kind": "pointer-move",
+      "x": 845.5,
+      "y": 450
+    },
+    {
+      "kind": "wheel",
+      "deltaX": 400,
+      "deltaY": 0
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "after"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: verify (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    # Phase 115 (2026-06-02): bump Node heap to 4 GB for every step
+    # — chronix-table.ts adapters are ~12k LOC each, the audit
+    # journal exceeds 100 KB, and the default 2 GB heap OOMs the
+    # `prettier --check "**/*.{ts,...}"` full-tree sweep. Setting
+    # NODE_OPTIONS at the job env tier covers format:check + lint
+    # + typecheck + test + build in one place. Local pre-commit
+    # hook only formats staged files so never hits this; only CI's
+    # full-tree sweep does.
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Turbo cache
+        uses: actions/cache@v5
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-node${{ matrix.node }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-node${{ matrix.node }}-
+
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build

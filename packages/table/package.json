@@ -1,0 +1,75 @@
+{
+  "name": "@chronixjs/table",
+  "version": "0.1.0",
+  "description": "Framework-agnostic table core with IR-based rendering",
+  "license": "MIT",
+  "author": "liaoyu1992",
+  "homepage": "https://github.com/liaoyu1992/chronixjs/tree/master/packages/table#readme",
+  "bugs": {
+    "url": "https://github.com/liaoyu1992/chronixjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liaoyu1992/chronixjs.git",
+    "directory": "packages/table"
+  },
+  "keywords": [
+    "table",
+    "grid",
+    "datagrid",
+    "ir",
+    "headless",
+    "vue",
+    "react",
+    "component-library"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "exceljs": "^4.4.0"
+  },
+  "peerDependenciesMeta": {
+    "exceljs": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run --passWithNoTests --retry=2",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "clean": "rimraf dist .turbo"
+  },
+  "devDependencies": {
+    "@chronixjs/eslint-config": "workspace:*",
+    "@types/node": "^20.16.0",
+    "exceljs": "^4.4.0",
+    "happy-dom": "^15.7.4",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.2"
+  }
+}

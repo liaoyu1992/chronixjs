@@ -1,0 +1,40 @@
+name: Release PR
+
+on:
+  push:
+    branches: [master]
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release-pr:
+    name: open or update release PR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Opens / updates a "Version Packages" PR that bumps versions and updates
+      # CHANGELOG. Publishing to npm is intentionally NOT wired here — the user
+      # runs `pnpm changeset publish` locally after merging the PR.
+      - name: Create or update release PR
+        uses: changesets/action@v1
+        with:
+          version: pnpm version
+          commit: 'chore: release packages'
+          title: 'chore: release packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

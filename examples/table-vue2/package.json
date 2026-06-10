@@ -1,0 +1,35 @@
+{
+  "name": "@chronixjs/example-table-vue2",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Interactive Vue 2.7 demo of @chronixjs/table-vue2 — real-browser smoke test + VRT target",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "vue-tsc --noEmit",
+    "lint": "eslint src",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@chronixjs/cx-kit": "workspace:*",
+    "@chronixjs/golden-runner": "workspace:*",
+    "@chronixjs/table": "workspace:*",
+    "@chronixjs/table-vue2": "workspace:*",
+    "exceljs": "^4.4.0",
+    "vue": "^2.7.16"
+  },
+  "devDependencies": {
+    "@chronixjs/eslint-config": "workspace:*",
+    "@types/node": "^20.16.0",
+    "@vitejs/plugin-vue2": "^2.3.3",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.8",
+    "vitest": "^2.1.2",
+    "vue-tsc": "^2.1.6"
+  }
+}

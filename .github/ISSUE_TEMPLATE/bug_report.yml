@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a defect in a chronix package
+labels: [bug]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - '@chronixjs/gantt'
+        - '@chronixjs/table'
+        - '@chronixjs/input'
+        - other / unsure
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: e.g. 0.1.2
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Link to a CodeSandbox/StackBlitz, or paste the smallest snippet that triggers the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      placeholder: |
+        Node:
+        Browser:
+        OS:
+        Framework adapter (Vue3 / React / Vue2):

@@ -1,0 +1,352 @@
+:root {
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 14px;
+  color: #1f2937;
+  background: #f3f4f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.cx-demo-app {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  min-height: 100vh;
+  /* Without `100vw`, the grid container could otherwise expand to fit
+     its widest descendant (the wide-view SVG inside .cx-demo-svg-frame
+     can be ~24000 px on year view). Capping at the viewport width keeps
+     horizontal page scroll suppressed; the SVG's own overflow:auto
+     wrapper handles its scroll internally. */
+  width: 100vw;
+  gap: 1px;
+  background: #d1d5db;
+}
+
+.cx-demo-main {
+  background: #ffffff;
+  padding: 16px 24px;
+  overflow: auto;
+  /* The chart frame inside .cx-demo-main is overflow:auto with a
+     fixed max-height + an SVG that's far wider than the viewport. By
+     default a CSS grid track has `min-width: auto` which resolves to
+     the intrinsic content width — that would force the `1fr` track to
+     expand past the viewport. `min-width: 0` lets the grid track
+     shrink to its assigned share of the viewport, so the SVG's
+     overflow scroll fires INSIDE its frame rather than pushing the
+     whole page sideways. */
+  min-width: 0;
+}
+
+.cx-demo-side {
+  background: #ffffff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.cx-demo-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* Phase 17 parity-mode banner — only visible when the demo loads
+   with `?parity=true`. Signals that sample data has been swapped for
+   the cross-demo parity dataset. Generic styling (no logo, no
+   colors that would interfere with VRT screenshots in default mode
+   since the banner is only rendered conditionally). */
+.cx-demo-parity-banner {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  color: #78350f;
+  font-size: 12px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+}
+
+.cx-demo-parity-banner code {
+  background: #fde68a;
+  border-radius: 2px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  padding: 1px 4px;
+}
+
+.cx-demo-header h1 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.cx-demo-header .cx-demo-config {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.cx-demo-config label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.cx-demo-validation-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding-top: 8px;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.cx-demo-validation-toggles label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.cx-demo-validation-label {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Phase 20.6: URL schema reference panel — auto-rendered from the
+   demo's config schema. Shareable demo URLs encode every toggle so
+   testers can reproduce a state with one click. */
+.cx-demo-url-schema {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+  font-size: 12px;
+  color: #374151;
+}
+
+.cx-demo-url-schema summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.cx-demo-url-schema table {
+  margin-top: 8px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cx-demo-url-schema th,
+.cx-demo-url-schema td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+}
+
+.cx-demo-url-schema th {
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.cx-demo-url-schema code {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 11px;
+  background: #ffffff;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.cx-demo-url-schema p {
+  margin: 8px 0 0;
+  color: #6b7280;
+}
+
+.cx-demo-svg-frame {
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #f9fafb;
+}
+
+.cx-demo-view-toggle {
+  display: inline-flex;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.cx-demo-view-toggle-button {
+  padding: 4px 10px;
+  border: 0;
+  border-right: 1px solid #e5e7eb;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.cx-demo-view-toggle-button:last-child {
+  border-right: 0;
+}
+
+.cx-demo-view-toggle-button:hover {
+  background: #f3f4f6;
+}
+
+.cx-demo-view-toggle-button.active {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.cx-gantt-wrapper {
+  background: #ffffff;
+  /* Phase 23: the chart-pane (NOT the wrapper) owns vertical scroll
+     now. The `max-body-height="70vh"` prop on `<ChronixGantt>` sets
+     grid-template-rows row 2 to 70vh; both the chart-pane and the
+     sidebar-pane inherit that cap and engage vertical scroll above
+     it, synced via useScrollSync. No CSS max-height needed on the
+     wrapper. */
+}
+
+/* Phase 20: bar fill / stroke moved to theme tokens (applied inline
+   by <ChronixGantt>). Non-color hooks (border-radius, cursor) stay
+   in CSS — they're style-only and don't participate in the
+   per-bar color cascade. */
+.cx-gantt-bar {
+  stroke-width: 1;
+  rx: 3;
+  ry: 3;
+  cursor: move;
+}
+
+/* Phase 12 selection state — accent stroke when the consumer's
+   `selectedBarIds` includes this bar. The class is added by the
+   adapter automatically on the default <rect>. Custom slot
+   renderers receive `BarSlotArgs.isSelected` and own their visual. */
+.cx-gantt-bar--selected {
+  stroke: #f59e0b;
+  stroke-width: 3;
+}
+
+/* Phase 14 sidebar resize divider. The grid track is 8px wide so
+   the hit zone is forgiving; a 1px line painted via ::after sits in
+   the visual center. Hover thickens to 2px so the affordance is
+   discoverable. The adapter applies `cursor: col-resize` inline. */
+.cx-gantt-sidebar-divider::after {
+  background: #d1d5db;
+  content: '';
+  height: 100%;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  width: 1px;
+}
+
+.cx-gantt-sidebar-divider:hover::after {
+  background: #9ca3af;
+  width: 2px;
+}
+
+.cx-demo-side h2 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #4b5563;
+}
+
+.cx-demo-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.cx-demo-event {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-left: 3px solid #3b82f6;
+  background: #f3f4f6;
+  border-radius: 0 4px 4px 0;
+}
+
+.cx-demo-event.kind-bar-drop {
+  border-left-color: #10b981;
+}
+
+.cx-demo-event.kind-bar-resize {
+  border-left-color: #f59e0b;
+}
+
+.cx-demo-event.kind-select {
+  border-left-color: #6366f1;
+}
+
+.cx-demo-event.kind-bar-progress {
+  border-left-color: #059669;
+}
+
+.cx-demo-event-kind {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.cx-demo-event-detail {
+  color: #4b5563;
+  word-break: break-all;
+}
+
+.cx-demo-empty {
+  font-size: 12px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.cx-demo-footer {
+  font-size: 11px;
+  color: #6b7280;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 8px;
+  line-height: 1.5;
+}
+
+/*
+ * Phase 24: imperative-handle test-button bar. Positioned offscreen so
+ * Playwright can click via data-test-handle-method selector without the
+ * bar leaking into any captured VRT snapshot or into the demo's visible
+ * chrome. Buttons remain in document flow + interactive (NOT
+ * display:none which would block pointer events).
+ */
+.cx-demo-handle-test-bar {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

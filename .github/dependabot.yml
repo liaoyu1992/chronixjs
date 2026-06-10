@@ -1,0 +1,52 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      eslint:
+        patterns:
+          - eslint
+          - eslint-*
+          - '@eslint/*'
+          - '@typescript-eslint/*'
+          - 'typescript-eslint'
+      stylelint:
+        patterns:
+          - stylelint*
+      typescript:
+        patterns:
+          - typescript
+          - '@types/*'
+      vitest:
+        patterns:
+          - vitest
+          - '@vitest/*'
+      build-tools:
+        patterns:
+          - tsup
+          - turbo
+          - rimraf
+      changesets:
+        patterns:
+          - '@changesets/*'
+    ignore:
+      # TypeScript 6 needs typescript-eslint 9 + tsup TS6-aware release.
+      # Re-evaluate once both ship; remove this ignore then.
+      - dependency-name: 'typescript'
+        versions: ['>=6']
+      # Vitest 4 needs vite 6 (./module-runner export). Our transitive
+      # vite is locked at 5 via happy-dom. Re-evaluate when we plan a
+      # coordinated vite 5→6 + vitest 2→4 upgrade.
+      - dependency-name: 'vitest'
+        versions: ['>=3']
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3

@@ -1,0 +1,34 @@
+{
+  "name": "@chronixjs/golden-runner",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Playwright-driven visual + interaction golden capture for the chronix the original spec",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./parity-events": "./src/parity-events.ts",
+    "./parity-events-vue2": "./src/parity-events-vue2.ts"
+  },
+  "scripts": {
+    "capture": "playwright test --update-snapshots",
+    "verify": "playwright test",
+    "chronix-capture": "playwright test tests/chronix-visual.spec.ts --update-snapshots",
+    "chronix-verify": "playwright test tests/chronix-visual.spec.ts",
+    "cross-demo-capture": "node scripts/run-cross-demo.mjs capture",
+    "cross-demo-verify": "node scripts/run-cross-demo.mjs verify",
+    "table-vrt-capture": "node scripts/run-table-vrt.mjs capture",
+    "table-vrt-verify": "node scripts/run-table-vrt.mjs verify",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests",
+    "clean": "rimraf playwright-report test-results"
+  },
+  "devDependencies": {
+    "@chronixjs/eslint-config": "workspace:*",
+    "@chronixjs/gantt": "workspace:*",
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^20.16.0",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.6.3"
+  }
+}

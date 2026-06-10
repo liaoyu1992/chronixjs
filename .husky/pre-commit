@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+# Auto-fix prettier on staged files before commit.
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR | \
+  grep -E '\.(ts|tsx|js|jsx|cjs|mjs|vue|json|md|css|scss|html)$' || true)
+
+if [ -n "$STAGED" ]; then
+  echo "$STAGED" | xargs -n 50 pnpm exec prettier --write --log-level=warn || exit 1
+  echo "$STAGED" | xargs -n 50 git add
+fi

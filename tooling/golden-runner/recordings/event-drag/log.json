@@ -1,0 +1,63 @@
+{
+  "id": "event-drag",
+  "description": "Drag the body of event-7 (A32-发动机大修) right by +60px on day view. Bar shifts by +1 hour in time. Validates BarDragTransaction parity.",
+  "viewToggleLabel": "日",
+  "frozenTime": "2026-05-13T00:00:00.000Z",
+  "entries": [
+    {
+      "kind": "snapshot",
+      "keyframeId": "before"
+    },
+    {
+      "kind": "state",
+      "when": "before",
+      "eventId": "event-7",
+      "barBbox": {
+        "x": -408.703125,
+        "y": 824.1875,
+        "width": 16261,
+        "height": 31
+      }
+    },
+    {
+      "kind": "pointer-move",
+      "x": 591.796875,
+      "y": 839.6875
+    },
+    {
+      "kind": "pointer-down",
+      "x": 591.796875,
+      "y": 839.6875
+    },
+    {
+      "kind": "pointer-move",
+      "x": 651.796875,
+      "y": 839.6875,
+      "steps": 10
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "mid"
+    },
+    {
+      "kind": "pointer-up",
+      "x": 651.796875,
+      "y": 839.6875
+    },
+    {
+      "kind": "state",
+      "when": "after",
+      "eventId": "event-7",
+      "barBbox": {
+        "x": -348.703125,
+        "y": 824.1875,
+        "width": 16261,
+        "height": 31
+      }
+    },
+    {
+      "kind": "snapshot",
+      "keyframeId": "after"
+    }
+  ]
+}

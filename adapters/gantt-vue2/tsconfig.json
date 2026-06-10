@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "types": ["node", "vitest/globals"],
+    "jsx": "preserve"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
+}

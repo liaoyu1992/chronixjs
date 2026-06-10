@@ -1,0 +1,85 @@
+{
+  "name": "@chronixjs/ui",
+  "version": "0.1.0",
+  "description": "Framework-agnostic UI component IR (theme tokens / popup spec / context / form / tree / option / date-time primitives) consumed by chronix UI adapters; chronix-ui R3 rewrite core",
+  "license": "MIT",
+  "author": "liaoyu1992",
+  "homepage": "https://github.com/liaoyu1992/chronixjs/tree/master/packages/ui#readme",
+  "bugs": {
+    "url": "https://github.com/liaoyu1992/chronixjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liaoyu1992/chronixjs.git",
+    "directory": "packages/ui"
+  },
+  "keywords": [
+    "ui",
+    "headless",
+    "ir",
+    "theme",
+    "popup",
+    "form",
+    "tree",
+    "component-library"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "clean": "rimraf dist .turbo"
+  },
+  "peerDependencies": {
+    "async-validator": "^4.2.5",
+    "date-fns": "^3.0.0 || ^4.0.0",
+    "qrcode-generator": "^1.4.4"
+  },
+  "peerDependenciesMeta": {
+    "async-validator": {
+      "optional": true
+    },
+    "date-fns": {
+      "optional": true
+    },
+    "qrcode-generator": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@chronixjs/eslint-config": "workspace:*",
+    "@types/node": "^20.16.0",
+    "async-validator": "^4.2.5",
+    "date-fns": "^4.4.0",
+    "happy-dom": "^15.7.4",
+    "qrcode-generator": "^1.4.4",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.2"
+  }
+}
