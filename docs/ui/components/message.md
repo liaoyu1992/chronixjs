@@ -1,8 +1,8 @@
-# Message
+# Message 消息提示
 
-Lightweight inline notifications with auto-dismiss and imperative API.
+轻量级行内通知组件，支持自动消失和命令式 API。
 
-## Install
+## 安装
 
 ::: code-group
 <<< @/snippets/vue3/install-ui.md
@@ -10,7 +10,7 @@ Lightweight inline notifications with auto-dismiss and imperative API.
 <<< @/snippets/react/install-ui.md
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -86,7 +86,7 @@ export function App() {
 
 :::
 
-## With Duration
+## 自定义持续时间
 
 ::: code-group
 
@@ -174,7 +174,7 @@ export function App() {
 
 :::
 
-## With Closable
+## 可关闭消息
 
 ::: code-group
 
@@ -254,24 +254,24 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Methods
+### 方法 (Methods)
 
-| Method                       | Description           |
-| ---------------------------- | --------------------- |
-| `create(options)`            | Create custom message |
-| `info(content, options?)`    | Info message          |
-| `success(content, options?)` | Success message       |
-| `warning(content, options?)` | Warning message       |
-| `error(content, options?)`   | Error message         |
-| `destroyAll()`               | Clear all messages    |
+| Method                       | 描述           |
+| ---------------------------- | -------------- |
+| `create(options)`            | 创建自定义消息 |
+| `info(content, options?)`    | 信息提示       |
+| `success(content, options?)` | 成功提示       |
+| `warning(content, options?)` | 警告提示       |
+| `error(content, options?)`   | 错误提示       |
+| `destroyAll()`               | 清除所有消息   |
 
 ### MessageCreateOptions
 
-| Prop       | Type                                                       | Default  | Description                      |
+| Prop       | 类型                                                       | 默认值   | 描述                             |
 | ---------- | ---------------------------------------------------------- | -------- | -------------------------------- |
-| `content`  | `string`                                                   | —        | Message text (required)          |
-| `type`     | `'info' \| 'success' \| 'warning' \| 'error' \| 'loading'` | `'info'` | Message type                     |
-| `duration` | `number`                                                   | `3000`   | Auto-dismiss ms (0 = persistent) |
-| `closable` | `boolean`                                                  | `false`  | Show close button                |
+| `content`  | `string`                                                   | —        | 消息文本（必需）                 |
+| `type`     | `'info' \| 'success' \| 'warning' \| 'error' \| 'loading'` | `'info'` | 消息类型                         |
+| `duration` | `number`                                                   | `3000`   | 自动消失时间（毫秒，0 = 不消失） |
+| `closable` | `boolean`                                                  | `false`  | 是否显示关闭按钮                 |

@@ -1,8 +1,8 @@
-# Tree Select
+# TreeSelect 树选择
 
-A dropdown selector with a nested tree structure.
+带有嵌套树形结构的下拉选择器。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ A dropdown selector with a nested tree structure.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-A tree-select with nested options for hierarchical selection.
+带有嵌套选项的树形选择器，用于层级选择。
 
 ::: code-group
 
@@ -119,9 +119,9 @@ export function App() {
 
 :::
 
-## Multiple Selection
+## 多选
 
-Use the `multiple` prop to allow selecting more than one node.
+使用 `multiple` 属性允许选择多个节点。
 
 ::: code-group
 
@@ -245,9 +245,9 @@ export function App() {
 
 :::
 
-## Clearable
+## 可清除
 
-Add `clearable` to let users reset the selection with a clear icon.
+添加 `clearable` 属性让用户可以通过清除图标重置选择。
 
 ::: code-group
 
@@ -368,9 +368,9 @@ export function App() {
 
 :::
 
-## Filter Tree
+## 搜索过滤
 
-Enable search filtering on the tree options with `filter-tree`.
+使用 `filter-tree` 启用树形选项的搜索过滤功能。
 
 ::: code-group
 
@@ -499,24 +499,24 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop           | Type                 | Default          | Description        |
-| -------------- | -------------------- | ---------------- | ------------------ |
-| `value`        | `string \| string[]` | `undefined`      | Selected value(s)  |
-| `data`         | `TreeNodeSpec[]`     | `[]`             | Tree data          |
-| `multiple`     | `boolean`            | `false`          | Multi-select mode  |
-| `clearable`    | `boolean`            | `false`          | Show clear icon    |
-| `placeholder`  | `string`             | `''`             | Placeholder text   |
-| `disabled`     | `boolean`            | `false`          | Disable select     |
-| `expandedKeys` | `string[]`           | `[]`             | Expanded keys      |
-| `filterTree`   | `boolean`            | `false`          | Enable tree filter |
-| `placement`    | `PopupPlacement`     | `'bottom-start'` | Dropdown position  |
+| 属性           | 类型                 | 默认值           | 说明           |
+| -------------- | -------------------- | ---------------- | -------------- |
+| `value`        | `string \| string[]` | `undefined`      | 选中的值       |
+| `data`         | `TreeNodeSpec[]`     | `[]`             | 树形数据       |
+| `multiple`     | `boolean`            | `false`          | 多选模式       |
+| `clearable`    | `boolean`            | `false`          | 显示清除图标   |
+| `placeholder`  | `string`             | `''`             | 占位文本       |
+| `disabled`     | `boolean`            | `false`          | 禁用选择器     |
+| `expandedKeys` | `string[]`           | `[]`             | 已展开的节点键 |
+| `filterTree`   | `boolean`            | `false`          | 启用树形过滤   |
+| `placement`    | `PopupPlacement`     | `'bottom-start'` | 下拉弹出位置   |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload              | Description   |
-| -------------- | -------------------- | ------------- |
-| `update:value` | `string \| string[]` | Value changed |
+| 事件           | 载荷                 | 说明         |
+| -------------- | -------------------- | ------------ |
+| `update:value` | `string \| string[]` | 值变化时触发 |

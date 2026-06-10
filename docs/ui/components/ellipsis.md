@@ -1,8 +1,8 @@
-# Ellipsis
+# Ellipsis 文本省略
 
-Text truncation with native HTML `title` tooltip and configurable line clamp.
+文本截断组件，支持原生 HTML `title` 提示和可配置的行数限制。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Text truncation with native HTML `title` tooltip and configurable line clamp.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -63,7 +63,7 @@ export function App() {
 
 :::
 
-## Multi-line
+## 多行省略
 
 ::: code-group
 
@@ -112,12 +112,12 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type      | Default | Description                                |
-| ----------- | --------- | ------- | ------------------------------------------ |
-| `content`   | `string`  | `''`    | Full text to display                       |
-| `tooltip`   | `boolean` | `true`  | Show native `title` tooltip with full text |
-| `lineClamp` | `number`  | `1`     | Number of visible lines before truncation  |
+| Prop        | 类型      | 默认值 | 描述                                  |
+| ----------- | --------- | ------ | ------------------------------------- |
+| `content`   | `string`  | `''`   | 要显示的完整文本                      |
+| `tooltip`   | `boolean` | `true` | 是否显示原生 `title` 提示（完整文本） |
+| `lineClamp` | `number`  | `1`    | 截断前可见的行数                      |

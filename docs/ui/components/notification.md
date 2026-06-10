@@ -1,8 +1,8 @@
-# Notification
+# Notification 通知
 
-Rich card-like notifications with title and description, using an imperative API.
+带标题和描述的富文本卡片式通知，使用命令式 API。
 
-## Install
+## 安装
 
 ::: code-group
 <<< @/snippets/vue3/install-ui.md
@@ -10,7 +10,7 @@ Rich card-like notifications with title and description, using an imperative API
 <<< @/snippets/react/install-ui.md
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -102,7 +102,7 @@ export function App() {
 
 :::
 
-## With Duration
+## 自定义持续时间
 
 ::: code-group
 
@@ -216,7 +216,7 @@ export function App() {
 
 :::
 
-## Without Closable
+## 隐藏关闭按钮
 
 ::: code-group
 
@@ -299,25 +299,25 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Methods
+### 方法 (Methods)
 
-| Method             | Description                |
-| ------------------ | -------------------------- |
-| `create(options)`  | Create custom notification |
-| `info(options)`    | Info notification          |
-| `success(options)` | Success notification       |
-| `warning(options)` | Warning notification       |
-| `error(options)`   | Error notification         |
-| `destroyAll()`     | Clear all notifications    |
+| 方法               | 说明           |
+| ------------------ | -------------- |
+| `create(options)`  | 创建自定义通知 |
+| `info(options)`    | 信息类通知     |
+| `success(options)` | 成功通知       |
+| `warning(options)` | 警告通知       |
+| `error(options)`   | 错误通知       |
+| `destroyAll()`     | 清除所有通知   |
 
 ### NotificationCreateOptions
 
-| Prop          | Type                                          | Default     | Description           |
-| ------------- | --------------------------------------------- | ----------- | --------------------- |
-| `title`       | `string`                                      | —           | Title text (required) |
-| `description` | `string`                                      | `undefined` | Description text      |
-| `type`        | `'info' \| 'success' \| 'warning' \| 'error'` | `'info'`    | Notification type     |
-| `duration`    | `number`                                      | `4500`      | Auto-dismiss ms       |
-| `closable`    | `boolean`                                     | `true`      | Show close button     |
+| 属性          | 类型                                          | 默认值      | 说明             |
+| ------------- | --------------------------------------------- | ----------- | ---------------- |
+| `title`       | `string`                                      | —           | 标题文本（必填） |
+| `description` | `string`                                      | `undefined` | 描述文本         |
+| `type`        | `'info' \| 'success' \| 'warning' \| 'error'` | `'info'`    | 通知类型         |
+| `duration`    | `number`                                      | `4500`      | 自动关闭毫秒数   |
+| `closable`    | `boolean`                                     | `true`      | 显示关闭按钮     |

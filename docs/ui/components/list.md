@@ -1,8 +1,8 @@
-# List
+# List 列表
 
-Vertical list display for settings, contacts, or file rows with optional prefix/suffix.
+垂直列表展示组件，适用于设置项、联系人或文件行，支持可选前缀/后缀。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Vertical list display for settings, contacts, or file rows with optional prefix/
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -74,7 +74,7 @@ export function App() {
 
 :::
 
-## Hoverable
+## 悬停高亮
 
 ::: code-group
 
@@ -134,24 +134,24 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                             | Default    | Description                |
-| ------------- | -------------------------------- | ---------- | -------------------------- |
-| `items`       | `readonly ListItem[]`            | `[]`       | Array of list items        |
-| `bordered`    | `boolean`                        | `false`    | Show outer border          |
-| `hoverable`   | `boolean`                        | `false`    | Highlight items on hover   |
-| `showDivider` | `boolean`                        | `true`     | Show divider between items |
-| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'` | Padding scale              |
+| Prop          | 类型                             | 默认值     | 描述                   |
+| ------------- | -------------------------------- | ---------- | ---------------------- |
+| `items`       | `readonly ListItem[]`            | `[]`       | 列表项数组             |
+| `bordered`    | `boolean`                        | `false`    | 是否显示外边框         |
+| `hoverable`   | `boolean`                        | `false`    | 悬停时是否高亮项目     |
+| `showDivider` | `boolean`                        | `true`     | 是否在项目间显示分隔线 |
+| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'` | 内边距比例             |
 
 ### ListItem
 
-| Property      | Type                  | Description            |
-| ------------- | --------------------- | ---------------------- |
-| `key`         | `string`              | Unique key             |
-| `title`       | `string`              | Primary title text     |
-| `description` | `string \| undefined` | Optional sub-text      |
-| `prefix`      | `string \| undefined` | Leading icon/glyph     |
-| `suffix`      | `string \| undefined` | Trailing metadata text |
+| Property      | 类型                  | 描述           |
+| ------------- | --------------------- | -------------- |
+| `key`         | `string`              | 唯一标识       |
+| `title`       | `string`              | 主标题文本     |
+| `description` | `string \| undefined` | 可选的副文本   |
+| `prefix`      | `string \| undefined` | 前置图标/符号  |
+| `suffix`      | `string \| undefined` | 后置元数据文本 |

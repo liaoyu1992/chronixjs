@@ -1,8 +1,8 @@
-# Pagination
+# Pagination 分页
 
-Page navigation with ellipsis, quick jumper, and page size picker.
+带省略号、快速跳转和每页条数选择器的分页导航。
 
-## Install
+## 安装
 
 ::: code-group
 <<< @/snippets/vue3/install-ui.md
@@ -10,7 +10,7 @@ Page navigation with ellipsis, quick jumper, and page size picker.
 <<< @/snippets/react/install-ui.md
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -57,9 +57,9 @@ export function App() {
 
 :::
 
-## With Item Count
+## 使用条目总数
 
-Use `item-count` and `page-size` instead of `page-count` to let the component calculate total pages automatically.
+使用 `item-count` 和 `page-size` 代替 `page-count`，让组件自动计算总页数。
 
 ::: code-group
 
@@ -106,7 +106,7 @@ export function App() {
 
 :::
 
-## Size Picker
+## 每页条数选择器
 
 ::: code-group
 
@@ -180,7 +180,7 @@ export function App() {
 
 :::
 
-## Quick Jumper
+## 快速跳转
 
 ::: code-group
 
@@ -227,7 +227,7 @@ export function App() {
 
 :::
 
-## Disabled
+## 禁用状态
 
 ::: code-group
 
@@ -274,24 +274,24 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop              | Type       | Default | Description                            |
-| ----------------- | ---------- | ------- | -------------------------------------- |
-| `page`            | `number`   | `1`     | Current page (1-based)                 |
-| `pageCount`       | `number`   | `1`     | Total pages                            |
-| `itemCount`       | `number`   | `0`     | Total items (alternative to pageCount) |
-| `pageSize`        | `number`   | `10`    | Items per page                         |
-| `pageSizes`       | `number[]` | `[10]`  | Available page sizes                   |
-| `showSizePicker`  | `boolean`  | `false` | Show size picker                       |
-| `showQuickJumper` | `boolean`  | `false` | Show page jumper                       |
-| `pageSlot`        | `number`   | `9`     | Visible page slots                     |
-| `disabled`        | `boolean`  | `false` | Disable pagination                     |
+| 属性              | 类型       | 默认值  | 说明                             |
+| ----------------- | ---------- | ------- | -------------------------------- |
+| `page`            | `number`   | `1`     | 当前页码（从 1 开始）            |
+| `pageCount`       | `number`   | `1`     | 总页数                           |
+| `itemCount`       | `number`   | `0`     | 总条目数（pageCount 的替代方案） |
+| `pageSize`        | `number`   | `10`    | 每页条数                         |
+| `pageSizes`       | `number[]` | `[10]`  | 可选的每页条数                   |
+| `showSizePicker`  | `boolean`  | `false` | 显示每页条数选择器               |
+| `showQuickJumper` | `boolean`  | `false` | 显示快速跳转                     |
+| `pageSlot`        | `number`   | `9`     | 可见的页码槽位数                 |
+| `disabled`        | `boolean`  | `false` | 禁用分页                         |
 
-### Events
+### 事件 (Events)
 
-| Event         | Payload  | Description  |
-| ------------- | -------- | ------------ |
-| `update:page` | `number` | Page changed |
+| 事件          | 载荷     | 说明     |
+| ------------- | -------- | -------- |
+| `update:page` | `number` | 页码变化 |

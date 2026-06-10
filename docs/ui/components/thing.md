@@ -1,8 +1,8 @@
-# Thing
+# Thing 事物卡片
 
-Composition card with avatar + header (title + extra) + description + content + action + footer slots.
+组合式卡片，包含头像 + 头部（标题 + 额外内容）+ 描述 + 内容 + 操作 + 页脚插槽。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Composition card with avatar + header (title + extra) + description + content + 
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -74,24 +74,24 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop              | Type                  | Default     | Description                            |
-| ----------------- | --------------------- | ----------- | -------------------------------------- |
-| `title`           | `string \| undefined` | `undefined` | Header title text                      |
-| `description`     | `string \| undefined` | `undefined` | Secondary description text             |
-| `contentIndented` | `boolean`             | `false`     | Indent body content past avatar column |
+| 属性              | 类型                  | 默认值      | 说明                     |
+| ----------------- | --------------------- | ----------- | ------------------------ |
+| `title`           | `string \| undefined` | `undefined` | 头部标题文本             |
+| `description`     | `string \| undefined` | `undefined` | 次要描述文本             |
+| `contentIndented` | `boolean`             | `false`     | 主体内容缩进至头像列之后 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot           | Description                         |
-| -------------- | ----------------------------------- |
-| `default`      | Body content                        |
-| `avatar`       | Left-of-main avatar / icon          |
-| `header`       | Custom header (overrides title)     |
-| `header-extra` | Right-aligned header content        |
-| `description`  | Custom description (overrides prop) |
-| `action`       | Interaction row (buttons etc.)      |
-| `footer`       | Footer area                         |
+| 插槽           | 说明                   |
+| -------------- | ---------------------- |
+| `default`      | 主体内容               |
+| `avatar`       | 左侧头像 / 图标        |
+| `header`       | 自定义头部（覆盖标题） |
+| `header-extra` | 右对齐的头部内容       |
+| `description`  | 自定义描述（覆盖属性） |
+| `action`       | 交互操作行（按钮等）   |
+| `footer`       | 页脚区域               |

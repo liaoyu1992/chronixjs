@@ -1,8 +1,8 @@
-# Affix
+# Affix 固钉
 
-Fixes a child element to the viewport when its natural scroll position passes a top or bottom threshold.
+当子元素的自然滚动位置超过顶部或底部阈值时，将其固定在视口中。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Fixes a child element to the viewport when its natural scroll position passes a 
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -57,7 +57,7 @@ export function App() {
 
 :::
 
-## Bottom Affix
+## 底部固定
 
 ::: code-group
 
@@ -100,23 +100,23 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop     | Type                  | Default     | Description                                |
-| -------- | --------------------- | ----------- | ------------------------------------------ |
-| `top`    | `number \| undefined` | `undefined` | Distance from viewport top when affixed    |
-| `bottom` | `number \| undefined` | `undefined` | Distance from viewport bottom when affixed |
+| 属性     | 类型                  | 默认值      | 说明                   |
+| -------- | --------------------- | ----------- | ---------------------- |
+| `top`    | `number \| undefined` | `undefined` | 固定时距视口顶部的距离 |
+| `bottom` | `number \| undefined` | `undefined` | 固定时距视口底部的距离 |
 
-### Events
+### 事件 (Events)
 
-| Event    | Payload   | Description                      |
-| -------- | --------- | -------------------------------- |
-| `change` | `boolean` | Fired when affixed state changes |
+| 事件     | 载荷      | 说明               |
+| -------- | --------- | ------------------ |
+| `change` | `boolean` | 固定状态变化时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description      |
-| --------- | ---------------- |
-| `default` | Content to affix |
+| 插槽      | 说明           |
+| --------- | -------------- |
+| `default` | 需要固定的内容 |

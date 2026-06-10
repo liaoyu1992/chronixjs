@@ -1,8 +1,8 @@
-# Rate
+# Rate 评分
 
-Star rating input with optional half-star precision.
+星级评分输入组件，支持可选的半星精度。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Star rating input with optional half-star precision.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -59,9 +59,9 @@ export function App() {
 
 :::
 
-## Half Star
+## 半星
 
-Enable half-star precision with the `allow-half` prop. Users can select values like 3.5.
+通过 `allow-half` 属性启用半星精度。用户可以选择如 3.5 这样的值。
 
 ::: code-group
 
@@ -106,9 +106,9 @@ export function App() {
 
 :::
 
-## Custom Count
+## 自定义星星数量
 
-Use the `count` prop to display more (or fewer) stars. Default is 5.
+使用 `count` 属性显示更多（或更少）的星星。默认为 5。
 
 ::: code-group
 
@@ -153,9 +153,9 @@ export function App() {
 
 :::
 
-## Read Only
+## 只读模式
 
-Use the `readonly` prop for display-only ratings (e.g. showing an average score).
+使用 `readonly` 属性实现仅展示的评分（例如显示平均分数）。
 
 ::: code-group
 
@@ -192,21 +192,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type      | Default     | Description         |
-| ----------- | --------- | ----------- | ------------------- |
-| `value`     | `number`  | `0`         | Current rating      |
-| `count`     | `number`  | `5`         | Number of stars     |
-| `allowHalf` | `boolean` | `false`     | Half-star precision |
-| `disabled`  | `boolean` | `false`     | Disable interaction |
-| `readonly`  | `boolean` | `false`     | Read-only display   |
-| `error`     | `string`  | `undefined` | Error message       |
+| 属性        | 类型      | 默认值      | 说明         |
+| ----------- | --------- | ----------- | ------------ |
+| `value`     | `number`  | `0`         | 当前评分     |
+| `count`     | `number`  | `5`         | 星星数量     |
+| `allowHalf` | `boolean` | `false`     | 半星精度     |
+| `disabled`  | `boolean` | `false`     | 禁用交互     |
+| `readonly`  | `boolean` | `false`     | 只读显示     |
+| `error`     | `string`  | `undefined` | 错误提示信息 |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload  | Description    |
-| -------------- | -------- | -------------- |
-| `update:value` | `number` | Rating changed |
+| 事件           | 载荷     | 说明     |
+| -------------- | -------- | -------- |
+| `update:value` | `number` | 评分变化 |

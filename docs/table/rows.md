@@ -1,6 +1,6 @@
-# Rows & Data
+# 行与数据
 
-Rows contain the data displayed in the table. Each row is defined by a `RowSpec` object.
+行包含表格中显示的数据。每行由一个 `RowSpec` 对象定义。
 
 ## RowSpec
 
@@ -18,15 +18,15 @@ interface RowSpec {
 }
 ```
 
-| Field        | Type                      | Required | Description              |
-| ------------ | ------------------------- | -------- | ------------------------ |
-| `id`         | `string`                  | ✅       | Unique row identifier    |
-| `data`       | `Record<string, unknown>` | ✅       | Column field values      |
-| `heightHint` | `number`                  |          | Custom row height (px)   |
-| `pinned`     | `'top' \| 'bottom'`       |          | Pin row to top or bottom |
-| `draggable`  | `boolean`                 |          | Allow row drag reorder   |
+| 字段         | 类型                      | 必填 | 描述               |
+| ------------ | ------------------------- | ---- | ------------------ |
+| `id`         | `string`                  | ✅   | 唯一行标识         |
+| `data`       | `Record<string, unknown>` | ✅   | 列字段值           |
+| `heightHint` | `number`                  |      | 自定义行高（px）   |
+| `pinned`     | `'top' \| 'bottom'`       |      | 固定行到顶部或底部 |
+| `draggable`  | `boolean`                 |      | 允许行拖拽排序     |
 
-## Basic Usage
+## 基本用法
 
 ::: code-group
 
@@ -99,27 +99,27 @@ export function App() {
 
 :::
 
-## Pinned Rows
+## 固定行
 
-Pin summary or header rows to the top or bottom:
+将汇总行或表头行固定到顶部或底部：
 
 ```typescript
 const rows: RowSpec[] = [
-  // Pinned to top — always visible
+  // 固定到顶部 — 始终可见
   { id: 'header-row', data: { name: 'Department A', role: 'Summary' }, pinned: 'top' },
 
-  // Regular scrollable rows
+  // 普通可滚动行
   { id: '1', data: { name: 'Alice', role: 'Engineer' } },
   { id: '2', data: { name: 'Bob', role: 'Designer' } },
 
-  // Pinned to bottom
+  // 固定到底部
   { id: 'totals-row', data: { name: 'Total: 2', role: '' }, pinned: 'bottom' },
 ];
 ```
 
-## Row Events
+## 行事件
 
-Listen for row-level interactions:
+监听行级别的交互：
 
 ::: code-group
 
@@ -159,17 +159,17 @@ export function App() {
 
 :::
 
-### Row Event Payloads
+### 行事件载荷
 
-| Event           | Payload Fields                      |
+| 事件            | 载荷字段                            |
 | --------------- | ----------------------------------- |
 | `row-click`     | `row`, `jsEvent`                    |
 | `cell-click`    | `row`, `column`, `value`, `jsEvent` |
 | `cell-dblclick` | `row`, `column`, `value`, `jsEvent` |
 
-## Row Selection
+## 行选择
 
-Enable row selection with `selectionMode`:
+通过 `selectionMode` 启用行选择：
 
 ::: code-group
 
@@ -194,15 +194,15 @@ function onSelectionChange(payload: { selectedRowIds: readonly string[] }) {
 
 :::
 
-| `selectionMode` | Description                         |
-| --------------- | ----------------------------------- |
-| `'none'`        | No selection (default)              |
-| `'single'`      | Single row selection                |
-| `'multi'`       | Multi-row selection with checkboxes |
+| `selectionMode` | 描述                 |
+| --------------- | -------------------- |
+| `'none'`        | 不选择（默认）       |
+| `'single'`      | 单行选择             |
+| `'multi'`       | 多行选择（带复选框） |
 
-## Row Drag Reorder
+## 行拖拽排序
 
-Enable drag-to-reorder with a drag handle column:
+通过拖拽手柄列启用拖拽排序：
 
 ```typescript
 const columns: ColumnSpec[] = [
@@ -211,7 +211,7 @@ const columns: ColumnSpec[] = [
 ];
 ```
 
-Enable with props:
+通过属性启用：
 
 ::: code-group
 
@@ -234,9 +234,9 @@ function onReorder(payload) {
 
 :::
 
-## Server-Side Data
+## 服务端数据
 
-For large datasets, use server-side row model:
+对于大数据集，使用服务端行模型：
 
 ::: code-group
 
@@ -266,7 +266,7 @@ const dataSource: ServerSideDataSource = {
 
 :::
 
-## Loading & Empty States
+## 加载与空状态
 
 ::: code-group
 

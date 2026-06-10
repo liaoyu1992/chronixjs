@@ -1,8 +1,8 @@
-# Back Top
+# Back Top 回到顶部
 
-A floating "back to top" button that appears when the page is scrolled past a threshold.
+当页面滚动超过指定阈值时出现的浮动"回到顶部"按钮。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A floating "back to top" button that appears when the page is scrolled past a th
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## Custom Position
+## 自定义位置
 
 ::: code-group
 
@@ -84,7 +84,7 @@ export function App() {
 
 :::
 
-## Custom Visibility Threshold
+## 自定义可见阈值
 
 ::: code-group
 
@@ -119,25 +119,25 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop                  | Type                 | Default    | Description                                 |
-| --------------------- | -------------------- | ---------- | ------------------------------------------- |
-| `visibilityThreshold` | `number`             | `100`      | Show button when `scrollY >=` this value    |
-| `right`               | `number`             | `40`       | Right offset in pixels                      |
-| `bottom`              | `number`             | `40`       | Bottom offset in pixels                     |
-| `behavior`            | `'smooth' \| 'auto'` | `'smooth'` | Scroll behavior passed to `window.scrollTo` |
+| 属性                  | 类型                 | 默认值     | 说明                                |
+| --------------------- | -------------------- | ---------- | ----------------------------------- |
+| `visibilityThreshold` | `number`             | `100`      | 当 `scrollY >=` 此值时显示按钮      |
+| `right`               | `number`             | `40`       | 距右侧偏移量（像素）                |
+| `bottom`              | `number`             | `40`       | 距底部偏移量（像素）                |
+| `behavior`            | `'smooth' \| 'auto'` | `'smooth'` | 传递给 `window.scrollTo` 的滚动行为 |
 
-### Events
+### 事件 (Events)
 
-| Event   | Payload      | Description                  |
-| ------- | ------------ | ---------------------------- |
-| `click` | `MouseEvent` | Fired when button is clicked |
+| 事件    | 载荷         | 说明             |
+| ------- | ------------ | ---------------- |
+| `click` | `MouseEvent` | 按钮被点击时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                         |
-| --------- | ----------------------------------- |
-| `default` | Custom content (defaults to ↑ icon) |
+| 插槽      | 说明                        |
+| --------- | --------------------------- |
+| `default` | 自定义内容（默认为 ↑ 图标） |

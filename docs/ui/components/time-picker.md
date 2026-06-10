@@ -1,8 +1,8 @@
-# Time Picker
+# TimePicker 时间选择器
 
-A time selection picker with scrollable hour/minute/second columns.
+带有可滚动时/分/秒列的时间选择器。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A time selection picker with scrollable hour/minute/second columns.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -63,9 +63,9 @@ export function App() {
 
 :::
 
-## Format
+## 格式化
 
-Customize the display format using date-fns format strings. The default is `HH:mm:ss`. Use `format="HH:mm"` to show hours and minutes only.
+使用 date-fns 格式字符串自定义显示格式。默认为 `HH:mm:ss`。使用 `format="HH:mm"` 仅显示小时和分钟。
 
 ::: code-group
 
@@ -133,9 +133,9 @@ export function App() {
 
 :::
 
-## 12-Hour Format
+## 12 小时制
 
-Set `use12-hours` to `true` to display a 12-hour clock with AM/PM toggle.
+将 `use12-hours` 设置为 `true` 以显示带有上午/下午切换的 12 小时制时钟。
 
 ::: code-group
 
@@ -186,9 +186,9 @@ export function App() {
 
 :::
 
-## Steps
+## 步长
 
-Use `hour-step` and `minute-step` to jump by a fixed increment when scrolling through time columns.
+使用 `hour-step` 和 `minute-step` 在滚动时间列时按固定增量跳跃。
 
 ::: code-group
 
@@ -245,9 +245,9 @@ export function App() {
 
 :::
 
-## Clearable
+## 可清除
 
-Add `clearable` to let users clear the selected time with a clear icon.
+添加 `clearable` 属性让用户可以通过清除图标清除已选时间。
 
 ::: code-group
 
@@ -298,28 +298,28 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop               | Type                          | Default          | Description      |
-| ------------------ | ----------------------------- | ---------------- | ---------------- |
-| `value`            | `Date \| undefined`           | `undefined`      | Selected time    |
-| `format`           | `string`                      | `'HH:mm:ss'`     | date-fns format  |
-| `placeholder`      | `string`                      | `''`             | Placeholder text |
-| `disabled`         | `boolean`                     | `false`          | Disable picker   |
-| `clearable`        | `boolean`                     | `false`          | Show clear icon  |
-| `hourStep`         | `number`                      | `1`              | Hour increment   |
-| `minuteStep`       | `number`                      | `1`              | Minute increment |
-| `secondStep`       | `number`                      | `1`              | Second increment |
-| `use12Hours`       | `boolean`                     | `false`          | 12-hour format   |
-| `placement`        | `PopupPlacement`              | `'bottom-start'` | Panel position   |
-| `isHourDisabled`   | `(hour: number) => boolean`   | `undefined`      | Disable hours    |
-| `isMinuteDisabled` | `(minute: number) => boolean` | `undefined`      | Disable minutes  |
-| `isSecondDisabled` | `(second: number) => boolean` | `undefined`      | Disable seconds  |
+| 属性               | 类型                          | 默认值           | 说明                |
+| ------------------ | ----------------------------- | ---------------- | ------------------- |
+| `value`            | `Date \| undefined`           | `undefined`      | 选中的时间          |
+| `format`           | `string`                      | `'HH:mm:ss'`     | date-fns 格式字符串 |
+| `placeholder`      | `string`                      | `''`             | 占位文本            |
+| `disabled`         | `boolean`                     | `false`          | 禁用选择器          |
+| `clearable`        | `boolean`                     | `false`          | 显示清除图标        |
+| `hourStep`         | `number`                      | `1`              | 小时步长            |
+| `minuteStep`       | `number`                      | `1`              | 分钟步长            |
+| `secondStep`       | `number`                      | `1`              | 秒步长              |
+| `use12Hours`       | `boolean`                     | `false`          | 12 小时制           |
+| `placement`        | `PopupPlacement`              | `'bottom-start'` | 面板弹出位置        |
+| `isHourDisabled`   | `(hour: number) => boolean`   | `undefined`      | 禁用小时的回调函数  |
+| `isMinuteDisabled` | `(minute: number) => boolean` | `undefined`      | 禁用分钟的回调函数  |
+| `isSecondDisabled` | `(second: number) => boolean` | `undefined`      | 禁用秒的回调函数    |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload             | Description  |
-| -------------- | ------------------- | ------------ |
-| `update:value` | `Date \| undefined` | Time changed |
+| 事件           | 载荷                | 说明           |
+| -------------- | ------------------- | -------------- |
+| `update:value` | `Date \| undefined` | 时间变化时触发 |

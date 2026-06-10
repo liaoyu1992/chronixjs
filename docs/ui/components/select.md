@@ -1,8 +1,8 @@
-# Select
+# Select 选择器
 
-A full-featured dropdown selector with single/multi, filtering, and virtual scrolling.
+功能齐全的下拉选择器，支持单选/多选、筛选和虚拟滚动。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A full-featured dropdown selector with single/multi, filtering, and virtual scro
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -86,9 +86,9 @@ export function App() {
 
 :::
 
-## Multiple Selection
+## 多选模式
 
-Use the `multiple` prop to allow selecting more than one value. The bound value becomes a string array.
+使用 `multiple` 属性允许选择多个值。绑定值变为字符串数组。
 
 ::: code-group
 
@@ -164,9 +164,9 @@ export function App() {
 
 :::
 
-## Filterable
+## 可筛选
 
-Enable the `filterable` prop to allow users to search through the option list.
+启用 `filterable` 属性允许用户搜索选项列表。
 
 ::: code-group
 
@@ -245,9 +245,9 @@ export function App() {
 
 :::
 
-## Clearable
+## 可清除
 
-Add `clearable` to let users reset the selection with a clear icon.
+添加 `clearable` 让用户通过清除图标重置选择。
 
 ::: code-group
 
@@ -325,9 +325,9 @@ export function App() {
 
 :::
 
-## Option Groups
+## 选项分组
 
-Use a `children` array on option objects to create grouped options.
+在选项对象上使用 `children` 数组创建分组选项。
 
 ::: code-group
 
@@ -444,26 +444,26 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop                | Type                 | Default          | Description             |
-| ------------------- | -------------------- | ---------------- | ----------------------- |
-| `value`             | `string \| string[]` | `undefined`      | Selected value(s)       |
-| `options`           | `SelectOption[]`     | `[]`             | Option list             |
-| `multiple`          | `boolean`            | `false`          | Multi-select mode       |
-| `filterable`        | `boolean`            | `false`          | Enable search           |
-| `clearable`         | `boolean`            | `false`          | Show clear icon         |
-| `placeholder`       | `string`             | `''`             | Placeholder text        |
-| `disabled`          | `boolean`            | `false`          | Disable select          |
-| `loading`           | `boolean`            | `false`          | Loading state           |
-| `virtual`           | `boolean`            | `false`          | Virtual scrolling       |
-| `virtualItemHeight` | `number`             | `32`             | Item height for virtual |
-| `placement`         | `PopupPlacement`     | `'bottom-start'` | Dropdown position       |
+| 属性                | 类型                 | 默认值           | 说明           |
+| ------------------- | -------------------- | ---------------- | -------------- |
+| `value`             | `string \| string[]` | `undefined`      | 选中的值       |
+| `options`           | `SelectOption[]`     | `[]`             | 选项列表       |
+| `multiple`          | `boolean`            | `false`          | 多选模式       |
+| `filterable`        | `boolean`            | `false`          | 启用搜索       |
+| `clearable`         | `boolean`            | `false`          | 显示清除图标   |
+| `placeholder`       | `string`             | `''`             | 占位文本       |
+| `disabled`          | `boolean`            | `false`          | 禁用选择器     |
+| `loading`           | `boolean`            | `false`          | 加载状态       |
+| `virtual`           | `boolean`            | `false`          | 虚拟滚动       |
+| `virtualItemHeight` | `number`             | `32`             | 虚拟滚动项高度 |
+| `placement`         | `PopupPlacement`     | `'bottom-start'` | 下拉菜单位置   |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload              | Description   |
-| -------------- | -------------------- | ------------- |
-| `update:value` | `string \| string[]` | Value changed |
+| 事件           | 载荷                 | 说明   |
+| -------------- | -------------------- | ------ |
+| `update:value` | `string \| string[]` | 值变化 |

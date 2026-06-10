@@ -1,8 +1,8 @@
-# Carousel
+# Carousel 走马灯
 
-A slide carousel with optional autoplay, indicator dots, prev/next arrows, and thumbnail strip.
+幻灯片轮播组件，支持自动播放、指示点、前进/后退箭头和缩略图条。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A slide carousel with optional autoplay, indicator dots, prev/next arrows, and t
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -77,7 +77,7 @@ export function App() {
 
 :::
 
-## Autoplay
+## 自动播放
 
 ::: code-group
 
@@ -148,7 +148,7 @@ export function App() {
 
 :::
 
-## Vertical Direction
+## 垂直方向
 
 ::: code-group
 
@@ -210,7 +210,7 @@ export function App() {
 
 :::
 
-## With Thumbnails
+## 带缩略图
 
 ::: code-group
 
@@ -273,34 +273,34 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop         | Type                         | Default        | Description                             |
-| ------------ | ---------------------------- | -------------- | --------------------------------------- |
-| `value`      | `number`                     | `0`            | Currently active slide index (0-based)  |
-| `items`      | `readonly CarouselItem[]`    | `[]`           | Array of slide items                    |
-| `autoplay`   | `boolean`                    | `false`        | Enable automatic slide transition       |
-| `intervalMs` | `number`                     | `3000`         | Autoplay interval in ms                 |
-| `showDots`   | `boolean`                    | `true`         | Show indicator dots                     |
-| `showArrows` | `boolean`                    | `true`         | Show prev/next arrows                   |
-| `loop`       | `boolean`                    | `true`         | Wrap from last to first slide           |
-| `direction`  | `'horizontal' \| 'vertical'` | `'horizontal'` | Slide direction                         |
-| `lazy`       | `boolean`                    | `false`        | Render only active ± adjacent slides    |
-| `thumbnails` | `boolean`                    | `false`        | Show thumbnail strip below the viewport |
+| 属性         | 类型                         | 默认值         | 说明                              |
+| ------------ | ---------------------------- | -------------- | --------------------------------- |
+| `value`      | `number`                     | `0`            | 当前激活的幻灯片索引（从 0 开始） |
+| `items`      | `readonly CarouselItem[]`    | `[]`           | 幻灯片项数组                      |
+| `autoplay`   | `boolean`                    | `false`        | 启用自动切换                      |
+| `intervalMs` | `number`                     | `3000`         | 自动播放间隔（毫秒）              |
+| `showDots`   | `boolean`                    | `true`         | 显示指示点                        |
+| `showArrows` | `boolean`                    | `true`         | 显示前进/后退箭头                 |
+| `loop`       | `boolean`                    | `true`         | 从最后一张循环到第一张            |
+| `direction`  | `'horizontal' \| 'vertical'` | `'horizontal'` | 滑动方向                          |
+| `lazy`       | `boolean`                    | `false`        | 仅渲染当前及相邻的幻灯片          |
+| `thumbnails` | `boolean`                    | `false`        | 在视口下方显示缩略图条            |
 
 ### CarouselItem
 
-| Property         | Type     | Description                            |
-| ---------------- | -------- | -------------------------------------- |
-| `key`            | `string` | Unique identifier                      |
-| `content`        | `string` | Plain-text panel content               |
-| `thumbnailLabel` | `string` | Optional label for the thumbnail strip |
+| 属性             | 类型     | 说明               |
+| ---------------- | -------- | ------------------ |
+| `key`            | `string` | 唯一标识符         |
+| `content`        | `string` | 纯文本面板内容     |
+| `thumbnailLabel` | `string` | 缩略图条的可选标签 |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload                  | Description                       |
-| -------------- | ------------------------ | --------------------------------- |
-| `update:value` | `number`                 | Fires when active index changes   |
-| `change`       | `(CarouselItem, number)` | Fires with the item and new index |
+| 事件           | 载荷                     | 说明                         |
+| -------------- | ------------------------ | ---------------------------- |
+| `update:value` | `number`                 | 激活索引变化时触发           |
+| `change`       | `(CarouselItem, number)` | 幻灯片项和新的索引变化时触发 |

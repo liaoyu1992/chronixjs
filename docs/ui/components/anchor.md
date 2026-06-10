@@ -1,8 +1,8 @@
-# Anchor
+# Anchor 锚点
 
-Vertical anchor navigation with optional rail indicator and active link highlighting.
+垂直锚点导航，带有可选的轨道指示器和激活链接高亮。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Vertical anchor navigation with optional rail indicator and active link highligh
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -74,7 +74,7 @@ export function App() {
 
 :::
 
-## Without Rail
+## 无轨道模式
 
 ::: code-group
 
@@ -131,21 +131,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop             | Type                    | Default | Description                              |
-| ---------------- | ----------------------- | ------- | ---------------------------------------- |
-| `items`          | `readonly AnchorItem[]` | `[]`    | Array of anchor link items               |
-| `showRail`       | `boolean`               | `true`  | Show the vertical rail indicator         |
-| `showBackground` | `boolean`               | `true`  | Show background highlight on active link |
-| `bound`          | `number`                | `12`    | Offset bound in px for scroll detection  |
+| 属性             | 类型                    | 默认值 | 说明                       |
+| ---------------- | ----------------------- | ------ | -------------------------- |
+| `items`          | `readonly AnchorItem[]` | `[]`   | 锚点链接项数组             |
+| `showRail`       | `boolean`               | `true` | 显示垂直轨道指示器         |
+| `showBackground` | `boolean`               | `true` | 激活链接显示背景高亮       |
+| `bound`          | `number`                | `12`   | 滚动检测的偏移边界（像素） |
 
 ### AnchorItem
 
-| Property | Type     | Description                           |
-| -------- | -------- | ------------------------------------- |
-| `key`    | `string` | Unique identifier                     |
-| `label`  | `string` | Display text of the anchor link       |
-| `href`   | `string` | Target element selector (e.g. `#foo`) |
+| 属性    | 类型     | 说明                        |
+| ------- | -------- | --------------------------- |
+| `key`   | `string` | 唯一标识符                  |
+| `label` | `string` | 锚点链接的显示文本          |
+| `href`  | `string` | 目标元素选择器（如 `#foo`） |

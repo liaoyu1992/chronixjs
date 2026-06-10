@@ -1,8 +1,8 @@
-# Heatmap
+# Heatmap 热力图
 
-SVG cell grid with linear color interpolation between two endpoint colors.
+SVG 单元格网格，在两个端点颜色之间进行线性颜色插值。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ SVG cell grid with linear color interpolation between two endpoint colors.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -74,13 +74,13 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                             | Default     | Description                 |
-| ----------- | -------------------------------- | ----------- | --------------------------- |
-| `cells`     | `readonly (readonly number[])[]` | `[]`        | 2D matrix of numeric values |
-| `cellSize`  | `number`                         | `20`        | Cell width + height in px   |
-| `colorLow`  | `string`                         | `'#dbeafe'` | Color for min value         |
-| `colorHigh` | `string`                         | `'#1e3a8a'` | Color for max value         |
+| Prop        | 类型                             | 默认值      | 描述               |
+| ----------- | -------------------------------- | ----------- | ------------------ |
+| `cells`     | `readonly (readonly number[])[]` | `[]`        | 数值型二维矩阵     |
+| `cellSize`  | `number`                         | `20`        | 单元格宽高（像素） |
+| `colorLow`  | `string`                         | `'#dbeafe'` | 最小值对应的颜色   |
+| `colorHigh` | `string`                         | `'#1e3a8a'` | 最大值对应的颜色   |

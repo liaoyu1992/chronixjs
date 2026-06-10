@@ -1,8 +1,8 @@
-# Wave
+# Wave 波浪
 
-CSS ripple wrapper — pointerdown triggers a brief keyframe animation on the wrapped element.
+CSS 涟漪包裹器 -- pointerdown 事件在包裹的元素上触发短暂的关键帧动画。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ CSS ripple wrapper — pointerdown triggers a brief keyframe animation on the wr
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -57,7 +57,7 @@ export function App() {
 
 :::
 
-## Custom Color
+## 自定义颜色
 
 ::: code-group
 
@@ -100,18 +100,18 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                  | Default     | Description                               |
-| ---------- | --------------------- | ----------- | ----------------------------------------- |
-| `color`    | `string \| undefined` | `undefined` | Ripple color (CSS); falls back to CSS var |
-| `duration` | `number`              | `600`       | Animation duration in ms                  |
-| `disabled` | `boolean`             | `false`     | Disable ripple                            |
+| 属性       | 类型                  | 默认值      | 说明                             |
+| ---------- | --------------------- | ----------- | -------------------------------- |
+| `color`    | `string \| undefined` | `undefined` | 涟漪颜色（CSS）；回退到 CSS 变量 |
+| `duration` | `number`              | `600`       | 动画时长（毫秒）                 |
+| `disabled` | `boolean`             | `false`     | 禁用涟漪效果                     |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                 |
-| --------- | --------------------------- |
-| `default` | Element to wrap with ripple |
+| 插槽      | 说明             |
+| --------- | ---------------- |
+| `default` | 被涟漪包裹的元素 |

@@ -1,8 +1,8 @@
-# Radio
+# Radio 单选
 
-Radio button component with group support. Use `CxRadioGroup` for mutually exclusive selections from a list of options.
+单选按钮组件，支持分组使用。使用 `CxRadioGroup` 从选项列表中进行互斥选择。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Radio button component with group support. Use `CxRadioGroup` for mutually exclu
 
 :::
 
-## Basic Usage with RadioGroup
+## 基础用法（使用 RadioGroup）
 
 ::: code-group
 
@@ -77,18 +77,18 @@ export function App() {
 
 :::
 
-## Disabled Options
+## 禁用选项
 
-Disable individual options or the entire group:
+可以禁用单个选项或整个分组：
 
 ::: code-group
 
 ```vue [Vue 3]
 <template>
-  <!-- Disabled group -->
+  <!-- 禁用整个分组 -->
   <CxRadioGroup v-model:value="val" :options="opts" disabled />
 
-  <!-- Disabled option -->
+  <!-- 禁用单个选项 -->
   <CxRadioGroup v-model:value="val" :options="optionsWithDisabled" />
 </template>
 
@@ -117,7 +117,7 @@ const options = [
 
 :::
 
-## Error State
+## 错误状态
 
 ::: code-group
 
@@ -137,30 +137,30 @@ import { CxRadioGroup } from '@chronixjs/ui-vue3';
 
 :::
 
-## RadioOption Type
+## RadioOption 类型
 
 ```typescript
 interface RadioOption {
-  readonly key: string; // Unique key for rendering
-  readonly label: string; // Display text
-  readonly value: string; // Selection value
-  readonly disabled: boolean; // Disable this option
+  readonly key: string; // 渲染用的唯一键
+  readonly label: string; // 显示文本
+  readonly value: string; // 选择值
+  readonly disabled: boolean; // 禁用此选项
 }
 ```
 
-## API Reference
+## API 参考
 
-### CxRadioGroup Props
+### CxRadioGroup 属性 (Props)
 
-| Prop       | Type                     | Default     | Description              |
-| ---------- | ------------------------ | ----------- | ------------------------ |
-| `value`    | `string`                 | `''`        | Selected value (v-model) |
-| `options`  | `readonly RadioOption[]` | `[]`        | Available options        |
-| `disabled` | `boolean`                | `false`     | Disable entire group     |
-| `error`    | `string`                 | `undefined` | Error message            |
+| 属性       | 类型                     | 默认值      | 说明                |
+| ---------- | ------------------------ | ----------- | ------------------- |
+| `value`    | `string`                 | `''`        | 选中的值（v-model） |
+| `options`  | `readonly RadioOption[]` | `[]`        | 可用选项            |
+| `disabled` | `boolean`                | `false`     | 禁用整个分组        |
+| `error`    | `string`                 | `undefined` | 错误提示信息        |
 
-### CxRadioGroup Events
+### CxRadioGroup 事件 (Events)
 
-| Event          | Payload  | Description                 |
-| -------------- | -------- | --------------------------- |
-| `update:value` | `string` | Selection changed (v-model) |
+| 事件           | 载荷     | 说明                  |
+| -------------- | -------- | --------------------- |
+| `update:value` | `string` | 选中值变化（v-model） |

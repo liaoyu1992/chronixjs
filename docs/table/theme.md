@@ -1,8 +1,8 @@
-# Table Theme
+# 主题
 
-Customize the table appearance using the `ChronixTableTheme` interface. Pass a partial theme to override only the tokens you need.
+使用 `ChronixTableTheme` 接口自定义表格外观。传入部分主题对象即可仅覆盖你需要的令牌。
 
-## Basic Usage
+## 基本用法
 
 ::: code-group
 
@@ -65,7 +65,7 @@ export function App() {
 
 :::
 
-## Dark Mode Example
+## 暗色模式示例
 
 ```typescript
 const darkTheme: Partial<ChronixTableTheme> = {
@@ -84,79 +84,79 @@ const darkTheme: Partial<ChronixTableTheme> = {
 };
 ```
 
-## Complete Theme Tokens
+## 完整主题令牌
 
-### Layout
+### 布局
 
-| Token                   | Default | Description                  |
-| ----------------------- | ------- | ---------------------------- |
-| `defaultColumnWidth`    | `200`   | Default column width (px)    |
-| `defaultMinColumnWidth` | `50`    | Min column width (px)        |
-| `headerHeight`          | `40`    | Header row height (px)       |
-| `rowHeight`             | `36`    | Default row height (px)      |
-| `cellPaddingX`          | `12`    | Horizontal cell padding (px) |
-| `headerGroupHeight`     | `32`    | Header group row height (px) |
-| `footerHeight`          | `36`    | Footer row height (px)       |
-| `statusBarHeight`       | `28`    | Status bar height (px)       |
+| 令牌                    | 默认值 | 描述                   |
+| ----------------------- | ------ | ---------------------- |
+| `defaultColumnWidth`    | `200`  | 默认列宽（px）         |
+| `defaultMinColumnWidth` | `50`   | 最小列宽（px）         |
+| `headerHeight`          | `40`   | 表头行高（px）         |
+| `rowHeight`             | `36`   | 默认行高（px）         |
+| `cellPaddingX`          | `12`   | 单元格水平内边距（px） |
+| `headerGroupHeight`     | `32`   | 表头分组行高（px）     |
+| `footerHeight`          | `36`   | 底部行高（px）         |
+| `statusBarHeight`       | `28`   | 状态栏高度（px）       |
 
-### Header
+### 表头
 
-| Token               | Default     | Description             |
-| ------------------- | ----------- | ----------------------- |
-| `headerBg`          | `'#f9fafb'` | Header background       |
-| `headerBorderColor` | `'#e5e7eb'` | Header cell border      |
-| `headerGroupBg`     | `'#f3f4f6'` | Header group background |
+| 令牌                | 默认值      | 描述           |
+| ------------------- | ----------- | -------------- |
+| `headerBg`          | `'#f9fafb'` | 表头背景       |
+| `headerBorderColor` | `'#e5e7eb'` | 表头单元格边框 |
+| `headerGroupBg`     | `'#f3f4f6'` | 表头分组背景   |
 
-### Rows
+### 行
 
-| Token             | Default     | Description            |
-| ----------------- | ----------- | ---------------------- |
-| `rowDividerColor` | `'#e5e7eb'` | Row divider line color |
-| `evenRowBg`       | `'#ffffff'` | Even row background    |
-| `oddRowBg`        | `'#ffffff'` | Odd row background     |
+| 令牌              | 默认值      | 描述         |
+| ----------------- | ----------- | ------------ |
+| `rowDividerColor` | `'#e5e7eb'` | 行分隔线颜色 |
+| `evenRowBg`       | `'#ffffff'` | 偶数行背景   |
+| `oddRowBg`        | `'#ffffff'` | 奇数行背景   |
 
-### Pinned Columns
+### 固定列
 
-| Token               | Default               | Description            |
-| ------------------- | --------------------- | ---------------------- |
-| `pinnedShadowColor` | `rgba(0, 0, 0, 0.12)` | Divider shadow color   |
-| `pinnedZoneBg`      | `'inherit'`           | Pinned zone background |
-| `pinnedRowZIndex`   | `10`                  | Pinned row z-index     |
+| 令牌                | 默认值                | 描述           |
+| ------------------- | --------------------- | -------------- |
+| `pinnedShadowColor` | `rgba(0, 0, 0, 0.12)` | 分隔阴影颜色   |
+| `pinnedZoneBg`      | `'inherit'`           | 固定区域背景   |
+| `pinnedRowZIndex`   | `10`                  | 固定行 z-index |
 
-### Selection
+### 选择
 
-| Token                           | Default     | Description                  |
-| ------------------------------- | ----------- | ---------------------------- |
-| `selectionColumnWidth`          | `48`        | Checkbox column width (px)   |
-| `rowCheckboxIndeterminateColor` | `'#d1d5db'` | Indeterminate checkbox color |
+| 令牌                            | 默认值      | 描述             |
+| ------------------------------- | ----------- | ---------------- |
+| `selectionColumnWidth`          | `48`        | 复选框列宽（px） |
+| `rowCheckboxIndeterminateColor` | `'#d1d5db'` | 半选复选框颜色   |
 
-### Footer & Status
+### 底部与状态栏
 
-| Token         | Default     | Description           |
-| ------------- | ----------- | --------------------- |
-| `footerBg`    | `'#f9fafb'` | Footer row background |
-| `statusBarBg` | `'#f9fafb'` | Status bar background |
+| 令牌          | 默认值      | 描述       |
+| ------------- | ----------- | ---------- |
+| `footerBg`    | `'#f9fafb'` | 底部行背景 |
+| `statusBarBg` | `'#f9fafb'` | 状态栏背景 |
 
-### Tree Data
+### 树形数据
 
-| Token              | Default     | Description                 |
-| ------------------ | ----------- | --------------------------- |
-| `treeIndentPx`     | `24`        | Indent per depth level (px) |
-| `treeChevronColor` | `'#6b7280'` | Expand/collapse icon color  |
-| `treeSpinnerColor` | `'#3b82f6'` | Loading spinner color       |
-| `treeErrorColor`   | `'#ef4444'` | Error indicator color       |
+| 令牌               | 默认值      | 描述              |
+| ------------------ | ----------- | ----------------- |
+| `treeIndentPx`     | `24`        | 每层缩进（px）    |
+| `treeChevronColor` | `'#6b7280'` | 展开/折叠图标颜色 |
+| `treeSpinnerColor` | `'#3b82f6'` | 加载动画颜色      |
+| `treeErrorColor`   | `'#ef4444'` | 错误指示器颜色    |
 
-### Tooltips & Overlays
+### 工具提示与遮罩层
 
-| Token            | Default                   | Description                |
-| ---------------- | ------------------------- | -------------------------- |
-| `tooltipDelayMs` | `500`                     | Tooltip show delay (ms)    |
-| `tooltipBg`      | `'#1f2937'`               | Tooltip background         |
-| `tooltipColor`   | `'#f9fafb'`               | Tooltip text color         |
-| `overlayBg`      | `'rgba(255,255,255,0.8)'` | Loading overlay background |
+| 令牌             | 默认值                    | 描述                   |
+| ---------------- | ------------------------- | ---------------------- |
+| `tooltipDelayMs` | `500`                     | 工具提示显示延迟（ms） |
+| `tooltipBg`      | `'#1f2937'`               | 工具提示背景           |
+| `tooltipColor`   | `'#f9fafa'`               | 工具提示文本颜色       |
+| `overlayBg`      | `'rgba(255,255,255,0.8)'` | 加载遮罩背景           |
 
-### Drag & Fill
+### 拖拽填充
 
-| Token                 | Default     | Description           |
-| --------------------- | ----------- | --------------------- |
-| `dragFillHandleColor` | `'#3b82f6'` | Fill handle dot color |
+| 令牌                  | 默认值      | 描述             |
+| --------------------- | ----------- | ---------------- |
+| `dragFillHandleColor` | `'#3b82f6'` | 填充手柄圆点颜色 |

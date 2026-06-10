@@ -1,8 +1,8 @@
-# Input
+# Input 输入框
 
-Text input component with clearable support, textarea mode, validation, and IME composition handling.
+文本输入组件，支持清除、文本域模式、验证和 IME 组合输入处理。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Text input component with clearable support, textarea mode, validation, and IME 
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -59,9 +59,9 @@ export function App() {
 
 :::
 
-## Input Types
+## 输入类型
 
-### Text Input (default)
+### 文本输入（默认）
 
 ::: code-group
 
@@ -77,9 +77,9 @@ export function App() {
 
 :::
 
-### Textarea
+### 文本域
 
-Set `type="textarea"` for multi-line input:
+设置 `type="textarea"` 用于多行输入：
 
 ::: code-group
 
@@ -102,7 +102,7 @@ const bio = ref('');
 
 :::
 
-## Sizes
+## 尺寸
 
 ::: code-group
 
@@ -130,9 +130,9 @@ import { CxInput } from '@chronixjs/ui-vue3';
 
 :::
 
-## Clearable
+## 可清除
 
-Show a clear button when the input has a value:
+当输入框有值时显示清除按钮：
 
 ::: code-group
 
@@ -158,9 +158,9 @@ function onClear() {
 
 :::
 
-## Error State
+## 错误状态
 
-Display validation error messages:
+显示验证错误信息：
 
 ::: code-group
 
@@ -183,7 +183,7 @@ const email = ref('invalid');
 
 :::
 
-## Disabled
+## 禁用状态
 
 ::: code-group
 
@@ -203,7 +203,7 @@ import { CxInput } from '@chronixjs/ui-vue3';
 
 :::
 
-## Events
+## 事件
 
 ::: code-group
 
@@ -229,26 +229,26 @@ function onClear() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                             | Default     | Description           |
-| ------------- | -------------------------------- | ----------- | --------------------- |
-| `value`       | `string`                         | `''`        | Input value (v-model) |
-| `type`        | `'text' \| 'textarea'`           | `'text'`    | Input type            |
-| `placeholder` | `string`                         | `undefined` | Placeholder text      |
-| `disabled`    | `boolean`                        | `false`     | Disable the input     |
-| `clearable`   | `boolean`                        | `false`     | Show clear button     |
-| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | Input size            |
-| `rows`        | `number`                         | `3`         | Textarea rows         |
-| `error`       | `string`                         | `undefined` | Error message         |
+| Prop          | 类型                             | 默认值      | 描述              |
+| ------------- | -------------------------------- | ----------- | ----------------- |
+| `value`       | `string`                         | `''`        | 输入值（v-model） |
+| `type`        | `'text' \| 'textarea'`           | `'text'`    | 输入类型          |
+| `placeholder` | `string`                         | `undefined` | 占位文本          |
+| `disabled`    | `boolean`                        | `false`     | 是否禁用输入框    |
+| `clearable`   | `boolean`                        | `false`     | 是否显示清除按钮  |
+| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | 输入框尺寸        |
+| `rows`        | `number`                         | `3`         | 文本域行数        |
+| `error`       | `string`                         | `undefined` | 错误信息          |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload      | Description             |
+| Event          | Payload      | 描述                    |
 | -------------- | ------------ | ----------------------- |
-| `update:value` | `string`     | Value changed (v-model) |
-| `focus`        | `FocusEvent` | Input focused           |
-| `blur`         | `FocusEvent` | Input blurred           |
-| `clear`        | —            | Clear button clicked    |
+| `update:value` | `string`     | 值变化时触发（v-model） |
+| `focus`        | `FocusEvent` | 输入框获得焦点时触发    |
+| `blur`         | `FocusEvent` | 输入框失去焦点时触发    |
+| `clear`        | —            | 清除按钮被点击时触发    |

@@ -1,8 +1,8 @@
-# Steps
+# Steps 步骤条
 
-A wizard-style step indicator showing progress through a multi-stage process.
+向导式步骤指示器，用于展示多阶段流程的进度。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A wizard-style step indicator showing progress through a multi-stage process.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -108,9 +108,9 @@ export function App() {
 
 :::
 
-## Vertical Direction
+## 垂直方向
 
-Use `direction="vertical"` to render the steps in a vertical layout.
+使用 `direction="vertical"` 以垂直布局渲染步骤条。
 
 ::: code-group
 
@@ -175,9 +175,9 @@ export function App() {
 
 :::
 
-## Error Step
+## 错误步骤
 
-Override an individual step's status by setting `status: 'error'` on the step item. This is useful to highlight a failed step.
+通过在步骤项上设置 `status: 'error'` 来覆盖单个步骤的状态。可用于突出显示失败的步骤。
 
 ::: code-group
 
@@ -236,21 +236,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                         | Default        | Description                 |
-| ----------- | ---------------------------- | -------------- | --------------------------- |
-| `items`     | `StepItem[]`                 | `[]`           | Step definitions            |
-| `current`   | `number`                     | `0`            | Active step index (0-based) |
-| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | Layout direction            |
+| 属性        | 类型                         | 默认值         | 说明                      |
+| ----------- | ---------------------------- | -------------- | ------------------------- |
+| `items`     | `StepItem[]`                 | `[]`           | 步骤定义                  |
+| `current`   | `number`                     | `0`            | 当前步骤索引（从 0 开始） |
+| `direction` | `'horizontal' \| 'vertical'` | `'horizontal'` | 布局方向                  |
 
-### StepItem Interface
+### StepItem 接口
 
-| Field         | Type                                         | Description      |
-| ------------- | -------------------------------------------- | ---------------- |
-| `key`         | `string`                                     | Unique key       |
-| `title`       | `string`                                     | Step title       |
-| `description` | `string`                                     | Step description |
-| `status`      | `'wait' \| 'process' \| 'finish' \| 'error'` | Override status  |
+| 字段          | 类型                                         | 说明     |
+| ------------- | -------------------------------------------- | -------- |
+| `key`         | `string`                                     | 唯一键   |
+| `title`       | `string`                                     | 步骤标题 |
+| `description` | `string`                                     | 步骤描述 |
+| `status`      | `'wait' \| 'process' \| 'finish' \| 'error'` | 覆盖状态 |

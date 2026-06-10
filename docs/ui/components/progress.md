@@ -1,8 +1,8 @@
-# Progress
+# Progress 进度条
 
-A linear progress bar with semantic types and configurable display.
+带语义类型和可配置显示的线性进度条。
 
-## Install
+## 安装
 
 ::: code-group
 <<< @/snippets/vue3/install-ui.md
@@ -10,7 +10,7 @@ A linear progress bar with semantic types and configurable display.
 <<< @/snippets/react/install-ui.md
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -62,9 +62,9 @@ export function App() {
 
 :::
 
-## Progress Types
+## 进度条类型
 
-Use `type` to apply semantic coloring: `default`, `success`, `warning`, `error`, or `info`.
+使用 `type` 应用语义颜色：`default`、`success`、`warning`、`error` 或 `info`。
 
 ::: code-group
 
@@ -122,9 +122,9 @@ export function App() {
 
 :::
 
-## Indicator Placement
+## 指示器位置
 
-Control where the percentage text appears. By default the indicator is placed **outside** the bar. Set `indicator-placement="inside"` to render it within the filled area.
+控制百分比文本出现的位置。默认情况下指示器放置在进度条**外部**。设置 `indicator-placement="inside"` 可将其渲染在填充区域内。
 
 ::: code-group
 
@@ -173,9 +173,9 @@ export function App() {
 
 :::
 
-## Custom Height
+## 自定义高度
 
-Set the `height` prop (in pixels) to create a thicker or thinner bar.
+设置 `height` 属性（像素）来创建更粗或更细的进度条。
 
 ::: code-group
 
@@ -227,9 +227,9 @@ export function App() {
 
 :::
 
-## Without Info
+## 隐藏百分比文本
 
-Hide the percentage text by setting `show-info` to `false`.
+设置 `show-info` 为 `false` 可隐藏百分比文本。
 
 ::: code-group
 
@@ -278,14 +278,14 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop                 | Type                                                       | Default     | Description            |
-| -------------------- | ---------------------------------------------------------- | ----------- | ---------------------- |
-| `type`               | `'default' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | Progress type          |
-| `percentage`         | `number`                                                   | `0`         | Progress value (0-100) |
-| `showInfo`           | `boolean`                                                  | `true`      | Show percentage text   |
-| `height`             | `number`                                                   | `undefined` | Rail height in px      |
-| `indicatorPlacement` | `'inside' \| 'outside'`                                    | `'outside'` | Text placement         |
+| 属性                 | 类型                                                       | 默认值      | 说明            |
+| -------------------- | ---------------------------------------------------------- | ----------- | --------------- |
+| `type`               | `'default' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | 进度条类型      |
+| `percentage`         | `number`                                                   | `0`         | 进度值（0-100） |
+| `showInfo`           | `boolean`                                                  | `true`      | 显示百分比文本  |
+| `height`             | `number`                                                   | `undefined` | 轨道高度（px）  |
+| `indicatorPlacement` | `'inside' \| 'outside'`                                    | `'outside'` | 文本位置        |

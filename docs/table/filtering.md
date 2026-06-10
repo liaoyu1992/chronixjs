@@ -1,10 +1,10 @@
-# Filtering
+# 筛选
 
-The table supports multiple filter types including text, number, set, and advanced expression-based filtering.
+表格支持多种筛选类型，包括文本、数字、集合和高级表达式筛选。
 
-## Quick Start
+## 快速开始
 
-Enable the filter row with `showFilterRow`:
+通过 `showFilterRow` 启用筛选行：
 
 ::: code-group
 
@@ -94,36 +94,36 @@ export function App() {
 
 :::
 
-## Filter Types
+## 筛选类型
 
-### Text Filter
+### 文本筛选
 
-Filter by string matching with multiple operators:
+通过字符串匹配进行筛选，支持多种运算符：
 
 ```typescript
 { filterable: true, filterUi: 'text' }
 ```
 
-| Operator     | Description              |
-| ------------ | ------------------------ |
-| `contains`   | Value contains the query |
-| `equals`     | Exact match              |
-| `startsWith` | Value starts with query  |
-| `endsWith`   | Value ends with query    |
+| 运算符       | 描述             |
+| ------------ | ---------------- |
+| `contains`   | 值包含查询文本   |
+| `equals`     | 精确匹配         |
+| `startsWith` | 值以查询文本开头 |
+| `endsWith`   | 值以查询文本结尾 |
 
-### Set Filter
+### 集合筛选
 
-Select from a list of unique values with checkboxes:
+通过复选框从唯一值列表中选择：
 
 ```typescript
 { filterable: true, filterUi: 'set' }
 ```
 
-Shows all unique values in the column with a search box and select-all toggle.
+显示列中所有唯一值，带搜索框和全选切换。
 
-### Multi Filter
+### 多条件筛选
 
-Combine multiple filter conditions with AND/OR logic:
+使用 AND/OR 逻辑组合多个筛选条件：
 
 ```typescript
 {
@@ -133,24 +133,24 @@ Combine multiple filter conditions with AND/OR logic:
 }
 ```
 
-### Number Filter
+### 数字筛选
 
-Numeric comparisons:
+数值比较：
 
-| Operator  | Description                         |
-| --------- | ----------------------------------- |
-| `=`       | Equal to                            |
-| `!=`      | Not equal to                        |
-| `>`       | Greater than                        |
-| `<`       | Less than                           |
-| `>=`      | Greater than or equal               |
-| `<=`      | Less than or equal                  |
-| `inRange` | Between two values (uses `valueTo`) |
+| 运算符    | 描述                           |
+| --------- | ------------------------------ |
+| `=`       | 等于                           |
+| `!=`      | 不等于                         |
+| `>`       | 大于                           |
+| `<`       | 小于                           |
+| `>=`      | 大于或等于                     |
+| `<=`      | 小于或等于                     |
+| `inRange` | 在两个值之间（使用 `valueTo`） |
 
-## FilterSpec Types
+## FilterSpec 类型
 
 ```typescript
-// Text filter
+// 文本筛选
 interface TextFilterSpec {
   readonly type: 'text';
   readonly colId: string;
@@ -159,7 +159,7 @@ interface TextFilterSpec {
   readonly caseSensitive?: boolean;
 }
 
-// Number filter
+// 数字筛选
 interface NumberFilterSpec {
   readonly type: 'number';
   readonly colId: string;
@@ -168,14 +168,14 @@ interface NumberFilterSpec {
   readonly valueTo?: number;
 }
 
-// Set filter
+// 集合筛选
 interface SetFilterSpec {
   readonly type: 'set';
   readonly colId: string;
   readonly selectedValues: readonly (string | number | boolean | null)[] | null;
 }
 
-// Multi filter
+// 多条件筛选
 interface MultiFilterSpec {
   readonly type: 'multi';
   readonly colId: string;
@@ -184,9 +184,9 @@ interface MultiFilterSpec {
 }
 ```
 
-## Advanced Expression Filter
+## 高级表达式筛选
 
-Build complex filter expressions with AND/OR/NOT logic:
+使用 AND/OR/NOT 逻辑构建复杂的筛选表达式：
 
 ::: code-group
 
@@ -205,7 +205,7 @@ function onReady(h: TableHandle) {
   handle = h;
 }
 
-// Build complex filter: (status = 'Active' AND score > 80) OR name contains 'Alice'
+// 构建复杂筛选：(status = 'Active' AND score > 80) OR name contains 'Alice'
 function applyAdvancedFilter() {
   const expression: FilterExpression = {
     kind: 'or',
@@ -228,41 +228,41 @@ function applyAdvancedFilter() {
 
 :::
 
-### Expression Operators
+### 表达式运算符
 
-| Operator     | Description           |
-| ------------ | --------------------- |
-| `=`          | Equal                 |
-| `!=`         | Not equal             |
-| `>`          | Greater than          |
-| `<`          | Less than             |
-| `>=`         | Greater than or equal |
-| `<=`         | Less than or equal    |
-| `contains`   | Contains substring    |
-| `startsWith` | Starts with           |
-| `endsWith`   | Ends with             |
-| `in`         | Value in list         |
-| `isNull`     | Value is null         |
-| `isNotNull`  | Value is not null     |
+| 运算符       | 描述         |
+| ------------ | ------------ |
+| `=`          | 等于         |
+| `!=`         | 不等于       |
+| `>`          | 大于         |
+| `<`          | 小于         |
+| `>=`         | 大于或等于   |
+| `<=`         | 小于或等于   |
+| `contains`   | 包含子串     |
+| `startsWith` | 以指定值开头 |
+| `endsWith`   | 以指定值结尾 |
+| `in`         | 值在列表中   |
+| `isNull`     | 值为 null    |
+| `isNotNull`  | 值不为 null  |
 
-### Parse Filter from Text
+### 从文本解析筛选
 
-Parse a text-based filter expression and apply it:
+解析基于文本的筛选表达式并应用：
 
 ```typescript
 handle.parseAndSetAdvancedFilter('status = "Active" AND score > 80');
 ```
 
-## Programmatic Filter Control
+## 编程式筛选控制
 
-Use `TableHandle` to control filters programmatically:
+使用 `TableHandle` 通过编程方式控制筛选：
 
-| Method                            | Description                      |
-| --------------------------------- | -------------------------------- |
-| `getFilter()`                     | Get current filter specs         |
-| `setFilter(spec)`                 | Apply filter spec(s)             |
-| `clearFilter()`                   | Remove all filters               |
-| `getAdvancedFilter()`             | Get current expression filter    |
-| `setAdvancedFilter(expr)`         | Apply expression filter          |
-| `parseAndSetAdvancedFilter(text)` | Parse and apply text filter      |
-| `getColumnUniqueValues(colId)`    | Get unique values for set filter |
+| 方法                              | 描述                 |
+| --------------------------------- | -------------------- |
+| `getFilter()`                     | 获取当前筛选规格     |
+| `setFilter(spec)`                 | 应用筛选规格         |
+| `clearFilter()`                   | 移除所有筛选         |
+| `getAdvancedFilter()`             | 获取当前表达式筛选   |
+| `setAdvancedFilter(expr)`         | 应用表达式筛选       |
+| `parseAndSetAdvancedFilter(text)` | 解析并应用文本筛选   |
+| `getColumnUniqueValues(colId)`    | 获取集合筛选的唯一值 |

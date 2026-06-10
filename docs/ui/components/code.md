@@ -1,8 +1,8 @@
-# Code
+# Code 代码
 
-Code block with `<pre><code>` rendering. No syntax highlighting in v0.1.0.
+使用 `<pre><code>` 渲染的代码块组件。v0.1.0 版本暂不支持语法高亮。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Code block with `<pre><code>` rendering. No syntax highlighting in v0.1.0.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -60,7 +60,7 @@ export function App() {
 
 :::
 
-## Inline Code
+## 行内代码
 
 ::: code-group
 
@@ -99,11 +99,11 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop     | Type      | Default | Description                            |
-| -------- | --------- | ------- | -------------------------------------- |
-| `value`  | `string`  | `''`    | Code text content                      |
-| `inline` | `boolean` | `false` | Render as inline `<code>` (no `<pre>`) |
+| 属性     | 类型      | 默认值  | 说明                                |
+| -------- | --------- | ------- | ----------------------------------- |
+| `value`  | `string`  | `''`    | 代码文本内容                        |
+| `inline` | `boolean` | `false` | 渲染为行内 `<code>`（不带 `<pre>`） |

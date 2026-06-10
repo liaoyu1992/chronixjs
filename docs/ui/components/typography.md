@@ -1,8 +1,8 @@
-# Typography
+# Typography 排版
 
-A typography component for rendering headings, paragraphs, blockquotes, and text with style controls.
+用于渲染标题、段落、引用和文本的排版组件，带有样式控制。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,11 +14,11 @@ A typography component for rendering headings, paragraphs, blockquotes, and text
 
 :::
 
-## Basic Usage
+## 基础用法
 
-### Plain Text
+### 纯文本
 
-By default, renders a `<span>`:
+默认渲染为 `<span>`：
 
 ::: code-group
 
@@ -53,9 +53,9 @@ export function App() {
 
 :::
 
-### Headings
+### 标题
 
-Set `variant="title"` and `level` (1–6) to render `<h1>` through `<h6>`:
+设置 `variant="title"` 和 `level`（1-6）来渲染 `<h1>` 到 `<h6>`：
 
 ::: code-group
 
@@ -106,7 +106,7 @@ export function App() {
 
 :::
 
-### Paragraph
+### 段落
 
 ::: code-group
 
@@ -149,7 +149,7 @@ export function App() {
 
 :::
 
-## Blockquote
+## 引用
 
 ::: code-group
 
@@ -192,9 +192,9 @@ export function App() {
 
 :::
 
-## Horizontal Rule
+## 分割线
 
-Renders an `<hr>` separator:
+渲染为 `<hr>` 分隔符：
 
 ::: code-group
 
@@ -229,9 +229,9 @@ export function App() {
 
 :::
 
-## Style Modifiers
+## 样式修饰
 
-Apply italic and underline styles to any variant:
+对任意变体应用斜体和下划线样式：
 
 ::: code-group
 
@@ -278,26 +278,26 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                                               | Default  | Description                      |
-| ----------- | -------------------------------------------------- | -------- | -------------------------------- |
-| `variant`   | `'text' \| 'title' \| 'p' \| 'blockquote' \| 'hr'` | `'text'` | HTML element to render           |
-| `level`     | `1 \| 2 \| 3 \| 4 \| 5 \| 6`                       | `1`      | Heading level (only for `title`) |
-| `italic`    | `boolean`                                          | `false`  | Apply italic style               |
-| `underline` | `boolean`                                          | `false`  | Apply underline style            |
+| 属性        | 类型                                               | 默认值   | 说明                            |
+| ----------- | -------------------------------------------------- | -------- | ------------------------------- |
+| `variant`   | `'text' \| 'title' \| 'p' \| 'blockquote' \| 'hr'` | `'text'` | 渲染的 HTML 元素                |
+| `level`     | `1 \| 2 \| 3 \| 4 \| 5 \| 6`                       | `1`      | 标题级别（仅 `title` 变体可用） |
+| `italic`    | `boolean`                                          | `false`  | 应用斜体样式                    |
+| `underline` | `boolean`                                          | `false`  | 应用下划线样式                  |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                           |
-| --------- | ------------------------------------- |
-| `default` | Content to display (ignored for `hr`) |
+| 插槽      | 说明                            |
+| --------- | ------------------------------- |
+| `default` | 要显示的内容（`hr` 变体时忽略） |
 
-### Element Mapping
+### 元素映射
 
-| `variant`    | HTML Element   |
+| `variant`    | HTML 元素      |
 | ------------ | -------------- |
 | `text`       | `<span>`       |
 | `title`      | `<h{level}>`   |

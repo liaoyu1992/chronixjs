@@ -1,8 +1,8 @@
-# Log
+# Log 日志
 
-Terminal-output viewer for CI, deploy, audit-trail, or build-output consumption.
+终端输出查看器，适用于 CI、部署、审计追踪或构建输出的展示。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Terminal-output viewer for CI, deploy, audit-trail, or build-output consumption.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -86,14 +86,14 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                  | Default     | Description                                 |
-| ------------- | --------------------- | ----------- | ------------------------------------------- |
-| `lines`       | `readonly string[]`   | `[]`        | Ordered lines to render                     |
-| `lineNumbers` | `boolean`             | `false`     | Show line numbers                           |
-| `loading`     | `boolean`             | `false`     | Show "loading..." row below lines           |
-| `maxHeight`   | `number \| undefined` | `undefined` | Max height in px (becomes scroll container) |
-| `wrapLines`   | `boolean`             | `false`     | Wrap long lines (`pre-wrap` vs `pre`)       |
+| Prop          | 类型                  | 默认值      | 描述                                 |
+| ------------- | --------------------- | ----------- | ------------------------------------ |
+| `lines`       | `readonly string[]`   | `[]`        | 按顺序渲染的行内容                   |
+| `lineNumbers` | `boolean`             | `false`     | 是否显示行号                         |
+| `loading`     | `boolean`             | `false`     | 是否在行下方显示 "loading..." 行     |
+| `maxHeight`   | `number \| undefined` | `undefined` | 最大高度（像素），超出后变为滚动容器 |
+| `wrapLines`   | `boolean`             | `false`     | 是否换行长行（`pre-wrap` 与 `pre`）  |

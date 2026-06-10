@@ -1,17 +1,17 @@
-# UI Components
+# UI 组件概览
 
-A comprehensive UI component library with **85 components** across 3 framework adapters, featuring a theme system, popup system, and BEM-based styling.
+功能全面的 UI 组件库，提供 **85 个组件**，支持 3 个框架适配器，具备主题系统、弹出层系统和基于 BEM 的样式方案。
 
-## Features
+## 特性
 
-- **85 Components** — Tier A (40), Tier B (33), Tier C (12)
-- **3 Framework Adapters** — Vue 3, Vue 2.7, React 18
-- **Theme System** — CSS custom properties with BEM naming (`cx-ui-*` prefix)
-- **Popup System** — modal, drawer, popover, tooltip, confirm dialog
-- **Framework-Agnostic Core** — pure helpers + types + CSS in `@chronixjs/ui`
-- **Sticky-flag Style Injection** — `ensureChronix*Styles()` with dedup
+- **85 个组件** — A 级 (40)、B 级 (33)、C 级 (12)
+- **3 个框架适配器** — Vue 3、Vue 2.7、React 18
+- **主题系统** — 基于 CSS 自定义属性，采用 BEM 命名（`cx-ui-*` 前缀）
+- **弹出层系统** — modal、drawer、popover、tooltip、confirm dialog
+- **框架无关的核心** — `@chronixjs/ui` 中包含纯辅助函数 + 类型 + CSS
+- **粘性标记样式注入** — `ensureChronix*Styles()` 自动去重
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -29,39 +29,39 @@ pnpm add @chronixjs/ui-react@alpha react@^18 react-dom@^18
 
 :::
 
-## Component Categories
+## 组件分类
 
-### Tier A — Core Components (40)
+### A 级 — 核心组件 (40)
 
-| Category         | Components                                         |
-| ---------------- | -------------------------------------------------- |
-| **Buttons**      | Button, ButtonGroup                                |
-| **Inputs**       | Input, Textarea, InputNumber, InputPassword        |
-| **Selection**    | Checkbox, CheckboxGroup, Radio, RadioGroup, Switch |
-| **Display**      | Tag, Badge, Avatar, AvatarGroup, Typography        |
-| **Navigation**   | Tabs, Breadcrumb, Pagination, Steps                |
-| **Feedback**     | Alert, Progress, Spinner, Skeleton, Result         |
-| **Data Display** | Tooltip, Popover, Table (light), Collapse          |
+| 分类         | 组件                                               |
+| ------------ | -------------------------------------------------- |
+| **按钮**     | Button, ButtonGroup                                |
+| **输入框**   | Input, Textarea, InputNumber, InputPassword        |
+| **选择**     | Checkbox, CheckboxGroup, Radio, RadioGroup, Switch |
+| **展示**     | Tag, Badge, Avatar, AvatarGroup, Typography        |
+| **导航**     | Tabs, Breadcrumb, Pagination, Steps                |
+| **反馈**     | Alert, Progress, Spinner, Skeleton, Result         |
+| **数据展示** | Tooltip, Popover, Table (轻量), Collapse           |
 
-### Tier B — Advanced Components (33)
+### B 级 — 高级组件 (33)
 
-| Category       | Components                                       |
-| -------------- | ------------------------------------------------ |
-| **Forms**      | Form, FormItem, Select, Cascader, DatePicker     |
-| **Data Entry** | Slider, Rate, ColorPicker, Transfer, TimePicker  |
-| **Layout**     | Divider, Space, Grid, Layout                     |
-| **Overlay**    | Modal, Drawer, Popconfirm, Message, Notification |
-| **Navigation** | Menu, Dropdown, Anchor, BackTop                  |
+| 分类         | 组件                                             |
+| ------------ | ------------------------------------------------ |
+| **表单**     | Form, FormItem, Select, Cascader, DatePicker     |
+| **数据录入** | Slider, Rate, ColorPicker, Transfer, TimePicker  |
+| **布局**     | Divider, Space, Grid, Layout                     |
+| **浮层**     | Modal, Drawer, Popconfirm, Message, Notification |
+| **导航**     | Menu, Dropdown, Anchor, BackTop                  |
 
-### Tier C — Specialized Components (12)
+### C 级 — 专用组件 (12)
 
-| Category     | Components                                     |
-| ------------ | ---------------------------------------------- |
-| **Advanced** | Tree, TreeSelect, Calendar, Upload, Image      |
-| **Data**     | Carousel, Descriptions, Empty, Watermark, Spin |
+| 分类     | 组件                                           |
+| -------- | ---------------------------------------------- |
+| **高级** | Tree, TreeSelect, Calendar, Upload, Image      |
+| **数据** | Carousel, Descriptions, Empty, Watermark, Spin |
 
-## Next Steps
+## 下一步
 
-- [Getting Started](/ui/getting-started) — setup and first component
-- [Theme System](/ui/theme) — customize the look and feel
-- [Button](/ui/components/button) — component documentation template
+- [快速开始](/ui/getting-started) — 安装配置和第一个组件
+- [主题系统](/ui/theme) — 自定义外观和风格
+- [Button](/ui/components/button) — 组件文档模板

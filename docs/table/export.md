@@ -1,12 +1,12 @@
-# Export (CSV & XLSX)
+# 导出（CSV 与 XLSX）
 
-Export table data to CSV or Excel (XLSX) format. Exports run entirely client-side — no server round-trip required.
+将表格数据导出为 CSV 或 Excel (XLSX) 格式。导出完全在客户端运行 — 无需服务器请求。
 
-## CSV Export
+## CSV 导出
 
-### Programmatic Export
+### 编程式导出
 
-Use `TableHandle` to trigger CSV export:
+使用 `TableHandle` 触发 CSV 导出：
 
 ::: code-group
 
@@ -34,7 +34,7 @@ async function exportCsv() {
     includeHeaders: true,
   });
   if (csvString) {
-    // Trigger download
+    // 触发下载
     const blob = new Blob([csvString], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -87,16 +87,16 @@ export function App() {
 
 ### ExportToCsvOptions
 
-| Option           | Type                | Default | Description                  |
-| ---------------- | ------------------- | ------- | ---------------------------- |
-| `separator`      | `string`            | `','`   | Column separator             |
-| `eol`            | `string`            | `'\n'`  | End-of-line character        |
-| `includeHeaders` | `boolean`           | `true`  | Include header row           |
-| `columnIds`      | `readonly string[]` |         | Export specific columns only |
+| 选项             | 类型                | 默认值 | 描述         |
+| ---------------- | ------------------- | ------ | ------------ |
+| `separator`      | `string`            | `','`  | 列分隔符     |
+| `eol`            | `string`            | `'\n'` | 行尾字符     |
+| `includeHeaders` | `boolean`           | `true` | 包含表头行   |
+| `columnIds`      | `readonly string[]` |        | 仅导出指定列 |
 
-### Core Function
+### 核心函数
 
-Export directly using the core function (no adapter needed):
+直接使用核心函数导出（无需适配器）：
 
 ```typescript
 import { exportToCsv } from '@chronixjs/table';
@@ -111,9 +111,9 @@ const input: ExportToCsvInput = {
 const csvString = exportToCsv(input);
 ```
 
-## XLSX Export
+## XLSX 导出
 
-### Programmatic Export
+### 编程式导出
 
 ::: code-group
 
@@ -139,7 +139,7 @@ async function exportXlsx() {
   const buffer = await handle.value?.exportToXlsx({
     sheetName: 'Sheet1',
     includeHeaders: true,
-    freezePane: { ySplit: 1 }, // Freeze header row
+    freezePane: { ySplit: 1 }, // 冻结表头行
   });
   if (buffer) {
     const blob = new Blob([buffer], {
@@ -160,16 +160,16 @@ async function exportXlsx() {
 
 ### ExportToXlsxOptions
 
-| Option           | Type                   | Default    | Description                  |
-| ---------------- | ---------------------- | ---------- | ---------------------------- |
-| `sheetName`      | `string`               | `'Sheet1'` | Worksheet name               |
-| `includeHeaders` | `boolean`              | `true`     | Include header row           |
-| `columnIds`      | `readonly string[]`    |            | Export specific columns only |
-| `freezePane`     | `{ xSplit?, ySplit? }` |            | Freeze rows/columns          |
+| 选项             | 类型                   | 默认值     | 描述         |
+| ---------------- | ---------------------- | ---------- | ------------ |
+| `sheetName`      | `string`               | `'Sheet1'` | 工作表名称   |
+| `includeHeaders` | `boolean`              | `true`     | 包含表头行   |
+| `columnIds`      | `readonly string[]`    |            | 仅导出指定列 |
+| `freezePane`     | `{ xSplit?, ySplit? }` |            | 冻结行/列    |
 
-### Multi-Sheet Export
+### 多工作表导出
 
-Export multiple data sets into separate sheets of one workbook:
+将多个数据集导出到同一个工作簿的不同工作表中：
 
 ```typescript
 const buffer = await handle.value?.exportToXlsx({
@@ -180,9 +180,9 @@ const buffer = await handle.value?.exportToXlsx({
 });
 ```
 
-## Per-Column Export Styling
+## 按列定制导出样式
 
-Customize cell formatting in exports via `exportStyle` on `ColumnSpec`:
+通过 `ColumnSpec` 上的 `exportStyle` 自定义导出中的单元格格式：
 
 ```typescript
 const columns: ColumnSpec[] = [
@@ -211,10 +211,10 @@ const columns: ColumnSpec[] = [
 
 ### ExportStyle
 
-| Field          | Type                   | Description                |
-| -------------- | ---------------------- | -------------------------- |
-| `font`         | `ExportStyleFont`      | Font styling               |
-| `fill`         | `ExportStyleFill`      | Cell background            |
-| `alignment`    | `ExportStyleAlignment` | Text alignment             |
-| `border`       | `ExportStyleBorder`    | Cell borders               |
-| `numberFormat` | `string`               | Excel number format string |
+| 字段           | 类型                   | 描述                 |
+| -------------- | ---------------------- | -------------------- |
+| `font`         | `ExportStyleFont`      | 字体样式             |
+| `fill`         | `ExportStyleFill`      | 单元格背景           |
+| `alignment`    | `ExportStyleAlignment` | 文本对齐             |
+| `border`       | `ExportStyleBorder`    | 单元格边框           |
+| `numberFormat` | `string`               | Excel 数字格式字符串 |

@@ -1,8 +1,8 @@
-# Switch
+# Switch 开关
 
-Toggle switch component for binary on/off states. Renders a native `<button role="switch">` with ARIA attributes for accessibility.
+用于开/关二元状态的切换开关组件。渲染为带有 ARIA 无障碍属性的原生 `<button role="switch">`。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Toggle switch component for binary on/off states. Renders a native `<button role
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -59,7 +59,7 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
 ::: code-group
 
@@ -108,7 +108,7 @@ export function App() {
 
 :::
 
-## Disabled
+## 禁用状态
 
 ::: code-group
 
@@ -128,7 +128,7 @@ import { CxSwitch } from '@chronixjs/ui-vue3';
 
 :::
 
-## Error State
+## 错误状态
 
 ::: code-group
 
@@ -151,9 +151,9 @@ const agreed = ref(false);
 
 :::
 
-## With Labels
+## 带标签
 
-Combine with text for descriptive toggles:
+与文本组合实现描述性切换：
 
 ::: code-group
 
@@ -182,27 +182,27 @@ const darkMode = ref(false);
 
 :::
 
-## Accessibility
+## 无障碍
 
-The switch renders as `<button type="button" role="switch">` with:
+开关渲染为 `<button type="button" role="switch">`，具有以下特性：
 
-- `aria-checked` reflecting the checked state
-- `aria-disabled` when disabled
-- Keyboard toggle with Space/Enter
+- `aria-checked` 反映选中状态
+- 禁用时带有 `aria-disabled`
+- 使用 Space/Enter 键切换
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                             | Default     | Description            |
-| ---------- | -------------------------------- | ----------- | ---------------------- |
-| `checked`  | `boolean`                        | `false`     | On/off state (v-model) |
-| `disabled` | `boolean`                        | `false`     | Disable the switch     |
-| `size`     | `'small' \| 'medium' \| 'large'` | `'medium'`  | Switch size            |
-| `error`    | `string`                         | `undefined` | Error message          |
+| 属性       | 类型                             | 默认值      | 说明                 |
+| ---------- | -------------------------------- | ----------- | -------------------- |
+| `checked`  | `boolean`                        | `false`     | 开/关状态（v-model） |
+| `disabled` | `boolean`                        | `false`     | 禁用开关             |
+| `size`     | `'small' \| 'medium' \| 'large'` | `'medium'`  | 开关尺寸             |
+| `error`    | `string`                         | `undefined` | 错误提示信息         |
 
-### Events
+### 事件 (Events)
 
-| Event            | Payload   | Description             |
-| ---------------- | --------- | ----------------------- |
-| `update:checked` | `boolean` | State changed (v-model) |
+| 事件             | 载荷      | 说明                |
+| ---------------- | --------- | ------------------- |
+| `update:checked` | `boolean` | 状态变化（v-model） |

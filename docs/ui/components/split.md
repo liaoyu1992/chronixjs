@@ -1,8 +1,8 @@
-# Split
+# Split 分割面板
 
-Two-pane resizable splitter. Drag the bar between panes to redistribute space.
+双面板可调整大小的分割器。拖动面板间的分隔条来重新分配空间。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Two-pane resizable splitter. Drag the bar between panes to redistribute space.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -69,7 +69,7 @@ export function App() {
 
 :::
 
-## Vertical Split
+## 垂直分割
 
 ::: code-group
 
@@ -127,30 +127,30 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                            | Default        | Description                         |
-| ------------- | ------------------------------- | -------------- | ----------------------------------- |
-| `direction`   | `'horizontal' \| 'vertical'`    | `'horizontal'` | Split orientation                   |
-| `defaultSize` | `number \| string`              | `'50%'`        | Initial first pane size             |
-| `size`        | `number \| string \| undefined` | `undefined`    | Controlled first pane size override |
-| `minSize`     | `number \| string`              | `0`            | Minimum first pane size             |
-| `maxSize`     | `number \| string`              | `'100%'`       | Maximum first pane size             |
-| `disabled`    | `boolean`                       | `false`        | Disable drag resizing               |
+| 属性          | 类型                            | 默认值         | 说明                     |
+| ------------- | ------------------------------- | -------------- | ------------------------ |
+| `direction`   | `'horizontal' \| 'vertical'`    | `'horizontal'` | 分割方向                 |
+| `defaultSize` | `number \| string`              | `'50%'`        | 第一个面板的初始大小     |
+| `size`        | `number \| string \| undefined` | `undefined`    | 受控的第一个面板大小覆盖 |
+| `minSize`     | `number \| string`              | `0`            | 第一个面板最小大小       |
+| `maxSize`     | `number \| string`              | `'100%'`       | 第一个面板最大大小       |
+| `disabled`    | `boolean`                       | `false`        | 禁用拖拽调整大小         |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload            | Description                   |
-| -------------- | ------------------ | ----------------------------- |
-| `update:size`  | `number \| string` | Fires when first pane resizes |
-| `resize-start` | —                  | Fires when drag begins        |
-| `resize-end`   | —                  | Fires when drag ends          |
+| 事件           | 载荷               | 说明                     |
+| -------------- | ------------------ | ------------------------ |
+| `update:size`  | `number \| string` | 第一个面板大小变化时触发 |
+| `resize-start` | —                  | 拖拽开始时触发           |
+| `resize-end`   | —                  | 拖拽结束时触发           |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot     | Description         |
-| -------- | ------------------- |
-| `first`  | First pane content  |
-| `second` | Second pane content |
+| 插槽     | 说明           |
+| -------- | -------------- |
+| `first`  | 第一个面板内容 |
+| `second` | 第二个面板内容 |

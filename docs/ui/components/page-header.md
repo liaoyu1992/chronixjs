@@ -1,8 +1,8 @@
-# Page Header
+# Page Header 页头
 
-Standardized top-of-page heading block with optional back affordance, avatar, title, subtitle, extra actions, and footer.
+标准化的页面顶部标题块，支持可选的返回按钮、头像、标题、副标题、额外操作区域和页脚。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Standardized top-of-page heading block with optional back affordance, avatar, ti
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## With Back Button and Extra
+## 带返回按钮和额外区域
 
 ::: code-group
 
@@ -115,31 +115,31 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                  | Default     | Description                   |
-| ---------- | --------------------- | ----------- | ----------------------------- |
-| `title`    | `string \| undefined` | `undefined` | Heading text                  |
-| `subtitle` | `string \| undefined` | `undefined` | Sub-heading text              |
-| `back`     | `boolean`             | `false`     | Show back button              |
-| `inverted` | `boolean`             | `false`     | Use dark-surface theme tokens |
+| 属性       | 类型                  | 默认值      | 说明                 |
+| ---------- | --------------------- | ----------- | -------------------- |
+| `title`    | `string \| undefined` | `undefined` | 标题文本             |
+| `subtitle` | `string \| undefined` | `undefined` | 副标题文本           |
+| `back`     | `boolean`             | `false`     | 显示返回按钮         |
+| `inverted` | `boolean`             | `false`     | 使用深色表面主题令牌 |
 
-### Events
+### 事件 (Events)
 
-| Event  | Payload | Description             |
-| ------ | ------- | ----------------------- |
-| `back` | —       | Fires when back clicked |
+| 事件   | 载荷 | 说明               |
+| ------ | ---- | ------------------ |
+| `back` | —    | 点击返回按钮时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot       | Description                      |
-| ---------- | -------------------------------- |
-| `default`  | Main content area                |
-| `back`     | Custom back button content       |
-| `avatar`   | Avatar area                      |
-| `title`    | Custom title (overrides prop)    |
-| `subtitle` | Custom subtitle (overrides prop) |
-| `extra`    | Right-aligned action area        |
-| `footer`   | Footer area                      |
+| 插槽       | 说明                     |
+| ---------- | ------------------------ |
+| `default`  | 主内容区域               |
+| `back`     | 自定义返回按钮内容       |
+| `avatar`   | 头像区域                 |
+| `title`    | 自定义标题（覆盖属性）   |
+| `subtitle` | 自定义副标题（覆盖属性） |
+| `extra`    | 右对齐的操作区域         |
+| `footer`   | 页脚区域                 |

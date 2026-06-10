@@ -1,8 +1,8 @@
-# Space
+# Space 间距
 
-A 1D layout primitive for consistent spacing between elements.
+一维布局原语，用于元素间的一致间距。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A 1D layout primitive for consistent spacing between elements.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -65,9 +65,9 @@ export function App() {
 
 :::
 
-## Vertical
+## 垂直布局
 
-Use the `vertical` prop to stack children vertically.
+使用 `vertical` 属性垂直排列子元素。
 
 ::: code-group
 
@@ -118,9 +118,9 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
-Use the `size` prop with preset sizes: `small`, `medium` (default), and `large`.
+使用 `size` 属性设置预设尺寸：`small`、`medium`（默认）和 `large`。
 
 ::: code-group
 
@@ -198,9 +198,9 @@ export function App() {
 
 :::
 
-## Custom Gap
+## 自定义间距
 
-Pass a number to `size` for a custom pixel gap.
+传入数字给 `size` 设置自定义像素间距。
 
 ::: code-group
 
@@ -251,15 +251,15 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                                                                                  | Default     | Description          |
-| ---------- | ------------------------------------------------------------------------------------- | ----------- | -------------------- |
-| `size`     | `'small' \| 'medium' \| 'large' \| number`                                            | `'medium'`  | Gap size             |
-| `vertical` | `boolean`                                                                             | `false`     | Vertical layout      |
-| `wrap`     | `boolean`                                                                             | `true`      | Wrap children        |
-| `align`    | `'start' \| 'center' \| 'end' \| 'baseline' \| 'stretch'`                             | `undefined` | Cross-axis alignment |
-| `justify`  | `'start' \| 'center' \| 'end' \| 'space-around' \| 'space-between' \| 'space-evenly'` | `undefined` | Main-axis justify    |
-| `inline`   | `boolean`                                                                             | `false`     | Inline-flex mode     |
+| 属性       | 类型                                                                                  | 默认值      | 说明           |
+| ---------- | ------------------------------------------------------------------------------------- | ----------- | -------------- |
+| `size`     | `'small' \| 'medium' \| 'large' \| number`                                            | `'medium'`  | 间距大小       |
+| `vertical` | `boolean`                                                                             | `false`     | 垂直布局       |
+| `wrap`     | `boolean`                                                                             | `true`      | 子元素换行     |
+| `align`    | `'start' \| 'center' \| 'end' \| 'baseline' \| 'stretch'`                             | `undefined` | 交叉轴对齐     |
+| `justify`  | `'start' \| 'center' \| 'end' \| 'space-around' \| 'space-between' \| 'space-evenly'` | `undefined` | 主轴对齐       |
+| `inline`   | `boolean`                                                                             | `false`     | 行内 flex 模式 |

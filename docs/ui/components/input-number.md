@@ -1,8 +1,8 @@
-# Input Number
+# Input Number 数字输入框
 
-A numeric input with increment/decrement stepper buttons.
+带有递增/递减步进按钮的数字输入组件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A numeric input with increment/decrement stepper buttons.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -59,9 +59,9 @@ export function App() {
 
 :::
 
-## Min / Max / Step
+## 最小值 / 最大值 / 步长
 
-Constrain the value range and control the increment step:
+约束值范围并控制递增步长：
 
 ::: code-group
 
@@ -106,9 +106,9 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
-Use the `size` prop to change the input number size:
+使用 `size` 属性更改数字输入框的大小：
 
 ::: code-group
 
@@ -167,9 +167,9 @@ export function App() {
 
 :::
 
-## Disabled
+## 禁用状态
 
-Disable the input number to prevent user interaction:
+禁用数字输入框以防止用户交互：
 
 ::: code-group
 
@@ -214,22 +214,22 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                             | Default     | Description    |
+| Prop       | 类型                             | 默认值      | 描述           |
 | ---------- | -------------------------------- | ----------- | -------------- |
-| `value`    | `number \| null`                 | `null`      | Current value  |
-| `min`      | `number`                         | `undefined` | Minimum value  |
-| `max`      | `number`                         | `undefined` | Maximum value  |
-| `step`     | `number`                         | `1`         | Increment step |
-| `disabled` | `boolean`                        | `false`     | Disable input  |
-| `size`     | `'small' \| 'medium' \| 'large'` | `'medium'`  | Input size     |
-| `error`    | `string`                         | `undefined` | Error message  |
+| `value`    | `number \| null`                 | `null`      | 当前值         |
+| `min`      | `number`                         | `undefined` | 最小值         |
+| `max`      | `number`                         | `undefined` | 最大值         |
+| `step`     | `number`                         | `1`         | 递增步长       |
+| `disabled` | `boolean`                        | `false`     | 是否禁用输入框 |
+| `size`     | `'small' \| 'medium' \| 'large'` | `'medium'`  | 输入框尺寸     |
+| `error`    | `string`                         | `undefined` | 错误信息       |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload          | Description             |
+| Event          | Payload          | 描述                    |
 | -------------- | ---------------- | ----------------------- |
-| `update:value` | `number \| null` | Value changed (v-model) |
+| `update:value` | `number \| null` | 值变化时触发（v-model） |

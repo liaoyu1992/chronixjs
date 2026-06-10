@@ -1,8 +1,8 @@
-# Highlight
+# Highlight 高亮
 
-Text with substring matching wrapped in `<mark>` elements.
+将匹配的子字符串用 `<mark>` 元素包裹的文本高亮组件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Text with substring matching wrapped in `<mark>` elements.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -51,7 +51,7 @@ export function App() {
 
 :::
 
-## Case Sensitive
+## 区分大小写
 
 ::: code-group
 
@@ -86,12 +86,12 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop            | Type      | Default | Description                    |
-| --------------- | --------- | ------- | ------------------------------ |
-| `value`         | `string`  | `''`    | Full text content              |
-| `pattern`       | `string`  | `''`    | Substring to highlight         |
-| `caseSensitive` | `boolean` | `false` | Enable case-sensitive matching |
+| Prop            | 类型      | 默认值  | 描述               |
+| --------------- | --------- | ------- | ------------------ |
+| `value`         | `string`  | `''`    | 完整文本内容       |
+| `pattern`       | `string`  | `''`    | 要高亮的子字符串   |
+| `caseSensitive` | `boolean` | `false` | 启用区分大小写匹配 |

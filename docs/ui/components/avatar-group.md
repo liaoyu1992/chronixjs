@@ -1,8 +1,8 @@
-# Avatar Group
+# Avatar Group 头像组
 
-Horizontal stack of overlapping avatars with overflow +N indicator.
+水平排列的重叠头像组，带有溢出 +N 指示器。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Horizontal stack of overlapping avatars with overflow +N indicator.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -80,21 +80,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop    | Type                    | Default    | Description                           |
-| ------- | ----------------------- | ---------- | ------------------------------------- |
-| `items` | `readonly AvatarItem[]` | `[]`       | Array of avatar items                 |
-| `max`   | `number`                | `5`        | Max visible items; excess shown as +N |
-| `size`  | `number`                | `32`       | Avatar size in px                     |
-| `shape` | `'circle' \| 'square'`  | `'circle'` | Avatar shape                          |
+| 属性    | 类型                    | 默认值     | 说明                            |
+| ------- | ----------------------- | ---------- | ------------------------------- |
+| `items` | `readonly AvatarItem[]` | `[]`       | 头像项数组                      |
+| `max`   | `number`                | `5`        | 最大可见数量；超出部分显示为 +N |
+| `size`  | `number`                | `32`       | 头像大小（像素）                |
+| `shape` | `'circle' \| 'square'`  | `'circle'` | 头像形状                        |
 
 ### AvatarItem
 
-| Property | Type                  | Description            |
-| -------- | --------------------- | ---------------------- |
-| `key`    | `string`              | Unique identifier      |
-| `src`    | `string \| undefined` | Image URL              |
-| `text`   | `string \| undefined` | Fallback text initials |
+| 属性   | 类型                  | 说明               |
+| ------ | --------------------- | ------------------ |
+| `key`  | `string`              | 唯一标识符         |
+| `src`  | `string \| undefined` | 图片 URL           |
+| `text` | `string \| undefined` | 回退文本首字母缩写 |

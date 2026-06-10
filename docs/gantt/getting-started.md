@@ -1,8 +1,8 @@
-# Gantt — Getting Started
+# 甘特图 — 快速开始
 
-This guide walks you through setting up the Chronix Gantt chart in your project.
+本指南将带你完成 Chronix 甘特图在项目中的安装与配置。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -20,7 +20,7 @@ pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18
 
 :::
 
-## Register the Component
+## 注册组件
 
 ::: code-group
 
@@ -29,7 +29,7 @@ pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18
 import { createApp } from 'vue';
 import App from './App.vue';
 
-// Styles are auto-injected by the adapter — no manual CSS import needed
+// 样式由适配器自动注入 — 无需手动导入 CSS
 createApp(App).mount('#app');
 ```
 
@@ -38,7 +38,7 @@ createApp(App).mount('#app');
 import Vue from 'vue';
 import App from './App.vue';
 
-// Styles are auto-injected by the adapter
+// 样式由适配器自动注入
 new Vue({ render: (h) => h(App) }).$mount('#app');
 ```
 
@@ -47,29 +47,29 @@ new Vue({ render: (h) => h(App) }).$mount('#app');
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 
-// Styles are auto-injected by the adapter
+// 样式由适配器自动注入
 createRoot(document.getElementById('root')!).render(<App />);
 ```
 
 :::
 
-## Task Data Model
+## 任务数据模型
 
-Each task in the Gantt chart follows this interface:
+甘特图中的每个任务遵循以下接口：
 
 ```ts
 interface GanttTask {
   id: number | string;
   name: string;
-  start: string; // ISO date string, e.g. '2024-01-15'
-  end: string; // ISO date string
+  start: string; // ISO 日期字符串，例如 '2024-01-15'
+  end: string; // ISO 日期字符串
   progress?: number; // 0-100
-  color?: string; // bar color override
+  color?: string; // 条形颜色覆盖
   children?: GanttTask[];
 }
 ```
 
-## Full Example
+## 完整示例
 
 ::: code-group
 
@@ -197,9 +197,9 @@ export function App() {
 
 :::
 
-## Next Steps
+## 下一步
 
-- [Bars](/gantt/bars) — configure bar appearance and behavior
-- [Links & Dependencies](/gantt/links) — connect tasks with dependency lines
-- [Timeline Views](/gantt/views) — switch between zoom levels
-- [Theme](/gantt/theme) — customize colors and sizing
+- [条形图](/gantt/bars) — 配置条形图外观与行为
+- [依赖](/gantt/links) — 使用依赖连线连接任务
+- [时间线视图](/gantt/views) — 切换缩放级别
+- [主题](/gantt/theme) — 自定义颜色与尺寸

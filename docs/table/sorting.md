@@ -1,10 +1,10 @@
-# Sorting
+# 排序
 
-Enable single and multi-column sorting on your data table. Sorting is configured per-column via `ColumnSpec`.
+为数据表格启用单列和多列排序。排序通过 `ColumnSpec` 逐列配置。
 
-## Basic Sorting
+## 基本排序
 
-Set `sortable: true` on columns to enable click-to-sort:
+在列上设置 `sortable: true` 以启用点击排序：
 
 ::: code-group
 
@@ -95,7 +95,7 @@ export function App() {
 
 ## SortSpec
 
-The sort state is an array of `SortSpec` objects:
+排序状态是一个 `SortSpec` 对象数组：
 
 ```typescript
 interface SortSpec {
@@ -104,11 +104,11 @@ interface SortSpec {
 }
 ```
 
-Clicking a sortable column header cycles through: `asc` → `desc` → unsorted.
+点击可排序列的表头会循环切换：`asc` → `desc` → 未排序。
 
-## Custom Comparator
+## 自定义比较函数
 
-Override the default sort behavior with a `comparator` function:
+使用 `comparator` 函数覆盖默认排序行为：
 
 ```typescript
 const columns: ColumnSpec[] = [
@@ -118,7 +118,7 @@ const columns: ColumnSpec[] = [
     headerName: 'Name',
     sortable: true,
     comparator: (a, b, args) => {
-      // Case-insensitive sort
+      // 不区分大小写排序
       const aStr = String(a).toLowerCase();
       const bStr = String(b).toLowerCase();
       return aStr.localeCompare(bStr);
@@ -130,7 +130,7 @@ const columns: ColumnSpec[] = [
     headerName: 'Priority',
     sortable: true,
     comparator: (a, b) => {
-      // Custom priority order: High > Medium > Low
+      // 自定义优先级顺序：High > Medium > Low
       const order = { High: 3, Medium: 2, Low: 1 };
       return (order[b] || 0) - (order[a] || 0);
     },
@@ -138,11 +138,11 @@ const columns: ColumnSpec[] = [
 ];
 ```
 
-The comparator receives `(valueA, valueB, args)` where `args` contains `rowA`, `rowB`, and `column`.
+比较函数接收 `(valueA, valueB, args)`，其中 `args` 包含 `rowA`、`rowB` 和 `column`。
 
-## Programmatic Sort
+## 编程式排序
 
-Control sorting via the `TableHandle`:
+通过 `TableHandle` 控制排序：
 
 ::: code-group
 
@@ -178,20 +178,20 @@ function clearSort() {
 
 :::
 
-### TableHandle Sort Methods
+### TableHandle 排序方法
 
-| Method      | Signature                                        | Description        |
-| ----------- | ------------------------------------------------ | ------------------ |
-| `getSort`   | `() => readonly SortSpec[]`                      | Current sort state |
-| `setSort`   | `(spec: SortSpec \| SortSpec[] \| null) => void` | Apply sort         |
-| `clearSort` | `() => void`                                     | Remove all sorting |
+| 方法        | 签名                                             | 描述         |
+| ----------- | ------------------------------------------------ | ------------ |
+| `getSort`   | `() => readonly SortSpec[]`                      | 当前排序状态 |
+| `setSort`   | `(spec: SortSpec \| SortSpec[] \| null) => void` | 应用排序     |
+| `clearSort` | `() => void`                                     | 清除所有排序 |
 
-## Sort Change Event
+## 排序变更事件
 
-Listen for sort changes:
+监听排序变化：
 
-| Event         | Payload                             |
+| 事件          | 载荷                                |
 | ------------- | ----------------------------------- |
 | `sort-change` | `{ sortSpec: readonly SortSpec[] }` |
 
-Multi-column sort is supported — `sortSpec` is an array where the first entry has highest priority.
+支持多列排序 — `sortSpec` 是一个数组，第一个条目优先级最高。

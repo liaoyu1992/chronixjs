@@ -1,31 +1,31 @@
-# Theme System
+# 主题系统
 
-Chronix UI uses a CSS custom properties (variables) based theming system with BEM naming conventions.
+Chronix UI 使用基于 CSS 自定义属性（变量）的主题系统，并采用 BEM 命名规范。
 
-## Overview
+## 概览
 
-All UI components use the `cx-ui-` prefix for their CSS classes. Styles are injected automatically via the sticky-flag pattern — no manual CSS imports needed.
+所有 UI 组件的 CSS 类均使用 `cx-ui-` 前缀。样式通过粘性标记模式自动注入——无需手动导入 CSS。
 
-## CSS Variable Tokens
+## CSS 变量令牌
 
-The theme is built on CSS custom properties organized by category:
+主题建立在按类别组织的 CSS 自定义属性之上：
 
-### Colors
+### 颜色
 
 ```css
 :root {
-  /* Primary palette */
+  /* 主色调 */
   --cx-color-primary: #6366f1;
   --cx-color-primary-light: #818cf8;
   --cx-color-primary-dark: #4f46e5;
 
-  /* Semantic colors */
+  /* 语义色 */
   --cx-color-success: #22c55e;
   --cx-color-warning: #f59e0b;
   --cx-color-danger: #ef4444;
   --cx-color-info: #3b82f6;
 
-  /* Neutral palette */
+  /* 中性色 */
   --cx-color-text: #1f2937;
   --cx-color-text-secondary: #6b7280;
   --cx-color-bg: #ffffff;
@@ -34,7 +34,7 @@ The theme is built on CSS custom properties organized by category:
 }
 ```
 
-### Sizing & Spacing
+### 尺寸与间距
 
 ```css
 :root {
@@ -55,26 +55,26 @@ The theme is built on CSS custom properties organized by category:
 }
 ```
 
-## Customizing the Theme
+## 自定义主题
 
-Override CSS variables at the `:root` level or scope them to specific containers:
+在 `:root` 层级覆盖 CSS 变量，或将变量限定在特定容器内：
 
 ```css
-/* Global override — affects all components */
+/* 全局覆盖 — 影响所有组件 */
 :root {
-  --cx-color-primary: #8b5cf6; /* Change primary to purple */
-  --cx-radius-md: 12px; /* Rounder corners */
+  --cx-color-primary: #8b5cf6; /* 将主色改为紫色 */
+  --cx-radius-md: 12px; /* 更圆的圆角 */
 }
 
-/* Scoped override — only affects components inside .my-app */
+/* 局部覆盖 — 仅影响 .my-app 内的组件 */
 .my-app {
-  --cx-color-primary: #ec4899; /* Pink primary for this section */
+  --cx-color-primary: #ec4899; /* 该区域使用粉色主色 */
 }
 ```
 
-## Dark Mode
+## 暗黑模式
 
-Toggle dark mode by adding a class to the root element:
+通过在根元素添加 class 来切换暗黑模式：
 
 ```css
 html.dark {
@@ -86,11 +86,11 @@ html.dark {
 }
 ```
 
-VitePress's built-in dark mode toggle will automatically apply the `dark` class, so your component docs will support both themes out of the box.
+VitePress 内置的暗黑模式切换会自动应用 `dark` 类，因此你的组件文档将同时支持两种主题。
 
-## BEM Naming Convention
+## BEM 命名规范
 
-All component classes follow BEM:
+所有组件类名遵循 BEM 规范：
 
 ```css
 .cx-ui-button {
@@ -103,9 +103,9 @@ All component classes follow BEM:
 } /* Element modifier */
 ```
 
-## Component-Level Customization
+## 组件级自定义
 
-Each component supports a `class` prop for additional styling:
+每个组件支持 `class` 属性，用于添加额外样式：
 
 ::: code-group
 
@@ -151,6 +151,6 @@ export function App() {
 
 :::
 
-## Next Steps
+## 下一步
 
-- [Button](/ui/components/button) — first component documentation
+- [Button](/ui/components/button) — 第一个组件文档

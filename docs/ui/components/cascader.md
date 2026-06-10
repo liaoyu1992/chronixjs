@@ -1,8 +1,8 @@
-# Cascader
+# Cascader 级联选择
 
-Multi-level cascading selection with nested panels.
+多级级联选择，带有嵌套面板。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ Multi-level cascading selection with nested panels.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-A cascader with nested options for province / city / district selection.
+带有嵌套选项的级联选择器，用于省/市/区选择。
 
 ::: code-group
 
@@ -185,9 +185,9 @@ export function App() {
 
 :::
 
-## Multiple Selection
+## 多选
 
-Use the `multiple` prop to allow selecting more than one value.
+使用 `multiple` 属性允许选择多个值。
 
 ::: code-group
 
@@ -330,9 +330,9 @@ export function App() {
 
 :::
 
-## Clearable
+## 可清除
 
-Add `clearable` to let users reset the selection with a clear icon.
+添加 `clearable` 让用户通过清除图标重置选择。
 
 ::: code-group
 
@@ -475,22 +475,22 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                 | Default          | Description        |
-| ------------- | -------------------- | ---------------- | ------------------ |
-| `value`       | `string \| string[]` | `undefined`      | Selected value(s)  |
-| `options`     | `SelectOption[]`     | `[]`             | Nested option tree |
-| `multiple`    | `boolean`            | `false`          | Multi-select mode  |
-| `clearable`   | `boolean`            | `false`          | Show clear icon    |
-| `placeholder` | `string`             | `''`             | Placeholder text   |
-| `disabled`    | `boolean`            | `false`          | Disable cascader   |
-| `placement`   | `PopupPlacement`     | `'bottom-start'` | Dropdown position  |
+| 属性          | 类型                 | 默认值           | 说明           |
+| ------------- | -------------------- | ---------------- | -------------- |
+| `value`       | `string \| string[]` | `undefined`      | 选中的值       |
+| `options`     | `SelectOption[]`     | `[]`             | 嵌套选项树     |
+| `multiple`    | `boolean`            | `false`          | 多选模式       |
+| `clearable`   | `boolean`            | `false`          | 显示清除图标   |
+| `placeholder` | `string`             | `''`             | 占位文本       |
+| `disabled`    | `boolean`            | `false`          | 禁用级联选择器 |
+| `placement`   | `PopupPlacement`     | `'bottom-start'` | 下拉菜单位置   |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload              | Description   |
-| -------------- | -------------------- | ------------- |
-| `update:value` | `string \| string[]` | Value changed |
+| 事件           | 载荷                 | 说明         |
+| -------------- | -------------------- | ------------ |
+| `update:value` | `string \| string[]` | 值变化时触发 |

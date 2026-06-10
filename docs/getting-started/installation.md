@@ -1,31 +1,31 @@
-# Installation
+# 安装
 
-Chronix is a monorepo of framework-agnostic components with dedicated adapters for **Vue 3**, **Vue 2.7**, and **React 18**.
+Chronix 是一个框架无关的组件 monorepo，并为 **Vue 3**、**Vue 2.7** 和 **React 18** 提供了专用适配器。
 
-## Prerequisites
+## 前置条件
 
 - Node.js >= 20
-- pnpm >= 9 (recommended) or npm / yarn
+- pnpm >= 9（推荐）或 npm / yarn
 
-## Packages
+## 包
 
-| Package                  | Description              |
-| ------------------------ | ------------------------ |
-| `@chronixjs/gantt`       | Gantt chart core (IR)    |
-| `@chronixjs/table`       | Data table core (IR)     |
-| `@chronixjs/ui`          | UI components core (IR)  |
-| `@chronixjs/cx-kit`      | Headless primitives      |
-| `@chronixjs/gantt-vue3`  | Gantt adapter — Vue 3    |
-| `@chronixjs/gantt-vue2`  | Gantt adapter — Vue 2.7  |
-| `@chronixjs/gantt-react` | Gantt adapter — React 18 |
-| `@chronixjs/table-vue3`  | Table adapter — Vue 3    |
-| `@chronixjs/table-vue2`  | Table adapter — Vue 2.7  |
-| `@chronixjs/table-react` | Table adapter — React 18 |
-| `@chronixjs/ui-vue3`     | UI adapter — Vue 3       |
-| `@chronixjs/ui-vue2`     | UI adapter — Vue 2.7     |
-| `@chronixjs/ui-react`    | UI adapter — React 18    |
+| 包名                     | 描述                      |
+| ------------------------ | ------------------------- |
+| `@chronixjs/gantt`       | 甘特图核心（IR）          |
+| `@chronixjs/table`       | 数据表格核心（IR）        |
+| `@chronixjs/ui`          | UI 组件核心（IR）         |
+| `@chronixjs/cx-kit`      | 无头原语                  |
+| `@chronixjs/gantt-vue3`  | 甘特图适配器 — Vue 3      |
+| `@chronixjs/gantt-vue2`  | 甘特图适配器 — Vue 2.7    |
+| `@chronixjs/gantt-react` | 甘特图适配器 — React 18   |
+| `@chronixjs/table-vue3`  | 数据表格适配器 — Vue 3    |
+| `@chronixjs/table-vue2`  | 数据表格适配器 — Vue 2.7  |
+| `@chronixjs/table-react` | 数据表格适配器 — React 18 |
+| `@chronixjs/ui-vue3`     | UI 适配器 — Vue 3         |
+| `@chronixjs/ui-vue2`     | UI 适配器 — Vue 2.7       |
+| `@chronixjs/ui-react`    | UI 适配器 — React 18      |
 
-## Install for Your Framework
+## 按框架安装
 
 ::: code-group
 
@@ -43,9 +43,9 @@ pnpm add @chronixjs/ui-react@alpha react@^18 react-dom@^18
 
 :::
 
-## Verify Installation
+## 验证安装
 
-After installing, you can verify the package is correctly installed:
+安装完成后，你可以验证包是否正确安装：
 
 ::: code-group
 
@@ -66,9 +66,9 @@ console.log(CxButton); // should log the component
 
 :::
 
-## Next Steps
+## 下一步
 
-- [Quick Start](/getting-started/quick-start) — build your first Chronix app
-- [Gantt](/gantt/) — explore the Gantt chart component
-- [Table](/table/) — explore the data table component
-- [UI Components](/ui/) — browse all 85 UI components
+- [快速开始](/getting-started/quick-start) — 构建你的第一个 Chronix 应用
+- [甘特图](/gantt/) — 探索甘特图组件
+- [数据表格](/table/) — 探索数据表格组件
+- [UI 组件](/ui/) — 浏览全部 85 个 UI 组件

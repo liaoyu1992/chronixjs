@@ -1,8 +1,8 @@
-# Collapse Transition
+# Collapse Transition 折叠过渡
 
-Height transition wrapper for expand/collapse animations. Used internally by Collapse and exposed for ad-hoc needs.
+用于展开/收起动画的高度过渡包装器。内部由 Collapse 使用，同时暴露给外部使用。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Height transition wrapper for expand/collapse animations. Used internally by Col
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -73,17 +73,17 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type      | Default | Description                            |
-| ---------- | --------- | ------- | -------------------------------------- |
-| `show`     | `boolean` | `false` | `true` = expanded, `false` = collapsed |
-| `duration` | `number`  | `200`   | Animation duration in ms               |
+| 属性       | 类型      | 默认值  | 说明                          |
+| ---------- | --------- | ------- | ----------------------------- |
+| `show`     | `boolean` | `false` | `true` = 展开，`false` = 收起 |
+| `duration` | `number`  | `200`   | 动画持续时间（毫秒）          |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description           |
-| --------- | --------------------- |
-| `default` | Content to transition |
+| 插槽      | 说明           |
+| --------- | -------------- |
+| `default` | 需要过渡的内容 |

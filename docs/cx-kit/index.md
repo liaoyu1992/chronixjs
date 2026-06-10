@@ -1,30 +1,30 @@
 # CX Kit
 
-Headless UI primitives for building custom components. Framework-agnostic core with maximum flexibility.
+用于构建自定义组件的无头 UI 原语。框架无关的核心设计，提供最大的灵活性。
 
-## Features
+## 功能特性
 
-- **Virtual List** — high-performance scrolling for large datasets
-- **Slider** — customizable range slider with marks and tooltips
-- **Input Range** — dual-handle range input
-- **Color Picker** — HSV/HEX/RGB color selection
-- **Autocomplete** — type-ahead search with async data loading
+- **虚拟列表** — 针对大数据集的高性能滚动
+- **滑块** — 支持标记和提示的可定制范围滑块
+- **范围输入** — 双手柄范围输入
+- **颜色选择器** — HSV/HEX/RGB 颜色选择
+- **自动补全** — 支持异步数据加载的前置搜索
 
-## Install
+## 安装
 
 ```bash
 pnpm add @chronixjs/cx-kit@alpha
 ```
 
 ::: tip
-CX Kit is framework-agnostic and can be used directly with any framework. No adapter packages needed.
+CX Kit 是框架无关的，可以直接在任何框架中使用。无需安装适配器包。
 :::
 
-## Components
+## 组件
 
-### Virtual List
+### 虚拟列表
 
-Renders only visible items for smooth scrolling with 100k+ items.
+仅渲染可见项，即使有 10 万+ 条数据也能保持流畅滚动。
 
 ```ts
 import { createVirtualList } from '@chronixjs/cx-kit';
@@ -36,9 +36,9 @@ const vl = createVirtualList({
 });
 ```
 
-### Slider
+### 滑块
 
-A headless slider with full keyboard and touch support.
+无头滑块，提供完整的键盘和触摸支持。
 
 ```ts
 import { createSlider } from '@chronixjs/cx-kit';
@@ -51,9 +51,9 @@ const slider = createSlider({
 });
 ```
 
-### Color Picker
+### 颜色选择器
 
-HSV-based color picker with conversion utilities.
+基于 HSV 的颜色选择器，附带转换工具函数。
 
 ```ts
 import { createColorPicker } from '@chronixjs/cx-kit';
@@ -64,9 +64,9 @@ const picker = createColorPicker({
 });
 ```
 
-### Autocomplete
+### 自动补全
 
-Async-ready autocomplete with debounce and cancellation.
+支持异步加载的自动补全，内置防抖和取消功能。
 
 ```ts
 import { createAutocomplete } from '@chronixjs/cx-kit';
@@ -80,10 +80,10 @@ const ac = createAutocomplete({
 });
 ```
 
-## Next Steps
+## 下一步
 
-- [Getting Started](/cx-kit/getting-started) — detailed setup guide
-- [Virtual List](/cx-kit/virtual-list) — virtualized list documentation
-- [Slider](/cx-kit/slider) — slider configuration
-- [Color Picker](/cx-kit/color-picker) — color picker usage
-- [Autocomplete](/cx-kit/autocomplete) — autocomplete with async data
+- [快速开始](/cx-kit/getting-started) — 详细的配置指南
+- [虚拟列表](/cx-kit/virtual-list) — 虚拟列表文档
+- [滑块](/cx-kit/slider) — 滑块配置
+- [颜色选择器](/cx-kit/color-picker) — 颜色选择器用法
+- [自动补全](/cx-kit/autocomplete) — 异步数据自动补全

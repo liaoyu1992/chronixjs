@@ -1,8 +1,8 @@
-# Button Group
+# Button Group 按钮组
 
-Flex container that groups `CxButton` children with merged borders.
+弹性容器，将 `CxButton` 子元素分组并合并边框。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Flex container that groups `CxButton` children with merged borders.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -63,7 +63,7 @@ export function App() {
 
 :::
 
-## Vertical
+## 垂直排列
 
 ::: code-group
 
@@ -112,17 +112,17 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                                          | Default     | Description                 |
-| ---------- | --------------------------------------------- | ----------- | --------------------------- |
-| `vertical` | `boolean`                                     | `false`     | Lay out children vertically |
-| `size`     | `'small' \| 'medium' \| 'large' \| undefined` | `undefined` | Override child button sizes |
+| 属性       | 类型                                          | 默认值      | 说明             |
+| ---------- | --------------------------------------------- | ----------- | ---------------- |
+| `vertical` | `boolean`                                     | `false`     | 垂直排列子按钮   |
+| `size`     | `'small' \| 'medium' \| 'large' \| undefined` | `undefined` | 覆盖子按钮的尺寸 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description     |
-| --------- | --------------- |
-| `default` | Button children |
+| 插槽      | 说明       |
+| --------- | ---------- |
+| `default` | 按钮子元素 |

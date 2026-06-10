@@ -1,8 +1,8 @@
-# Collapse
+# Collapse 折叠面板
 
-An accordion/multi-expand panel list for toggling content visibility.
+手风琴/多展开面板列表，用于切换内容可见性。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ An accordion/multi-expand panel list for toggling content visibility.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -79,7 +79,7 @@ export function App() {
 
 :::
 
-## Accordion Mode
+## 手风琴模式
 
 ::: code-group
 
@@ -144,7 +144,7 @@ export function App() {
 
 :::
 
-## Arrow Placement
+## 箭头位置
 
 ::: code-group
 
@@ -208,20 +208,20 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop             | Type                 | Default     | Description        |
-| ---------------- | -------------------- | ----------- | ------------------ |
-| `value`          | `string \| string[]` | `undefined` | Expanded key(s)    |
-| `items`          | `CollapseItem[]`     | `[]`        | Panel items        |
-| `accordion`      | `boolean`            | `false`     | Single expand mode |
-| `arrowPlacement` | `'left' \| 'right'`  | `'left'`    | Arrow side         |
+| 属性             | 类型                 | 默认值      | 说明         |
+| ---------------- | -------------------- | ----------- | ------------ |
+| `value`          | `string \| string[]` | `undefined` | 展开的键值   |
+| `items`          | `CollapseItem[]`     | `[]`        | 面板项       |
+| `accordion`      | `boolean`            | `false`     | 单选展开模式 |
+| `arrowPlacement` | `'left' \| 'right'`  | `'left'`    | 箭头位置     |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload                            | Description             |
-| -------------- | ---------------------------------- | ----------------------- |
-| `update:value` | `string \| string[]`               | Expanded keys changed   |
-| `item-change`  | `(key: string, expanded: boolean)` | Individual item toggled |
+| 事件           | 载荷                               | 说明               |
+| -------------- | ---------------------------------- | ------------------ |
+| `update:value` | `string \| string[]`               | 展开键值变化时触发 |
+| `item-change`  | `(key: string, expanded: boolean)` | 单个面板切换时触发 |

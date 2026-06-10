@@ -1,8 +1,8 @@
-# Flex
+# Flex 弹性布局
 
-Flexbox layout container with idiomatic CSS-aligned prop names.
+Flexbox 布局容器，使用符合 CSS 习惯的属性名称。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Flexbox layout container with idiomatic CSS-aligned prop names.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -63,7 +63,7 @@ export function App() {
 
 :::
 
-## Column Direction with Wrap
+## 列方向与换行
 
 ::: code-group
 
@@ -112,21 +112,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                                                                                               | Default     | Description                         |
-| ----------- | -------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------- |
-| `direction` | `'row' \| 'column' \| 'row-reverse' \| 'column-reverse'`                                           | `'row'`     | Flexbox direction                   |
-| `wrap`      | `'nowrap' \| 'wrap' \| 'wrap-reverse'`                                                             | `'nowrap'`  | Flexbox wrap                        |
-| `align`     | `'start' \| 'center' \| 'end' \| 'baseline' \| 'stretch' \| undefined`                             | `undefined` | Cross-axis alignment                |
-| `justify`   | `'start' \| 'center' \| 'end' \| 'space-around' \| 'space-between' \| 'space-evenly' \| undefined` | `undefined` | Main-axis justification             |
-| `gap`       | `'small' \| 'medium' \| 'large' \| number \| undefined`                                            | `undefined` | Gap between children                |
-| `inline`    | `boolean`                                                                                          | `false`     | Use `inline-flex` instead of `flex` |
+| Prop        | 类型                                                                                               | 默认值      | 描述                           |
+| ----------- | -------------------------------------------------------------------------------------------------- | ----------- | ------------------------------ |
+| `direction` | `'row' \| 'column' \| 'row-reverse' \| 'column-reverse'`                                           | `'row'`     | Flexbox 方向                   |
+| `wrap`      | `'nowrap' \| 'wrap' \| 'wrap-reverse'`                                                             | `'nowrap'`  | Flexbox 换行                   |
+| `align`     | `'start' \| 'center' \| 'end' \| 'baseline' \| 'stretch' \| undefined`                             | `undefined` | 交叉轴对齐                     |
+| `justify`   | `'start' \| 'center' \| 'end' \| 'space-around' \| 'space-between' \| 'space-evenly' \| undefined` | `undefined` | 主轴对齐                       |
+| `gap`       | `'small' \| 'medium' \| 'large' \| number \| undefined`                                            | `undefined` | 子元素间距                     |
+| `inline`    | `boolean`                                                                                          | `false`     | 使用 `inline-flex` 代替 `flex` |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description   |
-| --------- | ------------- |
-| `default` | Flex children |
+| Slot      | 描述        |
+| --------- | ----------- |
+| `default` | Flex 子元素 |

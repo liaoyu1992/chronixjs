@@ -1,8 +1,8 @@
-# Marquee
+# Marquee 跑马灯
 
-Auto-scrolling content strip for stock-tickers, sports scores, or promo announcements.
+自动滚动内容条，适用于股票行情、体育比分或促销公告。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Auto-scrolling content strip for stock-tickers, sports scores, or promo announce
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -57,18 +57,18 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop           | Type                                  | Default  | Description                |
-| -------------- | ------------------------------------- | -------- | -------------------------- |
-| `direction`    | `'left' \| 'right' \| 'up' \| 'down'` | `'left'` | Scrolling direction        |
-| `speed`        | `number`                              | `50`     | Speed in pixels per second |
-| `pauseOnHover` | `boolean`                             | `false`  | Pause animation on hover   |
+| Prop           | 类型                                  | 默认值   | 描述               |
+| -------------- | ------------------------------------- | -------- | ------------------ |
+| `direction`    | `'left' \| 'right' \| 'up' \| 'down'` | `'left'` | 滚动方向           |
+| `speed`        | `number`                              | `50`     | 速度（像素/秒）    |
+| `pauseOnHover` | `boolean`                             | `false`  | 鼠标悬停时暂停动画 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description       |
-| --------- | ----------------- |
-| `default` | Scrolling content |
+| Slot      | 描述     |
+| --------- | -------- |
+| `default` | 滚动内容 |

@@ -1,8 +1,8 @@
-# Color Picker
+# Color Picker 颜色选择器
 
-Color picker with hex input, hue strip, and optional swatches.
+带有十六进制输入、色相条和可选色板的颜色选择器。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Color picker with hex input, hue strip, and optional swatches.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -60,7 +60,7 @@ export function App() {
 
 :::
 
-## With Swatches
+## 带色板
 
 ::: code-group
 
@@ -111,21 +111,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                | Default | Description                                    |
-| ----------- | ------------------- | ------- | ---------------------------------------------- |
-| `value`     | `string \| null`    | `null`  | Current color in `#rrggbb` hex format          |
-| `swatches`  | `readonly string[]` | `[]`    | Predefined swatch colors                       |
-| `showAlpha` | `boolean`           | `false` | Show alpha slider                              |
-| `alpha`     | `number`            | `1`     | Alpha value (0-1), used when showAlpha is true |
-| `disabled`  | `boolean`           | `false` | Disable the picker                             |
-| `clearable` | `boolean`           | `false` | Show clear button to reset value               |
+| 属性        | 类型                | 默认值  | 说明                                     |
+| ----------- | ------------------- | ------- | ---------------------------------------- |
+| `value`     | `string \| null`    | `null`  | 当前颜色，`#rrggbb` 十六进制格式         |
+| `swatches`  | `readonly string[]` | `[]`    | 预设色板颜色                             |
+| `showAlpha` | `boolean`           | `false` | 显示透明度滑块                           |
+| `alpha`     | `number`            | `1`     | 透明度值 (0-1)，showAlpha 为 true 时使用 |
+| `disabled`  | `boolean`           | `false` | 禁用选择器                               |
+| `clearable` | `boolean`           | `false` | 显示清除按钮以重置值                     |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload          | Description              |
-| -------------- | ---------------- | ------------------------ |
-| `update:value` | `string \| null` | Fires when color changes |
+| 事件           | 载荷             | 说明           |
+| -------------- | ---------------- | -------------- |
+| `update:value` | `string \| null` | 颜色变化时触发 |

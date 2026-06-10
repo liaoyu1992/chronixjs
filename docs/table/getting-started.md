@@ -1,8 +1,8 @@
-# Table — Getting Started
+# 表格 — 快速开始
 
-This guide walks you through setting up the Chronix Data Table in your project.
+本指南将带你完成 Chronix 数据表格在项目中的安装与配置。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -20,24 +20,24 @@ pnpm add @chronixjs/table-react@alpha react@^18 react-dom@^18
 
 :::
 
-## Column Configuration
+## 列配置
 
-Columns define the structure of your table:
+列定义了表格的数据结构：
 
 ```ts
 interface TableColumn {
-  key: string; // data field key
-  title: string; // header display text
-  width?: number; // column width in px
-  sortable?: boolean; // enable sorting
-  filterable?: boolean; // enable filtering
-  editable?: boolean; // enable inline editing
-  pinned?: 'left' | 'right'; // freeze column
-  render?: (value: any, row: any) => string; // custom cell renderer
+  key: string; // 数据字段键
+  title: string; // 表头显示文本
+  width?: number; // 列宽（px）
+  sortable?: boolean; // 启用排序
+  filterable?: boolean; // 启用筛选
+  editable?: boolean; // 启用行内编辑
+  pinned?: 'left' | 'right'; // 固定列
+  render?: (value: any, row: any) => string; // 自定义单元格渲染
 }
 ```
 
-## Full Example
+## 完整示例
 
 ::: code-group
 
@@ -52,7 +52,7 @@ interface TableColumn {
       :options="tableOptions"
       style="height: 500px;"
     >
-      <!-- Custom toolbar -->
+      <!-- 自定义工具栏 -->
       <template #toolbar>
         <CxButton type="primary" @click="exportCSV">Export CSV</CxButton>
       </template>
@@ -175,12 +175,12 @@ export function App() {
 
 :::
 
-## Next Steps
+## 接下来
 
-- [Columns](/table/columns) — advanced column configuration
-- [Sorting](/table/sorting) — multi-column sorting
-- [Filtering](/table/filtering) — built-in and custom filters
-- [Inline Editing](/table/editing) — cell-level editing
-- [Tree Data](/table/tree-data) — hierarchical rows
-- [Export](/table/export) — CSV export
-- [Theme](/table/theme) — customize appearance
+- [列配置](/table/columns) — 高级列配置
+- [排序](/table/sorting) — 多列排序
+- [筛选](/table/filtering) — 内置与自定义筛选
+- [编辑](/table/editing) — 单元格级编辑
+- [树形数据](/table/tree-data) — 层级行数据
+- [导出](/table/export) — CSV 导出
+- [主题](/table/theme) — 自定义外观

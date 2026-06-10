@@ -1,8 +1,8 @@
-# Tabs
+# Tabs 标签页
 
-A tabbed interface with line, card, and segment variants.
+支持线条、卡片和分段变体的标签页界面。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A tabbed interface with line, card, and segment variants.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -79,9 +79,9 @@ export function App() {
 
 :::
 
-## Card Type
+## 卡片类型
 
-Use `type="card"` for a card-style tab bar.
+使用 `type="card"` 实现卡片风格的标签栏。
 
 ::: code-group
 
@@ -146,9 +146,9 @@ export function App() {
 
 :::
 
-## Segment Type
+## 分段类型
 
-Use `type="segment"` for a segmented control style.
+使用 `type="segment"` 实现分段控制器风格。
 
 ::: code-group
 
@@ -213,9 +213,9 @@ export function App() {
 
 :::
 
-## Placements
+## 标签栏位置
 
-Control where the tab bar appears using `placement`. Supported values are `top`, `right`, `bottom`, and `left`.
+使用 `placement` 控制标签栏出现的位置。支持 `top`、`right`、`bottom` 和 `left`。
 
 ::: code-group
 
@@ -291,23 +291,23 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                                     | Default     | Description         |
-| ----------- | ---------------------------------------- | ----------- | ------------------- |
-| `value`     | `string`                                 | `undefined` | Active tab key      |
-| `items`     | `TabItem[]`                              | `[]`        | Tab items           |
-| `type`      | `'line' \| 'card' \| 'segment'`          | `'line'`    | Visual variant      |
-| `placement` | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'`     | Tab bar position    |
-| `size`      | `'small' \| 'medium' \| 'large'`         | `'medium'`  | Tab size            |
-| `disabled`  | `boolean`                                | `false`     | Disable tabs        |
-| `addable`   | `boolean`                                | `false`     | Show add button     |
-| `draggable` | `boolean`                                | `false`     | Enable drag reorder |
+| 属性        | 类型                                     | 默认值      | 说明             |
+| ----------- | ---------------------------------------- | ----------- | ---------------- |
+| `value`     | `string`                                 | `undefined` | 激活的标签页键值 |
+| `items`     | `TabItem[]`                              | `[]`        | 标签页项         |
+| `type`      | `'line' \| 'card' \| 'segment'`          | `'line'`    | 视觉变体         |
+| `placement` | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'`     | 标签栏位置       |
+| `size`      | `'small' \| 'medium' \| 'large'`         | `'medium'`  | 标签页尺寸       |
+| `disabled`  | `boolean`                                | `false`     | 禁用标签页       |
+| `addable`   | `boolean`                                | `false`     | 显示添加按钮     |
+| `draggable` | `boolean`                                | `false`     | 启用拖拽排序     |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload  | Description        |
-| -------------- | -------- | ------------------ |
-| `update:value` | `string` | Active tab changed |
+| 事件           | 载荷     | 说明           |
+| -------------- | -------- | -------------- |
+| `update:value` | `string` | 激活标签页变化 |

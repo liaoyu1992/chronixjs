@@ -1,20 +1,20 @@
-# Quick Start
+# 快速开始
 
-Get up and running with Chronix in minutes. This guide walks you through using the most common components.
+只需几分钟即可上手 Chronix。本指南将带你了解最常用组件的使用方法。
 
-## Choose Your Framework
+## 选择你的框架
 
-All Chronix adapters share the same API surface. Pick the adapter that matches your framework:
+所有 Chronix 适配器共享相同的 API 接口。选择与你的框架匹配的适配器：
 
-| Framework | Adapter Package      |
-| --------- | -------------------- |
-| Vue 3     | `@chronixjs/*-vue3`  |
-| Vue 2.7   | `@chronixjs/*-vue2`  |
-| React 18  | `@chronixjs/*-react` |
+| 框架     | 适配器包名           |
+| -------- | -------------------- |
+| Vue 3    | `@chronixjs/*-vue3`  |
+| Vue 2.7  | `@chronixjs/*-vue2`  |
+| React 18 | `@chronixjs/*-react` |
 
-## UI Components
+## UI 组件
 
-The fastest way to get started is with the UI component library.
+使用 UI 组件库是最快的入门方式。
 
 ::: code-group
 
@@ -32,7 +32,7 @@ pnpm add @chronixjs/ui-react@alpha react@^18 react-dom@^18
 
 :::
 
-Now use a component:
+使用组件：
 
 ::: code-group
 
@@ -89,7 +89,7 @@ export function App() {
 
 :::
 
-## Gantt Chart
+## 甘特图
 
 ::: code-group
 
@@ -175,7 +175,7 @@ export function App() {
 
 :::
 
-## Data Table
+## 数据表格
 
 ::: code-group
 
@@ -264,9 +264,9 @@ export function App() {
 
 :::
 
-## Next Steps
+## 下一步
 
-- [Gantt Docs](/gantt/) — full Gantt chart documentation
-- [Table Docs](/table/) — full data table documentation
-- [UI Components](/ui/) — browse all 85 components
-- [CX Kit](/cx-kit/) — headless primitives
+- [甘特图文档](/gantt/) — 完整的甘特图文档
+- [数据表格文档](/table/) — 完整的数据表格文档
+- [UI 组件](/ui/) — 浏览全部 85 个组件
+- [CX Kit](/cx-kit/) — 无头原语

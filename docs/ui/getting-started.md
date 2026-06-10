@@ -1,8 +1,8 @@
-# UI — Getting Started
+# UI — 快速开始
 
-This guide walks you through setting up Chronix UI components in your project.
+本指南将引导你在项目中设置 Chronix UI 组件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -20,9 +20,9 @@ pnpm add @chronixjs/ui-react@alpha react@^18 react-dom@^18
 
 :::
 
-## Using Components
+## 使用组件
 
-All components are auto-registered when you import from the adapter package. No global registration needed.
+从适配器包导入时，所有组件会自动注册，无需全局注册。
 
 ::: code-group
 
@@ -80,7 +80,7 @@ export function App() {
 
 :::
 
-## Form Components
+## 表单组件
 
 ::: code-group
 
@@ -210,15 +210,15 @@ export function App() {
 
 :::
 
-## Style Injection
+## 样式注入
 
-Styles are automatically injected via the sticky-flag pattern:
+样式通过粘性标记模式自动注入：
 
-- Each adapter calls `ensureChronix*Styles()` under the hood
-- Styles are deduplicated with `data-chronix-ui="{name}"` attributes
-- No manual CSS imports needed
+- 每个适配器内部调用 `ensureChronix*Styles()`
+- 样式通过 `data-chronix-ui="{name}"` 属性去重
+- 无需手动导入 CSS
 
-## Next Steps
+## 下一步
 
-- [Theme System](/ui/theme) — customize colors, sizes, and spacing
-- [Button](/ui/components/button) — first component deep-dive
+- [主题系统](/ui/theme) — 自定义颜色、尺寸和间距
+- [Button](/ui/components/button) — 第一个组件深入教程

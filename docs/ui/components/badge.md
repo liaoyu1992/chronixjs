@@ -1,8 +1,8 @@
-# Badge
+# Badge 徽标
 
-Badges display status indicators, counts, or notifications. They can wrap child elements or render standalone.
+徽标用于显示状态指示器、计数或通知。可以包裹子元素或独立渲染。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Badges display status indicators, counts, or notifications. They can wrap child 
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -57,9 +57,9 @@ export function App() {
 
 :::
 
-## Standalone Badge
+## 独立徽标
 
-Without a default slot, the badge renders as a standalone element:
+不使用默认插槽时，徽标作为独立元素渲染：
 
 ::: code-group
 
@@ -108,9 +108,9 @@ export function App() {
 
 :::
 
-## Max Value
+## 最大值
 
-Truncate large numbers with `max`. Displays as `max+` when exceeded:
+使用 `max` 截断大数字。超出时显示为 `max+`：
 
 ::: code-group
 
@@ -119,7 +119,7 @@ Truncate large numbers with `max`. Displays as `max+` when exceeded:
   <CxBadge :value="150" :max="99">
     <CxButton>Notifications</CxButton>
   </CxBadge>
-  <!-- Displays: 99+ -->
+  <!-- 显示为: 99+ -->
 </template>
 
 <script setup lang="ts">
@@ -141,9 +141,9 @@ export function App() {
 
 :::
 
-## Dot Mode
+## 圆点模式
 
-Show a small dot indicator instead of a count:
+显示小圆点指示器代替数字：
 
 ::: code-group
 
@@ -173,9 +173,9 @@ export function App() {
 
 :::
 
-## Processing (Pulse)
+## 脉冲动画
 
-Animate the badge with a pulse effect:
+为徽标添加脉冲动画效果：
 
 ::: code-group
 
@@ -205,7 +205,7 @@ export function App() {
 
 :::
 
-## Badge Types
+## 徽标类型
 
 ::: code-group
 
@@ -243,21 +243,21 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop         | Type                                                       | Default     | Description          |
-| ------------ | ---------------------------------------------------------- | ----------- | -------------------- |
-| `value`      | `number \| string \| undefined`                            | `undefined` | Badge content        |
-| `max`        | `number \| undefined`                                      | `undefined` | Truncation threshold |
-| `dot`        | `boolean`                                                  | `false`     | Dot indicator mode   |
-| `type`       | `'default' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | Semantic color       |
-| `processing` | `boolean`                                                  | `false`     | Pulse animation      |
-| `show`       | `boolean`                                                  | `true`      | Toggle visibility    |
+| 属性         | 类型                                                       | 默认值      | 说明           |
+| ------------ | ---------------------------------------------------------- | ----------- | -------------- |
+| `value`      | `number \| string \| undefined`                            | `undefined` | 徽标内容       |
+| `max`        | `number \| undefined`                                      | `undefined` | 数字截断阈值   |
+| `dot`        | `boolean`                                                  | `false`     | 圆点指示器模式 |
+| `type`       | `'default' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | 语义颜色       |
+| `processing` | `boolean`                                                  | `false`     | 脉冲动画       |
+| `show`       | `boolean`                                                  | `true`      | 切换可见性     |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                               |
-| --------- | ----------------------------------------- |
-| `default` | Wrapped element; omit for standalone mode |
+| 插槽      | 说明                         |
+| --------- | ---------------------------- |
+| `default` | 包裹的元素；省略则为独立模式 |

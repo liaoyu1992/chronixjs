@@ -1,8 +1,8 @@
-# Dynamic Tags
+# Dynamic Tags 动态标签
 
-Inline tag editor where the user can add tags by typing and remove them via a close icon.
+内联标签编辑器，用户可以通过输入添加标签，并通过关闭图标移除标签。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Inline tag editor where the user can add tags by typing and remove them via a cl
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -60,19 +60,19 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop       | Type                  | Default     | Description                 |
-| ---------- | --------------------- | ----------- | --------------------------- |
-| `value`    | `readonly string[]`   | `[]`        | Current tags                |
-| `max`      | `number \| undefined` | `undefined` | Maximum number of tags      |
-| `closable` | `boolean`             | `true`      | Show close icon on each tag |
-| `disabled` | `boolean`             | `false`     | Disable the editor          |
+| Prop       | 类型                  | 默认值      | 描述                       |
+| ---------- | --------------------- | ----------- | -------------------------- |
+| `value`    | `readonly string[]`   | `[]`        | 当前标签列表               |
+| `max`      | `number \| undefined` | `undefined` | 最大标签数量               |
+| `closable` | `boolean`             | `true`      | 是否显示每个标签的关闭图标 |
+| `disabled` | `boolean`             | `false`     | 是否禁用编辑器             |
 
-### Events
+### 事件 (Events)
 
-| Event          | Payload    | Description            |
-| -------------- | ---------- | ---------------------- |
-| `update:value` | `string[]` | Fires when tags change |
+| Event          | Payload    | 描述           |
+| -------------- | ---------- | -------------- |
+| `update:value` | `string[]` | 标签变化时触发 |

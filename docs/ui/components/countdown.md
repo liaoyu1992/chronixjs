@@ -1,8 +1,8 @@
-# Countdown
+# Countdown 倒计时
 
-Live countdown timer that ticks down to zero, with configurable precision.
+实时倒计时器，倒数至零，支持可配置的精度。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Live countdown timer that ticks down to zero, with configurable precision.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,7 +49,7 @@ export function App() {
 
 :::
 
-## With Precision
+## 带精度
 
 ::: code-group
 
@@ -84,26 +84,26 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type                  | Default     | Description                              |
-| ----------- | --------------------- | ----------- | ---------------------------------------- |
-| `label`     | `string \| undefined` | `undefined` | Heading label                            |
-| `duration`  | `number`              | `0`         | Total countdown duration in ms           |
-| `precision` | `0 \| 1 \| 2 \| 3`    | `0`         | Decimal precision for fractional seconds |
-| `active`    | `boolean`             | `true`      | Whether the timer is running             |
+| 属性        | 类型                  | 默认值      | 说明                       |
+| ----------- | --------------------- | ----------- | -------------------------- |
+| `label`     | `string \| undefined` | `undefined` | 标题标签                   |
+| `duration`  | `number`              | `0`         | 倒计时总时长（毫秒）       |
+| `precision` | `0 \| 1 \| 2 \| 3`    | `0`         | 小数精度（用于显示小数秒） |
+| `active`    | `boolean`             | `true`      | 计时器是否运行中           |
 
-### Events
+### 事件 (Events)
 
-| Event    | Payload | Description                       |
-| -------- | ------- | --------------------------------- |
-| `finish` | —       | Fires when countdown reaches zero |
+| 事件     | 载荷 | 说明             |
+| -------- | ---- | ---------------- |
+| `finish` | —    | 倒计时归零时触发 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot     | Description                       |
-| -------- | --------------------------------- |
-| `prefix` | Content rendered before the value |
-| `suffix` | Content rendered after the value  |
+| 插槽     | 说明                 |
+| -------- | -------------------- |
+| `prefix` | 渲染在数值之前的内容 |
+| `suffix` | 渲染在数值之后的内容 |

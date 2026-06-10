@@ -1,8 +1,8 @@
-# Icon
+# Icon 图标
 
-SVG icon component powered by a central icon registry.
+由中心图标注册表驱动的 SVG 图标组件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ SVG icon component powered by a central icon registry.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -49,9 +49,9 @@ export function App() {
 
 :::
 
-## Sizes
+## 尺寸
 
-Icons can be rendered at different sizes using the `size` prop. The default size is `16`.
+使用 `size` 属性以不同尺寸渲染图标。默认尺寸为 `16`。
 
 ::: code-group
 
@@ -115,9 +115,9 @@ export function App() {
 
 :::
 
-## Custom Color
+## 自定义颜色
 
-Use the `color` prop or CSS custom properties to change icon color.
+使用 `color` 属性或 CSS 自定义属性来更改图标颜色。
 
 ::: code-group
 
@@ -166,12 +166,12 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop    | Type     | Default | Description            |
-| ------- | -------- | ------- | ---------------------- |
-| `name`  | `string` | `''`    | Icon registry name     |
-| `size`  | `number` | `16`    | Icon size in pixels    |
-| `color` | `string` | `''`    | Icon color (CSS value) |
+| Prop    | 类型     | 默认值 | 描述               |
+| ------- | -------- | ------ | ------------------ |
+| `name`  | `string` | `''`   | 图标注册表名称     |
+| `size`  | `number` | `16`   | 图标尺寸（像素）   |
+| `color` | `string` | `''`   | 图标颜色（CSS 值） |

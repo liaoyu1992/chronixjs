@@ -1,30 +1,30 @@
-# CX Kit — Getting Started
+# CX Kit — 快速开始
 
-CX Kit provides headless primitives that give you maximum control over rendering while handling complex logic internally.
+CX Kit 提供无头原语，在内部处理复杂逻辑的同时，让你对渲染拥有最大控制权。
 
-## Install
+## 安装
 
 ```bash
 pnpm add @chronixjs/cx-kit@alpha
 ```
 
-## Philosophy
+## 设计理念
 
-CX Kit primitives follow the **headless UI** pattern:
+CX Kit 原语遵循**无头 UI** 模式：
 
-1. **Logic, not markup** — handles state, keyboard navigation, ARIA attributes, and calculations
-2. **Framework-agnostic** — pure TypeScript with no framework dependencies
-3. **Composable** — combine primitives to build complex components
-4. **Accessible** — ARIA roles and keyboard support built in
+1. **逻辑而非标记** — 处理状态、键盘导航、ARIA 属性和计算
+2. **框架无关** — 纯 TypeScript，不依赖任何框架
+3. **可组合** — 组合原语以构建复杂组件
+4. **无障碍** — 内置 ARIA 角色和键盘支持
 
-## Usage Pattern
+## 使用模式
 
-Each primitive exports a `create*` factory function that returns reactive state and actions:
+每个原语导出一个 `create*` 工厂函数，返回响应式状态和操作：
 
 ```ts
 import { createSlider } from '@chronixjs/cx-kit';
 
-// 1. Create the primitive instance
+// 1. 创建原语实例
 const slider = createSlider({
   min: 0,
   max: 100,
@@ -32,19 +32,19 @@ const slider = createSlider({
   value: 30,
 });
 
-// 2. Read state
+// 2. 读取状态
 console.log(slider.getState().value); // 30
 
-// 3. Subscribe to changes
+// 3. 订阅变更
 slider.subscribe((state) => {
   console.log('New value:', state.value);
 });
 
-// 4. Dispatch actions
+// 4. 派发操作
 slider.setValue(75);
 ```
 
-## Using with Vue 3
+## 在 Vue 3 中使用
 
 ```vue
 <template>
@@ -68,13 +68,13 @@ const fillPercent = computed(() => {
 });
 
 function onMouseDown(e: MouseEvent) {
-  // Use the slider's pointer handling
+  // 使用滑块的指针处理
   slider.startInteraction(e.clientX);
 }
 </script>
 ```
 
-## Using with React
+## 在 React 中使用
 
 ```tsx
 import { useRef, useState, useEffect } from 'react';
@@ -107,9 +107,9 @@ export function MySlider() {
 }
 ```
 
-## Next Steps
+## 下一步
 
-- [Virtual List](/cx-kit/virtual-list) — high-performance list rendering
-- [Slider](/cx-kit/slider) — slider primitive
-- [Color Picker](/cx-kit/color-picker) — color selection primitive
-- [Autocomplete](/cx-kit/autocomplete) — type-ahead search primitive
+- [虚拟列表](/cx-kit/virtual-list) — 高性能列表渲染
+- [滑块](/cx-kit/slider) — 滑块原语
+- [颜色选择器](/cx-kit/color-picker) — 颜色选择原语
+- [自动补全](/cx-kit/autocomplete) — 前置搜索原语

@@ -1,8 +1,8 @@
-# Grid
+# Grid 栅格布局
 
-CSS Grid 2D layout container with simplified column and gap configuration.
+CSS Grid 二维布局容器，提供简化的列和间距配置。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ CSS Grid 2D layout container with simplified column and gap configuration.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -72,7 +72,7 @@ export function App() {
 
 :::
 
-## Custom Track Template
+## 自定义轨道模板
 
 ::: code-group
 
@@ -121,7 +121,7 @@ export function App() {
 
 :::
 
-## Inline Grid
+## 行内栅格
 
 ::: code-group
 
@@ -167,19 +167,19 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop     | Type                            | Default     | Description                                                 |
-| -------- | ------------------------------- | ----------- | ----------------------------------------------------------- |
-| `cols`   | `number \| string \| undefined` | `undefined` | Column tracks: number → `repeat(N, 1fr)`, string → verbatim |
-| `xGap`   | `number \| undefined`           | `undefined` | Column gap in pixels                                        |
-| `yGap`   | `number \| undefined`           | `undefined` | Row gap in pixels                                           |
-| `inline` | `boolean`                       | `false`     | Use `inline-grid` instead of `grid`                         |
+| Prop     | 类型                            | 默认值      | 描述                                               |
+| -------- | ------------------------------- | ----------- | -------------------------------------------------- |
+| `cols`   | `number \| string \| undefined` | `undefined` | 列轨道：数字 → `repeat(N, 1fr)`，字符串 → 原样使用 |
+| `xGap`   | `number \| undefined`           | `undefined` | 列间距（像素）                                     |
+| `yGap`   | `number \| undefined`           | `undefined` | 行间距（像素）                                     |
+| `inline` | `boolean`                       | `false`     | 使用 `inline-grid` 代替 `grid`                     |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description       |
-| --------- | ----------------- |
-| `default` | Grid cell content |
+| Slot      | 描述           |
+| --------- | -------------- |
+| `default` | 栅格单元格内容 |

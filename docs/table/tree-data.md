@@ -1,10 +1,10 @@
-# Tree Data
+# 树形数据
 
-Display hierarchical data with expandable tree rows. Tree data supports both local and async children loading.
+以可展开的树形行展示层级数据。树形数据支持本地和异步子节点加载。
 
-## Basic Tree Data
+## 基本树形数据
 
-Define rows with nested `children` arrays:
+使用嵌套的 `children` 数组定义行：
 
 ::: code-group
 
@@ -96,28 +96,28 @@ export function App() {
 
 :::
 
-## Tree Column
+## 树形列
 
-Set `treeColumn: true` on the column that should display the expand/collapse chevron:
+在应显示展开/折叠箭头的列上设置 `treeColumn: true`：
 
 ```typescript
 { id: 'name', field: 'name', headerName: 'Name', treeColumn: true }
 ```
 
-The chevron and indentation are automatically rendered in this column.
+箭头和缩进会自动在此列中渲染。
 
-## RowSpec Tree Fields
+## RowSpec 树形字段
 
-| Field         | Type                 | Description                                      |
-| ------------- | -------------------- | ------------------------------------------------ |
-| `children`    | `readonly RowSpec[]` | Nested child rows                                |
-| `hasChildren` | `boolean`            | Show expand chevron even without children loaded |
-| `depth`       | `number`             | Nesting level (0 = root)                         |
-| `groupKey`    | `string \| null`     | Grouping key                                     |
+| 字段          | 类型                 | 描述                           |
+| ------------- | -------------------- | ------------------------------ |
+| `children`    | `readonly RowSpec[]` | 嵌套子行                       |
+| `hasChildren` | `boolean`            | 即使未加载子节点也显示展开箭头 |
+| `depth`       | `number`             | 嵌套层级（0 = 根节点）         |
+| `groupKey`    | `string \| null`     | 分组键                         |
 
-## Controlled Expansion
+## 受控展开
 
-Control which rows are expanded:
+控制哪些行被展开：
 
 ::: code-group
 
@@ -135,23 +135,23 @@ Control which rows are expanded:
 import { ref } from 'vue';
 import { ChronixTable } from '@chronixjs/table-vue3';
 
-const expandedIds = ref<string[]>(['1', '2']); // Pre-expanded rows
+const expandedIds = ref<string[]>(['1', '2']); // 预展开的行
 </script>
 ```
 
 :::
 
-### Expansion Props
+### 展开属性
 
-| Prop                    | Type                | Default | Description              |
-| ----------------------- | ------------------- | ------- | ------------------------ |
-| `expandedRowIds`        | `readonly string[]` |         | Controlled expanded rows |
-| `defaultExpandedRowIds` | `readonly string[]` | `[]`    | Initial expanded rows    |
-| `defaultExpandedDepth`  | `number`            |         | Auto-expand to depth N   |
+| 属性                    | 类型                | 默认值 | 描述              |
+| ----------------------- | ------------------- | ------ | ----------------- |
+| `expandedRowIds`        | `readonly string[]` |        | 受控的展开行      |
+| `defaultExpandedRowIds` | `readonly string[]` | `[]`   | 初始展开行        |
+| `defaultExpandedDepth`  | `number`            |        | 自动展开到第 N 层 |
 
-## Async Children Loading
+## 异步子节点加载
 
-Load children on demand from a server:
+从服务器按需加载子节点：
 
 ::: code-group
 
@@ -180,24 +180,24 @@ async function loadChildren({
   }));
 }
 
-// Mark root rows as having children
+// 将根行标记为拥有子节点
 const rows: RowSpec[] = [{ id: '1', data: { name: 'Root Folder' }, hasChildren: true }];
 </script>
 ```
 
 :::
 
-The `signal` parameter allows aborting the request if the user collapses the row before loading completes.
+`signal` 参数允许在加载完成前用户折叠行时中止请求。
 
-## Theme Customization
+## 主题定制
 
-Customize tree-specific theme tokens:
+定制树形相关的主题令牌：
 
 ```typescript
 const theme: Partial<ChronixTableTheme> = {
-  treeIndentPx: 24, // Indentation per level
-  treeChevronColor: '#6b7280', // Expand/collapse icon color
-  treeSpinnerColor: '#3b82f6', // Loading spinner color
-  treeErrorColor: '#ef4444', // Error icon color
+  treeIndentPx: 24, // 每级缩进
+  treeChevronColor: '#6b7280', // 展开/折叠图标颜色
+  treeSpinnerColor: '#3b82f6', // 加载动画颜色
+  treeErrorColor: '#ef4444', // 错误图标颜色
 };
 ```

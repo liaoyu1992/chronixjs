@@ -1,8 +1,8 @@
-# Upload
+# Upload 上传
 
-File upload component with status tracking and progress display.
+带有状态追踪和进度显示的文件上传组件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,9 +14,9 @@ File upload component with status tracking and progress display.
 
 :::
 
-## Basic Usage
+## 基础用法
 
-A simple file upload component pointing to an upload endpoint.
+指向上传端点的简单文件上传组件。
 
 ::: code-group
 
@@ -65,9 +65,9 @@ export function App() {
 
 :::
 
-## Multiple Files
+## 多文件上传
 
-Use the `multiple` prop to allow selecting and uploading multiple files at once.
+使用 `multiple` 属性允许一次选择并上传多个文件。
 
 ::: code-group
 
@@ -116,9 +116,9 @@ export function App() {
 
 :::
 
-## Accept File Types
+## 限制文件类型
 
-Restrict selectable file types with the `accept` prop. Use MIME types or extensions.
+使用 `accept` 属性限制可选择的文件类型。支持 MIME 类型或扩展名。
 
 ::: code-group
 
@@ -167,9 +167,9 @@ export function App() {
 
 :::
 
-## Directory Upload
+## 目录上传
 
-Enable directory selection with the `directory` prop to upload entire folders.
+使用 `directory` 属性启用目录选择以上传整个文件夹。
 
 ::: code-group
 
@@ -218,26 +218,26 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop        | Type               | Default     | Description            |
-| ----------- | ------------------ | ----------- | ---------------------- |
-| `action`    | `string`           | `undefined` | Upload endpoint URL    |
-| `fileList`  | `UploadFileInfo[]` | `[]`        | Managed file list      |
-| `accept`    | `string`           | `undefined` | Accepted file types    |
-| `multiple`  | `boolean`          | `false`     | Allow multiple files   |
-| `directory` | `boolean`          | `false`     | Allow directory upload |
-| `disabled`  | `boolean`          | `false`     | Disable upload         |
+| 属性        | 类型               | 默认值      | 说明           |
+| ----------- | ------------------ | ----------- | -------------- |
+| `action`    | `string`           | `undefined` | 上传端点 URL   |
+| `fileList`  | `UploadFileInfo[]` | `[]`        | 受控的文件列表 |
+| `accept`    | `string`           | `undefined` | 接受的文件类型 |
+| `multiple`  | `boolean`          | `false`     | 允许多文件上传 |
+| `directory` | `boolean`          | `false`     | 允许目录上传   |
+| `disabled`  | `boolean`          | `false`     | 禁用上传       |
 
-### UploadFileInfo Interface
+### UploadFileInfo 接口
 
-| Field        | Type                                                             | Description             |
-| ------------ | ---------------------------------------------------------------- | ----------------------- |
-| `id`         | `string`                                                         | Unique file ID          |
-| `name`       | `string`                                                         | File name               |
-| `status`     | `'pending' \| 'uploading' \| 'finished' \| 'error' \| 'removed'` | Upload status           |
-| `percentage` | `number`                                                         | Upload progress (0-100) |
-| `url`        | `string`                                                         | File URL (after upload) |
-| `file`       | `File`                                                           | Native File object      |
+| 字段         | 类型                                                             | 说明               |
+| ------------ | ---------------------------------------------------------------- | ------------------ |
+| `id`         | `string`                                                         | 唯一文件 ID        |
+| `name`       | `string`                                                         | 文件名             |
+| `status`     | `'pending' \| 'uploading' \| 'finished' \| 'error' \| 'removed'` | 上传状态           |
+| `percentage` | `number`                                                         | 上传进度（0-100）  |
+| `url`        | `string`                                                         | 文件 URL（上传后） |
+| `file`       | `File`                                                           | 原生 File 对象     |

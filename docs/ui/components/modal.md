@@ -1,8 +1,8 @@
-# Modal
+# Modal 模态框
 
-Portal-mounted centered surface with translucent mask, focus trap, body scroll lock, and Escape close.
+通过 Portal 挂载的居中浮层面板，带有半透明遮罩、焦点陷阱、滚动锁定和 Escape 关闭功能。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ Portal-mounted centered surface with translucent mask, focus trap, body scroll l
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -81,31 +81,31 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop           | Type                   | Default     | Description                               |
-| -------------- | ---------------------- | ----------- | ----------------------------------------- |
-| `show`         | `boolean \| undefined` | `undefined` | Controlled visibility                     |
-| `title`        | `string \| undefined`  | `undefined` | Modal title                               |
-| `mask`         | `boolean`              | `true`      | Show translucent mask backdrop            |
-| `maskClosable` | `boolean`              | `true`      | Close on mask click                       |
-| `escClosable`  | `boolean`              | `true`      | Close on Escape key                       |
-| `width`        | `number \| string`     | `520`       | Panel width (number → px, string → as-is) |
-| `disabled`     | `boolean`              | `false`     | Prevent opening                           |
+| Prop           | 类型                   | 默认值      | 说明                                     |
+| -------------- | ---------------------- | ----------- | ---------------------------------------- |
+| `show`         | `boolean \| undefined` | `undefined` | 受控的显示状态                           |
+| `title`        | `string \| undefined`  | `undefined` | 模态框标题                               |
+| `mask`         | `boolean`              | `true`      | 显示半透明遮罩背景                       |
+| `maskClosable` | `boolean`              | `true`      | 点击遮罩关闭                             |
+| `escClosable`  | `boolean`              | `true`      | 按 Escape 键关闭                         |
+| `width`        | `number \| string`     | `520`       | 面板宽度（数字 → px，字符串 → 原样使用） |
+| `disabled`     | `boolean`              | `false`     | 阻止打开                                 |
 
-### Events
+### 事件 (Events)
 
-| Event         | Payload                             | Description                   |
-| ------------- | ----------------------------------- | ----------------------------- |
-| `update:show` | `boolean`                           | Fires when visibility changes |
-| `close`       | `'mask' \| 'esc' \| 'close-button'` | Fires with close reason       |
+| 事件          | 载荷                                | 说明               |
+| ------------- | ----------------------------------- | ------------------ |
+| `update:show` | `boolean`                           | 显示状态变化时触发 |
+| `close`       | `'mask' \| 'esc' \| 'close-button'` | 关闭时携带关闭原因 |
 
-### Slots
+### 插槽 (Slots)
 
-| Slot      | Description                    |
-| --------- | ------------------------------ |
-| `default` | Modal body content             |
-| `header`  | Custom header (replaces title) |
-| `footer`  | Bottom action row              |
+| 插槽      | 说明                   |
+| --------- | ---------------------- |
+| `default` | 模态框主体内容         |
+| `header`  | 自定义头部（替代标题） |
+| `footer`  | 底部操作栏             |

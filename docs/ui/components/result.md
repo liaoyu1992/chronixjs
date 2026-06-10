@@ -1,8 +1,8 @@
-# Result
+# Result 结果
 
-A terminal-state display for operation results and error pages.
+用于操作结果和错误页面的终态展示组件。
 
-## Install
+## 安装
 
 ::: code-group
 
@@ -14,7 +14,7 @@ A terminal-state display for operation results and error pages.
 
 :::
 
-## Basic Usage
+## 基础用法
 
 ::: code-group
 
@@ -51,9 +51,9 @@ export function App() {
 
 :::
 
-## Status Types
+## 状态类型
 
-Use the `status` prop to display different result states. Semantic statuses include `info`, `success`, `warning`, and `error`. HTTP status codes `404`, `403`, `500`, and `418` are also supported for error pages.
+使用 `status` 属性显示不同的结果状态。语义状态包括 `info`、`success`、`warning` 和 `error`。HTTP 状态码 `404`、`403`、`500` 和 `418` 也支持用于错误页面。
 
 ::: code-group
 
@@ -119,12 +119,12 @@ export function App() {
 
 :::
 
-## API Reference
+## API 参考
 
-### Props
+### 属性 (Props)
 
-| Prop          | Type                                                                                           | Default     | Description      |
-| ------------- | ---------------------------------------------------------------------------------------------- | ----------- | ---------------- |
-| `status`      | `'default' \| 'info' \| 'success' \| 'warning' \| 'error' \| '404' \| '403' \| '500' \| '418'` | `'info'`    | Result status    |
-| `title`       | `string`                                                                                       | `undefined` | Heading text     |
-| `description` | `string`                                                                                       | `undefined` | Sub-heading text |
+| 属性          | 类型                                                                                           | 默认值      | 说明       |
+| ------------- | ---------------------------------------------------------------------------------------------- | ----------- | ---------- |
+| `status`      | `'default' \| 'info' \| 'success' \| 'warning' \| 'error' \| '404' \| '403' \| '500' \| '418'` | `'info'`    | 结果状态   |
+| `title`       | `string`                                                                                       | `undefined` | 标题文本   |
+| `description` | `string`                                                                                       | `undefined` | 副标题文本 |
