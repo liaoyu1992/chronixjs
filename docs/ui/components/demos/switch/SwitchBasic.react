@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxSwitch } from '@chronixjs/ui-react';
+
+export function App() {
+  const [enabled, setEnabled] = useState(false);
+  return <CxSwitch checked={enabled} onUpdateChecked={setEnabled} />;
+}

@@ -1,0 +1,12 @@
+import { CxTag } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <CxTag type="primary">正常</CxTag>
+      <CxTag type="primary" disabled>禁用</CxTag>
+      <CxTag type="success">正常</CxTag>
+      <CxTag type="success" disabled>禁用</CxTag>
+    </div>
+  );
+}

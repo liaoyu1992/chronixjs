@@ -1,0 +1,13 @@
+<template>
+  <CxInput v-model:value="text" placeholder="请输入内容" />
+</template>
+
+<script>
+import { CxInput } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxInput },
+  data() {
+    return { text: '' };
+  },
+};
+</script>

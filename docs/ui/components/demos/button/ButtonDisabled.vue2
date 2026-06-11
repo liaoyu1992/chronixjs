@@ -1,0 +1,8 @@
+<template>
+  <CxButton type="primary" disabled>Disabled</CxButton>
+</template>
+
+<script>
+import { CxButton } from '@chronixjs/ui-vue2';
+export default { components: { CxButton } };
+</script>

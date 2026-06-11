@@ -1,0 +1,10 @@
+import { CxSwitch } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <CxSwitch disabled />
+      <CxSwitch checked disabled />
+    </div>
+  );
+}

@@ -1,0 +1,10 @@
+import { CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 400 }}>
+      <CxButton variant="primary" block>Block Button</CxButton>
+      <CxButton block>Block Default</CxButton>
+    </div>
+  );
+}

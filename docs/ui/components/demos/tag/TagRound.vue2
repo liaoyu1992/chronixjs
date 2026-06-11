@@ -1,0 +1,12 @@
+<template>
+  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <CxTag round>Round Default</CxTag>
+    <CxTag type="primary" round>Round Primary</CxTag>
+    <CxTag type="success" round>Round Success</CxTag>
+  </div>
+</template>
+
+<script>
+import { CxTag } from '@chronixjs/ui-vue2';
+export default { components: { CxTag } };
+</script>

@@ -412,6 +412,13 @@ importers:
         version: 3.5.34(typescript@5.9.3)
 
   docs:
+    dependencies:
+      '@chronixjs/ui':
+        specifier: workspace:*
+        version: link:../packages/ui
+      '@chronixjs/ui-vue3':
+        specifier: workspace:*
+        version: link:../adapters/ui-vue3
     devDependencies:
       vitepress:
         specifier: ^1.6.0

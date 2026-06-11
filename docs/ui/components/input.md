@@ -1,3 +1,30 @@
+<script setup>
+import InputBasic from './demos/input/InputBasic.vue';
+import inputBasicCode from './demos/input/InputBasic.vue?raw';
+import inputBasicVue2 from './demos/input/InputBasic.vue2?raw';
+import inputBasicReact from './demos/input/InputBasic.react?raw';
+import InputSizes from './demos/input/InputSizes.vue';
+import inputSizesCode from './demos/input/InputSizes.vue?raw';
+import inputSizesVue2 from './demos/input/InputSizes.vue2?raw';
+import inputSizesReact from './demos/input/InputSizes.react?raw';
+import InputClearable from './demos/input/InputClearable.vue';
+import inputClearableCode from './demos/input/InputClearable.vue?raw';
+import inputClearableVue2 from './demos/input/InputClearable.vue2?raw';
+import inputClearableReact from './demos/input/InputClearable.react?raw';
+import InputTextarea from './demos/input/InputTextarea.vue';
+import inputTextareaCode from './demos/input/InputTextarea.vue?raw';
+import inputTextareaVue2 from './demos/input/InputTextarea.vue2?raw';
+import inputTextareaReact from './demos/input/InputTextarea.react?raw';
+import InputDisabled from './demos/input/InputDisabled.vue';
+import inputDisabledCode from './demos/input/InputDisabled.vue?raw';
+import inputDisabledVue2 from './demos/input/InputDisabled.vue2?raw';
+import inputDisabledReact from './demos/input/InputDisabled.react?raw';
+import InputError from './demos/input/InputError.vue';
+import inputErrorCode from './demos/input/InputError.vue?raw';
+import inputErrorVue2 from './demos/input/InputError.vue2?raw';
+import inputErrorReact from './demos/input/InputError.react?raw';
+</script>
+
 # Input 输入框
 
 文本输入组件，支持清除、文本域模式、验证和 IME 组合输入处理。
@@ -6,228 +33,49 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="text" placeholder="Enter text..." />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInput } from '@chronixjs/ui-vue3';
-
-const text = ref('');
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxInput v-model:value="text" placeholder="Enter text..." />
-</template>
-
-<script>
-import { CxInput } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxInput },
-  data() {
-    return { text: '' };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxInput } from '@chronixjs/ui-react';
-
-export function App() {
-  const [text, setText] = useState('');
-  return <CxInput value={text} onUpdateValue={setText} placeholder="Enter text..." />;
-}
-```
-
-:::
-
-## 输入类型
-
-### 文本输入（默认）
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="name" placeholder="Your name" />
-</template>
-```
-
-```tsx [React]
-<CxInput value={name} onUpdateValue={setName} placeholder="Your name" />
-```
-
-:::
-
-### 文本域
-
-设置 `type="textarea"` 用于多行输入：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="bio" type="textarea" :rows="4" placeholder="Bio..." />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInput } from '@chronixjs/ui-vue3';
-
-const bio = ref('');
-</script>
-```
-
-```tsx [React]
-<CxInput value={bio} onUpdateValue={setBio} type="textarea" rows={4} placeholder="Bio..." />
-```
-
-:::
+<DemoBox title="基础用法" description="文本输入的基础用法。" :code="inputBasicCode" :code-vue2="inputBasicVue2" :code-react="inputBasicReact">
+  <InputBasic />
+</DemoBox>
 
 ## 尺寸
 
-::: code-group
+<DemoBox title="尺寸" description="通过 size 属性设置输入框尺寸。" :code="inputSizesCode" :code-vue2="inputSizesVue2" :code-react="inputSizesReact">
+  <InputSizes />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <CxInput size="small" placeholder="Small" />
-    <CxInput size="medium" placeholder="Medium" />
-    <CxInput size="large" placeholder="Large" />
-  </div>
-</template>
+## 文本域
 
-<script setup lang="ts">
-import { CxInput } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-  <CxInput size="small" placeholder="Small" />
-  <CxInput size="medium" placeholder="Medium" />
-  <CxInput size="large" placeholder="Large" />
-</div>
-```
-
-:::
+<DemoBox title="文本域" description="设置 type=&quot;textarea&quot; 用于多行输入，通过 rows 设置行数。" :code="inputTextareaCode" :code-vue2="inputTextareaVue2" :code-react="inputTextareaReact">
+  <InputTextarea />
+</DemoBox>
 
 ## 可清除
 
-当输入框有值时显示清除按钮：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="text" clearable placeholder="Type to see clear button" @clear="onClear" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInput } from '@chronixjs/ui-vue3';
-
-const text = ref('Hello');
-function onClear() {
-  console.log('Cleared');
-}
-</script>
-```
-
-```tsx [React]
-<CxInput value={text} onUpdateValue={setText} clearable onClear={() => console.log('Cleared')} />
-```
-
-:::
-
-## 错误状态
-
-显示验证错误信息：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="email" error="Please enter a valid email" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInput } from '@chronixjs/ui-vue3';
-
-const email = ref('invalid');
-</script>
-```
-
-```tsx [React]
-<CxInput value={email} onUpdateValue={setEmail} error="Please enter a valid email" />
-```
-
-:::
+<DemoBox title="可清除" description="通过 clearable 属性在输入框有值时显示清除按钮。" :code="inputClearableCode" :code-vue2="inputClearableVue2" :code-react="inputClearableReact">
+  <InputClearable />
+</DemoBox>
 
 ## 禁用状态
 
-::: code-group
+<DemoBox title="禁用状态" description="通过 disabled 属性禁用输入框。" :code="inputDisabledCode" :code-vue2="inputDisabledVue2" :code-react="inputDisabledReact">
+  <InputDisabled />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <CxInput value="Read only" disabled />
-</template>
+## 错误状态
 
-<script setup lang="ts">
-import { CxInput } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<CxInput value="Read only" disabled />
-```
-
-:::
-
-## 事件
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="text" @focus="onFocus" @blur="onBlur" @clear="onClear" />
-</template>
-
-<script setup lang="ts">
-import { CxInput } from '@chronixjs/ui-vue3';
-
-function onFocus(e: FocusEvent) {
-  console.log('Focused');
-}
-function onBlur(e: FocusEvent) {
-  console.log('Blurred');
-}
-function onClear() {
-  console.log('Cleared');
-}
-</script>
-```
-
-:::
+<DemoBox title="错误状态" description="通过 error 属性显示验证错误信息。" :code="inputErrorCode" :code-vue2="inputErrorVue2" :code-react="inputErrorReact">
+  <InputError />
+</DemoBox>
 
 ## API 参考
 

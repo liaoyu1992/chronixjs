@@ -1,3 +1,30 @@
+<script setup>
+import TagBasic from '../../../ui/components/demos/tag/TagBasic.vue';
+import tagBasicCode from '../../../ui/components/demos/tag/TagBasic.vue?raw';
+import tagBasicVue2 from '../../../ui/components/demos/tag/TagBasic.vue2?raw';
+import tagBasicReact from '../../../ui/components/demos/tag/TagBasic.react?raw';
+import TagSizes from '../../../ui/components/demos/tag/TagSizes.vue';
+import tagSizesCode from '../../../ui/components/demos/tag/TagSizes.vue?raw';
+import tagSizesVue2 from '../../../ui/components/demos/tag/TagSizes.vue2?raw';
+import tagSizesReact from '../../../ui/components/demos/tag/TagSizes.react?raw';
+import TagClosable from '../../../ui/components/demos/tag/TagClosable.vue';
+import tagClosableCode from '../../../ui/components/demos/tag/TagClosable.vue?raw';
+import tagClosableVue2 from '../../../ui/components/demos/tag/TagClosable.vue2?raw';
+import tagClosableReact from '../../../ui/components/demos/tag/TagClosable.react?raw';
+import TagRound from '../../../ui/components/demos/tag/TagRound.vue';
+import tagRoundCode from '../../../ui/components/demos/tag/TagRound.vue?raw';
+import tagRoundVue2 from '../../../ui/components/demos/tag/TagRound.vue2?raw';
+import tagRoundReact from '../../../ui/components/demos/tag/TagRound.react?raw';
+import TagBordered from '../../../ui/components/demos/tag/TagBordered.vue';
+import tagBorderedCode from '../../../ui/components/demos/tag/TagBordered.vue?raw';
+import tagBorderedVue2 from '../../../ui/components/demos/tag/TagBordered.vue2?raw';
+import tagBorderedReact from '../../../ui/components/demos/tag/TagBordered.react?raw';
+import TagDisabled from '../../../ui/components/demos/tag/TagDisabled.vue';
+import tagDisabledCode from '../../../ui/components/demos/tag/TagDisabled.vue?raw';
+import tagDisabledVue2 from '../../../ui/components/demos/tag/TagDisabled.vue2?raw';
+import tagDisabledReact from '../../../ui/components/demos/tag/TagDisabled.react?raw';
+</script>
+
 # Tag
 
 Tags are used for labeling, categorization, and small inline markers. They support semantic colors, sizes, closability, and pill-shaped rounding.
@@ -6,297 +33,49 @@ Tags are used for labeling, categorization, and small inline markers. They suppo
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTag>Default</CxTag>
-  <CxTag type="primary">Primary</CxTag>
-  <CxTag type="success">Success</CxTag>
-</template>
-
-<script setup lang="ts">
-import { CxTag } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <CxTag>Default</CxTag>
-    <CxTag type="primary">Primary</CxTag>
-    <CxTag type="success">Success</CxTag>
-  </div>
-</template>
-
-<script>
-import { CxTag } from '@chronixjs/ui-vue2';
-export default { components: { CxTag } };
-</script>
-```
-
-```tsx [React]
-import { CxTag } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <>
-      <CxTag>Default</CxTag>
-      <CxTag type="primary">Primary</CxTag>
-      <CxTag type="success">Success</CxTag>
-    </>
-  );
-}
-```
-
-:::
-
-## Tag Types
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxTag type="default">Default</CxTag>
-    <CxTag type="primary">Primary</CxTag>
-    <CxTag type="info">Info</CxTag>
-    <CxTag type="success">Success</CxTag>
-    <CxTag type="warning">Warning</CxTag>
-    <CxTag type="error">Error</CxTag>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxTag } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxTag type="default">Default</CxTag>
-    <CxTag type="primary">Primary</CxTag>
-    <CxTag type="info">Info</CxTag>
-    <CxTag type="success">Success</CxTag>
-    <CxTag type="warning">Warning</CxTag>
-    <CxTag type="error">Error</CxTag>
-  </div>
-</template>
-
-<script>
-import { CxTag } from '@chronixjs/ui-vue2';
-export default { components: { CxTag } };
-</script>
-```
-
-```tsx [React]
-import { CxTag } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 8 }}>
-      <CxTag type="default">Default</CxTag>
-      <CxTag type="primary">Primary</CxTag>
-      <CxTag type="info">Info</CxTag>
-      <CxTag type="success">Success</CxTag>
-      <CxTag type="warning">Warning</CxTag>
-      <CxTag type="error">Error</CxTag>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Six semantic tag types." :code="tagBasicCode" :code-vue2="tagBasicVue2" :code-react="tagBasicReact">
+  <TagBasic />
+</DemoBox>
 
 ## Sizes
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 8px; align-items: center;">
-    <CxTag size="small">Small</CxTag>
-    <CxTag size="medium">Medium</CxTag>
-    <CxTag size="large">Large</CxTag>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxTag } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 8px; align-items: center;">
-    <CxTag size="small">Small</CxTag>
-    <CxTag size="medium">Medium</CxTag>
-    <CxTag size="large">Large</CxTag>
-  </div>
-</template>
-
-<script>
-import { CxTag } from '@chronixjs/ui-vue2';
-export default { components: { CxTag } };
-</script>
-```
-
-```tsx [React]
-import { CxTag } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <CxTag size="small">Small</CxTag>
-      <CxTag size="medium">Medium</CxTag>
-      <CxTag size="large">Large</CxTag>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Sizes" description="Set tag size with the size prop." :code="tagSizesCode" :code-vue2="tagSizesVue2" :code-react="tagSizesReact">
+  <TagSizes />
+</DemoBox>
 
 ## Closable
 
-Tags can show a close button. Listen for the `close` event to remove them:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTag type="primary" closable @close="onClose">Removable</CxTag>
-</template>
-
-<script setup lang="ts">
-import { CxTag } from '@chronixjs/ui-vue3';
-
-function onClose(event: MouseEvent) {
-  console.log('Tag closed');
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTag type="primary" closable @close="onClose">Removable</CxTag>
-</template>
-
-<script>
-import { CxTag } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxTag },
-  methods: {
-    onClose(event) {
-      console.log('Tag closed');
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxTag } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxTag type="primary" closable onClose={(e) => console.log('Tag closed')}>
-      Removable
-    </CxTag>
-  );
-}
-```
-
-:::
+<DemoBox title="Closable" description="Show a close button. Listen for the close event to remove tags." :code="tagClosableCode" :code-vue2="tagClosableVue2" :code-react="tagClosableReact">
+  <TagClosable />
+</DemoBox>
 
 ## Round (Pill)
 
-::: code-group
+<DemoBox title="Round (Pill)" description="Pill-shaped tags with the round prop." :code="tagRoundCode" :code-vue2="tagRoundVue2" :code-react="tagRoundReact">
+  <TagRound />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <CxTag type="info" round>Pill Tag</CxTag>
-</template>
+## Bordered
 
-<script setup lang="ts">
-import { CxTag } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTag type="info" round>Pill Tag</CxTag>
-</template>
-
-<script>
-import { CxTag } from '@chronixjs/ui-vue2';
-export default { components: { CxTag } };
-</script>
-```
-
-```tsx [React]
-import { CxTag } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxTag type="info" round>
-      Pill Tag
-    </CxTag>
-  );
-}
-```
-
-:::
+<DemoBox title="Bordered" description="Control border visibility with the bordered prop." :code="tagBorderedCode" :code-vue2="tagBorderedVue2" :code-react="tagBorderedReact">
+  <TagBordered />
+</DemoBox>
 
 ## Disabled
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTag type="primary" disabled>Disabled Tag</CxTag>
-</template>
-
-<script setup lang="ts">
-import { CxTag } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTag type="primary" disabled>Disabled Tag</CxTag>
-</template>
-
-<script>
-import { CxTag } from '@chronixjs/ui-vue2';
-export default { components: { CxTag } };
-</script>
-```
-
-```tsx [React]
-import { CxTag } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxTag type="primary" disabled>
-      Disabled Tag
-    </CxTag>
-  );
-}
-```
-
-:::
+<DemoBox title="Disabled" description="Disable tag interaction with the disabled prop." :code="tagDisabledCode" :code-vue2="tagDisabledVue2" :code-react="tagDisabledReact">
+  <TagDisabled />
+</DemoBox>
 
 ## API Reference
 

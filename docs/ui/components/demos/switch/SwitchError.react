@@ -1,0 +1,15 @@
+import { useState } from 'react';
+import { CxSwitch } from '@chronixjs/ui-react';
+
+export function App() {
+  const [agreed, setAgreed] = useState(false);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <CxSwitch checked={agreed} onUpdateChecked={setAgreed} />
+        <span style={{ fontSize: 13, color: '#888' }}>{agreed ? '已同意' : '未同意'}</span>
+      </div>
+      <CxSwitch checked={agreed} onUpdateChecked={setAgreed} error="请先同意用户协议" />
+    </div>
+  );
+}

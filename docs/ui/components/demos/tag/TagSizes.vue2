@@ -1,0 +1,12 @@
+<template>
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <CxTag size="small">Small</CxTag>
+    <CxTag size="medium">Medium</CxTag>
+    <CxTag size="large">Large</CxTag>
+  </div>
+</template>
+
+<script>
+import { CxTag } from '@chronixjs/ui-vue2';
+export default { components: { CxTag } };
+</script>

@@ -1,0 +1,11 @@
+<template>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <CxSwitch disabled />
+    <CxSwitch checked disabled />
+  </div>
+</template>
+
+<script>
+import { CxSwitch } from '@chronixjs/ui-vue2';
+export default { components: { CxSwitch } };
+</script>

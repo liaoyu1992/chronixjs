@@ -1,3 +1,30 @@
+<script setup>
+import InputBasic from '../../../ui/components/demos/input/InputBasic.vue';
+import inputBasicCode from '../../../ui/components/demos/input/InputBasic.vue?raw';
+import inputBasicVue2 from '../../../ui/components/demos/input/InputBasic.vue2?raw';
+import inputBasicReact from '../../../ui/components/demos/input/InputBasic.react?raw';
+import InputSizes from '../../../ui/components/demos/input/InputSizes.vue';
+import inputSizesCode from '../../../ui/components/demos/input/InputSizes.vue?raw';
+import inputSizesVue2 from '../../../ui/components/demos/input/InputSizes.vue2?raw';
+import inputSizesReact from '../../../ui/components/demos/input/InputSizes.react?raw';
+import InputClearable from '../../../ui/components/demos/input/InputClearable.vue';
+import inputClearableCode from '../../../ui/components/demos/input/InputClearable.vue?raw';
+import inputClearableVue2 from '../../../ui/components/demos/input/InputClearable.vue2?raw';
+import inputClearableReact from '../../../ui/components/demos/input/InputClearable.react?raw';
+import InputTextarea from '../../../ui/components/demos/input/InputTextarea.vue';
+import inputTextareaCode from '../../../ui/components/demos/input/InputTextarea.vue?raw';
+import inputTextareaVue2 from '../../../ui/components/demos/input/InputTextarea.vue2?raw';
+import inputTextareaReact from '../../../ui/components/demos/input/InputTextarea.react?raw';
+import InputDisabled from '../../../ui/components/demos/input/InputDisabled.vue';
+import inputDisabledCode from '../../../ui/components/demos/input/InputDisabled.vue?raw';
+import inputDisabledVue2 from '../../../ui/components/demos/input/InputDisabled.vue2?raw';
+import inputDisabledReact from '../../../ui/components/demos/input/InputDisabled.react?raw';
+import InputError from '../../../ui/components/demos/input/InputError.vue';
+import inputErrorCode from '../../../ui/components/demos/input/InputError.vue?raw';
+import inputErrorVue2 from '../../../ui/components/demos/input/InputError.vue2?raw';
+import inputErrorReact from '../../../ui/components/demos/input/InputError.react?raw';
+</script>
+
 # Input
 
 Text input component with clearable support, textarea mode, validation, and IME composition handling.
@@ -6,228 +33,49 @@ Text input component with clearable support, textarea mode, validation, and IME 
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="text" placeholder="Enter text..." />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInput } from '@chronixjs/ui-vue3';
-
-const text = ref('');
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxInput v-model:value="text" placeholder="Enter text..." />
-</template>
-
-<script>
-import { CxInput } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxInput },
-  data() {
-    return { text: '' };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxInput } from '@chronixjs/ui-react';
-
-export function App() {
-  const [text, setText] = useState('');
-  return <CxInput value={text} onUpdateValue={setText} placeholder="Enter text..." />;
-}
-```
-
-:::
-
-## Input Types
-
-### Text Input (default)
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="name" placeholder="Your name" />
-</template>
-```
-
-```tsx [React]
-<CxInput value={name} onUpdateValue={setName} placeholder="Your name" />
-```
-
-:::
-
-### Textarea
-
-Set `type="textarea"` for multi-line input:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="bio" type="textarea" :rows="4" placeholder="Bio..." />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInput } from '@chronixjs/ui-vue3';
-
-const bio = ref('');
-</script>
-```
-
-```tsx [React]
-<CxInput value={bio} onUpdateValue={setBio} type="textarea" rows={4} placeholder="Bio..." />
-```
-
-:::
+<DemoBox title="Basic Usage" description="Basic text input usage." :code="inputBasicCode" :code-vue2="inputBasicVue2" :code-react="inputBasicReact">
+  <InputBasic />
+</DemoBox>
 
 ## Sizes
 
-::: code-group
+<DemoBox title="Sizes" description="Set input size with the size prop." :code="inputSizesCode" :code-vue2="inputSizesVue2" :code-react="inputSizesReact">
+  <InputSizes />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <CxInput size="small" placeholder="Small" />
-    <CxInput size="medium" placeholder="Medium" />
-    <CxInput size="large" placeholder="Large" />
-  </div>
-</template>
+## Textarea
 
-<script setup lang="ts">
-import { CxInput } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-  <CxInput size="small" placeholder="Small" />
-  <CxInput size="medium" placeholder="Medium" />
-  <CxInput size="large" placeholder="Large" />
-</div>
-```
-
-:::
+<DemoBox title="Textarea" description="Set type=&quot;textarea&quot; for multi-line input. Use rows to set line count." :code="inputTextareaCode" :code-vue2="inputTextareaVue2" :code-react="inputTextareaReact">
+  <InputTextarea />
+</DemoBox>
 
 ## Clearable
 
-Show a clear button when the input has a value:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="text" clearable placeholder="Type to see clear button" @clear="onClear" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInput } from '@chronixjs/ui-vue3';
-
-const text = ref('Hello');
-function onClear() {
-  console.log('Cleared');
-}
-</script>
-```
-
-```tsx [React]
-<CxInput value={text} onUpdateValue={setText} clearable onClear={() => console.log('Cleared')} />
-```
-
-:::
-
-## Error State
-
-Display validation error messages:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="email" error="Please enter a valid email" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInput } from '@chronixjs/ui-vue3';
-
-const email = ref('invalid');
-</script>
-```
-
-```tsx [React]
-<CxInput value={email} onUpdateValue={setEmail} error="Please enter a valid email" />
-```
-
-:::
+<DemoBox title="Clearable" description="Show a clear button when the input has a value." :code="inputClearableCode" :code-vue2="inputClearableVue2" :code-react="inputClearableReact">
+  <InputClearable />
+</DemoBox>
 
 ## Disabled
 
-::: code-group
+<DemoBox title="Disabled" description="Disable the input with the disabled prop." :code="inputDisabledCode" :code-vue2="inputDisabledVue2" :code-react="inputDisabledReact">
+  <InputDisabled />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <CxInput value="Read only" disabled />
-</template>
+## Error State
 
-<script setup lang="ts">
-import { CxInput } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<CxInput value="Read only" disabled />
-```
-
-:::
-
-## Events
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInput v-model:value="text" @focus="onFocus" @blur="onBlur" @clear="onClear" />
-</template>
-
-<script setup lang="ts">
-import { CxInput } from '@chronixjs/ui-vue3';
-
-function onFocus(e: FocusEvent) {
-  console.log('Focused');
-}
-function onBlur(e: FocusEvent) {
-  console.log('Blurred');
-}
-function onClear() {
-  console.log('Cleared');
-}
-</script>
-```
-
-:::
+<DemoBox title="Error State" description="Display validation error messages with the error prop." :code="inputErrorCode" :code-vue2="inputErrorVue2" :code-react="inputErrorReact">
+  <InputError />
+</DemoBox>
 
 ## API Reference
 
