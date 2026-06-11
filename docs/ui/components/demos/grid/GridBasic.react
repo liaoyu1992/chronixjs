@@ -1,0 +1,16 @@
+import { CxGrid } from '@chronixjs/ui-react';
+
+const cellStyle = { background: '#f0f0f0', padding: 12, textAlign: 'center' };
+
+export function App() {
+  return (
+    <CxGrid cols={3} xGap={16} yGap={12}>
+      <div style={cellStyle}>Cell 1</div>
+      <div style={cellStyle}>Cell 2</div>
+      <div style={cellStyle}>Cell 3</div>
+      <div style={cellStyle}>Cell 4</div>
+      <div style={cellStyle}>Cell 5</div>
+      <div style={cellStyle}>Cell 6</div>
+    </CxGrid>
+  );
+}

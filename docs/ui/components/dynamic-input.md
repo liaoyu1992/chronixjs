@@ -1,3 +1,10 @@
+<script setup>
+import DynamicInputBasic from './demos/dynamic-input/DynamicInputBasic.vue';
+import dynamicInputBasicCode from './demos/dynamic-input/DynamicInputBasic.vue?raw';
+import dynamicInputBasicVue2 from './demos/dynamic-input/DynamicInputBasic.vue2?raw';
+import dynamicInputBasicReact from './demos/dynamic-input/DynamicInputBasic.react?raw';
+</script>
+
 # Dynamic Input 动态输入
 
 动态输入值列表，用户可以添加或删除项目。
@@ -16,49 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxDynamicInput v-model:value="items" placeholder="Enter value" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxDynamicInput } from '@chronixjs/ui-vue3';
-
-const items = ref<string[]>(['Item 1', 'Item 2']);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxDynamicInput :value.sync="items" placeholder="Enter value" />
-</template>
-
-<script>
-import { CxDynamicInput } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxDynamicInput },
-  data() {
-    return { items: ['Item 1', 'Item 2'] };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxDynamicInput } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items, setItems] = useState<string[]>(['Item 1', 'Item 2']);
-
-  return <CxDynamicInput value={items} onUpdateValue={setItems} placeholder="Enter value" />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="动态输入的基础用法，支持添加和删除项目。" :code="dynamicInputBasicCode" :code-vue2="dynamicInputBasicVue2" :code-react="dynamicInputBasicReact">
+  <DynamicInputBasic />
+</DemoBox>
 
 ## API 参考
 

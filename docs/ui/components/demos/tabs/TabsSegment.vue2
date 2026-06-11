@@ -1,0 +1,20 @@
+<template>
+  <CxTabs :value.sync="activeTab" :items="items" type="segment" />
+</template>
+
+<script>
+import { CxTabs } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxTabs },
+  data() {
+    return {
+      activeTab: 'tab1',
+      items: [
+        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
+        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
+        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
+      ],
+    };
+  },
+};
+</script>

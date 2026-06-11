@@ -1,0 +1,12 @@
+import { CxBackTop } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ height: 200, overflowY: 'auto', border: '1px solid #e0e0e0', borderRadius: 4, padding: 12 }}>
+      {Array.from({ length: 20 }, (_, i) => (
+        <p key={i} style={{ margin: '0 0 8px' }}>Scroll down to see the back-to-top button. Line {i + 1}.</p>
+      ))}
+      <CxBackTop visibilityThreshold={100} right={20} bottom={20} behavior="smooth" />
+    </div>
+  );
+}

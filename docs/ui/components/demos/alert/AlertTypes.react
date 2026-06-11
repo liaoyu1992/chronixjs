@@ -1,0 +1,13 @@
+import { CxAlert } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <CxAlert>Default message</CxAlert>
+      <CxAlert type="info">Info message</CxAlert>
+      <CxAlert type="success">Success message</CxAlert>
+      <CxAlert type="warning">Warning message</CxAlert>
+      <CxAlert type="error">Error message</CxAlert>
+    </div>
+  );
+}

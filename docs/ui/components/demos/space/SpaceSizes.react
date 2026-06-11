@@ -1,0 +1,20 @@
+import { CxSpace, CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <CxSpace size="small">
+        <CxButton>Small</CxButton>
+        <CxButton>Small</CxButton>
+      </CxSpace>
+      <CxSpace size="medium">
+        <CxButton>Medium</CxButton>
+        <CxButton>Medium</CxButton>
+      </CxSpace>
+      <CxSpace size="large">
+        <CxButton>Large</CxButton>
+        <CxButton>Large</CxButton>
+      </CxSpace>
+    </div>
+  );
+}

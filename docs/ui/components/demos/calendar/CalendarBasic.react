@@ -1,0 +1,8 @@
+import { useState } from 'react';
+import { CxCalendar } from '@chronixjs/ui-react';
+
+export function App() {
+  const [selected, setSelected] = useState<Date | undefined>(undefined);
+
+  return <CxCalendar value={selected} onUpdateValue={setSelected} />;
+}

@@ -1,3 +1,10 @@
+<script setup>
+import GanttViewsToolbar from '../../gantt/demos/GanttViewsToolbar.vue';
+import ganttViewsToolbarCode from '../../gantt/demos/GanttViewsToolbar.vue?raw';
+import ganttViewsToolbarVue2 from '../../gantt/demos/GanttViewsToolbar.vue2?raw';
+import ganttViewsToolbarReact from '../../gantt/demos/GanttViewsToolbar.react?raw';
+</script>
+
 # Timeline Views
 
 The Gantt chart supports 6 built-in timeline zoom levels, each designed for different planning horizons.
@@ -13,74 +20,13 @@ The Gantt chart supports 6 built-in timeline zoom levels, each designed for diff
 | `'halfYear'` | 6 months | Semi-annual planning  |
 | `'year'`     | 1 year   | Annual overview       |
 
-## Configuring the View
+## Toolbar with View Switcher
 
-Set the initial view via `axisInput.viewId`:
+Add a built-in toolbar with navigation and view switching:
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { AxisRangePlanInput } from '@chronixjs/gantt';
-
-const axisInput: AxisRangePlanInput = {
-  viewId: 'month', // View level
-  anchorDate: new Date('2026-01-01'), // Initial center date
-  viewportWidth: 900, // Chart width in pixels
-  locale: 'en', // Locale for formatting
-  weekendsVisible: true, // Show weekend columns
-};
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" />
-</template>
-
-<script>
-import { ChronixGantt } from '@chronixjs/gantt-vue2';
-
-export default {
-  components: { ChronixGantt },
-  data() {
-    return {
-      axisInput: {
-        viewId: 'month',
-        anchorDate: new Date('2026-01-01'),
-        viewportWidth: 900,
-        locale: 'en',
-        weekendsVisible: true,
-      },
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { AxisRangePlanInput } from '@chronixjs/gantt';
-
-const axisInput: AxisRangePlanInput = {
-  viewId: 'month',
-  anchorDate: new Date('2026-01-01'),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-};
-
-export function App() {
-  return <ChronixGantt bars={bars} rows={rows} axisInput={axisInput} />;
-}
-```
-
-:::
+<DemoBox title="Toolbar with View Switcher" description="Navigate between views using the built-in toolbar." :code="ganttViewsToolbarCode" :code-vue2="ganttViewsToolbarVue2" :code-react="ganttViewsToolbarReact">
+  <GanttViewsToolbar />
+</DemoBox>
 
 ### AxisRangePlanInput
 
@@ -91,83 +37,6 @@ export function App() {
 | `viewportWidth`   | `number`  | ✅       | Chart container width (px)  |
 | `locale`          | `string`  | ✅       | Locale for date formatting  |
 | `weekendsVisible` | `boolean` | ✅       | Show weekend column shading |
-
-## Toolbar with View Switcher
-
-Add a built-in toolbar with navigation and view switching:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt
-    :bars="bars"
-    :rows="rows"
-    :axis-input="axisInput"
-    :header-toolbar="toolbar"
-    @update:axis-input="onAxisChange"
-  />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { AxisRangePlanInput, ToolbarInput } from '@chronixjs/gantt';
-
-const axisInput = ref<AxisRangePlanInput>({
-  viewId: 'week',
-  anchorDate: new Date(),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-});
-
-// Toolbar layout: left=nav, center=title, right=view switcher
-const toolbar: ToolbarInput = {
-  left: 'prev,next today',
-  center: 'title',
-  right: 'day,week,month,season,year',
-};
-
-function onAxisChange(next: AxisRangePlanInput) {
-  axisInput.value = next;
-}
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { AxisRangePlanInput, ToolbarInput } from '@chronixjs/gantt';
-
-const toolbar: ToolbarInput = {
-  left: 'prev,next today',
-  center: 'title',
-  right: 'day,week,month,season,year',
-};
-
-export function App() {
-  const [axisInput, setAxisInput] = useState<AxisRangePlanInput>({
-    viewId: 'week',
-    anchorDate: new Date(),
-    viewportWidth: 900,
-    locale: 'en',
-    weekendsVisible: true,
-  });
-
-  return (
-    <ChronixGantt
-      bars={bars}
-      rows={rows}
-      axisInput={axisInput}
-      headerToolbar={toolbar}
-      onUpdateAxisInput={setAxisInput}
-    />
-  );
-}
-```
-
-:::
 
 ### ToolbarInput
 

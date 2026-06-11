@@ -1,0 +1,13 @@
+<template>
+  <CxCalendar :value.sync="selected" />
+</template>
+
+<script>
+import { CxCalendar } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxCalendar },
+  data() {
+    return { selected: undefined };
+  },
+};
+</script>

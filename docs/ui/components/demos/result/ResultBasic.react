@@ -1,0 +1,5 @@
+import { CxResult } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxResult status="success" title="Success" description="Operation completed" />;
+}

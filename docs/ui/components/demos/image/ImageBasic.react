@@ -1,0 +1,5 @@
+import { CxImage } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxImage src="https://picsum.photos/200/120" alt="Example" width={200} height={120} />;
+}

@@ -1,0 +1,9 @@
+import { CxPopover, CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxPopover trigger="click" content={<p>This is the popover content.</p>}>
+      <CxButton>Click me</CxButton>
+    </CxPopover>
+  );
+}

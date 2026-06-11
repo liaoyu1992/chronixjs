@@ -1,0 +1,22 @@
+import { useState } from 'react';
+import { CxMenu } from '@chronixjs/ui-react';
+
+const items = [
+  { key: 'home', label: 'Home' },
+  { key: 'products', label: 'Products' },
+  { key: 'docs', label: 'Docs' },
+  { key: 'about', label: 'About' },
+];
+
+export function App() {
+  const [active, setActive] = useState('home');
+
+  return (
+    <CxMenu
+      items={items}
+      value={active}
+      onUpdateValue={setActive}
+      mode="horizontal"
+    />
+  );
+}

@@ -1,0 +1,14 @@
+<template>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <CxAlert>Default message</CxAlert>
+    <CxAlert type="info">Info message</CxAlert>
+    <CxAlert type="success">Success message</CxAlert>
+    <CxAlert type="warning">Warning message</CxAlert>
+    <CxAlert type="error">Error message</CxAlert>
+  </div>
+</template>
+
+<script>
+import { CxAlert } from '@chronixjs/ui-vue2';
+export default { components: { CxAlert } };
+</script>

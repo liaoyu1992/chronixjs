@@ -1,0 +1,9 @@
+import { CxCode } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <p>
+      Use <CxCode value="npm install" inline /> to add dependencies.
+    </p>
+  );
+}

@@ -1,3 +1,10 @@
+<script setup>
+import PopoverBasic from '../../../ui/components/demos/popover/PopoverBasic.vue';
+import popoverBasicCode from '../../../ui/components/demos/popover/PopoverBasic.vue?raw';
+import popoverBasicVue2 from '../../../ui/components/demos/popover/PopoverBasic.vue2?raw';
+import popoverBasicReact from '../../../ui/components/demos/popover/PopoverBasic.react?raw';
+</script>
+
 # Popover
 
 A popup surface for rich content, triggered by hover or click.
@@ -6,71 +13,19 @@ A popup surface for rich content, triggered by hover or click.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-Wrap any trigger element with `CxPopover`. Use the `content` slot (Vue) or `content` prop (React) to provide the popover body.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxPopover>
-    <template #default>
-      <CxButton>Hover me</CxButton>
-    </template>
-    <template #content>
-      <p>This is the popover content.</p>
-    </template>
-  </CxPopover>
-</template>
-
-<script setup lang="ts">
-import { CxPopover, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxPopover>
-    <template slot="default">
-      <CxButton>Hover me</CxButton>
-    </template>
-    <template slot="content">
-      <p>This is the popover content.</p>
-    </template>
-  </CxPopover>
-</template>
-
-<script>
-import { CxPopover, CxButton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxPopover, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxPopover, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxPopover content={<p>This is the popover content.</p>}>
-      <CxButton>Hover me</CxButton>
-    </CxPopover>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Click-triggered popover with content slot." :code="popoverBasicCode" :code-vue2="popoverBasicVue2" :code-react="popoverBasicReact">
+  <PopoverBasic />
+</DemoBox>
 
 ## Trigger Modes
 
@@ -82,50 +37,50 @@ Use the `trigger` prop to control how the popover opens. The default is `hover`.
 
 ```vue [Vue 3]
 <template>
-  <CxPopover trigger="click">
+  <ChronixPopover trigger="click">
     <template #default>
-      <CxButton>Click me</CxButton>
+      <ChronixButton>Click me</ChronixButton>
     </template>
     <template #content>
       <p>This popover opens on click.</p>
     </template>
-  </CxPopover>
+  </ChronixPopover>
 </template>
 
 <script setup lang="ts">
-import { CxPopover, CxButton } from '@chronixjs/ui-vue3';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-vue3';
 </script>
 ```
 
 ```vue [Vue 2]
 <template>
-  <CxPopover trigger="click">
+  <ChronixPopover trigger="click">
     <template slot="default">
-      <CxButton>Click me</CxButton>
+      <ChronixButton>Click me</ChronixButton>
     </template>
     <template slot="content">
       <p>This popover opens on click.</p>
     </template>
-  </CxPopover>
+  </ChronixPopover>
 </template>
 
 <script>
-import { CxPopover, CxButton } from '@chronixjs/ui-vue2';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-vue2';
 
 export default {
-  components: { CxPopover, CxButton },
+  components: { ChronixPopover, ChronixButton },
 };
 </script>
 ```
 
 ```tsx [React]
-import { CxPopover, CxButton } from '@chronixjs/ui-react';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-react';
 
 export function App() {
   return (
-    <CxPopover trigger="click" content={<p>This popover opens on click.</p>}>
-      <CxButton>Click me</CxButton>
-    </CxPopover>
+    <ChronixPopover trigger="click" content={<p>This popover opens on click.</p>}>
+      <ChronixButton>Click me</ChronixButton>
+    </ChronixPopover>
   );
 }
 ```
@@ -138,50 +93,50 @@ export function App() {
 
 ```vue [Vue 3]
 <template>
-  <CxPopover trigger="focus">
+  <ChronixPopover trigger="focus">
     <template #default>
-      <CxButton>Focus me</CxButton>
+      <ChronixButton>Focus me</ChronixButton>
     </template>
     <template #content>
       <p>This popover opens on focus.</p>
     </template>
-  </CxPopover>
+  </ChronixPopover>
 </template>
 
 <script setup lang="ts">
-import { CxPopover, CxButton } from '@chronixjs/ui-vue3';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-vue3';
 </script>
 ```
 
 ```vue [Vue 2]
 <template>
-  <CxPopover trigger="focus">
+  <ChronixPopover trigger="focus">
     <template slot="default">
-      <CxButton>Focus me</CxButton>
+      <ChronixButton>Focus me</ChronixButton>
     </template>
     <template slot="content">
       <p>This popover opens on focus.</p>
     </template>
-  </CxPopover>
+  </ChronixPopover>
 </template>
 
 <script>
-import { CxPopover, CxButton } from '@chronixjs/ui-vue2';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-vue2';
 
 export default {
-  components: { CxPopover, CxButton },
+  components: { ChronixPopover, ChronixButton },
 };
 </script>
 ```
 
 ```tsx [React]
-import { CxPopover, CxButton } from '@chronixjs/ui-react';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-react';
 
 export function App() {
   return (
-    <CxPopover trigger="focus" content={<p>This popover opens on focus.</p>}>
-      <CxButton>Focus me</CxButton>
-    </CxPopover>
+    <ChronixPopover trigger="focus" content={<p>This popover opens on focus.</p>}>
+      <ChronixButton>Focus me</ChronixButton>
+    </ChronixPopover>
   );
 }
 ```
@@ -198,50 +153,50 @@ Available placements: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `
 
 ```vue [Vue 3]
 <template>
-  <CxPopover placement="right">
+  <ChronixPopover placement="right">
     <template #default>
-      <CxButton>Right Placement</CxButton>
+      <ChronixButton>Right Placement</ChronixButton>
     </template>
     <template #content>
       <p>Popover on the right side.</p>
     </template>
-  </CxPopover>
+  </ChronixPopover>
 </template>
 
 <script setup lang="ts">
-import { CxPopover, CxButton } from '@chronixjs/ui-vue3';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-vue3';
 </script>
 ```
 
 ```vue [Vue 2]
 <template>
-  <CxPopover placement="right">
+  <ChronixPopover placement="right">
     <template slot="default">
-      <CxButton>Right Placement</CxButton>
+      <ChronixButton>Right Placement</ChronixButton>
     </template>
     <template slot="content">
       <p>Popover on the right side.</p>
     </template>
-  </CxPopover>
+  </ChronixPopover>
 </template>
 
 <script>
-import { CxPopover, CxButton } from '@chronixjs/ui-vue2';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-vue2';
 
 export default {
-  components: { CxPopover, CxButton },
+  components: { ChronixPopover, ChronixButton },
 };
 </script>
 ```
 
 ```tsx [React]
-import { CxPopover, CxButton } from '@chronixjs/ui-react';
+import { ChronixPopover, ChronixButton } from '@chronixjs/ui-react';
 
 export function App() {
   return (
-    <CxPopover placement="right" content={<p>Popover on the right side.</p>}>
-      <CxButton>Right Placement</CxButton>
-    </CxPopover>
+    <ChronixPopover placement="right" content={<p>Popover on the right side.</p>}>
+      <ChronixButton>Right Placement</ChronixButton>
+    </ChronixPopover>
   );
 }
 ```

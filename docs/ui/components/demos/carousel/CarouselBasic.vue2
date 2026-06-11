@@ -1,0 +1,20 @@
+<template>
+  <CxCarousel :value.sync="current" :items="items" :show-dots="true" />
+</template>
+
+<script>
+import { CxCarousel } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxCarousel },
+  data() {
+    return {
+      current: 0,
+      items: [
+        { key: 's1', content: 'Slide 1 — Introduction' },
+        { key: 's2', content: 'Slide 2 — Features' },
+        { key: 's3', content: 'Slide 3 — Get Started' },
+      ],
+    };
+  },
+};
+</script>

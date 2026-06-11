@@ -1,3 +1,10 @@
+<script setup>
+import WaveBasic from '../../../ui/components/demos/wave/WaveBasic.vue';
+import waveBasicCode from '../../../ui/components/demos/wave/WaveBasic.vue?raw';
+import waveBasicVue2 from '../../../ui/components/demos/wave/WaveBasic.vue2?raw';
+import waveBasicReact from '../../../ui/components/demos/wave/WaveBasic.react?raw';
+</script>
+
 # Wave
 
 CSS ripple wrapper — pointerdown triggers a brief keyframe animation on the wrapped element.
@@ -16,46 +23,9 @@ CSS ripple wrapper — pointerdown triggers a brief keyframe animation on the wr
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxWave>
-    <button>Click me for a ripple</button>
-  </CxWave>
-</template>
-
-<script setup lang="ts">
-import { CxWave } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxWave>
-    <button>Click me for a ripple</button>
-  </CxWave>
-</template>
-
-<script>
-import { CxWave } from '@chronixjs/ui-vue2';
-export default { components: { CxWave } };
-</script>
-```
-
-```tsx [React]
-import { CxWave } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxWave>
-      <button>Click me for a ripple</button>
-    </CxWave>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Wave wraps an element and shows a ripple animation on click." :code="waveBasicCode" :code-vue2="waveBasicVue2" :code-react="waveBasicReact">
+  <WaveBasic />
+</DemoBox>
 
 ## Custom Color
 

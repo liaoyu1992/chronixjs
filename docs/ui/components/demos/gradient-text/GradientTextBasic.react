@@ -1,0 +1,5 @@
+import { CxGradientText } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxGradientText value="Gradient Text" colors={['#ff0000', '#0000ff']} />;
+}

@@ -1,3 +1,10 @@
+<script setup>
+import EllipsisBasic from './demos/ellipsis/EllipsisBasic.vue';
+import ellipsisBasicCode from './demos/ellipsis/EllipsisBasic.vue?raw';
+import ellipsisBasicVue2 from './demos/ellipsis/EllipsisBasic.vue2?raw';
+import ellipsisBasicReact from './demos/ellipsis/EllipsisBasic.react?raw';
+</script>
+
 # Ellipsis 文本省略
 
 文本截断组件，支持原生 HTML `title` 提示和可配置的行数限制。
@@ -16,52 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxEllipsis :content="longText" />
-</template>
-
-<script setup lang="ts">
-import { CxEllipsis } from '@chronixjs/ui-vue3';
-
-const longText =
-  'This is a very long text that will be truncated with an ellipsis when it overflows the container width.';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxEllipsis :content="longText" />
-</template>
-
-<script>
-import { CxEllipsis } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxEllipsis },
-  data() {
-    return {
-      longText:
-        'This is a very long text that will be truncated with an ellipsis when it overflows the container width.',
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxEllipsis } from '@chronixjs/ui-react';
-
-export function App() {
-  const longText =
-    'This is a very long text that will be truncated with an ellipsis when it overflows the container width.';
-
-  return <CxEllipsis content={longText} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用 lineClamp 限制文本显示行数。" :code="ellipsisBasicCode" :code-vue2="ellipsisBasicVue2" :code-react="ellipsisBasicReact">
+  <EllipsisBasic />
+</DemoBox>
 
 ## 多行省略
 

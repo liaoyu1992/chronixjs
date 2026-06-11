@@ -1,0 +1,18 @@
+import { useState } from 'react';
+import { ChronixUpload } from '@chronixjs/ui-react';
+
+export function App() {
+  const [fileList, setFileList] = useState([]);
+
+  return (
+    <div style={{ maxWidth: 480 }}>
+      <ChronixUpload
+        action="/api/upload"
+        fileList={fileList}
+        accept="image/*"
+        onUpdateFileList={setFileList}
+      />
+      <p style={{ fontSize: 13, color: '#888', marginTop: 8 }}>Only image files are accepted.</p>
+    </div>
+  );
+}

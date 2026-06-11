@@ -1,0 +1,21 @@
+<template>
+  <CxMenu :value.sync="active" :items="items" mode="horizontal" />
+</template>
+
+<script>
+import { CxMenu } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxMenu },
+  data() {
+    return {
+      active: 'home',
+      items: [
+        { key: 'home', label: 'Home' },
+        { key: 'products', label: 'Products' },
+        { key: 'docs', label: 'Docs' },
+        { key: 'about', label: 'About' },
+      ],
+    };
+  },
+};
+</script>

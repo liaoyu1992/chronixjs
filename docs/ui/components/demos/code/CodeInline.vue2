@@ -1,0 +1,8 @@
+<template>
+  <p>Use <CxCode value="npm install" inline /> to add dependencies.</p>
+</template>
+
+<script>
+import { CxCode } from '@chronixjs/ui-vue2';
+export default { components: { CxCode } };
+</script>

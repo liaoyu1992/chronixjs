@@ -1,0 +1,11 @@
+import { CxEmpty } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <CxEmpty size="small" description="Small empty" />
+      <CxEmpty size="medium" description="Medium empty" />
+      <CxEmpty size="large" description="Large empty" />
+    </div>
+  );
+}

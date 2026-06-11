@@ -1,0 +1,5 @@
+import { CxAlert } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxAlert>Here is an info message.</CxAlert>;
+}

@@ -1,3 +1,18 @@
+<script setup>
+import TabsBasic from '../../../ui/components/demos/tabs/TabsBasic.vue';
+import tabsBasicCode from '../../../ui/components/demos/tabs/TabsBasic.vue?raw';
+import tabsBasicVue2 from '../../../ui/components/demos/tabs/TabsBasic.vue2?raw';
+import tabsBasicReact from '../../../ui/components/demos/tabs/TabsBasic.react?raw';
+import TabsCard from '../../../ui/components/demos/tabs/TabsCard.vue';
+import tabsCardCode from '../../../ui/components/demos/tabs/TabsCard.vue?raw';
+import tabsCardVue2 from '../../../ui/components/demos/tabs/TabsCard.vue2?raw';
+import tabsCardReact from '../../../ui/components/demos/tabs/TabsCard.react?raw';
+import TabsSegment from '../../../ui/components/demos/tabs/TabsSegment.vue';
+import tabsSegmentCode from '../../../ui/components/demos/tabs/TabsSegment.vue?raw';
+import tabsSegmentVue2 from '../../../ui/components/demos/tabs/TabsSegment.vue2?raw';
+import tabsSegmentReact from '../../../ui/components/demos/tabs/TabsSegment.react?raw';
+</script>
+
 # Tabs
 
 A tabbed interface with line, card, and segment variants.
@@ -6,290 +21,31 @@ A tabbed interface with line, card, and segment variants.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTabs v-model:value="activeTab" :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTabs } from '@chronixjs/ui-vue3';
-
-const activeTab = ref('tab1');
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTabs :value.sync="activeTab" :items="items" />
-</template>
-
-<script>
-import { CxTabs } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTabs },
-  data() {
-    return {
-      activeTab: 'tab1',
-      items: [
-        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTabs } from '@chronixjs/ui-react';
-
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-
-export function App() {
-  const [activeTab, setActiveTab] = useState('tab1');
-
-  return <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Line-style tabs." :code="tabsBasicCode" :code-vue2="tabsBasicVue2" :code-react="tabsBasicReact">
+  <TabsBasic />
+</DemoBox>
 
 ## Card Type
 
-Use `type="card"` for a card-style tab bar.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTabs v-model:value="activeTab" :items="items" type="card" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTabs } from '@chronixjs/ui-vue3';
-
-const activeTab = ref('tab1');
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTabs :value.sync="activeTab" :items="items" type="card" />
-</template>
-
-<script>
-import { CxTabs } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTabs },
-  data() {
-    return {
-      activeTab: 'tab1',
-      items: [
-        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTabs } from '@chronixjs/ui-react';
-
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-
-export function App() {
-  const [activeTab, setActiveTab] = useState('tab1');
-
-  return <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} type="card" />;
-}
-```
-
-:::
+<DemoBox title="Card Type" description="Use type=&quot;card&quot; for a card-style tab bar." :code="tabsCardCode" :code-vue2="tabsCardVue2" :code-react="tabsCardReact">
+  <TabsCard />
+</DemoBox>
 
 ## Segment Type
 
-Use `type="segment"` for a segmented control style.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTabs v-model:value="activeTab" :items="items" type="segment" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTabs } from '@chronixjs/ui-vue3';
-
-const activeTab = ref('tab1');
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTabs :value.sync="activeTab" :items="items" type="segment" />
-</template>
-
-<script>
-import { CxTabs } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTabs },
-  data() {
-    return {
-      activeTab: 'tab1',
-      items: [
-        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTabs } from '@chronixjs/ui-react';
-
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-
-export function App() {
-  const [activeTab, setActiveTab] = useState('tab1');
-
-  return <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} type="segment" />;
-}
-```
-
-:::
-
-## Placements
-
-Control where the tab bar appears using `placement`. Supported values are `top`, `right`, `bottom`, and `left`.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <CxTabs v-model:value="activeTab" :items="items" placement="left" />
-    <CxTabs v-model:value="activeTab" :items="items" placement="bottom" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTabs } from '@chronixjs/ui-vue3';
-
-const activeTab = ref('tab1');
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <CxTabs :value.sync="activeTab" :items="items" placement="left" />
-    <CxTabs :value.sync="activeTab" :items="items" placement="bottom" />
-  </div>
-</template>
-
-<script>
-import { CxTabs } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTabs },
-  data() {
-    return {
-      activeTab: 'tab1',
-      items: [
-        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTabs } from '@chronixjs/ui-react';
-
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-
-export function App() {
-  const [activeTab, setActiveTab] = useState('tab1');
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} placement="left" />
-      <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} placement="bottom" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Segment Type" description="Use type=&quot;segment&quot; for a segmented control style." :code="tabsSegmentCode" :code-vue2="tabsSegmentVue2" :code-react="tabsSegmentReact">
+  <TabsSegment />
+</DemoBox>
 
 ## API Reference
 

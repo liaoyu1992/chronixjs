@@ -1,3 +1,10 @@
+<script setup>
+import ThingBasic from '../../../ui/components/demos/thing/ThingBasic.vue';
+import thingBasicCode from '../../../ui/components/demos/thing/ThingBasic.vue?raw';
+import thingBasicVue2 from '../../../ui/components/demos/thing/ThingBasic.vue2?raw';
+import thingBasicReact from '../../../ui/components/demos/thing/ThingBasic.react?raw';
+</script>
+
 # Thing
 
 Composition card with avatar + header (title + extra) + description + content + action + footer slots.
@@ -6,15 +13,21 @@ Composition card with avatar + header (title + extra) + description + content + 
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
+
+<DemoBox title="Basic Usage" description="Thing card with title and description." :code="thingBasicCode" :code-vue2="thingBasicVue2" :code-react="thingBasicReact">
+  <ThingBasic />
+</DemoBox>
+
+## With Avatar and Action
 
 ::: code-group
 

@@ -1,0 +1,11 @@
+<template>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <CxCheckbox checked disabled label="Disabled checked" />
+    <CxCheckbox disabled label="Disabled unchecked" />
+  </div>
+</template>
+
+<script>
+import { CxCheckbox } from '@chronixjs/ui-vue2';
+export default { components: { CxCheckbox } };
+</script>

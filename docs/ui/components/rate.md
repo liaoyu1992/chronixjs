@@ -1,3 +1,22 @@
+<script setup>
+import RateBasic from './demos/rate/RateBasic.vue';
+import rateBasicCode from './demos/rate/RateBasic.vue?raw';
+import rateBasicVue2 from './demos/rate/RateBasic.vue2?raw';
+import rateBasicReact from './demos/rate/RateBasic.react?raw';
+import RateHalf from './demos/rate/RateHalf.vue';
+import rateHalfCode from './demos/rate/RateHalf.vue?raw';
+import rateHalfVue2 from './demos/rate/RateHalf.vue2?raw';
+import rateHalfReact from './demos/rate/RateHalf.react?raw';
+import RateReadonly from './demos/rate/RateReadonly.vue';
+import rateReadonlyCode from './demos/rate/RateReadonly.vue?raw';
+import rateReadonlyVue2 from './demos/rate/RateReadonly.vue2?raw';
+import rateReadonlyReact from './demos/rate/RateReadonly.react?raw';
+import RateCustomCount from './demos/rate/RateCustomCount.vue';
+import rateCustomCountCode from './demos/rate/RateCustomCount.vue?raw';
+import rateCustomCountVue2 from './demos/rate/RateCustomCount.vue2?raw';
+import rateCustomCountReact from './demos/rate/RateCustomCount.react?raw';
+</script>
+
 # Rate 评分
 
 星级评分输入组件，支持可选的半星精度。
@@ -6,191 +25,37 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxRate v-model:value="rating" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxRate } from '@chronixjs/ui-vue3';
-
-const rating = ref(3);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRate :value.sync="rating" />
-</template>
-
-<script>
-import { CxRate } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRate },
-  data() {
-    return { rating: 3 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxRate } from '@chronixjs/ui-react';
-
-export function App() {
-  const [rating, setRating] = useState(3);
-  return <CxRate value={rating} onUpdateValue={setRating} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="星级评分的基础用法。" :code="rateBasicCode" :code-vue2="rateBasicVue2" :code-react="rateBasicReact">
+  <RateBasic />
+</DemoBox>
 
 ## 半星
 
-通过 `allow-half` 属性启用半星精度。用户可以选择如 3.5 这样的值。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxRate v-model:value="rating" allow-half />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxRate } from '@chronixjs/ui-vue3';
-
-const rating = ref(3.5);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRate :value.sync="rating" allow-half />
-</template>
-
-<script>
-import { CxRate } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRate },
-  data() {
-    return { rating: 3.5 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxRate } from '@chronixjs/ui-react';
-
-export function App() {
-  const [rating, setRating] = useState(3.5);
-  return <CxRate value={rating} onUpdateValue={setRating} allowHalf />;
-}
-```
-
-:::
-
-## 自定义星星数量
-
-使用 `count` 属性显示更多（或更少）的星星。默认为 5。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxRate v-model:value="rating" :count="10" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxRate } from '@chronixjs/ui-vue3';
-
-const rating = ref(7);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRate :value.sync="rating" :count="10" />
-</template>
-
-<script>
-import { CxRate } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRate },
-  data() {
-    return { rating: 7 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxRate } from '@chronixjs/ui-react';
-
-export function App() {
-  const [rating, setRating] = useState(7);
-  return <CxRate value={rating} onUpdateValue={setRating} count={10} />;
-}
-```
-
-:::
+<DemoBox title="半星" description="通过 allow-half 属性启用半星精度。" :code="rateHalfCode" :code-vue2="rateHalfVue2" :code-react="rateHalfReact">
+  <RateHalf />
+</DemoBox>
 
 ## 只读模式
 
-使用 `readonly` 属性实现仅展示的评分（例如显示平均分数）。
+<DemoBox title="只读模式" description="使用 readonly 属性实现仅展示的评分。" :code="rateReadonlyCode" :code-vue2="rateReadonlyVue2" :code-react="rateReadonlyReact">
+  <RateReadonly />
+</DemoBox>
 
-::: code-group
+## 自定义星星数量
 
-```vue [Vue 3]
-<template>
-  <CxRate :value="4.5" readonly allow-half />
-</template>
-
-<script setup lang="ts">
-import { CxRate } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRate :value="4.5" readonly allow-half />
-</template>
-
-<script>
-import { CxRate } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRate },
-};
-</script>
-```
-
-```tsx [React]
-import { CxRate } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxRate value={4.5} readonly allowHalf />;
-}
-```
-
-:::
+<DemoBox title="自定义星星数量" description="使用 count 属性显示更多星星。" :code="rateCustomCountCode" :code-vue2="rateCustomCountVue2" :code-react="rateCustomCountReact">
+  <RateCustomCount />
+</DemoBox>
 
 ## API 参考
 

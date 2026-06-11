@@ -1,3 +1,10 @@
+<script setup>
+import AvatarGroupBasic from '../../../ui/components/demos/avatar-group/AvatarGroupBasic.vue';
+import avatarGroupBasicCode from '../../../ui/components/demos/avatar-group/AvatarGroupBasic.vue?raw';
+import avatarGroupBasicVue2 from '../../../ui/components/demos/avatar-group/AvatarGroupBasic.vue2?raw';
+import avatarGroupBasicReact from '../../../ui/components/demos/avatar-group/AvatarGroupBasic.react?raw';
+</script>
+
 # Avatar Group
 
 Horizontal stack of overlapping avatars with overflow +N indicator.
@@ -6,79 +13,19 @@ Horizontal stack of overlapping avatars with overflow +N indicator.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAvatarGroup :items="items" :max="4" :size="32" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxAvatarGroup } from '@chronixjs/ui-vue3';
-
-const items = ref([
-  { key: 'a', src: 'https://i.pravatar.cc/32?img=1', text: undefined },
-  { key: 'b', src: 'https://i.pravatar.cc/32?img=2', text: undefined },
-  { key: 'c', src: undefined, text: 'JD' },
-  { key: 'd', src: 'https://i.pravatar.cc/32?img=4', text: undefined },
-  { key: 'e', src: 'https://i.pravatar.cc/32?img=5', text: undefined },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAvatarGroup :items="items" :max="4" :size="32" />
-</template>
-
-<script>
-import { CxAvatarGroup } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxAvatarGroup },
-  data() {
-    return {
-      items: [
-        { key: 'a', src: 'https://i.pravatar.cc/32?img=1', text: undefined },
-        { key: 'b', src: 'https://i.pravatar.cc/32?img=2', text: undefined },
-        { key: 'c', src: undefined, text: 'JD' },
-        { key: 'd', src: 'https://i.pravatar.cc/32?img=4', text: undefined },
-        { key: 'e', src: 'https://i.pravatar.cc/32?img=5', text: undefined },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxAvatarGroup } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items] = useState([
-    { key: 'a', src: 'https://i.pravatar.cc/32?img=1', text: undefined },
-    { key: 'b', src: 'https://i.pravatar.cc/32?img=2', text: undefined },
-    { key: 'c', src: undefined, text: 'JD' },
-    { key: 'd', src: 'https://i.pravatar.cc/32?img=4', text: undefined },
-    { key: 'e', src: 'https://i.pravatar.cc/32?img=5', text: undefined },
-  ]);
-
-  return <CxAvatarGroup items={items} max={4} size={32} />;
-}
-```
-
-:::
+<DemoBox title="Avatar Group" description="Display 4 avatars with max set to 3, excess shown as +N." :code="avatarGroupBasicCode" :code-vue2="avatarGroupBasicVue2" :code-react="avatarGroupBasicReact">
+  <AvatarGroupBasic />
+</DemoBox>
 
 ## API Reference
 

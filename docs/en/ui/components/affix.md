@@ -1,3 +1,10 @@
+<script setup>
+import AffixBasic from '../../../ui/components/demos/affix/AffixBasic.vue';
+import affixBasicCode from '../../../ui/components/demos/affix/AffixBasic.vue?raw';
+import affixBasicVue2 from '../../../ui/components/demos/affix/AffixBasic.vue2?raw';
+import affixBasicReact from '../../../ui/components/demos/affix/AffixBasic.react?raw';
+</script>
+
 # Affix
 
 Fixes a child element to the viewport when its natural scroll position passes a top or bottom threshold.
@@ -16,46 +23,9 @@ Fixes a child element to the viewport when its natural scroll position passes a 
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAffix :top="0">
-    <div style="background: #fff; padding: 8px 16px;">Sticky Header</div>
-  </CxAffix>
-</template>
-
-<script setup lang="ts">
-import { CxAffix } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAffix :top="0">
-    <div style="background: #fff; padding: 8px 16px;">Sticky Header</div>
-  </CxAffix>
-</template>
-
-<script>
-import { CxAffix } from '@chronixjs/ui-vue2';
-export default { components: { CxAffix } };
-</script>
-```
-
-```tsx [React]
-import { CxAffix } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxAffix top={0}>
-      <div style={{ background: '#fff', padding: '8px 16px' }}>Sticky Header</div>
-    </CxAffix>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Affix a element to the top of the viewport with the top prop." :code="affixBasicCode" :code-vue2="affixBasicVue2" :code-react="affixBasicReact">
+  <AffixBasic />
+</DemoBox>
 
 ## Bottom Affix
 

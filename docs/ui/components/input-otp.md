@@ -1,3 +1,10 @@
+<script setup>
+import InputOTPBasic from './demos/input-otp/InputOTPBasic.vue';
+import inputOTPBasicCode from './demos/input-otp/InputOTPBasic.vue?raw';
+import inputOTPBasicVue2 from './demos/input-otp/InputOTPBasic.vue2?raw';
+import inputOTPBasicReact from './demos/input-otp/InputOTPBasic.react?raw';
+</script>
+
 # Input OTP 验证码输入
 
 一次性密码输入组件，包含 N 个独立单元格共享一个受控值。
@@ -6,72 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInputOtp v-model:value="otp" :length="6" @complete="onComplete" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInputOtp } from '@chronixjs/ui-vue3';
-
-const otp = ref('');
-
-function onComplete(value: string) {
-  console.log('OTP complete:', value);
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxInputOtp :value.sync="otp" :length="6" @complete="onComplete" />
-</template>
-
-<script>
-import { CxInputOtp } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxInputOtp },
-  data() {
-    return { otp: '' };
-  },
-  methods: {
-    onComplete(value) {
-      console.log('OTP complete:', value);
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxInputOtp } from '@chronixjs/ui-react';
-
-export function App() {
-  const [otp, setOtp] = useState('');
-
-  function onComplete(value: string) {
-    console.log('OTP complete:', value);
-  }
-
-  return <CxInputOtp value={otp} onUpdateValue={setOtp} length={6} onComplete={onComplete} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="设置 length 为 6 的验证码输入。" :code="inputOTPBasicCode" :code-vue2="inputOTPBasicVue2" :code-react="inputOTPBasicReact">
+  <InputOTPBasic />
+</DemoBox>
 
 ## API 参考
 

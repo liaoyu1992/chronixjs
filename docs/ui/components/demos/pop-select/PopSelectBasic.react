@@ -1,0 +1,27 @@
+import { useState } from 'react';
+import { CxPopSelect } from '@chronixjs/ui-react';
+
+export function App() {
+  const [selected, setSelected] = useState<string | undefined>(undefined);
+  const [open, setOpen] = useState(false);
+  const [options] = useState([
+    { key: 'a', label: 'Apple', value: 'apple', disabled: false },
+    { key: 'b', label: 'Banana', value: 'banana', disabled: false },
+    { key: 'c', label: 'Cherry', value: 'cherry', disabled: false },
+  ]);
+
+  const selectedLabel = options.find((o) => o.value === selected)?.label;
+
+  return (
+    <CxPopSelect
+      value={selected}
+      onUpdateValue={setSelected}
+      show={open}
+      onUpdateShow={setOpen}
+      options={options}
+      trigger="click"
+    >
+      <button onClick={() => setOpen(true)}>{selectedLabel || 'Select...'}</button>
+    </CxPopSelect>
+  );
+}

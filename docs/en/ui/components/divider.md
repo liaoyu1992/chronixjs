@@ -1,359 +1,74 @@
+<script setup>
+import DividerBasic from '../../../ui/components/demos/divider/DividerBasic.vue';
+import dividerBasicCode from '../../../ui/components/demos/divider/DividerBasic.vue?raw';
+import dividerBasicVue2 from '../../../ui/components/demos/divider/DividerBasic.vue2?raw';
+import dividerBasicReact from '../../../ui/components/demos/divider/DividerBasic.react?raw';
+import DividerWithTitle from '../../../ui/components/demos/divider/DividerWithTitle.vue';
+import dividerWithTitleCode from '../../../ui/components/demos/divider/DividerWithTitle.vue?raw';
+import dividerWithTitleVue2 from '../../../ui/components/demos/divider/DividerWithTitle.vue2?raw';
+import dividerWithTitleReact from '../../../ui/components/demos/divider/DividerWithTitle.react?raw';
+import DividerVertical from '../../../ui/components/demos/divider/DividerVertical.vue';
+import dividerVerticalCode from '../../../ui/components/demos/divider/DividerVertical.vue?raw';
+import dividerVerticalVue2 from '../../../ui/components/demos/divider/DividerVertical.vue2?raw';
+import dividerVerticalReact from '../../../ui/components/demos/divider/DividerVertical.react?raw';
+import DividerDashed from '../../../ui/components/demos/divider/DividerDashed.vue';
+import dividerDashedCode from '../../../ui/components/demos/divider/DividerDashed.vue?raw';
+import dividerDashedVue2 from '../../../ui/components/demos/divider/DividerDashed.vue2?raw';
+import dividerDashedReact from '../../../ui/components/demos/divider/DividerDashed.react?raw';
+</script>
+
 # Divider
 
-A visual separator line with optional title.
+Visual divider with optional title.
 
 ## Install
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-A simple horizontal divider between content blocks.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Content above the divider.</p>
-    <CxDivider />
-    <p>Content below the divider.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Content above the divider.</p>
-    <CxDivider />
-    <p>Content below the divider.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Content above the divider.</p>
-      <CxDivider />
-      <p>Content below the divider.</p>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Simple horizontal divider between content blocks." :code="dividerBasicCode" :code-vue2="dividerBasicVue2" :code-react="dividerBasicReact">
+  <DividerBasic />
+</DemoBox>
 
 ## With Title
 
-Place text inside the divider using the default slot. Use `title-placement` to control alignment.
-
-### Left
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Section A content.</p>
-    <CxDivider title-placement="left">Section B</CxDivider>
-    <p>Section B content.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Section A content.</p>
-    <CxDivider title-placement="left">Section B</CxDivider>
-    <p>Section B content.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Section A content.</p>
-      <CxDivider titlePlacement="left">Section B</CxDivider>
-      <p>Section B content.</p>
-    </div>
-  );
-}
-```
-
-:::
-
-### Center
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Section A content.</p>
-    <CxDivider title-placement="center">Details</CxDivider>
-    <p>Details content.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Section A content.</p>
-    <CxDivider title-placement="center">Details</CxDivider>
-    <p>Details content.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Section A content.</p>
-      <CxDivider titlePlacement="center">Details</CxDivider>
-      <p>Details content.</p>
-    </div>
-  );
-}
-```
-
-:::
-
-### Right
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Main content.</p>
-    <CxDivider title-placement="right">Extras</CxDivider>
-    <p>Extra content.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Main content.</p>
-    <CxDivider title-placement="right">Extras</CxDivider>
-    <p>Extra content.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Main content.</p>
-      <CxDivider titlePlacement="right">Extras</CxDivider>
-      <p>Extra content.</p>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="With Title" description="Place title via default slot, control alignment with title-placement." :code="dividerWithTitleCode" :code-vue2="dividerWithTitleVue2" :code-react="dividerWithTitleReact">
+  <DividerWithTitle />
+</DemoBox>
 
 ## Vertical
 
-Use `vertical` to render a vertical divider between inline elements.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <span>Link A</span>
-    <CxDivider vertical />
-    <span>Link B</span>
-    <CxDivider vertical />
-    <span>Link C</span>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <span>Link A</span>
-    <CxDivider vertical />
-    <span>Link B</span>
-    <CxDivider vertical />
-    <span>Link C</span>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span>Link A</span>
-      <CxDivider vertical />
-      <span>Link B</span>
-      <CxDivider vertical />
-      <span>Link C</span>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Vertical" description="Use vertical prop for inline vertical dividers." :code="dividerVerticalCode" :code-vue2="dividerVerticalVue2" :code-react="dividerVerticalReact">
+  <DividerVertical />
+</DemoBox>
 
 ## Dashed
 
-Use `dashed` to render a dashed line instead of solid.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Content above.</p>
-    <CxDivider dashed />
-    <p>Content below.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Content above.</p>
-    <CxDivider dashed />
-    <p>Content below.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Content above.</p>
-      <CxDivider dashed />
-      <p>Content below.</p>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Dashed" description="Use dashed prop for dashed line style." :code="dividerDashedCode" :code-vue2="dividerDashedVue2" :code-react="dividerDashedReact">
+  <DividerDashed />
+</DemoBox>
 
 ## API Reference
 
 ### Props
 
-| Prop             | Type                            | Default    | Description       |
-| ---------------- | ------------------------------- | ---------- | ----------------- |
-| `vertical`       | `boolean`                       | `false`    | Vertical divider  |
-| `titlePlacement` | `'left' \| 'center' \| 'right'` | `'center'` | Title position    |
-| `dashed`         | `boolean`                       | `false`    | Dashed line style |
+| Prop             | Type                            | Default    | Description      |
+| ---------------- | ------------------------------- | ---------- | ---------------- |
+| `vertical`       | `boolean`                       | `false`    | Vertical divider |
+| `titlePlacement` | `'left' \| 'center' \| 'right'` | `'center'` | Title placement  |
+| `dashed`         | `boolean`                       | `false`    | Dashed style     |
 
 ### Slots
 
-| Slot      | Description           |
-| --------- | --------------------- |
-| `default` | Divider title content |
+| Slot      | Description        |
+| --------- | ------------------ |
+| `default` | Divider title text |

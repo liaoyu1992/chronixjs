@@ -1,0 +1,14 @@
+import { useState } from 'react';
+import { CxModal } from '@chronixjs/ui-react';
+
+export function App() {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <button style={{ padding: '6px 16px', cursor: 'pointer' }} onClick={() => setShow(true)}>Open Modal</button>
+      <CxModal show={show} onUpdateShow={setShow} title="Confirm">
+        <p>Are you sure you want to proceed?</p>
+      </CxModal>
+    </div>
+  );
+}

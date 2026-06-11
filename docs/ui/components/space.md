@@ -1,3 +1,18 @@
+<script setup>
+import SpaceBasic from './demos/space/SpaceBasic.vue';
+import spaceBasicCode from './demos/space/SpaceBasic.vue?raw';
+import spaceBasicVue2 from './demos/space/SpaceBasic.vue2?raw';
+import spaceBasicReact from './demos/space/SpaceBasic.react?raw';
+import SpaceVertical from './demos/space/SpaceVertical.vue';
+import spaceVerticalCode from './demos/space/SpaceVertical.vue?raw';
+import spaceVerticalVue2 from './demos/space/SpaceVertical.vue2?raw';
+import spaceVerticalReact from './demos/space/SpaceVertical.react?raw';
+import SpaceSizes from './demos/space/SpaceSizes.vue';
+import spaceSizesCode from './demos/space/SpaceSizes.vue?raw';
+import spaceSizesVue2 from './demos/space/SpaceSizes.vue2?raw';
+import spaceSizesReact from './demos/space/SpaceSizes.react?raw';
+</script>
+
 # Space 间距
 
 一维布局原语，用于元素间的一致间距。
@@ -6,250 +21,31 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSpace>
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script setup lang="ts">
-import { CxSpace, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSpace>
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script>
-import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSpace, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSpace, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxSpace>
-      <CxButton>Button 1</CxButton>
-      <CxButton>Button 2</CxButton>
-      <CxButton>Button 3</CxButton>
-    </CxSpace>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="水平排列子元素。" :code="spaceBasicCode" :code-vue2="spaceBasicVue2" :code-react="spaceBasicReact">
+  <SpaceBasic />
+</DemoBox>
 
 ## 垂直布局
 
-使用 `vertical` 属性垂直排列子元素。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSpace vertical>
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script setup lang="ts">
-import { CxSpace, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSpace vertical>
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script>
-import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSpace, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSpace, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxSpace vertical>
-      <CxButton>Button 1</CxButton>
-      <CxButton>Button 2</CxButton>
-      <CxButton>Button 3</CxButton>
-    </CxSpace>
-  );
-}
-```
-
-:::
+<DemoBox title="垂直布局" description="使用 vertical 属性垂直排列子元素。" :code="spaceVerticalCode" :code-vue2="spaceVerticalVue2" :code-react="spaceVerticalReact">
+  <SpaceVertical />
+</DemoBox>
 
 ## 尺寸
 
-使用 `size` 属性设置预设尺寸：`small`、`medium`（默认）和 `large`。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 16px;">
-    <CxSpace size="small">
-      <CxButton>Small</CxButton>
-      <CxButton>Small</CxButton>
-    </CxSpace>
-    <CxSpace size="medium">
-      <CxButton>Medium</CxButton>
-      <CxButton>Medium</CxButton>
-    </CxSpace>
-    <CxSpace size="large">
-      <CxButton>Large</CxButton>
-      <CxButton>Large</CxButton>
-    </CxSpace>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSpace, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 16px;">
-    <CxSpace size="small">
-      <CxButton>Small</CxButton>
-      <CxButton>Small</CxButton>
-    </CxSpace>
-    <CxSpace size="medium">
-      <CxButton>Medium</CxButton>
-      <CxButton>Medium</CxButton>
-    </CxSpace>
-    <CxSpace size="large">
-      <CxButton>Large</CxButton>
-      <CxButton>Large</CxButton>
-    </CxSpace>
-  </div>
-</template>
-
-<script>
-import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSpace, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSpace, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <CxSpace size="small">
-        <CxButton>Small</CxButton>
-        <CxButton>Small</CxButton>
-      </CxSpace>
-      <CxSpace size="medium">
-        <CxButton>Medium</CxButton>
-        <CxButton>Medium</CxButton>
-      </CxSpace>
-      <CxSpace size="large">
-        <CxButton>Large</CxButton>
-        <CxButton>Large</CxButton>
-      </CxSpace>
-    </div>
-  );
-}
-```
-
-:::
-
-## 自定义间距
-
-传入数字给 `size` 设置自定义像素间距。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSpace :size="24">
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script setup lang="ts">
-import { CxSpace, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSpace :size="24">
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script>
-import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSpace, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSpace, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxSpace size={24}>
-      <CxButton>Button 1</CxButton>
-      <CxButton>Button 2</CxButton>
-      <CxButton>Button 3</CxButton>
-    </CxSpace>
-  );
-}
-```
-
-:::
+<DemoBox title="尺寸" description="使用 size 属性设置预设间距。" :code="spaceSizesCode" :code-vue2="spaceSizesVue2" :code-react="spaceSizesReact">
+  <SpaceSizes />
+</DemoBox>
 
 ## API 参考
 

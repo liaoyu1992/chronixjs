@@ -1,3 +1,10 @@
+<script setup>
+import AnchorBasic from './demos/anchor/AnchorBasic.vue';
+import anchorBasicCode from './demos/anchor/AnchorBasic.vue?raw';
+import anchorBasicVue2 from './demos/anchor/AnchorBasic.vue2?raw';
+import anchorBasicReact from './demos/anchor/AnchorBasic.react?raw';
+</script>
+
 # Anchor 锚点
 
 垂直锚点导航，带有可选的轨道指示器和激活链接高亮。
@@ -6,73 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAnchor :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxAnchor } from '@chronixjs/ui-vue3';
-
-const items = ref([
-  { key: 'sec-1', label: 'Section 1', href: '#section-1' },
-  { key: 'sec-2', label: 'Section 2', href: '#section-2' },
-  { key: 'sec-3', label: 'Section 3', href: '#section-3' },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAnchor :items="items" />
-</template>
-
-<script>
-import { CxAnchor } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxAnchor },
-  data() {
-    return {
-      items: [
-        { key: 'sec-1', label: 'Section 1', href: '#section-1' },
-        { key: 'sec-2', label: 'Section 2', href: '#section-2' },
-        { key: 'sec-3', label: 'Section 3', href: '#section-3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxAnchor } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items] = useState([
-    { key: 'sec-1', label: 'Section 1', href: '#section-1' },
-    { key: 'sec-2', label: 'Section 2', href: '#section-2' },
-    { key: 'sec-3', label: 'Section 3', href: '#section-3' },
-  ]);
-
-  return <CxAnchor items={items} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="锚点的基础用法，展示三个锚点链接。" :code="anchorBasicCode" :code-vue2="anchorBasicVue2" :code-react="anchorBasicReact">
+  <AnchorBasic />
+</DemoBox>
 
 ## 无轨道模式
 
@@ -80,12 +33,12 @@ export function App() {
 
 ```vue [Vue 3]
 <template>
-  <CxAnchor :items="items" :show-rail="false" />
+  <ChronixAnchor :items="items" :show-rail="false" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CxAnchor } from '@chronixjs/ui-vue3';
+import { ChronixAnchor } from '@chronixjs/ui-vue3';
 
 const items = ref([
   { key: 'a', label: 'Overview', href: '#overview' },
@@ -96,13 +49,13 @@ const items = ref([
 
 ```vue [Vue 2]
 <template>
-  <CxAnchor :items="items" :show-rail="false" />
+  <ChronixAnchor :items="items" :show-rail="false" />
 </template>
 
 <script>
-import { CxAnchor } from '@chronixjs/ui-vue2';
+import { ChronixAnchor } from '@chronixjs/ui-vue2';
 export default {
-  components: { CxAnchor },
+  components: { ChronixAnchor },
   data() {
     return {
       items: [
@@ -117,7 +70,7 @@ export default {
 
 ```tsx [React]
 import { useState } from 'react';
-import { CxAnchor } from '@chronixjs/ui-react';
+import { ChronixAnchor } from '@chronixjs/ui-react';
 
 export function App() {
   const [items] = useState([
@@ -125,7 +78,7 @@ export function App() {
     { key: 'b', label: 'Details', href: '#details' },
   ]);
 
-  return <CxAnchor items={items} showRail={false} />;
+  return <ChronixAnchor items={items} showRail={false} />;
 }
 ```
 

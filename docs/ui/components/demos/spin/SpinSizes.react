@@ -1,0 +1,11 @@
+import { CxSpin } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+      <CxSpin size="small" />
+      <CxSpin size="medium" />
+      <CxSpin size="large" />
+    </div>
+  );
+}

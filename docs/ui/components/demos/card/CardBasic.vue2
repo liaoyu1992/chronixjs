@@ -1,0 +1,11 @@
+<template>
+  <CxCard title="Card Title" style="max-width: 360px">
+    Card body content goes here.
+    <template slot="footer">Footer content</template>
+  </CxCard>
+</template>
+
+<script>
+import { CxCard } from '@chronixjs/ui-vue2';
+export default { components: { CxCard } };
+</script>

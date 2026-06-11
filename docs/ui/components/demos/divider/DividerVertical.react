@@ -1,0 +1,13 @@
+import { CxDivider } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <span>Link A</span>
+      <CxDivider vertical />
+      <span>Link B</span>
+      <CxDivider vertical />
+      <span>Link C</span>
+    </div>
+  );
+}

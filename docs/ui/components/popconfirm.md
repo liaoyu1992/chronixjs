@@ -1,3 +1,10 @@
+<script setup>
+import PopconfirmBasic from './demos/popconfirm/PopconfirmBasic.vue';
+import popconfirmBasicCode from './demos/popconfirm/PopconfirmBasic.vue?raw';
+import popconfirmBasicVue2 from './demos/popconfirm/PopconfirmBasic.vue2?raw';
+import popconfirmBasicReact from './demos/popconfirm/PopconfirmBasic.react?raw';
+</script>
+
 # Popconfirm 弹出确认
 
 在执行操作前显示确认弹窗，通过点击触发。
@@ -6,74 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-使用 `CxPopconfirm` 包裹任意触发元素。当用户点击触发元素时，会显示一个带有 **确定** 和 **取消** 按钮的小型确认弹窗。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxPopconfirm title="Are you sure?" @positive-click="onConfirm">
-    <CxButton type="danger">Delete</CxButton>
-  </CxPopconfirm>
-</template>
-
-<script setup lang="ts">
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-vue3';
-
-function onConfirm() {
-  console.log('Confirmed!');
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxPopconfirm title="Are you sure?" @positive-click="onConfirm">
-    <CxButton type="danger">Delete</CxButton>
-  </CxPopconfirm>
-</template>
-
-<script>
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxPopconfirm, CxButton },
-  methods: {
-    onConfirm() {
-      console.log('Confirmed!');
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  function onConfirm() {
-    console.log('Confirmed!');
-  }
-
-  return (
-    <CxPopconfirm title="Are you sure?" onPositiveClick={onConfirm}>
-      <CxButton type="danger">Delete</CxButton>
-    </CxPopconfirm>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="点击触发确认弹窗，显示确认标题。" :code="popconfirmBasicCode" :code-vue2="popconfirmBasicVue2" :code-react="popconfirmBasicReact">
+  <PopconfirmBasic />
+</DemoBox>
 
 ## 自定义按钮文本
 
@@ -83,18 +35,18 @@ export function App() {
 
 ```vue [Vue 3]
 <template>
-  <CxPopconfirm
+  <ChronixPopconfirm
     title="This action cannot be undone."
     positive-text="Yes, delete"
     negative-text="No, keep"
     @positive-click="onDelete"
   >
-    <CxButton type="danger">Delete Item</CxButton>
-  </CxPopconfirm>
+    <ChronixButton type="danger">Delete Item</ChronixButton>
+  </ChronixPopconfirm>
 </template>
 
 <script setup lang="ts">
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-vue3';
+import { ChronixPopconfirm, ChronixButton } from '@chronixjs/ui-vue3';
 
 function onDelete() {
   console.log('Item deleted!');
@@ -104,21 +56,20 @@ function onDelete() {
 
 ```vue [Vue 2]
 <template>
-  <CxPopconfirm
+  <ChronixPopconfirm
     title="This action cannot be undone."
     positive-text="Yes, delete"
     negative-text="No, keep"
     @positive-click="onDelete"
   >
-    <CxButton type="danger">Delete Item</CxButton>
-  </CxPopconfirm>
+    <ChronixButton type="danger">Delete Item</ChronixButton>
+  </ChronixPopconfirm>
 </template>
 
 <script>
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-vue2';
-
+import { ChronixPopconfirm, ChronixButton } from '@chronixjs/ui-vue2';
 export default {
-  components: { CxPopconfirm, CxButton },
+  components: { ChronixPopconfirm, ChronixButton },
   methods: {
     onDelete() {
       console.log('Item deleted!');
@@ -129,7 +80,7 @@ export default {
 ```
 
 ```tsx [React]
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-react';
+import { ChronixPopconfirm, ChronixButton } from '@chronixjs/ui-react';
 
 export function App() {
   function onDelete() {
@@ -137,14 +88,14 @@ export function App() {
   }
 
   return (
-    <CxPopconfirm
+    <ChronixPopconfirm
       title="This action cannot be undone."
       positiveText="Yes, delete"
       negativeText="No, keep"
       onPositiveClick={onDelete}
     >
-      <CxButton type="danger">Delete Item</CxButton>
-    </CxPopconfirm>
+      <ChronixButton type="danger">Delete Item</ChronixButton>
+    </ChronixPopconfirm>
   );
 }
 ```
@@ -161,13 +112,13 @@ export function App() {
 
 ```vue [Vue 3]
 <template>
-  <CxPopconfirm title="Confirm this action?" placement="bottom" @positive-click="onConfirm">
-    <CxButton>Bottom Placement</CxButton>
-  </CxPopconfirm>
+  <ChronixPopconfirm title="Confirm this action?" placement="bottom" @positive-click="onConfirm">
+    <ChronixButton>Bottom Placement</ChronixButton>
+  </ChronixPopconfirm>
 </template>
 
 <script setup lang="ts">
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-vue3';
+import { ChronixPopconfirm, ChronixButton } from '@chronixjs/ui-vue3';
 
 function onConfirm() {
   console.log('Confirmed!');
@@ -177,16 +128,15 @@ function onConfirm() {
 
 ```vue [Vue 2]
 <template>
-  <CxPopconfirm title="Confirm this action?" placement="bottom" @positive-click="onConfirm">
-    <CxButton>Bottom Placement</CxButton>
-  </CxPopconfirm>
+  <ChronixPopconfirm title="Confirm this action?" placement="bottom" @positive-click="onConfirm">
+    <ChronixButton>Bottom Placement</ChronixButton>
+  </ChronixPopconfirm>
 </template>
 
 <script>
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-vue2';
-
+import { ChronixPopconfirm, ChronixButton } from '@chronixjs/ui-vue2';
 export default {
-  components: { CxPopconfirm, CxButton },
+  components: { ChronixPopconfirm, ChronixButton },
   methods: {
     onConfirm() {
       console.log('Confirmed!');
@@ -197,7 +147,7 @@ export default {
 ```
 
 ```tsx [React]
-import { CxPopconfirm, CxButton } from '@chronixjs/ui-react';
+import { ChronixPopconfirm, ChronixButton } from '@chronixjs/ui-react';
 
 export function App() {
   function onConfirm() {
@@ -205,9 +155,9 @@ export function App() {
   }
 
   return (
-    <CxPopconfirm title="Confirm this action?" placement="bottom" onPositiveClick={onConfirm}>
-      <CxButton>Bottom Placement</CxButton>
-    </CxPopconfirm>
+    <ChronixPopconfirm title="Confirm this action?" placement="bottom" onPositiveClick={onConfirm}>
+      <ChronixButton>Bottom Placement</ChronixButton>
+    </ChronixPopconfirm>
   );
 }
 ```

@@ -1,0 +1,28 @@
+<template>
+  <div>
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <button style="padding: 4px 12px; cursor: pointer;" @click="start">Start</button>
+      <button style="padding: 4px 12px; cursor: pointer;" @click="finish">Finish</button>
+      <button style="padding: 4px 12px; cursor: pointer;" @click="error">Error</button>
+    </div>
+    <div :class="classList" />
+  </div>
+</template>
+
+<script>
+import { useLoadingBar } from '@chronixjs/ui-vue2';
+export default {
+  data() {
+    const loadingBar = useLoadingBar();
+    return {
+      loadingBar,
+      classList: loadingBar.classList,
+    };
+  },
+  methods: {
+    start() { this.loadingBar.start(); },
+    finish() { this.loadingBar.finish(); },
+    error() { this.loadingBar.error(); },
+  },
+};
+</script>

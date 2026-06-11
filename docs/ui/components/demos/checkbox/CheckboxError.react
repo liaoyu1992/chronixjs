@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxCheckbox } from '@chronixjs/ui-react';
+
+export function App() {
+  const [agreed, setAgreed] = useState(false);
+  return <CxCheckbox checked={agreed} onUpdateChecked={setAgreed} error="You must agree to continue" label="Terms" />;
+}

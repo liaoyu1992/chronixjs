@@ -1,0 +1,5 @@
+import { CxPageHeader } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxPageHeader title="Page Title" subtitle="Subtitle" back />;
+}

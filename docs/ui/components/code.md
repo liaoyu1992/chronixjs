@@ -1,3 +1,14 @@
+<script setup>
+import CodeBasic from './demos/code/CodeBasic.vue';
+import codeBasicCode from './demos/code/CodeBasic.vue?raw';
+import codeBasicVue2 from './demos/code/CodeBasic.vue2?raw';
+import codeBasicReact from './demos/code/CodeBasic.react?raw';
+import CodeInline from './demos/code/CodeInline.vue';
+import codeInlineCode from './demos/code/CodeInline.vue?raw';
+import codeInlineVue2 from './demos/code/CodeInline.vue2?raw';
+import codeInlineReact from './demos/code/CodeInline.react?raw';
+</script>
+
 # Code 代码
 
 使用 `<pre><code>` 渲染的代码块组件。v0.1.0 版本暂不支持语法高亮。
@@ -6,98 +17,25 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCode :value="codeStr" />
-</template>
-
-<script setup lang="ts">
-import { CxCode } from '@chronixjs/ui-vue3';
-
-const codeStr = 'const greeting = "Hello, Chronix!";\nconsole.log(greeting);';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCode :value="codeStr" />
-</template>
-
-<script>
-import { CxCode } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCode },
-  data() {
-    return {
-      codeStr: 'const greeting = "Hello, Chronix!";\nconsole.log(greeting);',
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxCode } from '@chronixjs/ui-react';
-
-export function App() {
-  const codeStr = 'const greeting = "Hello, Chronix!";\nconsole.log(greeting);';
-
-  return <CxCode value={codeStr} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="展示代码块的默认用法。" :code="codeBasicCode" :code-vue2="codeBasicVue2" :code-react="codeBasicReact">
+  <CodeBasic />
+</DemoBox>
 
 ## 行内代码
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <p>Use <CxCode value="npm install" inline /> to add dependencies.</p>
-</template>
-
-<script setup lang="ts">
-import { CxCode } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <p>Use <CxCode value="npm install" inline /> to add dependencies.</p>
-</template>
-
-<script>
-import { CxCode } from '@chronixjs/ui-vue2';
-export default { components: { CxCode } };
-</script>
-```
-
-```tsx [React]
-import { CxCode } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <p>
-      Use <CxCode value="npm install" inline /> to add dependencies.
-    </p>
-  );
-}
-```
-
-:::
+<DemoBox title="行内代码" description="通过 inline 属性将代码渲染为行内元素。" :code="codeInlineCode" :code-vue2="codeInlineVue2" :code-react="codeInlineReact">
+  <CodeInline />
+</DemoBox>
 
 ## API 参考
 

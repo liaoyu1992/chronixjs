@@ -1,3 +1,18 @@
+<script setup>
+import TabsBasic from './demos/tabs/TabsBasic.vue';
+import tabsBasicCode from './demos/tabs/TabsBasic.vue?raw';
+import tabsBasicVue2 from './demos/tabs/TabsBasic.vue2?raw';
+import tabsBasicReact from './demos/tabs/TabsBasic.react?raw';
+import TabsCard from './demos/tabs/TabsCard.vue';
+import tabsCardCode from './demos/tabs/TabsCard.vue?raw';
+import tabsCardVue2 from './demos/tabs/TabsCard.vue2?raw';
+import tabsCardReact from './demos/tabs/TabsCard.react?raw';
+import TabsSegment from './demos/tabs/TabsSegment.vue';
+import tabsSegmentCode from './demos/tabs/TabsSegment.vue?raw';
+import tabsSegmentVue2 from './demos/tabs/TabsSegment.vue2?raw';
+import tabsSegmentReact from './demos/tabs/TabsSegment.react?raw';
+</script>
+
 # Tabs 标签页
 
 支持线条、卡片和分段变体的标签页界面。
@@ -6,290 +21,31 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTabs v-model:value="activeTab" :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTabs } from '@chronixjs/ui-vue3';
-
-const activeTab = ref('tab1');
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTabs :value.sync="activeTab" :items="items" />
-</template>
-
-<script>
-import { CxTabs } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTabs },
-  data() {
-    return {
-      activeTab: 'tab1',
-      items: [
-        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTabs } from '@chronixjs/ui-react';
-
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-
-export function App() {
-  const [activeTab, setActiveTab] = useState('tab1');
-
-  return <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="线条风格标签页。" :code="tabsBasicCode" :code-vue2="tabsBasicVue2" :code-react="tabsBasicReact">
+  <TabsBasic />
+</DemoBox>
 
 ## 卡片类型
 
-使用 `type="card"` 实现卡片风格的标签栏。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTabs v-model:value="activeTab" :items="items" type="card" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTabs } from '@chronixjs/ui-vue3';
-
-const activeTab = ref('tab1');
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTabs :value.sync="activeTab" :items="items" type="card" />
-</template>
-
-<script>
-import { CxTabs } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTabs },
-  data() {
-    return {
-      activeTab: 'tab1',
-      items: [
-        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTabs } from '@chronixjs/ui-react';
-
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-
-export function App() {
-  const [activeTab, setActiveTab] = useState('tab1');
-
-  return <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} type="card" />;
-}
-```
-
-:::
+<DemoBox title="卡片类型" description="使用 type=&quot;card&quot; 实现卡片风格的标签栏。" :code="tabsCardCode" :code-vue2="tabsCardVue2" :code-react="tabsCardReact">
+  <TabsCard />
+</DemoBox>
 
 ## 分段类型
 
-使用 `type="segment"` 实现分段控制器风格。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTabs v-model:value="activeTab" :items="items" type="segment" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTabs } from '@chronixjs/ui-vue3';
-
-const activeTab = ref('tab1');
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTabs :value.sync="activeTab" :items="items" type="segment" />
-</template>
-
-<script>
-import { CxTabs } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTabs },
-  data() {
-    return {
-      activeTab: 'tab1',
-      items: [
-        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTabs } from '@chronixjs/ui-react';
-
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-
-export function App() {
-  const [activeTab, setActiveTab] = useState('tab1');
-
-  return <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} type="segment" />;
-}
-```
-
-:::
-
-## 标签栏位置
-
-使用 `placement` 控制标签栏出现的位置。支持 `top`、`right`、`bottom` 和 `left`。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <CxTabs v-model:value="activeTab" :items="items" placement="left" />
-    <CxTabs v-model:value="activeTab" :items="items" placement="bottom" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTabs } from '@chronixjs/ui-vue3';
-
-const activeTab = ref('tab1');
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <CxTabs :value.sync="activeTab" :items="items" placement="left" />
-    <CxTabs :value.sync="activeTab" :items="items" placement="bottom" />
-  </div>
-</template>
-
-<script>
-import { CxTabs } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTabs },
-  data() {
-    return {
-      activeTab: 'tab1',
-      items: [
-        { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-        { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-        { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTabs } from '@chronixjs/ui-react';
-
-const items = [
-  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
-  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
-  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
-];
-
-export function App() {
-  const [activeTab, setActiveTab] = useState('tab1');
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} placement="left" />
-      <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} placement="bottom" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="分段类型" description="使用 type=&quot;segment&quot; 实现分段控制器风格。" :code="tabsSegmentCode" :code-vue2="tabsSegmentVue2" :code-react="tabsSegmentReact">
+  <TabsSegment />
+</DemoBox>
 
 ## API 参考
 

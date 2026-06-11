@@ -1,0 +1,11 @@
+import { CxScrollbar } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxScrollbar style={{ height: 200 }}>
+      {Array.from({ length: 20 }, (_, i) => (
+        <p key={i}>Scrollable content line {i + 1}</p>
+      ))}
+    </CxScrollbar>
+  );
+}

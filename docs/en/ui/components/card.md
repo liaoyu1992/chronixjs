@@ -1,3 +1,10 @@
+<script setup>
+import CardBasic from '../../../ui/components/demos/card/CardBasic.vue';
+import cardBasicCode from '../../../ui/components/demos/card/CardBasic.vue?raw';
+import cardBasicVue2 from '../../../ui/components/demos/card/CardBasic.vue2?raw';
+import cardBasicReact from '../../../ui/components/demos/card/CardBasic.react?raw';
+</script>
+
 # Card
 
 A flexible container with optional header, body, and footer areas.
@@ -16,83 +23,9 @@ A flexible container with optional header, body, and footer areas.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCard>Card content</CxCard>
-</template>
-
-<script setup lang="ts">
-import { CxCard } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCard>Card content</CxCard>
-</template>
-
-<script>
-import { CxCard } from '@chronixjs/ui-vue2';
-export default { components: { CxCard } };
-</script>
-```
-
-```tsx [React]
-import { CxCard } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxCard>Card content</CxCard>;
-}
-```
-
-:::
-
-## With Title and Footer
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCard title="Card Title">
-    Content goes here.
-    <template #footer>Footer content</template>
-  </CxCard>
-</template>
-
-<script setup lang="ts">
-import { CxCard } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCard title="Card Title">
-    Content goes here.
-    <template slot="footer">Footer content</template>
-  </CxCard>
-</template>
-
-<script>
-import { CxCard } from '@chronixjs/ui-vue2';
-export default { components: { CxCard } };
-</script>
-```
-
-```tsx [React]
-import { CxCard } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxCard title="Card Title" footer={<span>Footer content</span>}>
-      Content goes here.
-    </CxCard>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Use the title prop for a card title and the footer slot for footer content." :code="cardBasicCode" :code-vue2="cardBasicVue2" :code-react="cardBasicReact">
+  <CardBasic />
+</DemoBox>
 
 ## Sizes
 

@@ -1,3 +1,10 @@
+<script setup>
+import CardBasic from './demos/card/CardBasic.vue';
+import cardBasicCode from './demos/card/CardBasic.vue?raw';
+import cardBasicVue2 from './demos/card/CardBasic.vue2?raw';
+import cardBasicReact from './demos/card/CardBasic.react?raw';
+</script>
+
 # Card 卡片
 
 灵活的容器组件，支持可选的头部、主体和底部区域。
@@ -16,83 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCard>Card content</CxCard>
-</template>
-
-<script setup lang="ts">
-import { CxCard } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCard>Card content</CxCard>
-</template>
-
-<script>
-import { CxCard } from '@chronixjs/ui-vue2';
-export default { components: { CxCard } };
-</script>
-```
-
-```tsx [React]
-import { CxCard } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxCard>Card content</CxCard>;
-}
-```
-
-:::
-
-## 带标题和底部
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCard title="Card Title">
-    Content goes here.
-    <template #footer>Footer content</template>
-  </CxCard>
-</template>
-
-<script setup lang="ts">
-import { CxCard } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCard title="Card Title">
-    Content goes here.
-    <template slot="footer">Footer content</template>
-  </CxCard>
-</template>
-
-<script>
-import { CxCard } from '@chronixjs/ui-vue2';
-export default { components: { CxCard } };
-</script>
-```
-
-```tsx [React]
-import { CxCard } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxCard title="Card Title" footer={<span>Footer content</span>}>
-      Content goes here.
-    </CxCard>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="通过 title 设置卡片标题，footer 插槽设置底部内容。" :code="cardBasicCode" :code-vue2="cardBasicVue2" :code-react="cardBasicReact">
+  <CardBasic />
+</DemoBox>
 
 ## 尺寸
 

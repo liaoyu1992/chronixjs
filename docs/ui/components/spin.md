@@ -1,3 +1,14 @@
+<script setup>
+import SpinBasic from './demos/spin/SpinBasic.vue';
+import spinBasicCode from './demos/spin/SpinBasic.vue?raw';
+import spinBasicVue2 from './demos/spin/SpinBasic.vue2?raw';
+import spinBasicReact from './demos/spin/SpinBasic.react?raw';
+import SpinSizes from './demos/spin/SpinSizes.vue';
+import spinSizesCode from './demos/spin/SpinSizes.vue?raw';
+import spinSizesVue2 from './demos/spin/SpinSizes.vue2?raw';
+import spinSizesReact from './demos/spin/SpinSizes.react?raw';
+</script>
+
 # Spin 加载
 
 带不确定旋转动画和可选描述文本的加载状态指示器。
@@ -6,97 +17,25 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSpin size="medium" description="Loading..." />
-</template>
-
-<script setup lang="ts">
-import { CxSpin } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSpin size="medium" description="Loading..." />
-</template>
-
-<script>
-import { CxSpin } from '@chronixjs/ui-vue2';
-export default { components: { CxSpin } };
-</script>
-```
-
-```tsx [React]
-import { CxSpin } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxSpin size="medium" description="Loading..." />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="带描述文本的加载指示器。" :code="spinBasicCode" :code-vue2="spinBasicVue2" :code-react="spinBasicReact">
+  <SpinBasic />
+</DemoBox>
 
 ## 尺寸
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 24px; align-items: center;">
-    <CxSpin size="small" />
-    <CxSpin size="medium" />
-    <CxSpin size="large" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSpin } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 24px; align-items: center;">
-    <CxSpin size="small" />
-    <CxSpin size="medium" />
-    <CxSpin size="large" />
-  </div>
-</template>
-
-<script>
-import { CxSpin } from '@chronixjs/ui-vue2';
-export default { components: { CxSpin } };
-</script>
-```
-
-```tsx [React]
-import { CxSpin } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-      <CxSpin size="small" />
-      <CxSpin size="medium" />
-      <CxSpin size="large" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="尺寸" description="通过 size 属性设置加载指示器大小。" :code="spinSizesCode" :code-vue2="spinSizesVue2" :code-react="spinSizesReact">
+  <SpinSizes />
+</DemoBox>
 
 ## API 参考
 

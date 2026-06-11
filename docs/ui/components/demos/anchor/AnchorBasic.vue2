@@ -1,0 +1,19 @@
+<template>
+  <CxAnchor :items="items" />
+</template>
+
+<script>
+import { CxAnchor } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxAnchor },
+  data() {
+    return {
+      items: [
+        { key: 'sec-1', label: 'Section 1', href: '#section-1' },
+        { key: 'sec-2', label: 'Section 2', href: '#section-2' },
+        { key: 'sec-3', label: 'Section 3', href: '#section-3' },
+      ],
+    };
+  },
+};
+</script>

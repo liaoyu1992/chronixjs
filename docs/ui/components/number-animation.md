@@ -1,3 +1,10 @@
+<script setup>
+import NumberAnimationBasic from './demos/number-animation/NumberAnimationBasic.vue';
+import numberAnimationBasicCode from './demos/number-animation/NumberAnimationBasic.vue?raw';
+import numberAnimationBasicVue2 from './demos/number-animation/NumberAnimationBasic.vue2?raw';
+import numberAnimationBasicReact from './demos/number-animation/NumberAnimationBasic.react?raw';
+</script>
+
 # Number Animation 数字动画
 
 动画数字显示组件，可在配置的持续时间内从一个值平滑过渡到另一个值。
@@ -6,83 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxNumberAnimation :from="0" :to="9999" :duration="2000" />
-</template>
-
-<script setup lang="ts">
-import { CxNumberAnimation } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxNumberAnimation :from="0" :to="9999" :duration="2000" />
-</template>
-
-<script>
-import { CxNumberAnimation } from '@chronixjs/ui-vue2';
-export default { components: { CxNumberAnimation } };
-</script>
-```
-
-```tsx [React]
-import { CxNumberAnimation } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxNumberAnimation from={0} to={9999} duration={2000} />;
-}
-```
-
-:::
-
-## 精度与分隔符
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxNumberAnimation :from="0" :to="1234567.89" :duration="3000" :precision="2" show-separator />
-</template>
-
-<script setup lang="ts">
-import { CxNumberAnimation } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxNumberAnimation :from="0" :to="1234567.89" :duration="3000" :precision="2" show-separator />
-</template>
-
-<script>
-import { CxNumberAnimation } from '@chronixjs/ui-vue2';
-export default { components: { CxNumberAnimation } };
-</script>
-```
-
-```tsx [React]
-import { CxNumberAnimation } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxNumberAnimation from={0} to={1234567.89} duration={3000} precision={2} showSeparator />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="从 0 动画到 10000，持续 2 秒，并显示千位分隔符。" :code="numberAnimationBasicCode" :code-vue2="numberAnimationBasicVue2" :code-react="numberAnimationBasicReact">
+  <NumberAnimationBasic />
+</DemoBox>
 
 ## API 参考
 

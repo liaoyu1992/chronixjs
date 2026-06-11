@@ -1,0 +1,8 @@
+<template>
+  <CxImage src="https://picsum.photos/200/120" alt="Example" :width="200" :height="120" />
+</template>
+
+<script>
+import { CxImage } from '@chronixjs/ui-vue2';
+export default { components: { CxImage } };
+</script>

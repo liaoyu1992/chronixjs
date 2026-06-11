@@ -1,3 +1,22 @@
+<script setup>
+import DividerBasic from './demos/divider/DividerBasic.vue';
+import dividerBasicCode from './demos/divider/DividerBasic.vue?raw';
+import dividerBasicVue2 from './demos/divider/DividerBasic.vue2?raw';
+import dividerBasicReact from './demos/divider/DividerBasic.react?raw';
+import DividerWithTitle from './demos/divider/DividerWithTitle.vue';
+import dividerWithTitleCode from './demos/divider/DividerWithTitle.vue?raw';
+import dividerWithTitleVue2 from './demos/divider/DividerWithTitle.vue2?raw';
+import dividerWithTitleReact from './demos/divider/DividerWithTitle.react?raw';
+import DividerVertical from './demos/divider/DividerVertical.vue';
+import dividerVerticalCode from './demos/divider/DividerVertical.vue?raw';
+import dividerVerticalVue2 from './demos/divider/DividerVertical.vue2?raw';
+import dividerVerticalReact from './demos/divider/DividerVertical.react?raw';
+import DividerDashed from './demos/divider/DividerDashed.vue';
+import dividerDashedCode from './demos/divider/DividerDashed.vue?raw';
+import dividerDashedVue2 from './demos/divider/DividerDashed.vue2?raw';
+import dividerDashedReact from './demos/divider/DividerDashed.react?raw';
+</script>
+
 # Divider 分割线
 
 带有可选标题的可视分割线。
@@ -6,341 +25,37 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-内容块之间的简单水平分割线。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Content above the divider.</p>
-    <CxDivider />
-    <p>Content below the divider.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Content above the divider.</p>
-    <CxDivider />
-    <p>Content below the divider.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Content above the divider.</p>
-      <CxDivider />
-      <p>Content below the divider.</p>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="内容块之间的简单水平分割线。" :code="dividerBasicCode" :code-vue2="dividerBasicVue2" :code-react="dividerBasicReact">
+  <DividerBasic />
+</DemoBox>
 
 ## 带标题
 
-通过默认插槽在分割线中放置文本。使用 `title-placement` 控制对齐方式。
-
-### 左对齐
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Section A content.</p>
-    <CxDivider title-placement="left">Section B</CxDivider>
-    <p>Section B content.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Section A content.</p>
-    <CxDivider title-placement="left">Section B</CxDivider>
-    <p>Section B content.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Section A content.</p>
-      <CxDivider titlePlacement="left">Section B</CxDivider>
-      <p>Section B content.</p>
-    </div>
-  );
-}
-```
-
-:::
-
-### 居中
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Section A content.</p>
-    <CxDivider title-placement="center">Details</CxDivider>
-    <p>Details content.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Section A content.</p>
-    <CxDivider title-placement="center">Details</CxDivider>
-    <p>Details content.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Section A content.</p>
-      <CxDivider titlePlacement="center">Details</CxDivider>
-      <p>Details content.</p>
-    </div>
-  );
-}
-```
-
-:::
-
-### 右对齐
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Main content.</p>
-    <CxDivider title-placement="right">Extras</CxDivider>
-    <p>Extra content.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Main content.</p>
-    <CxDivider title-placement="right">Extras</CxDivider>
-    <p>Extra content.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Main content.</p>
-      <CxDivider titlePlacement="right">Extras</CxDivider>
-      <p>Extra content.</p>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="带标题" description="通过默认插槽放置标题，使用 title-placement 控制对齐。" :code="dividerWithTitleCode" :code-vue2="dividerWithTitleVue2" :code-react="dividerWithTitleReact">
+  <DividerWithTitle />
+</DemoBox>
 
 ## 垂直分割
 
-使用 `vertical` 属性在行内元素之间渲染垂直分割线。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <span>Link A</span>
-    <CxDivider vertical />
-    <span>Link B</span>
-    <CxDivider vertical />
-    <span>Link C</span>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <span>Link A</span>
-    <CxDivider vertical />
-    <span>Link B</span>
-    <CxDivider vertical />
-    <span>Link C</span>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span>Link A</span>
-      <CxDivider vertical />
-      <span>Link B</span>
-      <CxDivider vertical />
-      <span>Link C</span>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="垂直分割" description="使用 vertical 属性渲染垂直分割线。" :code="dividerVerticalCode" :code-vue2="dividerVerticalVue2" :code-react="dividerVerticalReact">
+  <DividerVertical />
+</DemoBox>
 
 ## 虚线
 
-使用 `dashed` 属性渲染虚线而非实线。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <p>Content above.</p>
-    <CxDivider dashed />
-    <p>Content below.</p>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxDivider } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <p>Content above.</p>
-    <CxDivider dashed />
-    <p>Content below.</p>
-  </div>
-</template>
-
-<script>
-import { CxDivider } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDivider },
-};
-</script>
-```
-
-```tsx [React]
-import { CxDivider } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div>
-      <p>Content above.</p>
-      <CxDivider dashed />
-      <p>Content below.</p>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="虚线" description="使用 dashed 属性渲染虚线分割线。" :code="dividerDashedCode" :code-vue2="dividerDashedVue2" :code-react="dividerDashedReact">
+  <DividerDashed />
+</DemoBox>
 
 ## API 参考
 

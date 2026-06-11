@@ -1,3 +1,10 @@
+<script setup>
+import PaginationBasic from './demos/pagination/PaginationBasic.vue';
+import paginationBasicCode from './demos/pagination/PaginationBasic.vue?raw';
+import paginationBasicVue2 from './demos/pagination/PaginationBasic.vue2?raw';
+import paginationBasicReact from './demos/pagination/PaginationBasic.react?raw';
+</script>
+
 # Pagination 分页
 
 带省略号、快速跳转和每页条数选择器的分页导航。
@@ -5,57 +12,16 @@
 ## 安装
 
 ::: code-group
-<<< @/snippets/vue3/install-ui.md
-<<< @/snippets/vue2/install-ui.md
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
+<<< @/snippets/vue2/install-ui.md [Vue 2]
+<<< @/snippets/react/install-ui.md [React]
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxPagination v-model:page="page" :page-count="50" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxPagination } from '@chronixjs/ui-vue3';
-
-const page = ref(1);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxPagination :page.sync="page" :page-count="50" />
-</template>
-
-<script>
-import { CxPagination } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxPagination },
-  data() {
-    return { page: 1 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxPagination } from '@chronixjs/ui-react';
-
-export function App() {
-  const [page, setPage] = useState(1);
-
-  return <CxPagination page={page} pageCount={50} onUpdatePage={setPage} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="最基本的分页用法，通过 v-model:page 绑定当前页码。" :code="paginationBasicCode" :code-vue2="paginationBasicVue2" :code-react="paginationBasicReact">
+  <PaginationBasic />
+</DemoBox>
 
 ## 使用条目总数
 

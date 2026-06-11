@@ -1,0 +1,25 @@
+import { useState, useCallback } from 'react';
+import { CxInfiniteScroll } from '@chronixjs/ui-react';
+
+export function App() {
+  const [items, setItems] = useState(() => Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`));
+  const [loading, setLoading] = useState(false);
+
+  const onLoad = useCallback(async () => {
+    setLoading(true);
+    const start = items.length;
+    const newItems = Array.from({ length: 10 }, (_, i) => `Item ${start + i + 1}`);
+    setItems((prev) => [...prev, ...newItems]);
+    setLoading(false);
+  }, [items.length]);
+
+  return (
+    <div style={{ height: 200, overflow: 'auto', border: '1px solid #e5e7eb', borderRadius: 8, padding: 12 }}>
+      <CxInfiniteScroll distance={100} loading={loading} onLoad={onLoad}>
+        {items.map((item) => (
+          <div key={item} style={{ padding: '4px 0' }}>{item}</div>
+        ))}
+      </CxInfiniteScroll>
+    </div>
+  );
+}

@@ -1,3 +1,10 @@
+<script setup>
+import IconBasic from './demos/icon/IconBasic.vue';
+import iconBasicCode from './demos/icon/IconBasic.vue?raw';
+import iconBasicVue2 from './demos/icon/IconBasic.vue2?raw';
+import iconBasicReact from './demos/icon/IconBasic.react?raw';
+</script>
+
 # Icon 图标
 
 由中心图标注册表驱动的 SVG 图标组件。
@@ -6,165 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxIcon name="check" :size="20" />
-</template>
-
-<script setup lang="ts">
-import { CxIcon } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxIcon name="check" :size="20" />
-</template>
-
-<script>
-import { CxIcon } from '@chronixjs/ui-vue2';
-export default { components: { CxIcon } };
-</script>
-```
-
-```tsx [React]
-import { CxIcon } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxIcon name="check" size={20} />;
-}
-```
-
-:::
-
-## 尺寸
-
-使用 `size` 属性以不同尺寸渲染图标。默认尺寸为 `16`。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; align-items: center; gap: 16px;">
-    <CxIcon name="check" :size="16" />
-    <span>16px (default)</span>
-
-    <CxIcon name="check" :size="24" />
-    <span>24px</span>
-
-    <CxIcon name="check" :size="32" />
-    <span>32px</span>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxIcon } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; align-items: center; gap: 16px;">
-    <CxIcon name="check" :size="16" />
-    <span>16px (default)</span>
-
-    <CxIcon name="check" :size="24" />
-    <span>24px</span>
-
-    <CxIcon name="check" :size="32" />
-    <span>32px</span>
-  </div>
-</template>
-
-<script>
-import { CxIcon } from '@chronixjs/ui-vue2';
-export default { components: { CxIcon } };
-</script>
-```
-
-```tsx [React]
-import { CxIcon } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-      <CxIcon name="check" size={16} />
-      <span>16px (default)</span>
-
-      <CxIcon name="check" size={24} />
-      <span>24px</span>
-
-      <CxIcon name="check" size={32} />
-      <span>32px</span>
-    </div>
-  );
-}
-```
-
-:::
-
-## 自定义颜色
-
-使用 `color` 属性或 CSS 自定义属性来更改图标颜色。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 12px;">
-    <CxIcon name="star" :size="24" color="#f5a623" />
-    <CxIcon name="star" :size="24" color="#4caf50" />
-    <CxIcon name="star" :size="24" color="#e53935" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxIcon } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 12px;">
-    <CxIcon name="star" :size="24" color="#f5a623" />
-    <CxIcon name="star" :size="24" color="#4caf50" />
-    <CxIcon name="star" :size="24" color="#e53935" />
-  </div>
-</template>
-
-<script>
-import { CxIcon } from '@chronixjs/ui-vue2';
-export default { components: { CxIcon } };
-</script>
-```
-
-```tsx [React]
-import { CxIcon } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 12 }}>
-      <CxIcon name="star" size={24} color="#f5a623" />
-      <CxIcon name="star" size={24} color="#4caf50" />
-      <CxIcon name="star" size={24} color="#e53935" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用 name 属性指定图标名称，size 属性设置尺寸。" :code="iconBasicCode" :code-vue2="iconBasicVue2" :code-react="iconBasicReact">
+  <IconBasic />
+</DemoBox>
 
 ## API 参考
 

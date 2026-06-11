@@ -1,0 +1,20 @@
+<template>
+  <CxMention :value.sync="text" :options="options" trigger="@" placeholder="Type @ to mention someone..." />
+</template>
+
+<script>
+import { CxMention } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxMention },
+  data() {
+    return {
+      text: '',
+      options: [
+        { key: 'alice', label: 'Alice', value: 'alice' },
+        { key: 'bob', label: 'Bob', value: 'bob' },
+        { key: 'charlie', label: 'Charlie', value: 'charlie' },
+      ],
+    };
+  },
+};
+</script>

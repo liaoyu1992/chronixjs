@@ -1,3 +1,14 @@
+<script setup>
+import SelectBasic from '../../../ui/components/demos/select/SelectBasic.vue';
+import selectBasicCode from '../../../ui/components/demos/select/SelectBasic.vue?raw';
+import selectBasicVue2 from '../../../ui/components/demos/select/SelectBasic.vue2?raw';
+import selectBasicReact from '../../../ui/components/demos/select/SelectBasic.react?raw';
+import SelectMultiple from '../../../ui/components/demos/select/SelectMultiple.vue';
+import selectMultipleCode from '../../../ui/components/demos/select/SelectMultiple.vue?raw';
+import selectMultipleVue2 from '../../../ui/components/demos/select/SelectMultiple.vue2?raw';
+import selectMultipleReact from '../../../ui/components/demos/select/SelectMultiple.react?raw';
+</script>
+
 # Select
 
 A full-featured dropdown selector with single/multi, filtering, and virtual scrolling.
@@ -6,163 +17,25 @@ A full-featured dropdown selector with single/multi, filtering, and virtual scro
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSelect :options="options" v-model:value="selected" placeholder="Select..." />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSelect } from '@chronixjs/ui-vue3';
-
-const selected = ref<string | undefined>(undefined);
-
-const options = [
-  { key: '1', label: 'Option A', value: 'a' },
-  { key: '2', label: 'Option B', value: 'b' },
-  { key: '3', label: 'Option C', value: 'c' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSelect :options="options" :value.sync="selected" placeholder="Select..." />
-</template>
-
-<script>
-import { CxSelect } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSelect },
-  data() {
-    return {
-      selected: undefined,
-      options: [
-        { key: '1', label: 'Option A', value: 'a' },
-        { key: '2', label: 'Option B', value: 'b' },
-        { key: '3', label: 'Option C', value: 'c' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxSelect } from '@chronixjs/ui-react';
-
-const OPTIONS = [
-  { key: '1', label: 'Option A', value: 'a' },
-  { key: '2', label: 'Option B', value: 'b' },
-  { key: '3', label: 'Option C', value: 'c' },
-];
-
-export function App() {
-  const [selected, setSelected] = useState<string | undefined>(undefined);
-
-  return (
-    <CxSelect
-      options={OPTIONS}
-      value={selected}
-      onUpdateValue={setSelected}
-      placeholder="Select..."
-    />
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Single-selection dropdown." :code="selectBasicCode" :code-vue2="selectBasicVue2" :code-react="selectBasicReact">
+  <SelectBasic />
+</DemoBox>
 
 ## Multiple Selection
 
-Use the `multiple` prop to allow selecting more than one value. The bound value becomes a string array.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSelect :options="options" v-model:value="selected" multiple placeholder="Pick several..." />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSelect } from '@chronixjs/ui-vue3';
-
-const selected = ref<string[]>([]);
-
-const options = [
-  { key: '1', label: 'Red', value: 'red' },
-  { key: '2', label: 'Green', value: 'green' },
-  { key: '3', label: 'Blue', value: 'blue' },
-  { key: '4', label: 'Yellow', value: 'yellow' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSelect :options="options" :value.sync="selected" multiple placeholder="Pick several..." />
-</template>
-
-<script>
-import { CxSelect } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSelect },
-  data() {
-    return {
-      selected: [],
-      options: [
-        { key: '1', label: 'Red', value: 'red' },
-        { key: '2', label: 'Green', value: 'green' },
-        { key: '3', label: 'Blue', value: 'blue' },
-        { key: '4', label: 'Yellow', value: 'yellow' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxSelect } from '@chronixjs/ui-react';
-
-const OPTIONS = [
-  { key: '1', label: 'Red', value: 'red' },
-  { key: '2', label: 'Green', value: 'green' },
-  { key: '3', label: 'Blue', value: 'blue' },
-  { key: '4', label: 'Yellow', value: 'yellow' },
-];
-
-export function App() {
-  const [selected, setSelected] = useState<string[]>([]);
-
-  return (
-    <CxSelect
-      options={OPTIONS}
-      value={selected}
-      onUpdateValue={setSelected}
-      multiple
-      placeholder="Pick several..."
-    />
-  );
-}
-```
-
-:::
+<DemoBox title="Multiple Selection" description="Use the multiple prop to allow selecting more than one value." :code="selectMultipleCode" :code-vue2="selectMultipleVue2" :code-react="selectMultipleReact">
+  <SelectMultiple />
+</DemoBox>
 
 ## Filterable
 
@@ -448,22 +321,17 @@ export function App() {
 
 ### Props
 
-| Prop                | Type                 | Default          | Description             |
-| ------------------- | -------------------- | ---------------- | ----------------------- |
-| `value`             | `string \| string[]` | `undefined`      | Selected value(s)       |
-| `options`           | `SelectOption[]`     | `[]`             | Option list             |
-| `multiple`          | `boolean`            | `false`          | Multi-select mode       |
-| `filterable`        | `boolean`            | `false`          | Enable search           |
-| `clearable`         | `boolean`            | `false`          | Show clear icon         |
-| `placeholder`       | `string`             | `''`             | Placeholder text        |
-| `disabled`          | `boolean`            | `false`          | Disable select          |
-| `loading`           | `boolean`            | `false`          | Loading state           |
-| `virtual`           | `boolean`            | `false`          | Virtual scrolling       |
-| `virtualItemHeight` | `number`             | `32`             | Item height for virtual |
-| `placement`         | `PopupPlacement`     | `'bottom-start'` | Dropdown position       |
+| Prop          | Type                 | Default     | Description              |
+| ------------- | -------------------- | ----------- | ------------------------ |
+| `value`       | `string \| string[]` | `undefined` | Selected value (v-model) |
+| `options`     | `SelectOption[]`     | `[]`        | Option list              |
+| `multiple`    | `boolean`            | `false`     | Multi-select mode        |
+| `placeholder` | `string`             | `''`        | Placeholder text         |
+| `disabled`    | `boolean`            | `false`     | Disable select           |
+| `filterable`  | `boolean`            | `false`     | Enable search            |
 
 ### Events
 
-| Event          | Payload              | Description   |
-| -------------- | -------------------- | ------------- |
-| `update:value` | `string \| string[]` | Value changed |
+| Event          | Payload | Description           |
+| -------------- | ------- | --------------------- |
+| `update:value` | `any`   | Fired on value change |

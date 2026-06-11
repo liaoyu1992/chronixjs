@@ -1,0 +1,9 @@
+import { CxCard } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxCard title="Card Title" footer={<span>Footer content</span>} style={{ maxWidth: 360 }}>
+      Card body content goes here.
+    </CxCard>
+  );
+}

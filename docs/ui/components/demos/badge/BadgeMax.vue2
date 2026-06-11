@@ -1,0 +1,10 @@
+<template>
+  <CxBadge :value="150" :max="99">
+    <CxButton>Notifications</CxButton>
+  </CxBadge>
+</template>
+
+<script>
+import { CxBadge, CxButton } from '@chronixjs/ui-vue2';
+export default { components: { CxBadge, CxButton } };
+</script>

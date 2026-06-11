@@ -1,0 +1,12 @@
+import { useState } from 'react';
+import { CxBreadcrumb } from '@chronixjs/ui-react';
+
+export function App() {
+  const [items] = useState([
+    { key: 'home', label: 'Home', href: '/' },
+    { key: 'products', label: 'Products', href: '/products' },
+    { key: 'detail', label: 'Detail' },
+  ]);
+
+  return <CxBreadcrumb items={items} />;
+}

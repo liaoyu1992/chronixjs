@@ -1,3 +1,10 @@
+<script setup>
+import ElementBasic from './demos/element/ElementBasic.vue';
+import elementBasicCode from './demos/element/ElementBasic.vue?raw';
+import elementBasicVue2 from './demos/element/ElementBasic.vue2?raw';
+import elementBasicReact from './demos/element/ElementBasic.react?raw';
+</script>
+
 # Element 元素
 
 通用的 Chronix 主题 HTML 元素包装器，支持自定义标签名。
@@ -16,46 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxElement tag="section">
-    <p>Content inside a themed section element.</p>
-  </CxElement>
-</template>
-
-<script setup lang="ts">
-import { CxElement } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxElement tag="section">
-    <p>Content inside a themed section element.</p>
-  </CxElement>
-</template>
-
-<script>
-import { CxElement } from '@chronixjs/ui-vue2';
-export default { components: { CxElement } };
-</script>
-```
-
-```tsx [React]
-import { CxElement } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxElement tag="section">
-      <p>Content inside a themed section element.</p>
-    </CxElement>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用 tag 属性渲染指定的 HTML 元素。" :code="elementBasicCode" :code-vue2="elementBasicVue2" :code-react="elementBasicReact">
+  <ElementBasic />
+</DemoBox>
 
 ## API 参考
 

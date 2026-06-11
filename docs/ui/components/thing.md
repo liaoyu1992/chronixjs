@@ -1,3 +1,10 @@
+<script setup>
+import ThingBasic from './demos/thing/ThingBasic.vue';
+import thingBasicCode from './demos/thing/ThingBasic.vue?raw';
+import thingBasicVue2 from './demos/thing/ThingBasic.vue2?raw';
+import thingBasicReact from './demos/thing/ThingBasic.react?raw';
+</script>
+
 # Thing 事物卡片
 
 组合式卡片，包含头像 + 头部（标题 + 额外内容）+ 描述 + 内容 + 操作 + 页脚插槽。
@@ -6,15 +13,21 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
+
+<DemoBox title="基础用法" description="带标题和描述的事物卡片。" :code="thingBasicCode" :code-vue2="thingBasicVue2" :code-react="thingBasicReact">
+  <ThingBasic />
+</DemoBox>
+
+## 带头像和操作
 
 ::: code-group
 

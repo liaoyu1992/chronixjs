@@ -1,0 +1,29 @@
+<template>
+  <CxPopSelect :value.sync="selected" :show.sync="open" :options="options" trigger="click">
+    <button @click="open = true">{{ selectedLabel || 'Select...' }}</button>
+  </CxPopSelect>
+</template>
+
+<script>
+import { CxPopSelect } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxPopSelect },
+  data() {
+    return {
+      selected: undefined,
+      open: false,
+      options: [
+        { key: 'a', label: 'Apple', value: 'apple', disabled: false },
+        { key: 'b', label: 'Banana', value: 'banana', disabled: false },
+        { key: 'c', label: 'Cherry', value: 'cherry', disabled: false },
+      ],
+    };
+  },
+  computed: {
+    selectedLabel() {
+      const opt = this.options.find((o) => o.value === this.selected);
+      return opt ? opt.label : '';
+    },
+  },
+};
+</script>

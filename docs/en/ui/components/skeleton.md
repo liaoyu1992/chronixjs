@@ -1,3 +1,18 @@
+<script setup>
+import SkeletonBasic from '../../../ui/components/demos/skeleton/SkeletonBasic.vue';
+import skeletonBasicCode from '../../../ui/components/demos/skeleton/SkeletonBasic.vue?raw';
+import skeletonBasicVue2 from '../../../ui/components/demos/skeleton/SkeletonBasic.vue2?raw';
+import skeletonBasicReact from '../../../ui/components/demos/skeleton/SkeletonBasic.react?raw';
+import SkeletonShapes from '../../../ui/components/demos/skeleton/SkeletonShapes.vue';
+import skeletonShapesCode from '../../../ui/components/demos/skeleton/SkeletonShapes.vue?raw';
+import skeletonShapesVue2 from '../../../ui/components/demos/skeleton/SkeletonShapes.vue2?raw';
+import skeletonShapesReact from '../../../ui/components/demos/skeleton/SkeletonShapes.react?raw';
+import SkeletonNoAnimation from '../../../ui/components/demos/skeleton/SkeletonNoAnimation.vue';
+import skeletonNoAnimationCode from '../../../ui/components/demos/skeleton/SkeletonNoAnimation.vue?raw';
+import skeletonNoAnimationVue2 from '../../../ui/components/demos/skeleton/SkeletonNoAnimation.vue2?raw';
+import skeletonNoAnimationReact from '../../../ui/components/demos/skeleton/SkeletonNoAnimation.react?raw';
+</script>
+
 # Skeleton
 
 A shimmering placeholder for content loading states.
@@ -5,224 +20,32 @@ A shimmering placeholder for content loading states.
 ## Install
 
 ::: code-group
-<<< @/snippets/vue3/install-ui.md
-<<< @/snippets/vue2/install-ui.md
-<<< @/snippets/react/install-ui.md
+
+<<< @/snippets/vue3/install-ui.md [Vue 3]
+
+<<< @/snippets/vue2/install-ui.md [Vue 2]
+
+<<< @/snippets/react/install-ui.md [React]
+
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <CxSkeleton shape="text" />
-    <CxSkeleton shape="text" width="80%" />
-    <CxSkeleton shape="text" width="60%" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSkeleton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <CxSkeleton shape="text" />
-    <CxSkeleton shape="text" width="80%" />
-    <CxSkeleton shape="text" width="60%" />
-  </div>
-</template>
-
-<script>
-import { CxSkeleton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxSkeleton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSkeleton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <CxSkeleton shape="text" />
-      <CxSkeleton shape="text" width="80%" />
-      <CxSkeleton shape="text" width="60%" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Text-line skeleton placeholders." :code="skeletonBasicCode" :code-vue2="skeletonBasicVue2" :code-react="skeletonBasicReact">
+  <SkeletonBasic />
+</DemoBox>
 
 ## Shapes
 
-Three built-in shapes: `text` (default) renders a line, `rect` renders a rectangle, and `circle` renders a circle.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxSkeleton shape="text" width="60%" />
-    <CxSkeleton shape="rect" :width="200" :height="120" />
-    <CxSkeleton shape="circle" :width="64" :height="64" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSkeleton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxSkeleton shape="text" width="60%" />
-    <CxSkeleton shape="rect" :width="200" :height="120" />
-    <CxSkeleton shape="circle" :width="64" :height="64" />
-  </div>
-</template>
-
-<script>
-import { CxSkeleton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxSkeleton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSkeleton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxSkeleton shape="text" width="60%" />
-      <CxSkeleton shape="rect" width={200} height={120} />
-      <CxSkeleton shape="circle" width={64} height={64} />
-    </div>
-  );
-}
-```
-
-:::
-
-## Custom Dimensions
-
-Set explicit `width` and `height` values. You can pass numbers (pixels) or strings (e.g. `"50%"`).
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxSkeleton shape="rect" :width="320" :height="20" />
-    <CxSkeleton shape="rect" width="100%" :height="16" />
-    <CxSkeleton shape="rect" :width="160" :height="160" round />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSkeleton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxSkeleton shape="rect" :width="320" :height="20" />
-    <CxSkeleton shape="rect" width="100%" :height="16" />
-    <CxSkeleton shape="rect" :width="160" :height="160" round />
-  </div>
-</template>
-
-<script>
-import { CxSkeleton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxSkeleton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSkeleton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxSkeleton shape="rect" width={320} height={20} />
-      <CxSkeleton shape="rect" width="100%" height={16} />
-      <CxSkeleton shape="rect" width={160} height={160} round />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Shapes" description="Three built-in shapes: text, rect, circle." :code="skeletonShapesCode" :code-vue2="skeletonShapesVue2" :code-react="skeletonShapesReact">
+  <SkeletonShapes />
+</DemoBox>
 
 ## Without Animation
 
-Disable the shimmer effect by setting `animated` to `false`.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <CxSkeleton shape="text" width="70%" :animated="false" />
-    <CxSkeleton shape="text" width="50%" :animated="false" />
-    <CxSkeleton shape="rect" :width="200" :height="100" :animated="false" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSkeleton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <CxSkeleton shape="text" width="70%" :animated="false" />
-    <CxSkeleton shape="text" width="50%" :animated="false" />
-    <CxSkeleton shape="rect" :width="200" :height="100" :animated="false" />
-  </div>
-</template>
-
-<script>
-import { CxSkeleton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxSkeleton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSkeleton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <CxSkeleton shape="text" width="70%" animated={false} />
-      <CxSkeleton shape="text" width="50%" animated={false} />
-      <CxSkeleton shape="rect" width={200} height={100} animated={false} />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Without Animation" description="Set animated to false to disable the shimmer effect." :code="skeletonNoAnimationCode" :code-vue2="skeletonNoAnimationVue2" :code-react="skeletonNoAnimationReact">
+  <SkeletonNoAnimation />
+</DemoBox>
 
 ## API Reference
 

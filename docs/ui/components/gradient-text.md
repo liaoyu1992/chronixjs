@@ -1,3 +1,10 @@
+<script setup>
+import GradientTextBasic from './demos/gradient-text/GradientTextBasic.vue';
+import gradientTextBasicCode from './demos/gradient-text/GradientTextBasic.vue?raw';
+import gradientTextBasicVue2 from './demos/gradient-text/GradientTextBasic.vue2?raw';
+import gradientTextBasicReact from './demos/gradient-text/GradientTextBasic.react?raw';
+</script>
+
 # Gradient Text 渐变文字
 
 通过 `background-clip: text` 实现 CSS 线性渐变文字效果。
@@ -16,38 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxGradientText value="Chronix UI" :colors="['#3b82f6', '#a855f7']" />
-</template>
-
-<script setup lang="ts">
-import { CxGradientText } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxGradientText value="Chronix UI" :colors="['#3b82f6', '#a855f7']" />
-</template>
-
-<script>
-import { CxGradientText } from '@chronixjs/ui-vue2';
-export default { components: { CxGradientText } };
-</script>
-```
-
-```tsx [React]
-import { CxGradientText } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxGradientText value="Chronix UI" colors={['#3b82f6', '#a855f7']} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用两种颜色创建渐变文字效果。" :code="gradientTextBasicCode" :code-vue2="gradientTextBasicVue2" :code-react="gradientTextBasicReact">
+  <GradientTextBasic />
+</DemoBox>
 
 ## 自定义方向
 

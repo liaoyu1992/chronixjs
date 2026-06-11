@@ -1,0 +1,14 @@
+<template>
+  <div style="display: flex; gap: 12px; align-items: center;">
+    <CxAvatar text="JD" :size="40" />
+    <CxAvatar text="AB" :size="32" shape="square" />
+    <CxAvatar :size="48">
+      <span>👤</span>
+    </CxAvatar>
+  </div>
+</template>
+
+<script>
+import { CxAvatar } from '@chronixjs/ui-vue2';
+export default { components: { CxAvatar } };
+</script>

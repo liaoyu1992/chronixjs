@@ -1,0 +1,11 @@
+<template>
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <CxProgress :percentage="70" indicator-placement="outside" />
+    <CxProgress :percentage="70" indicator-placement="inside" :height="24" />
+  </div>
+</template>
+
+<script>
+import { CxProgress } from '@chronixjs/ui-vue2';
+export default { components: { CxProgress } };
+</script>

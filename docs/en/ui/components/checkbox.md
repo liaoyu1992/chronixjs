@@ -1,3 +1,22 @@
+<script setup>
+import CheckboxBasic from '../../../ui/components/demos/checkbox/CheckboxBasic.vue';
+import checkboxBasicCode from '../../../ui/components/demos/checkbox/CheckboxBasic.vue?raw';
+import checkboxBasicVue2 from '../../../ui/components/demos/checkbox/CheckboxBasic.vue2?raw';
+import checkboxBasicReact from '../../../ui/components/demos/checkbox/CheckboxBasic.react?raw';
+import CheckboxIndeterminate from '../../../ui/components/demos/checkbox/CheckboxIndeterminate.vue';
+import checkboxIndeterminateCode from '../../../ui/components/demos/checkbox/CheckboxIndeterminate.vue?raw';
+import checkboxIndeterminateVue2 from '../../../ui/components/demos/checkbox/CheckboxIndeterminate.vue2?raw';
+import checkboxIndeterminateReact from '../../../ui/components/demos/checkbox/CheckboxIndeterminate.react?raw';
+import CheckboxDisabled from '../../../ui/components/demos/checkbox/CheckboxDisabled.vue';
+import checkboxDisabledCode from '../../../ui/components/demos/checkbox/CheckboxDisabled.vue?raw';
+import checkboxDisabledVue2 from '../../../ui/components/demos/checkbox/CheckboxDisabled.vue2?raw';
+import checkboxDisabledReact from '../../../ui/components/demos/checkbox/CheckboxDisabled.react?raw';
+import CheckboxError from '../../../ui/components/demos/checkbox/CheckboxError.vue';
+import checkboxErrorCode from '../../../ui/components/demos/checkbox/CheckboxError.vue?raw';
+import checkboxErrorVue2 from '../../../ui/components/demos/checkbox/CheckboxError.vue2?raw';
+import checkboxErrorReact from '../../../ui/components/demos/checkbox/CheckboxError.react?raw';
+</script>
+
 # Checkbox
 
 Checkbox component with support for indeterminate state, labels, and validation errors.
@@ -6,152 +25,37 @@ Checkbox component with support for indeterminate state, labels, and validation 
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCheckbox v-model:checked="checked" label="Accept terms" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCheckbox } from '@chronixjs/ui-vue3';
-
-const checked = ref(false);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCheckbox v-model:checked="checked" label="Accept terms" />
-</template>
-
-<script>
-import { CxCheckbox } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCheckbox },
-  data() {
-    return { checked: false };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCheckbox } from '@chronixjs/ui-react';
-
-export function App() {
-  const [checked, setChecked] = useState(false);
-  return <CxCheckbox checked={checked} onUpdateChecked={setChecked} label="Accept terms" />;
-}
-```
-
-:::
-
-## Custom Label Slot
-
-Use the default slot for rich label content:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCheckbox v-model:checked="checked">
-    <strong>Accept</strong> the <a href="/terms">terms and conditions</a>
-  </CxCheckbox>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCheckbox } from '@chronixjs/ui-vue3';
-
-const checked = ref(false);
-</script>
-```
-
-```tsx [React]
-<CxCheckbox checked={checked} onUpdateChecked={setChecked}>
-  <strong>Accept</strong> the <a href="/terms">terms</a>
-</CxCheckbox>
-```
-
-:::
+<DemoBox title="Basic Usage" description="Basic checkbox usage." :code="checkboxBasicCode" :code-vue2="checkboxBasicVue2" :code-react="checkboxBasicReact">
+  <CheckboxBasic />
+</DemoBox>
 
 ## Indeterminate State
 
-The indeterminate state shows a horizontal bar, useful for "select all" scenarios:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCheckbox :checked="allChecked" indeterminate label="Select all" />
-</template>
-
-<script setup lang="ts">
-import { CxCheckbox } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<CxCheckbox checked={allChecked} indeterminate label="Select all" />
-```
-
-:::
+<DemoBox title="Indeterminate State" description="The indeterminate state shows a horizontal bar, useful for select-all scenarios." :code="checkboxIndeterminateCode" :code-vue2="checkboxIndeterminateVue2" :code-react="checkboxIndeterminateReact">
+  <CheckboxIndeterminate />
+</DemoBox>
 
 ## Disabled
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCheckbox checked disabled label="Locked option" />
-</template>
-
-<script setup lang="ts">
-import { CxCheckbox } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<CxCheckbox checked disabled label="Locked option" />
-```
-
-:::
+<DemoBox title="Disabled" description="Disabled checkboxes cannot be clicked." :code="checkboxDisabledCode" :code-vue2="checkboxDisabledVue2" :code-react="checkboxDisabledReact">
+  <CheckboxDisabled />
+</DemoBox>
 
 ## Error State
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCheckbox v-model:checked="agreed" error="You must agree to continue" label="Terms" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCheckbox } from '@chronixjs/ui-vue3';
-
-const agreed = ref(false);
-</script>
-```
-
-```tsx [React]
-<CxCheckbox checked={agreed} onUpdateChecked={setAgreed} error="You must agree" label="Terms" />
-```
-
-:::
+<DemoBox title="Error State" description="Display an error message using the error prop." :code="checkboxErrorCode" :code-vue2="checkboxErrorVue2" :code-react="checkboxErrorReact">
+  <CheckboxError />
+</DemoBox>
 
 ## API Reference
 
@@ -160,7 +64,7 @@ const agreed = ref(false);
 | Prop            | Type      | Default     | Description             |
 | --------------- | --------- | ----------- | ----------------------- |
 | `checked`       | `boolean` | `false`     | Checked state (v-model) |
-| `indeterminate` | `boolean` | `false`     | Indeterminate (—) state |
+| `indeterminate` | `boolean` | `false`     | Indeterminate state     |
 | `disabled`      | `boolean` | `false`     | Disable the checkbox    |
 | `label`         | `string`  | `undefined` | Label text              |
 | `error`         | `string`  | `undefined` | Error message           |
@@ -173,6 +77,6 @@ const agreed = ref(false);
 
 ### Slots
 
-| Slot      | Description                                  |
-| --------- | -------------------------------------------- |
-| `default` | Custom label content (replaces `label` prop) |
+| Slot      | Description                                |
+| --------- | ------------------------------------------ |
+| `default` | Custom label content (replaces label prop) |

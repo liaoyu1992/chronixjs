@@ -1,0 +1,9 @@
+import { CxMarquee } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxMarquee direction="left" speed={40} pauseOnHover>
+      <span>This is a scrolling marquee text that demonstrates the basic usage of the Marquee component.</span>
+    </CxMarquee>
+  );
+}

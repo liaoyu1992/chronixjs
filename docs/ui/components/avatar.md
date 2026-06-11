@@ -1,3 +1,14 @@
+<script setup>
+import AvatarBasic from './demos/avatar/AvatarBasic.vue';
+import avatarBasicCode from './demos/avatar/AvatarBasic.vue?raw';
+import avatarBasicVue2 from './demos/avatar/AvatarBasic.vue2?raw';
+import avatarBasicReact from './demos/avatar/AvatarBasic.react?raw';
+import AvatarImage from './demos/avatar/AvatarImage.vue';
+import avatarImageCode from './demos/avatar/AvatarImage.vue?raw';
+import avatarImageVue2 from './demos/avatar/AvatarImage.vue2?raw';
+import avatarImageReact from './demos/avatar/AvatarImage.react?raw';
+</script>
+
 # Avatar 头像
 
 用于展示用户头像图片、首字母缩写或回退内容的头像组件。
@@ -6,226 +17,25 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-### 图片头像
+<DemoBox title="文字头像" description="当未提供 src 或图片加载失败时，头像会显示 text 属性作为首字母缩写。" :code="avatarBasicCode" :code-vue2="avatarBasicVue2" :code-react="avatarBasicReact">
+  <AvatarBasic />
+</DemoBox>
 
-::: code-group
+## 图片头像
 
-```vue [Vue 3]
-<template>
-  <CxAvatar src="/photo.jpg" alt="User avatar" />
-</template>
-
-<script setup lang="ts">
-import { CxAvatar } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAvatar src="/photo.jpg" alt="User avatar" />
-</template>
-
-<script>
-import { CxAvatar } from '@chronixjs/ui-vue2';
-export default { components: { CxAvatar } };
-</script>
-```
-
-```tsx [React]
-import { CxAvatar } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxAvatar src="/photo.jpg" alt="User avatar" />;
-}
-```
-
-:::
-
-### 文字头像
-
-当未提供 `src` 或图片加载失败时，头像会显示 `text` 属性作为首字母缩写：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAvatar text="JD" />
-</template>
-
-<script setup lang="ts">
-import { CxAvatar } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAvatar text="JD" />
-</template>
-
-<script>
-import { CxAvatar } from '@chronixjs/ui-vue2';
-export default { components: { CxAvatar } };
-</script>
-```
-
-```tsx [React]
-import { CxAvatar } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxAvatar text="JD" />;
-}
-```
-
-:::
-
-### 回退插槽
-
-当 `src` 和 `text` 均未提供时，将渲染默认插槽内容：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAvatar>
-    <span>👤</span>
-  </CxAvatar>
-</template>
-
-<script setup lang="ts">
-import { CxAvatar } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAvatar>
-    <span>👤</span>
-  </CxAvatar>
-</template>
-
-<script>
-import { CxAvatar } from '@chronixjs/ui-vue2';
-export default { components: { CxAvatar } };
-</script>
-```
-
-```tsx [React]
-import { CxAvatar } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxAvatar>👤</CxAvatar>;
-}
-```
-
-:::
-
-## 尺寸
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 12px; align-items: center;">
-    <CxAvatar text="S" :size="32" />
-    <CxAvatar text="M" :size="40" />
-    <CxAvatar text="L" :size="56" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxAvatar } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 12px; align-items: center;">
-    <CxAvatar text="S" :size="32" />
-    <CxAvatar text="M" :size="40" />
-    <CxAvatar text="L" :size="56" />
-  </div>
-</template>
-
-<script>
-import { CxAvatar } from '@chronixjs/ui-vue2';
-export default { components: { CxAvatar } };
-</script>
-```
-
-```tsx [React]
-import { CxAvatar } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-      <CxAvatar text="S" size={32} />
-      <CxAvatar text="M" size={40} />
-      <CxAvatar text="L" size={56} />
-    </div>
-  );
-}
-```
-
-:::
-
-## 形状
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 12px;">
-    <CxAvatar text="C" shape="circle" />
-    <CxAvatar text="R" shape="round" />
-    <CxAvatar text="S" shape="square" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxAvatar } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 12px;">
-    <CxAvatar text="C" shape="circle" />
-    <CxAvatar text="R" shape="round" />
-    <CxAvatar text="S" shape="square" />
-  </div>
-</template>
-
-<script>
-import { CxAvatar } from '@chronixjs/ui-vue2';
-export default { components: { CxAvatar } };
-</script>
-```
-
-```tsx [React]
-import { CxAvatar } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 12 }}>
-      <CxAvatar text="C" shape="circle" />
-      <CxAvatar text="R" shape="round" />
-      <CxAvatar text="S" shape="square" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="图片头像" description="通过 src 属性设置头像图片地址。" :code="avatarImageCode" :code-vue2="avatarImageVue2" :code-react="avatarImageReact">
+  <AvatarImage />
+</DemoBox>
 
 ## API 参考
 

@@ -1,3 +1,10 @@
+<script setup>
+import BreadcrumbBasic from './demos/breadcrumb/BreadcrumbBasic.vue';
+import breadcrumbBasicCode from './demos/breadcrumb/BreadcrumbBasic.vue?raw';
+import breadcrumbBasicVue2 from './demos/breadcrumb/BreadcrumbBasic.vue2?raw';
+import breadcrumbBasicReact from './demos/breadcrumb/BreadcrumbBasic.react?raw';
+</script>
+
 # Breadcrumb 面包屑
 
 层级路径导航，显示用户在页面层级中的当前位置。
@@ -16,63 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBreadcrumb :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxBreadcrumb } from '@chronixjs/ui-vue3';
-
-const items = ref([
-  { key: 'home', label: 'Home', href: '/', clickable: false },
-  { key: 'products', label: 'Products', href: '/products', clickable: true },
-  { key: 'detail', label: 'Detail', href: undefined, clickable: false },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBreadcrumb :items="items" />
-</template>
-
-<script>
-import { CxBreadcrumb } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxBreadcrumb },
-  data() {
-    return {
-      items: [
-        { key: 'home', label: 'Home', href: '/', clickable: false },
-        { key: 'products', label: 'Products', href: '/products', clickable: true },
-        { key: 'detail', label: 'Detail', href: undefined, clickable: false },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxBreadcrumb } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items] = useState([
-    { key: 'home', label: 'Home', href: '/', clickable: false },
-    { key: 'products', label: 'Products', href: '/products', clickable: true },
-    { key: 'detail', label: 'Detail', href: undefined, clickable: false },
-  ]);
-
-  return <CxBreadcrumb items={items} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="通过 items 属性设置面包屑导航项。" :code="breadcrumbBasicCode" :code-vue2="breadcrumbBasicVue2" :code-react="breadcrumbBasicReact">
+  <BreadcrumbBasic />
+</DemoBox>
 
 ## 自定义分隔符
 

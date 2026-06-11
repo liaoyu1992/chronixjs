@@ -1,0 +1,8 @@
+<template>
+  <CxCheckbox :checked="true" indeterminate label="Select all" />
+</template>
+
+<script>
+import { CxCheckbox } from '@chronixjs/ui-vue2';
+export default { components: { CxCheckbox } };
+</script>

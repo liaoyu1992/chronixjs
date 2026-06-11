@@ -1,3 +1,10 @@
+<script setup>
+import ColorPickerBasic from '../../../ui/components/demos/color-picker/ColorPickerBasic.vue';
+import colorPickerBasicCode from '../../../ui/components/demos/color-picker/ColorPickerBasic.vue?raw';
+import colorPickerBasicVue2 from '../../../ui/components/demos/color-picker/ColorPickerBasic.vue2?raw';
+import colorPickerBasicReact from '../../../ui/components/demos/color-picker/ColorPickerBasic.react?raw';
+</script>
+
 # Color Picker
 
 Color picker with hex input, hue strip, and optional swatches.
@@ -16,49 +23,9 @@ Color picker with hex input, hue strip, and optional swatches.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxColorPicker v-model:value="color" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxColorPicker } from '@chronixjs/ui-vue3';
-
-const color = ref<string | null>('#3b82f6');
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxColorPicker :value.sync="color" />
-</template>
-
-<script>
-import { CxColorPicker } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxColorPicker },
-  data() {
-    return { color: '#3b82f6' };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxColorPicker } from '@chronixjs/ui-react';
-
-export function App() {
-  const [color, setColor] = useState<string | null>('#3b82f6');
-
-  return <CxColorPicker value={color} onUpdateValue={setColor} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Basic color picker usage." :code="colorPickerBasicCode" :code-vue2="colorPickerBasicVue2" :code-react="colorPickerBasicReact">
+  <ColorPickerBasic />
+</DemoBox>
 
 ## With Swatches
 

@@ -1,0 +1,22 @@
+import { useState } from 'react';
+import { CxMention } from '@chronixjs/ui-react';
+
+const options = [
+  { key: 'alice', label: 'Alice', value: 'alice' },
+  { key: 'bob', label: 'Bob', value: 'bob' },
+  { key: 'charlie', label: 'Charlie', value: 'charlie' },
+];
+
+export function App() {
+  const [text, setText] = useState('');
+
+  return (
+    <CxMention
+      value={text}
+      onUpdateValue={setText}
+      options={options}
+      trigger="@"
+      placeholder="Type @ to mention someone..."
+    />
+  );
+}

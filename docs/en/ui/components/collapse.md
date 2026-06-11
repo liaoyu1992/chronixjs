@@ -1,3 +1,14 @@
+<script setup>
+import CollapseBasic from '../../../ui/components/demos/collapse/CollapseBasic.vue';
+import collapseBasicCode from '../../../ui/components/demos/collapse/CollapseBasic.vue?raw';
+import collapseBasicVue2 from '../../../ui/components/demos/collapse/CollapseBasic.vue2?raw';
+import collapseBasicReact from '../../../ui/components/demos/collapse/CollapseBasic.react?raw';
+import CollapseAccordion from '../../../ui/components/demos/collapse/CollapseAccordion.vue';
+import collapseAccordionCode from '../../../ui/components/demos/collapse/CollapseAccordion.vue?raw';
+import collapseAccordionVue2 from '../../../ui/components/demos/collapse/CollapseAccordion.vue2?raw';
+import collapseAccordionReact from '../../../ui/components/demos/collapse/CollapseAccordion.react?raw';
+</script>
+
 # Collapse
 
 An accordion/multi-expand panel list for toggling content visibility.
@@ -6,207 +17,25 @@ An accordion/multi-expand panel list for toggling content visibility.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCollapse :items="items" v-model:value="active" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCollapse } from '@chronixjs/ui-vue3';
-
-const active = ref<string[]>([]);
-const items = [
-  { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-  { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-  { key: '3', title: 'Panel 3', content: 'Content of panel 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCollapse :items="items" v-model:value="active" />
-</template>
-
-<script>
-import { CxCollapse } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxCollapse },
-  data() {
-    return {
-      active: [],
-      items: [
-        { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-        { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-        { key: '3', title: 'Panel 3', content: 'Content of panel 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCollapse } from '@chronixjs/ui-react';
-
-const items = [
-  { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-  { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-  { key: '3', title: 'Panel 3', content: 'Content of panel 3' },
-];
-
-export function App() {
-  const [active, setActive] = useState<string[]>([]);
-
-  return <CxCollapse items={items} value={active} onUpdateValue={setActive} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Multi-expand collapse panels." :code="collapseBasicCode" :code-vue2="collapseBasicVue2" :code-react="collapseBasicReact">
+  <CollapseBasic />
+</DemoBox>
 
 ## Accordion Mode
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCollapse :items="items" v-model:value="active" accordion />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCollapse } from '@chronixjs/ui-vue3';
-
-const active = ref<string>('');
-const items = [
-  { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-  { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-  { key: '3', title: 'Panel 3', content: 'Content of panel 3' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCollapse :items="items" v-model:value="active" accordion />
-</template>
-
-<script>
-import { CxCollapse } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxCollapse },
-  data() {
-    return {
-      active: '',
-      items: [
-        { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-        { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-        { key: '3', title: 'Panel 3', content: 'Content of panel 3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCollapse } from '@chronixjs/ui-react';
-
-const items = [
-  { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-  { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-  { key: '3', title: 'Panel 3', content: 'Content of panel 3' },
-];
-
-export function App() {
-  const [active, setActive] = useState<string>('');
-
-  return <CxCollapse items={items} value={active} onUpdateValue={setActive} accordion />;
-}
-```
-
-:::
-
-## Arrow Placement
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCollapse :items="items" v-model:value="active" arrow-placement="right" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCollapse } from '@chronixjs/ui-vue3';
-
-const active = ref<string[]>([]);
-const items = [
-  { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-  { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCollapse :items="items" v-model:value="active" arrow-placement="right" />
-</template>
-
-<script>
-import { CxCollapse } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxCollapse },
-  data() {
-    return {
-      active: [],
-      items: [
-        { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-        { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCollapse } from '@chronixjs/ui-react';
-
-const items = [
-  { key: '1', title: 'Panel 1', content: 'Content of panel 1' },
-  { key: '2', title: 'Panel 2', content: 'Content of panel 2' },
-];
-
-export function App() {
-  const [active, setActive] = useState<string[]>([]);
-
-  return (
-    <CxCollapse items={items} value={active} onUpdateValue={setActive} arrowPlacement="right" />
-  );
-}
-```
-
-:::
+<DemoBox title="Accordion Mode" description="Use the accordion prop to allow only one panel to be expanded at a time." :code="collapseAccordionCode" :code-vue2="collapseAccordionVue2" :code-react="collapseAccordionReact">
+  <CollapseAccordion />
+</DemoBox>
 
 ## API Reference
 
@@ -221,7 +50,7 @@ export function App() {
 
 ### Events
 
-| Event          | Payload                            | Description             |
-| -------------- | ---------------------------------- | ----------------------- |
-| `update:value` | `string \| string[]`               | Expanded keys changed   |
-| `item-change`  | `(key: string, expanded: boolean)` | Individual item toggled |
+| Event          | Payload                            | Description            |
+| -------------- | ---------------------------------- | ---------------------- |
+| `update:value` | `string \| string[]`               | Fired when keys change |
+| `item-change`  | `(key: string, expanded: boolean)` | Fired on item toggle   |

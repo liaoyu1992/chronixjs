@@ -1,0 +1,10 @@
+<template>
+  <CxElement tag="section">
+    <p>Content inside a themed section element.</p>
+  </CxElement>
+</template>
+
+<script>
+import { CxElement } from '@chronixjs/ui-vue2';
+export default { components: { CxElement } };
+</script>

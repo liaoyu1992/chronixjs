@@ -1,0 +1,11 @@
+<template>
+  <CxAlert v-if="show" type="warning" closable @close="show = false">This alert can be closed.</CxAlert>
+</template>
+
+<script>
+import { CxAlert } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxAlert },
+  data() { return { show: true }; },
+};
+</script>

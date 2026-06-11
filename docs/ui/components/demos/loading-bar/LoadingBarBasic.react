@@ -1,0 +1,16 @@
+import { useLoadingBar } from '@chronixjs/ui-react';
+
+export function App() {
+  const loadingBar = useLoadingBar();
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <button style={{ padding: '4px 12px', cursor: 'pointer' }} onClick={() => loadingBar.start()}>Start</button>
+        <button style={{ padding: '4px 12px', cursor: 'pointer' }} onClick={() => loadingBar.finish()}>Finish</button>
+        <button style={{ padding: '4px 12px', cursor: 'pointer' }} onClick={() => loadingBar.error()}>Error</button>
+      </div>
+      <div className={loadingBar.classList.join(' ')} />
+    </div>
+  );
+}

@@ -1,149 +1,51 @@
+<script setup>
+import EmptyBasic from '../../../ui/components/demos/empty/EmptyBasic.vue';
+import emptyBasicCode from '../../../ui/components/demos/empty/EmptyBasic.vue?raw';
+import emptyBasicVue2 from '../../../ui/components/demos/empty/EmptyBasic.vue2?raw';
+import emptyBasicReact from '../../../ui/components/demos/empty/EmptyBasic.react?raw';
+import EmptyDescription from '../../../ui/components/demos/empty/EmptyDescription.vue';
+import emptyDescriptionCode from '../../../ui/components/demos/empty/EmptyDescription.vue?raw';
+import emptyDescriptionVue2 from '../../../ui/components/demos/empty/EmptyDescription.vue2?raw';
+import emptyDescriptionReact from '../../../ui/components/demos/empty/EmptyDescription.react?raw';
+import EmptySizes from '../../../ui/components/demos/empty/EmptySizes.vue';
+import emptySizesCode from '../../../ui/components/demos/empty/EmptySizes.vue?raw';
+import emptySizesVue2 from '../../../ui/components/demos/empty/EmptySizes.vue2?raw';
+import emptySizesReact from '../../../ui/components/demos/empty/EmptySizes.react?raw';
+</script>
+
 # Empty
 
-A placeholder component for empty states with an icon and description.
+Empty state placeholder component with icon and description text.
 
 ## Install
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-Simple empty state with default description:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxEmpty />
-</template>
-
-<script setup lang="ts">
-import { CxEmpty } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxEmpty />
-</template>
-
-<script>
-import { CxEmpty } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxEmpty },
-};
-</script>
-```
-
-```tsx [React]
-import { CxEmpty } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxEmpty />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Simple empty state with default description." :code="emptyBasicCode" :code-vue2="emptyBasicVue2" :code-react="emptyBasicReact">
+  <EmptyBasic />
+</DemoBox>
 
 ## Custom Description
 
-Set a custom description text for the empty state:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxEmpty description="No results found" />
-</template>
-
-<script setup lang="ts">
-import { CxEmpty } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxEmpty description="No results found" />
-</template>
-
-<script>
-import { CxEmpty } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxEmpty },
-};
-</script>
-```
-
-```tsx [React]
-import { CxEmpty } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxEmpty description="No results found" />;
-}
-```
-
-:::
+<DemoBox title="Custom Description" description="Set custom description text with the description prop." :code="emptyDescriptionCode" :code-vue2="emptyDescriptionVue2" :code-react="emptyDescriptionReact">
+  <EmptyDescription />
+</DemoBox>
 
 ## Sizes
 
-Use the `size` prop to control the empty state size:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <CxEmpty size="small" description="Small empty" />
-    <CxEmpty size="medium" description="Medium empty" />
-    <CxEmpty size="large" description="Large empty" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxEmpty } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 24px;">
-    <CxEmpty size="small" description="Small empty" />
-    <CxEmpty size="medium" description="Medium empty" />
-    <CxEmpty size="large" description="Large empty" />
-  </div>
-</template>
-
-<script>
-import { CxEmpty } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxEmpty },
-};
-</script>
-```
-
-```tsx [React]
-import { CxEmpty } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-      <CxEmpty size="small" description="Small empty" />
-      <CxEmpty size="medium" description="Medium empty" />
-      <CxEmpty size="large" description="Large empty" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Sizes" description="Control size with the size prop." :code="emptySizesCode" :code-vue2="emptySizesVue2" :code-react="emptySizesReact">
+  <EmptySizes />
+</DemoBox>
 
 ## API Reference
 
@@ -151,5 +53,12 @@ export function App() {
 
 | Prop          | Type                             | Default     | Description      |
 | ------------- | -------------------------------- | ----------- | ---------------- |
-| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | Empty size       |
+| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | Empty state size |
 | `description` | `string`                         | `'No data'` | Description text |
+
+### Slots
+
+| Slot      | Description                 |
+| --------- | --------------------------- |
+| `default` | Extra action area at bottom |
+| `icon`    | Custom icon content         |

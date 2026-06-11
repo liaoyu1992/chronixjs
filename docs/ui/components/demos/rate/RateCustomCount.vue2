@@ -1,0 +1,11 @@
+<template>
+  <CxRate :value.sync="rating" :count="10" />
+</template>
+
+<script>
+import { CxRate } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxRate },
+  data() { return { rating: 7 }; },
+};
+</script>

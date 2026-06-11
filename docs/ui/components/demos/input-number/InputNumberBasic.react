@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxInputNumber } from '@chronixjs/ui-react';
+
+export function App() {
+  const [count, setCount] = useState<number | null>(0);
+  return <CxInputNumber value={count} onUpdateValue={setCount} step={1} />;
+}

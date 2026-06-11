@@ -1,3 +1,10 @@
+<script setup>
+import LayoutBasic from './demos/layout/LayoutBasic.vue';
+import layoutBasicCode from './demos/layout/LayoutBasic.vue?raw';
+import layoutBasicVue2 from './demos/layout/LayoutBasic.vue2?raw';
+import layoutBasicReact from './demos/layout/LayoutBasic.react?raw';
+</script>
+
 # Layout 布局
 
 包含 Header、Sider、Content 和 Footer 区域的页面布局系统。
@@ -16,89 +23,9 @@
 
 ## 基础用法
 
-经典的页面布局，包含头部、侧边栏、内容和底部：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxLayout>
-    <CxLayoutHeader>Header</CxLayoutHeader>
-    <CxLayout>
-      <CxLayoutSider>Sider</CxLayoutSider>
-      <CxLayoutContent>Content</CxLayoutContent>
-    </CxLayout>
-    <CxLayoutFooter>Footer</CxLayoutFooter>
-  </CxLayout>
-</template>
-
-<script setup lang="ts">
-import {
-  CxLayout,
-  CxLayoutHeader,
-  CxLayoutSider,
-  CxLayoutContent,
-  CxLayoutFooter,
-} from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxLayout>
-    <CxLayoutHeader>Header</CxLayoutHeader>
-    <CxLayout>
-      <CxLayoutSider>Sider</CxLayoutSider>
-      <CxLayoutContent>Content</CxLayoutContent>
-    </CxLayout>
-    <CxLayoutFooter>Footer</CxLayoutFooter>
-  </CxLayout>
-</template>
-
-<script>
-import {
-  CxLayout,
-  CxLayoutHeader,
-  CxLayoutSider,
-  CxLayoutContent,
-  CxLayoutFooter,
-} from '@chronixjs/ui-vue2';
-export default {
-  components: {
-    CxLayout,
-    CxLayoutHeader,
-    CxLayoutSider,
-    CxLayoutContent,
-    CxLayoutFooter,
-  },
-};
-</script>
-```
-
-```tsx [React]
-import {
-  CxLayout,
-  CxLayoutHeader,
-  CxLayoutSider,
-  CxLayoutContent,
-  CxLayoutFooter,
-} from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxLayout>
-      <CxLayoutHeader>Header</CxLayoutHeader>
-      <CxLayout>
-        <CxLayoutSider>Sider</CxLayoutSider>
-        <CxLayoutContent>Content</CxLayoutContent>
-      </CxLayout>
-      <CxLayoutFooter>Footer</CxLayoutFooter>
-    </CxLayout>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="包含头部、内容和底部的简单页面布局。" :code="layoutBasicCode" :code-vue2="layoutBasicVue2" :code-react="layoutBasicReact">
+  <LayoutBasic />
+</DemoBox>
 
 ## 可折叠侧边栏
 

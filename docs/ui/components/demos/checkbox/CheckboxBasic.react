@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxCheckbox } from '@chronixjs/ui-react';
+
+export function App() {
+  const [checked, setChecked] = useState(false);
+  return <CxCheckbox checked={checked} onUpdateChecked={setChecked} label="Accept terms" />;
+}

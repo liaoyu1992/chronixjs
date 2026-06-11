@@ -1,0 +1,12 @@
+<template>
+  <CxFlex gap="medium" align="center">
+    <CxButton>Button 1</CxButton>
+    <CxButton variant="primary">Button 2</CxButton>
+    <CxButton>Button 3</CxButton>
+  </CxFlex>
+</template>
+
+<script>
+import { CxFlex, CxButton } from '@chronixjs/ui-vue2';
+export default { components: { CxFlex, CxButton } };
+</script>

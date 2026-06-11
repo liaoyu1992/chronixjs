@@ -1,0 +1,42 @@
+<template>
+  <div style="height: 300px;">
+    <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :theme="customTheme" />
+  </div>
+</template>
+
+<script>
+import { ChronixGantt } from '@chronixjs/gantt-vue2';
+
+export default {
+  components: { ChronixGantt },
+  data() {
+    return {
+      bars: [
+        { id: 'bar-1', rowId: 'row-1', range: { start: new Date('2026-01-05'), end: new Date('2026-01-15') }, title: 'UI Design', dprIntent: 'crisp-pixel', progress: { value: 80, showText: true } },
+        { id: 'bar-2', rowId: 'row-2', range: { start: new Date('2026-01-12'), end: new Date('2026-01-28') }, title: 'Frontend', dprIntent: 'crisp-pixel', progress: { value: 40, showText: true } },
+        { id: 'bar-3', rowId: 'row-3', range: { start: new Date('2026-01-25'), end: new Date('2026-02-05') }, title: 'QA', dprIntent: 'crisp-pixel' },
+      ],
+      rows: [
+        { id: 'row-1', columns: { name: 'Design' } },
+        { id: 'row-2', columns: { name: 'Development' } },
+        { id: 'row-3', columns: { name: 'Testing' } },
+      ],
+      axisInput: {
+        viewId: 'week',
+        anchorDate: new Date('2026-01-05'),
+        viewportWidth: 800,
+        locale: 'en',
+        weekendsVisible: true,
+      },
+      customTheme: {
+        barBackgroundColor: '#6366f1',
+        barBorderColor: '#4f46e5',
+        barTextColor: '#ffffff',
+        chartBackground: '#f8fafc',
+        headerCellFill: '#f1f5f9',
+        linkDefaultColor: '#94a3b8',
+      },
+    };
+  },
+};
+</script>

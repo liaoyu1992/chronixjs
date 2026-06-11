@@ -1,0 +1,25 @@
+import { useState } from 'react';
+import { CxTree } from '@chronixjs/ui-react';
+
+const items = [
+  {
+    key: 'root-1',
+    label: 'Root 1',
+    children: [
+      { key: 'child-1-1', label: 'Child 1-1' },
+      { key: 'child-1-2', label: 'Child 1-2' },
+    ],
+  },
+  {
+    key: 'root-2',
+    label: 'Root 2',
+    children: [
+      { key: 'child-2-1', label: 'Child 2-1' },
+    ],
+  },
+];
+
+export function App() {
+  const [selected, setSelected] = useState(undefined);
+  return <CxTree value={selected} onUpdateValue={setSelected} items={items} defaultExpandAll={true} />;
+}

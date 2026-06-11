@@ -1,3 +1,10 @@
+<script setup>
+import UploadBasic from './demos/upload/UploadBasic.vue';
+import uploadBasicCode from './demos/upload/UploadBasic.vue?raw';
+import uploadBasicVue2 from './demos/upload/UploadBasic.vue2?raw';
+import uploadBasicReact from './demos/upload/UploadBasic.react?raw';
+</script>
+
 # Upload 上传
 
 带有状态追踪和进度显示的文件上传组件。
@@ -16,54 +23,9 @@
 
 ## 基础用法
 
-指向上传端点的简单文件上传组件。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxUpload action="/api/upload" :file-list="fileList" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxUpload } from '@chronixjs/ui-vue3';
-
-const fileList = ref([]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxUpload action="/api/upload" :file-list="fileList" />
-</template>
-
-<script>
-import { CxUpload } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxUpload },
-  data() {
-    return {
-      fileList: [],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxUpload } from '@chronixjs/ui-react';
-
-export function App() {
-  const [fileList, setFileList] = useState([]);
-
-  return <CxUpload action="/api/upload" fileList={fileList} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="简单的文件上传，通过 accept 限制只能上传图片。" :code="uploadBasicCode" :code-vue2="uploadBasicVue2" :code-react="uploadBasicReact">
+  <UploadBasic />
+</DemoBox>
 
 ## 多文件上传
 

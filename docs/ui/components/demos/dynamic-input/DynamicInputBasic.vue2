@@ -1,0 +1,13 @@
+<template>
+  <CxDynamicInput :value.sync="items" />
+</template>
+
+<script>
+import { CxDynamicInput } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxDynamicInput },
+  data() {
+    return { items: ['Item 1', 'Item 2', 'Item 3'] };
+  },
+};
+</script>

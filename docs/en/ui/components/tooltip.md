@@ -1,3 +1,10 @@
+<script setup>
+import TooltipBasic from '../../../ui/components/demos/tooltip/TooltipBasic.vue';
+import tooltipBasicCode from '../../../ui/components/demos/tooltip/TooltipBasic.vue?raw';
+import tooltipBasicVue2 from '../../../ui/components/demos/tooltip/TooltipBasic.vue2?raw';
+import tooltipBasicReact from '../../../ui/components/demos/tooltip/TooltipBasic.react?raw';
+</script>
+
 # Tooltip
 
 A text-only popup for brief hints on hover.
@@ -6,61 +13,19 @@ A text-only popup for brief hints on hover.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-Wrap any element with `CxTooltip` and set the `content` prop to the hint text. The tooltip appears on hover by default.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTooltip content="This is a tooltip">
-    <CxButton>Hover me</CxButton>
-  </CxTooltip>
-</template>
-
-<script setup lang="ts">
-import { CxTooltip, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTooltip content="This is a tooltip">
-    <CxButton>Hover me</CxButton>
-  </CxTooltip>
-</template>
-
-<script>
-import { CxTooltip, CxButton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTooltip, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxTooltip, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxTooltip content="This is a tooltip">
-      <CxButton>Hover me</CxButton>
-    </CxTooltip>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Tooltip shown on hover with content text." :code="tooltipBasicCode" :code-vue2="tooltipBasicVue2" :code-react="tooltipBasicReact">
+  <TooltipBasic />
+</DemoBox>
 
 ## Placements
 
@@ -73,71 +38,70 @@ Available placements: `top`, `top-start`, `top-end`, `bottom`, `bottom-start`, `
 ```vue [Vue 3]
 <template>
   <div style="display: flex; gap: 8px;">
-    <CxTooltip content="Top tooltip" placement="top">
-      <CxButton>Top</CxButton>
-    </CxTooltip>
-    <CxTooltip content="Bottom tooltip" placement="bottom">
-      <CxButton>Bottom</CxButton>
-    </CxTooltip>
-    <CxTooltip content="Left tooltip" placement="left">
-      <CxButton>Left</CxButton>
-    </CxTooltip>
-    <CxTooltip content="Right tooltip" placement="right">
-      <CxButton>Right</CxButton>
-    </CxTooltip>
+    <ChronixTooltip content="Top tooltip" placement="top">
+      <ChronixButton>Top</ChronixButton>
+    </ChronixTooltip>
+    <ChronixTooltip content="Bottom tooltip" placement="bottom">
+      <ChronixButton>Bottom</ChronixButton>
+    </ChronixTooltip>
+    <ChronixTooltip content="Left tooltip" placement="left">
+      <ChronixButton>Left</ChronixButton>
+    </ChronixTooltip>
+    <ChronixTooltip content="Right tooltip" placement="right">
+      <ChronixButton>Right</ChronixButton>
+    </ChronixTooltip>
   </div>
 </template>
 
 <script setup lang="ts">
-import { CxTooltip, CxButton } from '@chronixjs/ui-vue3';
+import { ChronixTooltip, ChronixButton } from '@chronixjs/ui-vue3';
 </script>
 ```
 
 ```vue [Vue 2]
 <template>
   <div style="display: flex; gap: 8px;">
-    <CxTooltip content="Top tooltip" placement="top">
-      <CxButton>Top</CxButton>
-    </CxTooltip>
-    <CxTooltip content="Bottom tooltip" placement="bottom">
-      <CxButton>Bottom</CxButton>
-    </CxTooltip>
-    <CxTooltip content="Left tooltip" placement="left">
-      <CxButton>Left</CxButton>
-    </CxTooltip>
-    <CxTooltip content="Right tooltip" placement="right">
-      <CxButton>Right</CxButton>
-    </CxTooltip>
+    <ChronixTooltip content="Top tooltip" placement="top">
+      <ChronixButton>Top</ChronixButton>
+    </ChronixTooltip>
+    <ChronixTooltip content="Bottom tooltip" placement="bottom">
+      <ChronixButton>Bottom</ChronixButton>
+    </ChronixTooltip>
+    <ChronixTooltip content="Left tooltip" placement="left">
+      <ChronixButton>Left</ChronixButton>
+    </ChronixTooltip>
+    <ChronixTooltip content="Right tooltip" placement="right">
+      <ChronixButton>Right</ChronixButton>
+    </ChronixTooltip>
   </div>
 </template>
 
 <script>
-import { CxTooltip, CxButton } from '@chronixjs/ui-vue2';
-
+import { ChronixTooltip, ChronixButton } from '@chronixjs/ui-vue2';
 export default {
-  components: { CxTooltip, CxButton },
+  components: { ChronixTooltip, ChronixButton },
 };
 </script>
 ```
 
 ```tsx [React]
-import { CxTooltip, CxButton } from '@chronixjs/ui-react';
+import { ChronixTooltip, ChronixButton } from '@chronixjs/ui-react';
 
 export function App() {
   return (
     <div style={{ display: 'flex', gap: 8 }}>
-      <CxTooltip content="Top tooltip" placement="top">
-        <CxButton>Top</CxButton>
-      </CxTooltip>
-      <CxTooltip content="Bottom tooltip" placement="bottom">
-        <CxButton>Bottom</CxButton>
-      </CxTooltip>
-      <CxTooltip content="Left tooltip" placement="left">
-        <CxButton>Left</CxButton>
-      </CxTooltip>
-      <CxTooltip content="Right tooltip" placement="right">
-        <CxButton>Right</CxButton>
-      </CxTooltip>
+      <ChronixTooltip content="Top tooltip" placement="top">
+        <ChronixButton>Top</ChronixButton>
+      </ChronixTooltip>
+      <ChronixTooltip content="Bottom tooltip" placement="bottom">
+        <ChronixButton>Bottom</ChronixButton>
+      </ChronixTooltip>
+      <ChronixTooltip content="Left tooltip" placement="left">
+        <ChronixButton>Left</ChronixButton>
+      </ChronixTooltip>
+      <ChronixTooltip content="Right tooltip" placement="right">
+        <ChronixButton>Right</ChronixButton>
+      </ChronixTooltip>
     </div>
   );
 }

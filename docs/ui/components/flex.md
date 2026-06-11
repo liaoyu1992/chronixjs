@@ -1,3 +1,18 @@
+<script setup>
+import FlexBasic from './demos/flex/FlexBasic.vue';
+import flexBasicCode from './demos/flex/FlexBasic.vue?raw';
+import flexBasicVue2 from './demos/flex/FlexBasic.vue2?raw';
+import flexBasicReact from './demos/flex/FlexBasic.react?raw';
+import FlexVertical from './demos/flex/FlexVertical.vue';
+import flexVerticalCode from './demos/flex/FlexVertical.vue?raw';
+import flexVerticalVue2 from './demos/flex/FlexVertical.vue2?raw';
+import flexVerticalReact from './demos/flex/FlexVertical.react?raw';
+import FlexGap from './demos/flex/FlexGap.vue';
+import flexGapCode from './demos/flex/FlexGap.vue?raw';
+import flexGapVue2 from './demos/flex/FlexGap.vue2?raw';
+import flexGapReact from './demos/flex/FlexGap.react?raw';
+</script>
+
 # Flex 弹性布局
 
 Flexbox 布局容器，使用符合 CSS 习惯的属性名称。
@@ -6,111 +21,31 @@ Flexbox 布局容器，使用符合 CSS 习惯的属性名称。
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
+<DemoBox title="基础用法" description="使用 Flex 进行水平布局，通过 gap 属性设置间距。" :code="flexBasicCode" :code-vue2="flexBasicVue2" :code-react="flexBasicReact">
+  <FlexBasic />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <CxFlex gap="medium" align="center">
-    <div>Item 1</div>
-    <div>Item 2</div>
-    <div>Item 3</div>
-  </CxFlex>
-</template>
+## 列方向
 
-<script setup lang="ts">
-import { CxFlex } from '@chronixjs/ui-vue3';
-</script>
-```
+<DemoBox title="列方向" description="通过 direction 属性设置 column 方向排列。" :code="flexVerticalCode" :code-vue2="flexVerticalVue2" :code-react="flexVerticalReact">
+  <FlexVertical />
+</DemoBox>
 
-```vue [Vue 2]
-<template>
-  <CxFlex gap="medium" align="center">
-    <div>Item 1</div>
-    <div>Item 2</div>
-    <div>Item 3</div>
-  </CxFlex>
-</template>
+## 自定义间距
 
-<script>
-import { CxFlex } from '@chronixjs/ui-vue2';
-export default { components: { CxFlex } };
-</script>
-```
-
-```tsx [React]
-import { CxFlex } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxFlex gap="medium" align="center">
-      <div>Item 1</div>
-      <div>Item 2</div>
-      <div>Item 3</div>
-    </CxFlex>
-  );
-}
-```
-
-:::
-
-## 列方向与换行
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxFlex direction="column" :gap="12" justify="start" wrap="wrap">
-    <div>Row 1</div>
-    <div>Row 2</div>
-    <div>Row 3</div>
-  </CxFlex>
-</template>
-
-<script setup lang="ts">
-import { CxFlex } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxFlex direction="column" :gap="12" justify="start" wrap="wrap">
-    <div>Row 1</div>
-    <div>Row 2</div>
-    <div>Row 3</div>
-  </CxFlex>
-</template>
-
-<script>
-import { CxFlex } from '@chronixjs/ui-vue2';
-export default { components: { CxFlex } };
-</script>
-```
-
-```tsx [React]
-import { CxFlex } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxFlex direction="column" gap={12} justify="start" wrap="wrap">
-      <div>Row 1</div>
-      <div>Row 2</div>
-      <div>Row 3</div>
-    </CxFlex>
-  );
-}
-```
-
-:::
+<DemoBox title="自定义间距" description="通过 gap 属性设置数字类型的间距（像素）。" :code="flexGapCode" :code-vue2="flexGapVue2" :code-react="flexGapReact">
+  <FlexGap />
+</DemoBox>
 
 ## API 参考
 

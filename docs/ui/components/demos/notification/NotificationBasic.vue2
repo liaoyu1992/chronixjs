@@ -1,0 +1,22 @@
+<template>
+  <div style="display: flex; gap: 8px;">
+    <CxButton @click="showInfo">Info</CxButton>
+    <CxButton @click="showSuccess">Success</CxButton>
+    <CxButton @click="showWarning">Warning</CxButton>
+    <CxButton @click="showError">Error</CxButton>
+  </div>
+</template>
+
+<script>
+import { useNotification } from '@chronixjs/ui-vue2';
+import { CxButton } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxButton },
+  methods: {
+    showInfo() { useNotification().info({ title: 'Info', description: 'Notification content' }); },
+    showSuccess() { useNotification().success({ title: 'Success', description: 'Operation done' }); },
+    showWarning() { useNotification().warning({ title: 'Warning', description: 'Check this' }); },
+    showError() { useNotification().error({ title: 'Error', description: 'Something failed' }); },
+  },
+};
+</script>

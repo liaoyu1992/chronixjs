@@ -1,102 +1,41 @@
+<script setup>
+import SpinBasic from '../../../ui/components/demos/spin/SpinBasic.vue';
+import spinBasicCode from '../../../ui/components/demos/spin/SpinBasic.vue?raw';
+import spinBasicVue2 from '../../../ui/components/demos/spin/SpinBasic.vue2?raw';
+import spinBasicReact from '../../../ui/components/demos/spin/SpinBasic.react?raw';
+import SpinSizes from '../../../ui/components/demos/spin/SpinSizes.vue';
+import spinSizesCode from '../../../ui/components/demos/spin/SpinSizes.vue?raw';
+import spinSizesVue2 from '../../../ui/components/demos/spin/SpinSizes.vue2?raw';
+import spinSizesReact from '../../../ui/components/demos/spin/SpinSizes.react?raw';
+</script>
+
 # Spin
 
-Loading-state indicator with an indeterminate rotating spinner and optional description.
+Loading state indicator with indeterminate spin animation and optional description.
 
 ## Install
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSpin size="medium" description="Loading..." />
-</template>
-
-<script setup lang="ts">
-import { CxSpin } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSpin size="medium" description="Loading..." />
-</template>
-
-<script>
-import { CxSpin } from '@chronixjs/ui-vue2';
-export default { components: { CxSpin } };
-</script>
-```
-
-```tsx [React]
-import { CxSpin } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxSpin size="medium" description="Loading..." />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Loading indicator with description text." :code="spinBasicCode" :code-vue2="spinBasicVue2" :code-react="spinBasicReact">
+  <SpinBasic />
+</DemoBox>
 
 ## Sizes
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 24px; align-items: center;">
-    <CxSpin size="small" />
-    <CxSpin size="medium" />
-    <CxSpin size="large" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSpin } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 24px; align-items: center;">
-    <CxSpin size="small" />
-    <CxSpin size="medium" />
-    <CxSpin size="large" />
-  </div>
-</template>
-
-<script>
-import { CxSpin } from '@chronixjs/ui-vue2';
-export default { components: { CxSpin } };
-</script>
-```
-
-```tsx [React]
-import { CxSpin } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-      <CxSpin size="small" />
-      <CxSpin size="medium" />
-      <CxSpin size="large" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Sizes" description="Set indicator size with the size prop." :code="spinSizesCode" :code-vue2="spinSizesVue2" :code-react="spinSizesReact">
+  <SpinSizes />
+</DemoBox>
 
 ## API Reference
 
@@ -104,6 +43,6 @@ export function App() {
 
 | Prop          | Type                             | Default     | Description                       |
 | ------------- | -------------------------------- | ----------- | --------------------------------- |
-| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | Spinner size                      |
-| `show`        | `boolean`                        | `true`      | Toggle visibility without unmount |
-| `description` | `string \| undefined`            | `undefined` | Text below the spinner            |
+| `size`        | `'small' \| 'medium' \| 'large'` | `'medium'`  | Indicator size                    |
+| `show`        | `boolean`                        | `true`      | Toggle visibility (keeps mounted) |
+| `description` | `string \| undefined`            | `undefined` | Text below the indicator          |

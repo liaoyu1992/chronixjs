@@ -1,0 +1,5 @@
+import { CxQrCode } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxQrCode value="https://chronixjs.com" size={128} />;
+}

@@ -1,3 +1,10 @@
+<script setup>
+import CarouselBasic from './demos/carousel/CarouselBasic.vue';
+import carouselBasicCode from './demos/carousel/CarouselBasic.vue?raw';
+import carouselBasicVue2 from './demos/carousel/CarouselBasic.vue2?raw';
+import carouselBasicReact from './demos/carousel/CarouselBasic.react?raw';
+</script>
+
 # Carousel 走马灯
 
 幻灯片轮播组件，支持自动播放、指示点、前进/后退箭头和缩略图条。
@@ -6,272 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCarousel v-model:value="current" :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCarousel } from '@chronixjs/ui-vue3';
-
-const current = ref(0);
-const items = ref([
-  { key: 's1', content: 'Slide 1 — Introduction' },
-  { key: 's2', content: 'Slide 2 — Features' },
-  { key: 's3', content: 'Slide 3 — Get Started' },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCarousel :value.sync="current" :items="items" />
-</template>
-
-<script>
-import { CxCarousel } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCarousel },
-  data() {
-    return {
-      current: 0,
-      items: [
-        { key: 's1', content: 'Slide 1 — Introduction' },
-        { key: 's2', content: 'Slide 2 — Features' },
-        { key: 's3', content: 'Slide 3 — Get Started' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCarousel } from '@chronixjs/ui-react';
-
-export function App() {
-  const [current, setCurrent] = useState(0);
-  const [items] = useState([
-    { key: 's1', content: 'Slide 1 — Introduction' },
-    { key: 's2', content: 'Slide 2 — Features' },
-    { key: 's3', content: 'Slide 3 — Get Started' },
-  ]);
-
-  return <CxCarousel value={current} onUpdateValue={setCurrent} items={items} />;
-}
-```
-
-:::
-
-## 自动播放
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCarousel v-model:value="current" :items="items" autoplay :interval-ms="2000" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCarousel } from '@chronixjs/ui-vue3';
-
-const current = ref(0);
-const items = ref([
-  { key: 'a', content: 'Auto Slide A' },
-  { key: 'b', content: 'Auto Slide B' },
-  { key: 'c', content: 'Auto Slide C' },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCarousel :value.sync="current" :items="items" autoplay :interval-ms="2000" />
-</template>
-
-<script>
-import { CxCarousel } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCarousel },
-  data() {
-    return {
-      current: 0,
-      items: [
-        { key: 'a', content: 'Auto Slide A' },
-        { key: 'b', content: 'Auto Slide B' },
-        { key: 'c', content: 'Auto Slide C' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCarousel } from '@chronixjs/ui-react';
-
-export function App() {
-  const [current, setCurrent] = useState(0);
-  const [items] = useState([
-    { key: 'a', content: 'Auto Slide A' },
-    { key: 'b', content: 'Auto Slide B' },
-    { key: 'c', content: 'Auto Slide C' },
-  ]);
-
-  return (
-    <CxCarousel
-      value={current}
-      onUpdateValue={setCurrent}
-      items={items}
-      autoplay
-      intervalMs={2000}
-    />
-  );
-}
-```
-
-:::
-
-## 垂直方向
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCarousel v-model:value="current" :items="items" direction="vertical" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCarousel } from '@chronixjs/ui-vue3';
-
-const current = ref(0);
-const items = ref([
-  { key: 'v1', content: 'Vertical Slide 1' },
-  { key: 'v2', content: 'Vertical Slide 2' },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCarousel :value.sync="current" :items="items" direction="vertical" />
-</template>
-
-<script>
-import { CxCarousel } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCarousel },
-  data() {
-    return {
-      current: 0,
-      items: [
-        { key: 'v1', content: 'Vertical Slide 1' },
-        { key: 'v2', content: 'Vertical Slide 2' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCarousel } from '@chronixjs/ui-react';
-
-export function App() {
-  const [current, setCurrent] = useState(0);
-  const [items] = useState([
-    { key: 'v1', content: 'Vertical Slide 1' },
-    { key: 'v2', content: 'Vertical Slide 2' },
-  ]);
-
-  return (
-    <CxCarousel value={current} onUpdateValue={setCurrent} items={items} direction="vertical" />
-  );
-}
-```
-
-:::
-
-## 带缩略图
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCarousel v-model:value="current" :items="items" thumbnails />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCarousel } from '@chronixjs/ui-vue3';
-
-const current = ref(0);
-const items = ref([
-  { key: 't1', content: 'Photo 1', thumbnailLabel: '1' },
-  { key: 't2', content: 'Photo 2', thumbnailLabel: '2' },
-  { key: 't3', content: 'Photo 3', thumbnailLabel: '3' },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCarousel :value.sync="current" :items="items" thumbnails />
-</template>
-
-<script>
-import { CxCarousel } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCarousel },
-  data() {
-    return {
-      current: 0,
-      items: [
-        { key: 't1', content: 'Photo 1', thumbnailLabel: '1' },
-        { key: 't2', content: 'Photo 2', thumbnailLabel: '2' },
-        { key: 't3', content: 'Photo 3', thumbnailLabel: '3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCarousel } from '@chronixjs/ui-react';
-
-export function App() {
-  const [current, setCurrent] = useState(0);
-  const [items] = useState([
-    { key: 't1', content: 'Photo 1', thumbnailLabel: '1' },
-    { key: 't2', content: 'Photo 2', thumbnailLabel: '2' },
-    { key: 't3', content: 'Photo 3', thumbnailLabel: '3' },
-  ]);
-
-  return <CxCarousel value={current} onUpdateValue={setCurrent} items={items} thumbnails />;
-}
-```
-
-:::
+<DemoBox title="基础走马灯" description="3 张幻灯片，显示指示点。" :code="carouselBasicCode" :code-vue2="carouselBasicVue2" :code-react="carouselBasicReact">
+  <CarouselBasic />
+</DemoBox>
 
 ## API 参考
 

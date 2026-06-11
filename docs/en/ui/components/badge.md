@@ -1,247 +1,71 @@
+<script setup>
+import BadgeBasic from '../../../ui/components/demos/badge/BadgeBasic.vue';
+import badgeBasicCode from '../../../ui/components/demos/badge/BadgeBasic.vue?raw';
+import badgeBasicVue2 from '../../../ui/components/demos/badge/BadgeBasic.vue2?raw';
+import badgeBasicReact from '../../../ui/components/demos/badge/BadgeBasic.react?raw';
+import BadgeTypes from '../../../ui/components/demos/badge/BadgeTypes.vue';
+import badgeTypesCode from '../../../ui/components/demos/badge/BadgeTypes.vue?raw';
+import badgeTypesVue2 from '../../../ui/components/demos/badge/BadgeTypes.vue2?raw';
+import badgeTypesReact from '../../../ui/components/demos/badge/BadgeTypes.react?raw';
+import BadgeDot from '../../../ui/components/demos/badge/BadgeDot.vue';
+import badgeDotCode from '../../../ui/components/demos/badge/BadgeDot.vue?raw';
+import badgeDotVue2 from '../../../ui/components/demos/badge/BadgeDot.vue2?raw';
+import badgeDotReact from '../../../ui/components/demos/badge/BadgeDot.react?raw';
+import BadgeMax from '../../../ui/components/demos/badge/BadgeMax.vue';
+import badgeMaxCode from '../../../ui/components/demos/badge/BadgeMax.vue?raw';
+import badgeMaxVue2 from '../../../ui/components/demos/badge/BadgeMax.vue2?raw';
+import badgeMaxReact from '../../../ui/components/demos/badge/BadgeMax.react?raw';
+import BadgeProcessing from '../../../ui/components/demos/badge/BadgeProcessing.vue';
+import badgeProcessingCode from '../../../ui/components/demos/badge/BadgeProcessing.vue?raw';
+import badgeProcessingVue2 from '../../../ui/components/demos/badge/BadgeProcessing.vue2?raw';
+import badgeProcessingReact from '../../../ui/components/demos/badge/BadgeProcessing.react?raw';
+</script>
+
 # Badge
 
-Badges display status indicators, counts, or notifications. They can wrap child elements or render standalone.
+Badges display status indicators, counts, or notifications. Can wrap child elements or render standalone.
 
 ## Install
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBadge :value="5">
-    <CxButton>Messages</CxButton>
-  </CxBadge>
-</template>
-
-<script setup lang="ts">
-import { CxBadge, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBadge :value="5">
-    <CxButton>Messages</CxButton>
-  </CxBadge>
-</template>
-
-<script>
-import { CxBadge, CxButton } from '@chronixjs/ui-vue2';
-export default { components: { CxBadge, CxButton } };
-</script>
-```
-
-```tsx [React]
-import { CxBadge, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxBadge value={5}>
-      <CxButton>Messages</CxButton>
-    </CxBadge>
-  );
-}
-```
-
-:::
-
-## Standalone Badge
-
-Without a default slot, the badge renders as a standalone element:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxBadge :value="12" />
-    <CxBadge value="new" type="success" />
-    <CxBadge :value="99" type="error" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxBadge } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxBadge :value="12" />
-    <CxBadge value="new" type="success" />
-    <CxBadge :value="99" type="error" />
-  </div>
-</template>
-
-<script>
-import { CxBadge } from '@chronixjs/ui-vue2';
-export default { components: { CxBadge } };
-</script>
-```
-
-```tsx [React]
-import { CxBadge } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 8 }}>
-      <CxBadge value={12} />
-      <CxBadge value="new" type="success" />
-      <CxBadge value={99} type="error" />
-    </div>
-  );
-}
-```
-
-:::
-
-## Max Value
-
-Truncate large numbers with `max`. Displays as `max+` when exceeded:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBadge :value="150" :max="99">
-    <CxButton>Notifications</CxButton>
-  </CxBadge>
-  <!-- Displays: 99+ -->
-</template>
-
-<script setup lang="ts">
-import { CxBadge, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-import { CxBadge, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxBadge value={150} max={99}>
-      <CxButton>Notifications</CxButton>
-    </CxBadge>
-  );
-}
-```
-
-:::
-
-## Dot Mode
-
-Show a small dot indicator instead of a count:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBadge dot>
-    <CxButton>Updates</CxButton>
-  </CxBadge>
-</template>
-
-<script setup lang="ts">
-import { CxBadge, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-import { CxBadge, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxBadge dot>
-      <CxButton>Updates</CxButton>
-    </CxBadge>
-  );
-}
-```
-
-:::
-
-## Processing (Pulse)
-
-Animate the badge with a pulse effect:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBadge dot processing type="error">
-    <CxButton>Live</CxButton>
-  </CxBadge>
-</template>
-
-<script setup lang="ts">
-import { CxBadge, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-import { CxBadge, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxBadge dot processing type="error">
-      <CxButton>Live</CxButton>
-    </CxBadge>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Badge wrapping a child element with a count." :code="badgeBasicCode" :code-vue2="badgeBasicVue2" :code-react="badgeBasicReact">
+  <BadgeBasic />
+</DemoBox>
 
 ## Badge Types
 
-::: code-group
+<DemoBox title="Badge Types" description="Standalone badges with different semantic types." :code="badgeTypesCode" :code-vue2="badgeTypesVue2" :code-react="badgeTypesReact">
+  <BadgeTypes />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxBadge :value="5" type="default" />
-    <CxBadge :value="5" type="success" />
-    <CxBadge :value="5" type="warning" />
-    <CxBadge :value="5" type="error" />
-    <CxBadge :value="5" type="info" />
-  </div>
-</template>
+## Dot Mode
 
-<script setup lang="ts">
-import { CxBadge } from '@chronixjs/ui-vue3';
-</script>
-```
+<DemoBox title="Dot Mode" description="Use dot prop to show a small dot indicator." :code="badgeDotCode" :code-vue2="badgeDotVue2" :code-react="badgeDotReact">
+  <BadgeDot />
+</DemoBox>
 
-```tsx [React]
-import { CxBadge } from '@chronixjs/ui-react';
+## Max Value
 
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 8 }}>
-      <CxBadge value={5} type="default" />
-      <CxBadge value={5} type="success" />
-      <CxBadge value={5} type="warning" />
-      <CxBadge value={5} type="error" />
-      <CxBadge value={5} type="info" />
-    </div>
-  );
-}
-```
+<DemoBox title="Max Value" description="Use max to truncate large numbers." :code="badgeMaxCode" :code-vue2="badgeMaxVue2" :code-react="badgeMaxReact">
+  <BadgeMax />
+</DemoBox>
 
-:::
+## Processing
+
+<DemoBox title="Processing" description="Use processing prop to add pulse animation." :code="badgeProcessingCode" :code-vue2="badgeProcessingVue2" :code-react="badgeProcessingReact">
+  <BadgeProcessing />
+</DemoBox>
 
 ## API Reference
 

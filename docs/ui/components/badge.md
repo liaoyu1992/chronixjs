@@ -1,3 +1,26 @@
+<script setup>
+import BadgeBasic from './demos/badge/BadgeBasic.vue';
+import badgeBasicCode from './demos/badge/BadgeBasic.vue?raw';
+import badgeBasicVue2 from './demos/badge/BadgeBasic.vue2?raw';
+import badgeBasicReact from './demos/badge/BadgeBasic.react?raw';
+import BadgeTypes from './demos/badge/BadgeTypes.vue';
+import badgeTypesCode from './demos/badge/BadgeTypes.vue?raw';
+import badgeTypesVue2 from './demos/badge/BadgeTypes.vue2?raw';
+import badgeTypesReact from './demos/badge/BadgeTypes.react?raw';
+import BadgeDot from './demos/badge/BadgeDot.vue';
+import badgeDotCode from './demos/badge/BadgeDot.vue?raw';
+import badgeDotVue2 from './demos/badge/BadgeDot.vue2?raw';
+import badgeDotReact from './demos/badge/BadgeDot.react?raw';
+import BadgeMax from './demos/badge/BadgeMax.vue';
+import badgeMaxCode from './demos/badge/BadgeMax.vue?raw';
+import badgeMaxVue2 from './demos/badge/BadgeMax.vue2?raw';
+import badgeMaxReact from './demos/badge/BadgeMax.react?raw';
+import BadgeProcessing from './demos/badge/BadgeProcessing.vue';
+import badgeProcessingCode from './demos/badge/BadgeProcessing.vue?raw';
+import badgeProcessingVue2 from './demos/badge/BadgeProcessing.vue2?raw';
+import badgeProcessingReact from './demos/badge/BadgeProcessing.react?raw';
+</script>
+
 # Badge 徽标
 
 徽标用于显示状态指示器、计数或通知。可以包裹子元素或独立渲染。
@@ -6,242 +29,43 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBadge :value="5">
-    <CxButton>Messages</CxButton>
-  </CxBadge>
-</template>
-
-<script setup lang="ts">
-import { CxBadge, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBadge :value="5">
-    <CxButton>Messages</CxButton>
-  </CxBadge>
-</template>
-
-<script>
-import { CxBadge, CxButton } from '@chronixjs/ui-vue2';
-export default { components: { CxBadge, CxButton } };
-</script>
-```
-
-```tsx [React]
-import { CxBadge, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxBadge value={5}>
-      <CxButton>Messages</CxButton>
-    </CxBadge>
-  );
-}
-```
-
-:::
-
-## 独立徽标
-
-不使用默认插槽时，徽标作为独立元素渲染：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxBadge :value="12" />
-    <CxBadge value="new" type="success" />
-    <CxBadge :value="99" type="error" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxBadge } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxBadge :value="12" />
-    <CxBadge value="new" type="success" />
-    <CxBadge :value="99" type="error" />
-  </div>
-</template>
-
-<script>
-import { CxBadge } from '@chronixjs/ui-vue2';
-export default { components: { CxBadge } };
-</script>
-```
-
-```tsx [React]
-import { CxBadge } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 8 }}>
-      <CxBadge value={12} />
-      <CxBadge value="new" type="success" />
-      <CxBadge value={99} type="error" />
-    </div>
-  );
-}
-```
-
-:::
-
-## 最大值
-
-使用 `max` 截断大数字。超出时显示为 `max+`：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBadge :value="150" :max="99">
-    <CxButton>Notifications</CxButton>
-  </CxBadge>
-  <!-- 显示为: 99+ -->
-</template>
-
-<script setup lang="ts">
-import { CxBadge, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-import { CxBadge, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxBadge value={150} max={99}>
-      <CxButton>Notifications</CxButton>
-    </CxBadge>
-  );
-}
-```
-
-:::
-
-## 圆点模式
-
-显示小圆点指示器代替数字：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBadge dot>
-    <CxButton>Updates</CxButton>
-  </CxBadge>
-</template>
-
-<script setup lang="ts">
-import { CxBadge, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-import { CxBadge, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxBadge dot>
-      <CxButton>Updates</CxButton>
-    </CxBadge>
-  );
-}
-```
-
-:::
-
-## 脉冲动画
-
-为徽标添加脉冲动画效果：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBadge dot processing type="error">
-    <CxButton>Live</CxButton>
-  </CxBadge>
-</template>
-
-<script setup lang="ts">
-import { CxBadge, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-import { CxBadge, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxBadge dot processing type="error">
-      <CxButton>Live</CxButton>
-    </CxBadge>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="包裹子元素显示数字徽标。" :code="badgeBasicCode" :code-vue2="badgeBasicVue2" :code-react="badgeBasicReact">
+  <BadgeBasic />
+</DemoBox>
 
 ## 徽标类型
 
-::: code-group
+<DemoBox title="徽标类型" description="不同语义类型的独立徽标。" :code="badgeTypesCode" :code-vue2="badgeTypesVue2" :code-react="badgeTypesReact">
+  <BadgeTypes />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxBadge :value="5" type="default" />
-    <CxBadge :value="5" type="success" />
-    <CxBadge :value="5" type="warning" />
-    <CxBadge :value="5" type="error" />
-    <CxBadge :value="5" type="info" />
-  </div>
-</template>
+## 圆点模式
 
-<script setup lang="ts">
-import { CxBadge } from '@chronixjs/ui-vue3';
-</script>
-```
+<DemoBox title="圆点模式" description="使用 dot 属性显示小圆点指示器。" :code="badgeDotCode" :code-vue2="badgeDotVue2" :code-react="badgeDotReact">
+  <BadgeDot />
+</DemoBox>
 
-```tsx [React]
-import { CxBadge } from '@chronixjs/ui-react';
+## 最大值
 
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 8 }}>
-      <CxBadge value={5} type="default" />
-      <CxBadge value={5} type="success" />
-      <CxBadge value={5} type="warning" />
-      <CxBadge value={5} type="error" />
-      <CxBadge value={5} type="info" />
-    </div>
-  );
-}
-```
+<DemoBox title="最大值" description="使用 max 截断大数字，超出时显示 max+。" :code="badgeMaxCode" :code-vue2="badgeMaxVue2" :code-react="badgeMaxReact">
+  <BadgeMax />
+</DemoBox>
 
-:::
+## 脉冲动画
+
+<DemoBox title="脉冲动画" description="使用 processing 属性添加脉冲动画。" :code="badgeProcessingCode" :code-vue2="badgeProcessingVue2" :code-react="badgeProcessingReact">
+  <BadgeProcessing />
+</DemoBox>
 
 ## API 参考
 

@@ -1,0 +1,10 @@
+<template>
+  <CxIconWrapper :size="32" color="#f59e0b">
+    <span>🔥</span>
+  </CxIconWrapper>
+</template>
+
+<script>
+import { CxIconWrapper } from '@chronixjs/ui-vue2';
+export default { components: { CxIconWrapper } };
+</script>

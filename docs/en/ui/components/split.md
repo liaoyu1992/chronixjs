@@ -1,3 +1,10 @@
+<script setup>
+import SplitBasic from '../../../ui/components/demos/split/SplitBasic.vue';
+import splitBasicCode from '../../../ui/components/demos/split/SplitBasic.vue?raw';
+import splitBasicVue2 from '../../../ui/components/demos/split/SplitBasic.vue2?raw';
+import splitBasicReact from '../../../ui/components/demos/split/SplitBasic.react?raw';
+</script>
+
 # Split
 
 Two-pane resizable splitter. Drag the bar between panes to redistribute space.
@@ -6,126 +13,19 @@ Two-pane resizable splitter. Drag the bar between panes to redistribute space.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSplit default-size="50%">
-    <template #first>
-      <div style="padding: 16px;">Left Pane</div>
-    </template>
-    <template #second>
-      <div style="padding: 16px;">Right Pane</div>
-    </template>
-  </CxSplit>
-</template>
-
-<script setup lang="ts">
-import { CxSplit } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSplit default-size="50%">
-    <template slot="first">
-      <div style="padding: 16px;">Left Pane</div>
-    </template>
-    <template slot="second">
-      <div style="padding: 16px;">Right Pane</div>
-    </template>
-  </CxSplit>
-</template>
-
-<script>
-import { CxSplit } from '@chronixjs/ui-vue2';
-export default { components: { CxSplit } };
-</script>
-```
-
-```tsx [React]
-import { CxSplit } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxSplit
-      defaultSize="50%"
-      first={<div style={{ padding: 16 }}>Left Pane</div>}
-      second={<div style={{ padding: 16 }}>Right Pane</div>}
-    />
-  );
-}
-```
-
-:::
-
-## Vertical Split
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSplit direction="vertical" default-size="200px" min-size="100" max-size="400">
-    <template #first>
-      <div style="padding: 16px;">Top Pane</div>
-    </template>
-    <template #second>
-      <div style="padding: 16px;">Bottom Pane</div>
-    </template>
-  </CxSplit>
-</template>
-
-<script setup lang="ts">
-import { CxSplit } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSplit direction="vertical" default-size="200px" min-size="100" max-size="400">
-    <template slot="first">
-      <div style="padding: 16px;">Top Pane</div>
-    </template>
-    <template slot="second">
-      <div style="padding: 16px;">Bottom Pane</div>
-    </template>
-  </CxSplit>
-</template>
-
-<script>
-import { CxSplit } from '@chronixjs/ui-vue2';
-export default { components: { CxSplit } };
-</script>
-```
-
-```tsx [React]
-import { CxSplit } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxSplit
-      direction="vertical"
-      defaultSize="200px"
-      minSize={100}
-      maxSize={400}
-      first={<div style={{ padding: 16 }}>Top Pane</div>}
-      second={<div style={{ padding: 16 }}>Bottom Pane</div>}
-    />
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Horizontal split with two resizable panels." :code="splitBasicCode" :code-vue2="splitBasicVue2" :code-react="splitBasicReact">
+  <SplitBasic />
+</DemoBox>
 
 ## API Reference
 

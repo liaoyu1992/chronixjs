@@ -1,3 +1,10 @@
+<script setup>
+import CollapseTransitionBasic from './demos/collapse-transition/CollapseTransitionBasic.vue';
+import collapseTransitionBasicCode from './demos/collapse-transition/CollapseTransitionBasic.vue?raw';
+import collapseTransitionBasicVue2 from './demos/collapse-transition/CollapseTransitionBasic.vue2?raw';
+import collapseTransitionBasicReact from './demos/collapse-transition/CollapseTransitionBasic.react?raw';
+</script>
+
 # Collapse Transition 折叠过渡
 
 用于展开/收起动画的高度过渡包装器。内部由 Collapse 使用，同时暴露给外部使用。
@@ -16,62 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <button @click="visible = !visible">Toggle</button>
-  <CxCollapseTransition :show="visible">
-    <div style="padding: 16px;">Collapsible content here.</div>
-  </CxCollapseTransition>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCollapseTransition } from '@chronixjs/ui-vue3';
-
-const visible = ref(false);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <button @click="visible = !visible">Toggle</button>
-  <CxCollapseTransition :show="visible">
-    <div style="padding: 16px;">Collapsible content here.</div>
-  </CxCollapseTransition>
-</template>
-
-<script>
-import { CxCollapseTransition } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCollapseTransition },
-  data() {
-    return { visible: false };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCollapseTransition } from '@chronixjs/ui-react';
-
-export function App() {
-  const [visible, setVisible] = useState(false);
-
-  return (
-    <div>
-      <button onClick={() => setVisible(!visible)}>Toggle</button>
-      <CxCollapseTransition show={visible}>
-        <div style={{ padding: 16 }}>Collapsible content here.</div>
-      </CxCollapseTransition>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="通过 show 属性控制内容的展开和收起。" :code="collapseTransitionBasicCode" :code-vue2="collapseTransitionBasicVue2" :code-react="collapseTransitionBasicReact">
+  <CollapseTransitionBasic />
+</DemoBox>
 
 ## API 参考
 

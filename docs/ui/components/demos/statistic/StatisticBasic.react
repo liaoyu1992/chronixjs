@@ -1,0 +1,5 @@
+import { CxStatistic } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxStatistic label="Active Users" value={123456} />;
+}

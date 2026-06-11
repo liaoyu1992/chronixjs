@@ -1,0 +1,8 @@
+<template>
+  <CxTypography variant="title" :level="2">Hello World</CxTypography>
+</template>
+
+<script>
+import { CxTypography } from '@chronixjs/ui-vue2';
+export default { components: { CxTypography } };
+</script>

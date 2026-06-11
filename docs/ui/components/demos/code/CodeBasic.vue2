@@ -1,0 +1,8 @@
+<template>
+  <CxCode value="const x = 42;" />
+</template>
+
+<script>
+import { CxCode } from '@chronixjs/ui-vue2';
+export default { components: { CxCode } };
+</script>

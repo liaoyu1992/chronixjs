@@ -1,0 +1,21 @@
+<template>
+  <CxAutoComplete :value.sync="value" :options="options" placeholder="Type to search..." />
+</template>
+
+<script>
+import { CxAutoComplete } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxAutoComplete },
+  data() {
+    return {
+      value: '',
+      options: [
+        { key: 'apple', label: 'Apple', value: 'apple' },
+        { key: 'banana', label: 'Banana', value: 'banana' },
+        { key: 'cherry', label: 'Cherry', value: 'cherry' },
+        { key: 'durian', label: 'Durian', value: 'durian' },
+      ],
+    };
+  },
+};
+</script>

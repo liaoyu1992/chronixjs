@@ -1,0 +1,12 @@
+<template>
+  <CxTooltip content="Tooltip text">
+    <CxButton>Hover me</CxButton>
+  </CxTooltip>
+</template>
+
+<script>
+import { CxTooltip, CxButton } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxTooltip, CxButton },
+};
+</script>

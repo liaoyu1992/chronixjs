@@ -1,0 +1,19 @@
+import { useState } from 'react';
+import { CxCollapseTransition } from '@chronixjs/ui-react';
+
+export function App() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div>
+      <button onClick={() => setVisible(!visible)} style={{ marginBottom: 8 }}>
+        {visible ? 'Hide' : 'Show'} Content
+      </button>
+      <CxCollapseTransition show={visible}>
+        <div style={{ padding: 16, background: '#f5f5f5', border: '1px solid #ddd' }}>
+          Collapsible content here.
+        </div>
+      </CxCollapseTransition>
+    </div>
+  );
+}

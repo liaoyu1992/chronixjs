@@ -1,0 +1,13 @@
+import { useState } from 'react';
+import { CxSelect } from '@chronixjs/ui-react';
+
+const OPTIONS = [
+  { key: '1', label: 'Option A', value: 'a' },
+  { key: '2', label: 'Option B', value: 'b' },
+  { key: '3', label: 'Option C', value: 'c' },
+];
+
+export function App() {
+  const [selected, setSelected] = useState(undefined);
+  return <CxSelect options={OPTIONS} value={selected} onUpdateValue={setSelected} placeholder="Select..." />;
+}

@@ -1,3 +1,10 @@
+<script setup>
+import StepsBasic from './demos/steps/StepsBasic.vue';
+import stepsBasicCode from './demos/steps/StepsBasic.vue?raw';
+import stepsBasicVue2 from './demos/steps/StepsBasic.vue2?raw';
+import stepsBasicReact from './demos/steps/StepsBasic.react?raw';
+</script>
+
 # Steps 步骤条
 
 向导式步骤指示器，用于展示多阶段流程的进度。
@@ -6,107 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div>
-    <CxSteps :items="items" :current="current" />
-    <div style="margin-top: 16px;">
-      <CxButton @click="current = Math.max(current - 1, 0)">Previous</CxButton>
-      <CxButton @click="current = Math.min(current + 1, 2)" style="margin-left: 8px;"
-        >Next</CxButton
-      >
-    </div>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSteps } from '@chronixjs/ui-vue3';
-import { CxButton } from '@chronixjs/ui-vue3';
-
-const current = ref(0);
-const items = [
-  { key: '1', title: 'Account', description: 'Create your account' },
-  { key: '2', title: 'Profile', description: 'Fill in your profile' },
-  { key: '3', title: 'Complete', description: 'All done' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div>
-    <CxSteps :items="items" :current="current" />
-    <div style="margin-top: 16px;">
-      <CxButton @click="current = Math.max(current - 1, 0)">Previous</CxButton>
-      <CxButton @click="current = Math.min(current + 1, 2)" style="margin-left: 8px;"
-        >Next</CxButton
-      >
-    </div>
-  </div>
-</template>
-
-<script>
-import { CxSteps } from '@chronixjs/ui-vue2';
-import { CxButton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxSteps, CxButton },
-  data() {
-    return {
-      current: 0,
-      items: [
-        { key: '1', title: 'Account', description: 'Create your account' },
-        { key: '2', title: 'Profile', description: 'Fill in your profile' },
-        { key: '3', title: 'Complete', description: 'All done' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxSteps } from '@chronixjs/ui-react';
-import { CxButton } from '@chronixjs/ui-react';
-
-const items = [
-  { key: '1', title: 'Account', description: 'Create your account' },
-  { key: '2', title: 'Profile', description: 'Fill in your profile' },
-  { key: '3', title: 'Complete', description: 'All done' },
-];
-
-export function App() {
-  const [current, setCurrent] = useState(0);
-
-  return (
-    <div>
-      <CxSteps items={items} current={current} />
-      <div style={{ marginTop: 16 }}>
-        <CxButton onClick={() => setCurrent(Math.max(current - 1, 0))}>Previous</CxButton>
-        <CxButton onClick={() => setCurrent(Math.min(current + 1, 2))} style={{ marginLeft: 8 }}>
-          Next
-        </CxButton>
-      </div>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="通过 items 和 current 属性配置步骤条。" :code="stepsBasicCode" :code-vue2="stepsBasicVue2" :code-react="stepsBasicReact">
+  <StepsBasic />
+</DemoBox>
 
 ## 垂直方向
 

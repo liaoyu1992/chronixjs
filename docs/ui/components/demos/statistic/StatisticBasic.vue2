@@ -1,0 +1,8 @@
+<template>
+  <CxStatistic label="Active Users" :value="123456" />
+</template>
+
+<script>
+import { CxStatistic } from '@chronixjs/ui-vue2';
+export default { components: { CxStatistic } };
+</script>

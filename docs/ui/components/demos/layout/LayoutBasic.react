@@ -1,0 +1,16 @@
+import {
+  CxLayout,
+  CxLayoutHeader,
+  CxLayoutContent,
+  CxLayoutFooter,
+} from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxLayout style={{ height: 240, border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
+      <CxLayoutHeader style={{ background: '#f0f5ff', padding: '12px 16px' }}>Header</CxLayoutHeader>
+      <CxLayoutContent style={{ padding: 16 }}>Content</CxLayoutContent>
+      <CxLayoutFooter style={{ background: '#f0f5ff', padding: '12px 16px' }}>Footer</CxLayoutFooter>
+    </CxLayout>
+  );
+}

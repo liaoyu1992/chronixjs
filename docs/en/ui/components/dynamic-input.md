@@ -1,3 +1,10 @@
+<script setup>
+import DynamicInputBasic from '../../../ui/components/demos/dynamic-input/DynamicInputBasic.vue';
+import dynamicInputBasicCode from '../../../ui/components/demos/dynamic-input/DynamicInputBasic.vue?raw';
+import dynamicInputBasicVue2 from '../../../ui/components/demos/dynamic-input/DynamicInputBasic.vue2?raw';
+import dynamicInputBasicReact from '../../../ui/components/demos/dynamic-input/DynamicInputBasic.react?raw';
+</script>
+
 # Dynamic Input
 
 Dynamic list of input values where the user can add or remove items.
@@ -16,49 +23,9 @@ Dynamic list of input values where the user can add or remove items.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxDynamicInput v-model:value="items" placeholder="Enter value" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxDynamicInput } from '@chronixjs/ui-vue3';
-
-const items = ref<string[]>(['Item 1', 'Item 2']);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxDynamicInput :value.sync="items" placeholder="Enter value" />
-</template>
-
-<script>
-import { CxDynamicInput } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxDynamicInput },
-  data() {
-    return { items: ['Item 1', 'Item 2'] };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxDynamicInput } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items, setItems] = useState<string[]>(['Item 1', 'Item 2']);
-
-  return <CxDynamicInput value={items} onUpdateValue={setItems} placeholder="Enter value" />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Dynamic input with add and remove support." :code="dynamicInputBasicCode" :code-vue2="dynamicInputBasicVue2" :code-react="dynamicInputBasicReact">
+  <DynamicInputBasic />
+</DemoBox>
 
 ## API Reference
 

@@ -1,3 +1,10 @@
+<script setup>
+import ListBasic from '../../../ui/components/demos/list/ListBasic.vue';
+import listBasicCode from '../../../ui/components/demos/list/ListBasic.vue?raw';
+import listBasicVue2 from '../../../ui/components/demos/list/ListBasic.vue2?raw';
+import listBasicReact from '../../../ui/components/demos/list/ListBasic.react?raw';
+</script>
+
 # List
 
 Vertical list display for settings, contacts, or file rows with optional prefix/suffix.
@@ -6,133 +13,19 @@ Vertical list display for settings, contacts, or file rows with optional prefix/
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxList :items="items" bordered />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxList } from '@chronixjs/ui-vue3';
-
-const items = ref([
-  { key: 'a', title: 'Settings', description: 'App configuration', prefix: '⚙', suffix: '>' },
-  { key: 'b', title: 'Profile', description: 'User account', prefix: '👤', suffix: '>' },
-  { key: 'c', title: 'Help', prefix: '❓' },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxList :items="items" bordered />
-</template>
-
-<script>
-import { CxList } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxList },
-  data() {
-    return {
-      items: [
-        { key: 'a', title: 'Settings', description: 'App configuration', prefix: '⚙', suffix: '>' },
-        { key: 'b', title: 'Profile', description: 'User account', prefix: '👤', suffix: '>' },
-        { key: 'c', title: 'Help', prefix: '❓' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxList } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items] = useState([
-    { key: 'a', title: 'Settings', description: 'App configuration', prefix: '⚙', suffix: '>' },
-    { key: 'b', title: 'Profile', description: 'User account', prefix: '👤', suffix: '>' },
-    { key: 'c', title: 'Help', prefix: '❓' },
-  ]);
-
-  return <CxList items={items} bordered />;
-}
-```
-
-:::
-
-## Hoverable
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxList :items="items" hoverable />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxList } from '@chronixjs/ui-vue3';
-
-const items = ref([
-  { key: '1', title: 'Inbox', suffix: '12' },
-  { key: '2', title: 'Sent', suffix: '0' },
-  { key: '3', title: 'Drafts', suffix: '3' },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxList :items="items" hoverable />
-</template>
-
-<script>
-import { CxList } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxList },
-  data() {
-    return {
-      items: [
-        { key: '1', title: 'Inbox', suffix: '12' },
-        { key: '2', title: 'Sent', suffix: '0' },
-        { key: '3', title: 'Drafts', suffix: '3' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxList } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items] = useState([
-    { key: '1', title: 'Inbox', suffix: '12' },
-    { key: '2', title: 'Sent', suffix: '0' },
-    { key: '3', title: 'Drafts', suffix: '3' },
-  ]);
-
-  return <CxList items={items} hoverable />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="A simple bordered list with 3 items." :code="listBasicCode" :code-vue2="listBasicVue2" :code-react="listBasicReact">
+  <ListBasic />
+</DemoBox>
 
 ## API Reference
 

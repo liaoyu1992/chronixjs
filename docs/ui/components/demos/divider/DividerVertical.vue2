@@ -1,0 +1,14 @@
+<template>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <span>Link A</span>
+    <CxDivider vertical />
+    <span>Link B</span>
+    <CxDivider vertical />
+    <span>Link C</span>
+  </div>
+</template>
+
+<script>
+import { CxDivider } from '@chronixjs/ui-vue2';
+export default { components: { CxDivider } };
+</script>

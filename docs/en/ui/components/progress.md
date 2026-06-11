@@ -1,3 +1,22 @@
+<script setup>
+import ProgressBasic from '../../../ui/components/demos/progress/ProgressBasic.vue';
+import progressBasicCode from '../../../ui/components/demos/progress/ProgressBasic.vue?raw';
+import progressBasicVue2 from '../../../ui/components/demos/progress/ProgressBasic.vue2?raw';
+import progressBasicReact from '../../../ui/components/demos/progress/ProgressBasic.react?raw';
+import ProgressTypes from '../../../ui/components/demos/progress/ProgressTypes.vue';
+import progressTypesCode from '../../../ui/components/demos/progress/ProgressTypes.vue?raw';
+import progressTypesVue2 from '../../../ui/components/demos/progress/ProgressTypes.vue2?raw';
+import progressTypesReact from '../../../ui/components/demos/progress/ProgressTypes.react?raw';
+import ProgressIndicator from '../../../ui/components/demos/progress/ProgressIndicator.vue';
+import progressIndicatorCode from '../../../ui/components/demos/progress/ProgressIndicator.vue?raw';
+import progressIndicatorVue2 from '../../../ui/components/demos/progress/ProgressIndicator.vue2?raw';
+import progressIndicatorReact from '../../../ui/components/demos/progress/ProgressIndicator.react?raw';
+import ProgressCustomHeight from '../../../ui/components/demos/progress/ProgressCustomHeight.vue';
+import progressCustomHeightCode from '../../../ui/components/demos/progress/ProgressCustomHeight.vue?raw';
+import progressCustomHeightVue2 from '../../../ui/components/demos/progress/ProgressCustomHeight.vue2?raw';
+import progressCustomHeightReact from '../../../ui/components/demos/progress/ProgressCustomHeight.react?raw';
+</script>
+
 # Progress
 
 A linear progress bar with semantic types and configurable display.
@@ -5,278 +24,38 @@ A linear progress bar with semantic types and configurable display.
 ## Install
 
 ::: code-group
-<<< @/snippets/vue3/install-ui.md
-<<< @/snippets/vue2/install-ui.md
-<<< @/snippets/react/install-ui.md
+
+<<< @/snippets/vue3/install-ui.md [Vue 3]
+
+<<< @/snippets/vue2/install-ui.md [Vue 2]
+
+<<< @/snippets/react/install-ui.md [React]
+
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="30" />
-    <CxProgress :percentage="60" type="success" />
-    <CxProgress :percentage="100" type="warning" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="30" />
-    <CxProgress :percentage="60" type="success" />
-    <CxProgress :percentage="100" type="warning" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxProgress percentage={30} />
-      <CxProgress percentage={60} type="success" />
-      <CxProgress percentage={100} type="warning" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Basic usage of the linear progress bar." :code="progressBasicCode" :code-vue2="progressBasicVue2" :code-react="progressBasicReact">
+  <ProgressBasic />
+</DemoBox>
 
 ## Progress Types
 
-Use `type` to apply semantic coloring: `default`, `success`, `warning`, `error`, or `info`.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="20" type="default" />
-    <CxProgress :percentage="40" type="success" />
-    <CxProgress :percentage="60" type="warning" />
-    <CxProgress :percentage="80" type="error" />
-    <CxProgress :percentage="90" type="info" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="20" type="default" />
-    <CxProgress :percentage="40" type="success" />
-    <CxProgress :percentage="60" type="warning" />
-    <CxProgress :percentage="80" type="error" />
-    <CxProgress :percentage="90" type="info" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxProgress percentage={20} type="default" />
-      <CxProgress percentage={40} type="success" />
-      <CxProgress percentage={60} type="warning" />
-      <CxProgress percentage={80} type="error" />
-      <CxProgress percentage={90} type="info" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Progress Types" description="Use type to apply semantic coloring." :code="progressTypesCode" :code-vue2="progressTypesVue2" :code-react="progressTypesReact">
+  <ProgressTypes />
+</DemoBox>
 
 ## Indicator Placement
 
-Control where the percentage text appears. By default the indicator is placed **outside** the bar. Set `indicator-placement="inside"` to render it within the filled area.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="70" indicator-placement="outside" />
-    <CxProgress :percentage="70" indicator-placement="inside" :height="24" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="70" indicator-placement="outside" />
-    <CxProgress :percentage="70" indicator-placement="inside" :height="24" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxProgress percentage={70} indicatorPlacement="outside" />
-      <CxProgress percentage={70} indicatorPlacement="inside" height={24} />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Indicator Placement" description="Control where the percentage text appears." :code="progressIndicatorCode" :code-vue2="progressIndicatorVue2" :code-react="progressIndicatorReact">
+  <ProgressIndicator />
+</DemoBox>
 
 ## Custom Height
 
-Set the `height` prop (in pixels) to create a thicker or thinner bar.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 16px;">
-    <CxProgress :percentage="50" :height="8" />
-    <CxProgress :percentage="50" :height="16" />
-    <CxProgress :percentage="50" :height="24" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 16px;">
-    <CxProgress :percentage="50" :height="8" />
-    <CxProgress :percentage="50" :height="16" />
-    <CxProgress :percentage="50" :height="24" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <CxProgress percentage={50} height={8} />
-      <CxProgress percentage={50} height={16} />
-      <CxProgress percentage={50} height={24} />
-    </div>
-  );
-}
-```
-
-:::
-
-## Without Info
-
-Hide the percentage text by setting `show-info` to `false`.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="40" :show-info="false" />
-    <CxProgress :percentage="75" :show-info="false" type="success" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="40" :show-info="false" />
-    <CxProgress :percentage="75" :show-info="false" type="success" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxProgress percentage={40} showInfo={false} />
-      <CxProgress percentage={75} showInfo={false} type="success" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Custom Height" description="Set the height prop to create thicker or thinner bars." :code="progressCustomHeightCode" :code-vue2="progressCustomHeightVue2" :code-react="progressCustomHeightReact">
+  <ProgressCustomHeight />
+</DemoBox>
 
 ## API Reference
 

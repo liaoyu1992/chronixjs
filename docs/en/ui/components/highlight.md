@@ -1,3 +1,10 @@
+<script setup>
+import HighlightBasic from '../../../ui/components/demos/highlight/HighlightBasic.vue';
+import highlightBasicCode from '../../../ui/components/demos/highlight/HighlightBasic.vue?raw';
+import highlightBasicVue2 from '../../../ui/components/demos/highlight/HighlightBasic.vue2?raw';
+import highlightBasicReact from '../../../ui/components/demos/highlight/HighlightBasic.react?raw';
+</script>
+
 # Highlight
 
 Text with substring matching wrapped in `<mark>` elements.
@@ -16,40 +23,9 @@ Text with substring matching wrapped in `<mark>` elements.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxHighlight value="Chronix is a framework-agnostic component library" pattern="Chronix" />
-</template>
-
-<script setup lang="ts">
-import { CxHighlight } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxHighlight value="Chronix is a framework-agnostic component library" pattern="Chronix" />
-</template>
-
-<script>
-import { CxHighlight } from '@chronixjs/ui-vue2';
-export default { components: { CxHighlight } };
-</script>
-```
-
-```tsx [React]
-import { CxHighlight } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxHighlight value="Chronix is a framework-agnostic component library" pattern="Chronix" />
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Highlight all matching substrings in text (case-insensitive by default)." :code="highlightBasicCode" :code-vue2="highlightBasicVue2" :code-react="highlightBasicReact">
+  <HighlightBasic />
+</DemoBox>
 
 ## Case Sensitive
 

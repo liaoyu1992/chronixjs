@@ -1,0 +1,8 @@
+<template>
+  <CxSpin size="medium" description="Loading..." />
+</template>
+
+<script>
+import { CxSpin } from '@chronixjs/ui-vue2';
+export default { components: { CxSpin } };
+</script>

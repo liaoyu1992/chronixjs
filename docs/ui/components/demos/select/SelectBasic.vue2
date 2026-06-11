@@ -1,0 +1,20 @@
+<template>
+  <CxSelect :options="options" :value.sync="selected" placeholder="Select..." />
+</template>
+
+<script>
+import { CxSelect } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxSelect },
+  data() {
+    return {
+      selected: undefined,
+      options: [
+        { key: '1', label: 'Option A', value: 'a' },
+        { key: '2', label: 'Option B', value: 'b' },
+        { key: '3', label: 'Option C', value: 'c' },
+      ],
+    };
+  },
+};
+</script>

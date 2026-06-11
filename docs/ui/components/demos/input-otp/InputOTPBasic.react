@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxInputOtp } from '@chronixjs/ui-react';
+
+export function App() {
+  const [otp, setOtp] = useState('');
+  return <CxInputOtp value={otp} onUpdateValue={setOtp} length={6} />;
+}

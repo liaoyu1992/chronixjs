@@ -1,3 +1,10 @@
+<script setup>
+import ImageBasic from './demos/image/ImageBasic.vue';
+import imageBasicCode from './demos/image/ImageBasic.vue?raw';
+import imageBasicVue2 from './demos/image/ImageBasic.vue2?raw';
+import imageBasicReact from './demos/image/ImageBasic.react?raw';
+</script>
+
 # Image 图片
 
 增强的图片组件，支持懒加载、回退和预览功能。
@@ -6,257 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxImage src="https://picsum.photos/200/200" alt="Example" />
-</template>
-
-<script setup lang="ts">
-import { CxImage } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxImage src="https://picsum.photos/200/200" alt="Example" />
-</template>
-
-<script>
-import { CxImage } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxImage },
-};
-</script>
-```
-
-```tsx [React]
-import { CxImage } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxImage src="https://picsum.photos/200/200" alt="Example" />;
-}
-```
-
-:::
-
-## 适配方式
-
-使用 `objectFit` 属性控制图片如何适应容器：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 16px;">
-    <div>
-      <p>cover (default)</p>
-      <CxImage
-        src="https://picsum.photos/200/200"
-        alt="Cover"
-        :width="150"
-        :height="150"
-        object-fit="cover"
-      />
-    </div>
-    <div>
-      <p>contain</p>
-      <CxImage
-        src="https://picsum.photos/200/200"
-        alt="Contain"
-        :width="150"
-        :height="150"
-        object-fit="contain"
-        style="border: 1px solid #ddd;"
-      />
-    </div>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxImage } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 16px;">
-    <div>
-      <p>cover (default)</p>
-      <CxImage
-        src="https://picsum.photos/200/200"
-        alt="Cover"
-        :width="150"
-        :height="150"
-        object-fit="cover"
-      />
-    </div>
-    <div>
-      <p>contain</p>
-      <CxImage
-        src="https://picsum.photos/200/200"
-        alt="Contain"
-        :width="150"
-        :height="150"
-        object-fit="contain"
-        style="border: 1px solid #ddd;"
-      />
-    </div>
-  </div>
-</template>
-
-<script>
-import { CxImage } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxImage },
-};
-</script>
-```
-
-```tsx [React]
-import { CxImage } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 16 }}>
-      <div>
-        <p>cover (default)</p>
-        <CxImage
-          src="https://picsum.photos/200/200"
-          alt="Cover"
-          width={150}
-          height={150}
-          objectFit="cover"
-        />
-      </div>
-      <div>
-        <p>contain</p>
-        <CxImage
-          src="https://picsum.photos/200/200"
-          alt="Contain"
-          width={150}
-          height={150}
-          objectFit="contain"
-          style={{ border: '1px solid #ddd' }}
-        />
-      </div>
-    </div>
-  );
-}
-```
-
-:::
-
-## 图片预览
-
-使用 `previewable` 属性启用点击灯箱预览：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxImage src="https://picsum.photos/600/400" alt="Click to preview" :width="300" previewable />
-</template>
-
-<script setup lang="ts">
-import { CxImage } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxImage src="https://picsum.photos/600/400" alt="Click to preview" :width="300" previewable />
-</template>
-
-<script>
-import { CxImage } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxImage },
-};
-</script>
-```
-
-```tsx [React]
-import { CxImage } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxImage src="https://picsum.photos/600/400" alt="Click to preview" width={300} previewable />
-  );
-}
-```
-
-:::
-
-## 回退图片
-
-当源图片加载失败时显示回退图片：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxImage
-    src="/broken-image.jpg"
-    alt="Broken"
-    fallback="https://picsum.photos/200/200"
-    :width="200"
-    :height="200"
-  />
-</template>
-
-<script setup lang="ts">
-import { CxImage } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxImage
-    src="/broken-image.jpg"
-    alt="Broken"
-    fallback="https://picsum.photos/200/200"
-    :width="200"
-    :height="200"
-  />
-</template>
-
-<script>
-import { CxImage } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxImage },
-};
-</script>
-```
-
-```tsx [React]
-import { CxImage } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxImage
-      src="/broken-image.jpg"
-      alt="Broken"
-      fallback="https://picsum.photos/200/200"
-      width={200}
-      height={200}
-    />
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用 src 属性设置图片地址。" :code="imageBasicCode" :code-vue2="imageBasicVue2" :code-react="imageBasicReact">
+  <ImageBasic />
+</DemoBox>
 
 ## API 参考
 

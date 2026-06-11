@@ -1,0 +1,13 @@
+<template>
+  <CxInputNumber :value.sync="count" :step="1" />
+</template>
+
+<script>
+import { CxInputNumber } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxInputNumber },
+  data() {
+    return { count: 0 };
+  },
+};
+</script>

@@ -1,0 +1,12 @@
+import { useState } from 'react';
+import { CxDescriptions } from '@chronixjs/ui-react';
+
+export function App() {
+  const [items] = useState([
+    { key: 'name', label: 'Name', value: 'Chronix UI' },
+    { key: 'version', label: 'Version', value: '0.1.0' },
+    { key: 'license', label: 'License', value: 'MIT' },
+  ]);
+
+  return <CxDescriptions items={items} columns={1} />;
+}

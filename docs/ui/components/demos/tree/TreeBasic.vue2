@@ -1,0 +1,32 @@
+<template>
+  <CxTree :value.sync="selected" :items="items" :default-expand-all="true" />
+</template>
+
+<script>
+import { CxTree } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxTree },
+  data() {
+    return {
+      selected: undefined,
+      items: [
+        {
+          key: 'root-1',
+          label: 'Root 1',
+          children: [
+            { key: 'child-1-1', label: 'Child 1-1' },
+            { key: 'child-1-2', label: 'Child 1-2' },
+          ],
+        },
+        {
+          key: 'root-2',
+          label: 'Root 2',
+          children: [
+            { key: 'child-2-1', label: 'Child 2-1' },
+          ],
+        },
+      ],
+    };
+  },
+};
+</script>

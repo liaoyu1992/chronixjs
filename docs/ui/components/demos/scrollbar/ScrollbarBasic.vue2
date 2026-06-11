@@ -1,0 +1,10 @@
+<template>
+  <CxScrollbar style="height: 200px;">
+    <p v-for="i in 20" :key="i">Scrollable content line {{ i }}</p>
+  </CxScrollbar>
+</template>
+
+<script>
+import { CxScrollbar } from '@chronixjs/ui-vue2';
+export default { components: { CxScrollbar } };
+</script>

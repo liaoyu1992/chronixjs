@@ -1,0 +1,5 @@
+import { CxCheckbox } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxCheckbox checked={true} indeterminate label="Select all" />;
+}

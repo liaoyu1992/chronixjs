@@ -1,0 +1,5 @@
+import { CxNumberAnimation } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxNumberAnimation from={0} to={10000} duration={2000} active showSeparator />;
+}

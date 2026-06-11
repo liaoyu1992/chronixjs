@@ -1,0 +1,14 @@
+<script setup lang="ts">
+import { ChronixGrid } from '@chronixjs/ui-vue3';
+</script>
+
+<template>
+  <ChronixGrid :cols="3" :x-gap="16" :y-gap="12">
+    <div style="background: #f0f0f0; padding: 12px; text-align: center">Cell 1</div>
+    <div style="background: #f0f0f0; padding: 12px; text-align: center">Cell 2</div>
+    <div style="background: #f0f0f0; padding: 12px; text-align: center">Cell 3</div>
+    <div style="background: #f0f0f0; padding: 12px; text-align: center">Cell 4</div>
+    <div style="background: #f0f0f0; padding: 12px; text-align: center">Cell 5</div>
+    <div style="background: #f0f0f0; padding: 12px; text-align: center">Cell 6</div>
+  </ChronixGrid>
+</template>

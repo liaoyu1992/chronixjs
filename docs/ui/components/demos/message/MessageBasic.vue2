@@ -1,0 +1,23 @@
+<template>
+  <div style="display: flex; gap: 8px;">
+    <CxButton @click="showInfo">Info</CxButton>
+    <CxButton @click="showSuccess">Success</CxButton>
+    <CxButton @click="showWarning">Warning</CxButton>
+    <CxButton @click="showError">Error</CxButton>
+  </div>
+</template>
+
+<script>
+import { useMessage } from '@chronixjs/ui-vue2';
+import { CxButton } from '@chronixjs/ui-vue2';
+
+export default {
+  components: { CxButton },
+  methods: {
+    showInfo() { useMessage().info('This is an info message'); },
+    showSuccess() { useMessage().success('Operation successful'); },
+    showWarning() { useMessage().warning('Something went wrong'); },
+    showError() { useMessage().error('Error occurred'); },
+  },
+};
+</script>

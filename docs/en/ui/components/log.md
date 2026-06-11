@@ -1,3 +1,10 @@
+<script setup>
+import LogBasic from '../../../ui/components/demos/log/LogBasic.vue';
+import logBasicCode from '../../../ui/components/demos/log/LogBasic.vue?raw';
+import logBasicVue2 from '../../../ui/components/demos/log/LogBasic.vue2?raw';
+import logBasicReact from '../../../ui/components/demos/log/LogBasic.react?raw';
+</script>
+
 # Log
 
 Terminal-output viewer for CI, deploy, audit-trail, or build-output consumption.
@@ -6,85 +13,19 @@ Terminal-output viewer for CI, deploy, audit-trail, or build-output consumption.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxLog :lines="lines" line-numbers :max-height="300" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxLog } from '@chronixjs/ui-vue3';
-
-const lines = ref([
-  '$ pnpm install',
-  'Packages: +128',
-  '+124 packages in 3.2s',
-  '$ pnpm build',
-  'Building chronix-ui...',
-  '✓ 85 components built in 12.4s',
-  'Done in 15.6s',
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxLog :lines="lines" line-numbers :max-height="300" />
-</template>
-
-<script>
-import { CxLog } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxLog },
-  data() {
-    return {
-      lines: [
-        '$ pnpm install',
-        'Packages: +128',
-        '+124 packages in 3.2s',
-        '$ pnpm build',
-        'Building chronix-ui...',
-        '✓ 85 components built in 12.4s',
-        'Done in 15.6s',
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxLog } from '@chronixjs/ui-react';
-
-export function App() {
-  const [lines] = useState([
-    '$ pnpm install',
-    'Packages: +128',
-    '+124 packages in 3.2s',
-    '$ pnpm build',
-    'Building chronix-ui...',
-    '✓ 85 components built in 12.4s',
-    'Done in 15.6s',
-  ]);
-
-  return <CxLog lines={lines} lineNumbers maxHeight={300} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Log output with line numbers." :code="logBasicCode" :code-vue2="logBasicVue2" :code-react="logBasicReact">
+  <LogBasic />
+</DemoBox>
 
 ## API Reference
 

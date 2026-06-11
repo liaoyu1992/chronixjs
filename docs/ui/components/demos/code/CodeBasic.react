@@ -1,0 +1,5 @@
+import { CxCode } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxCode value="const x = 42;" />;
+}

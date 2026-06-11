@@ -1,3 +1,10 @@
+<script setup>
+import StatisticBasic from '../../../ui/components/demos/statistic/StatisticBasic.vue';
+import statisticBasicCode from '../../../ui/components/demos/statistic/StatisticBasic.vue?raw';
+import statisticBasicVue2 from '../../../ui/components/demos/statistic/StatisticBasic.vue2?raw';
+import statisticBasicReact from '../../../ui/components/demos/statistic/StatisticBasic.react?raw';
+</script>
+
 # Statistic
 
 Numeric display for dashboards and KPI summaries with optional prefix/suffix.
@@ -6,48 +13,19 @@ Numeric display for dashboards and KPI summaries with optional prefix/suffix.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxStatistic label="Total Users" :value="12345" />
-</template>
-
-<script setup lang="ts">
-import { CxStatistic } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxStatistic label="Total Users" :value="12345" />
-</template>
-
-<script>
-import { CxStatistic } from '@chronixjs/ui-vue2';
-export default { components: { CxStatistic } };
-</script>
-```
-
-```tsx [React]
-import { CxStatistic } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxStatistic label="Total Users" value={12345} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Display a labeled numeric value." :code="statisticBasicCode" :code-vue2="statisticBasicVue2" :code-react="statisticBasicReact">
+  <StatisticBasic />
+</DemoBox>
 
 ## With Precision
 

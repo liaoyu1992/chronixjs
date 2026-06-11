@@ -1,3 +1,10 @@
+<script setup>
+import BackTopBasic from './demos/back-top/BackTopBasic.vue';
+import backTopBasicCode from './demos/back-top/BackTopBasic.vue?raw';
+import backTopBasicVue2 from './demos/back-top/BackTopBasic.vue2?raw';
+import backTopBasicReact from './demos/back-top/BackTopBasic.react?raw';
+</script>
+
 # Back Top 回到顶部
 
 当页面滚动超过指定阈值时出现的浮动"回到顶部"按钮。
@@ -6,118 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBackTop />
-</template>
-
-<script setup lang="ts">
-import { CxBackTop } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBackTop />
-</template>
-
-<script>
-import { CxBackTop } from '@chronixjs/ui-vue2';
-export default { components: { CxBackTop } };
-</script>
-```
-
-```tsx [React]
-import { CxBackTop } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxBackTop />;
-}
-```
-
-:::
-
-## 自定义位置
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBackTop :right="60" :bottom="80" />
-</template>
-
-<script setup lang="ts">
-import { CxBackTop } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBackTop :right="60" :bottom="80" />
-</template>
-
-<script>
-import { CxBackTop } from '@chronixjs/ui-vue2';
-export default { components: { CxBackTop } };
-</script>
-```
-
-```tsx [React]
-import { CxBackTop } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxBackTop right={60} bottom={80} />;
-}
-```
-
-:::
-
-## 自定义可见阈值
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBackTop :visibility-threshold="300" behavior="smooth" />
-</template>
-
-<script setup lang="ts">
-import { CxBackTop } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBackTop :visibility-threshold="300" behavior="smooth" />
-</template>
-
-<script>
-import { CxBackTop } from '@chronixjs/ui-vue2';
-export default { components: { CxBackTop } };
-</script>
-```
-
-```tsx [React]
-import { CxBackTop } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxBackTop visibilityThreshold={300} behavior="smooth" />;
-}
-```
-
-:::
+<DemoBox title="回到顶部" description="在可滚动区域内展示回到顶部按钮，滚动超过阈值后显示。" :code="backTopBasicCode" :code-vue2="backTopBasicVue2" :code-react="backTopBasicReact">
+  <BackTopBasic />
+</DemoBox>
 
 ## API 参考
 

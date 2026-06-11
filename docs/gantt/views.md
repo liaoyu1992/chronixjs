@@ -1,3 +1,10 @@
+<script setup>
+import GanttViewsToolbar from './demos/GanttViewsToolbar.vue';
+import ganttViewsToolbarCode from './demos/GanttViewsToolbar.vue?raw';
+import ganttViewsToolbarVue2 from './demos/GanttViewsToolbar.vue2?raw';
+import ganttViewsToolbarReact from './demos/GanttViewsToolbar.react?raw';
+</script>
+
 # 时间线视图
 
 甘特图支持 6 种内置时间线缩放级别，每种针对不同的规划周期而设计。
@@ -96,78 +103,9 @@ export function App() {
 
 添加内置工具栏，包含导航和视图切换功能：
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt
-    :bars="bars"
-    :rows="rows"
-    :axis-input="axisInput"
-    :header-toolbar="toolbar"
-    @update:axis-input="onAxisChange"
-  />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { AxisRangePlanInput, ToolbarInput } from '@chronixjs/gantt';
-
-const axisInput = ref<AxisRangePlanInput>({
-  viewId: 'week',
-  anchorDate: new Date(),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-});
-
-// 工具栏布局：左侧=导航，中间=标题，右侧=视图切换器
-const toolbar: ToolbarInput = {
-  left: 'prev,next today',
-  center: 'title',
-  right: 'day,week,month,season,year',
-};
-
-function onAxisChange(next: AxisRangePlanInput) {
-  axisInput.value = next;
-}
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { AxisRangePlanInput, ToolbarInput } from '@chronixjs/gantt';
-
-const toolbar: ToolbarInput = {
-  left: 'prev,next today',
-  center: 'title',
-  right: 'day,week,month,season,year',
-};
-
-export function App() {
-  const [axisInput, setAxisInput] = useState<AxisRangePlanInput>({
-    viewId: 'week',
-    anchorDate: new Date(),
-    viewportWidth: 900,
-    locale: 'en',
-    weekendsVisible: true,
-  });
-
-  return (
-    <ChronixGantt
-      bars={bars}
-      rows={rows}
-      axisInput={axisInput}
-      headerToolbar={toolbar}
-      onUpdateAxisInput={setAxisInput}
-    />
-  );
-}
-```
-
-:::
+<DemoBox title="工具栏视图切换" description="通过内置工具栏在不同视图间导航。" :code="ganttViewsToolbarCode" :code-vue2="ganttViewsToolbarVue2" :code-react="ganttViewsToolbarReact">
+  <GanttViewsToolbar />
+</DemoBox>
 
 ### ToolbarInput
 

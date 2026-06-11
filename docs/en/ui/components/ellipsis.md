@@ -1,3 +1,10 @@
+<script setup>
+import EllipsisBasic from '../../../ui/components/demos/ellipsis/EllipsisBasic.vue';
+import ellipsisBasicCode from '../../../ui/components/demos/ellipsis/EllipsisBasic.vue?raw';
+import ellipsisBasicVue2 from '../../../ui/components/demos/ellipsis/EllipsisBasic.vue2?raw';
+import ellipsisBasicReact from '../../../ui/components/demos/ellipsis/EllipsisBasic.react?raw';
+</script>
+
 # Ellipsis
 
 Text truncation with native HTML `title` tooltip and configurable line clamp.
@@ -16,52 +23,9 @@ Text truncation with native HTML `title` tooltip and configurable line clamp.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxEllipsis :content="longText" />
-</template>
-
-<script setup lang="ts">
-import { CxEllipsis } from '@chronixjs/ui-vue3';
-
-const longText =
-  'This is a very long text that will be truncated with an ellipsis when it overflows the container width.';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxEllipsis :content="longText" />
-</template>
-
-<script>
-import { CxEllipsis } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxEllipsis },
-  data() {
-    return {
-      longText:
-        'This is a very long text that will be truncated with an ellipsis when it overflows the container width.',
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxEllipsis } from '@chronixjs/ui-react';
-
-export function App() {
-  const longText =
-    'This is a very long text that will be truncated with an ellipsis when it overflows the container width.';
-
-  return <CxEllipsis content={longText} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Truncate text with lineClamp set to 2." :code="ellipsisBasicCode" :code-vue2="ellipsisBasicVue2" :code-react="ellipsisBasicReact">
+  <EllipsisBasic />
+</DemoBox>
 
 ## Multi-line
 

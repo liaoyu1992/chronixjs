@@ -1,0 +1,10 @@
+import { CxCheckbox } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <CxCheckbox checked disabled label="Disabled checked" />
+      <CxCheckbox disabled label="Disabled unchecked" />
+    </div>
+  );
+}

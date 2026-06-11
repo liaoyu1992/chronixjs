@@ -1,0 +1,14 @@
+<template>
+  <div style="display: flex; gap: 12px;">
+    <CxBadge :value="5" type="default" />
+    <CxBadge :value="5" type="success" />
+    <CxBadge :value="5" type="warning" />
+    <CxBadge :value="5" type="error" />
+    <CxBadge :value="5" type="info" />
+  </div>
+</template>
+
+<script>
+import { CxBadge } from '@chronixjs/ui-vue2';
+export default { components: { CxBadge } };
+</script>

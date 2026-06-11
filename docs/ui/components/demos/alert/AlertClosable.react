@@ -1,0 +1,12 @@
+import { useState } from 'react';
+import { CxAlert } from '@chronixjs/ui-react';
+
+export function App() {
+  const [show, setShow] = useState(true);
+  if (!show) return <span style={{ fontSize: 13, color: '#888' }}>Alert closed.</span>;
+  return (
+    <CxAlert type="warning" closable onClose={() => setShow(false)}>
+      This alert can be closed.
+    </CxAlert>
+  );
+}

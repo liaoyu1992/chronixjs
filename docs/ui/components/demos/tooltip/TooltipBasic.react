@@ -1,0 +1,9 @@
+import { CxTooltip, CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxTooltip content="Tooltip text">
+      <CxButton>Hover me</CxButton>
+    </CxTooltip>
+  );
+}

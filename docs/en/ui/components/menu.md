@@ -1,3 +1,10 @@
+<script setup>
+import MenuBasic from '../../../ui/components/demos/menu/MenuBasic.vue';
+import menuBasicCode from '../../../ui/components/demos/menu/MenuBasic.vue?raw';
+import menuBasicVue2 from '../../../ui/components/demos/menu/MenuBasic.vue2?raw';
+import menuBasicReact from '../../../ui/components/demos/menu/MenuBasic.react?raw';
+</script>
+
 # Menu
 
 A hierarchical navigation menu with horizontal and vertical modes.
@@ -6,78 +13,19 @@ A hierarchical navigation menu with horizontal and vertical modes.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxMenu :items="items" v-model:value="active" mode="vertical" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxMenu } from '@chronixjs/ui-vue3';
-
-const active = ref('1');
-
-const items = [
-  { key: '1', label: 'Dashboard' },
-  { key: '2', label: 'Settings' },
-  { key: '3', label: 'About' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxMenu :items="items" :value.sync="active" mode="vertical" />
-</template>
-
-<script>
-import { CxMenu } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxMenu },
-  data() {
-    return {
-      active: '1',
-      items: [
-        { key: '1', label: 'Dashboard' },
-        { key: '2', label: 'Settings' },
-        { key: '3', label: 'About' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxMenu } from '@chronixjs/ui-react';
-
-const menuItems = [
-  { key: '1', label: 'Dashboard' },
-  { key: '2', label: 'Settings' },
-  { key: '3', label: 'About' },
-];
-
-export function App() {
-  const [active, setActive] = useState('1');
-
-  return <CxMenu items={menuItems} value={active} onUpdateValue={setActive} mode="vertical" />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Horizontal menu with four navigation items." :code="menuBasicCode" :code-vue2="menuBasicVue2" :code-react="menuBasicReact">
+  <MenuBasic />
+</DemoBox>
 
 ## Horizontal Mode
 
@@ -87,12 +35,12 @@ Use `mode="horizontal"` for a top navigation bar.
 
 ```vue [Vue 3]
 <template>
-  <CxMenu :items="items" v-model:value="active" mode="horizontal" />
+  <ChronixMenu :items="items" v-model:value="active" mode="horizontal" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CxMenu } from '@chronixjs/ui-vue3';
+import { ChronixMenu } from '@chronixjs/ui-vue3';
 
 const active = ref('1');
 
@@ -107,13 +55,13 @@ const items = [
 
 ```vue [Vue 2]
 <template>
-  <CxMenu :items="items" :value.sync="active" mode="horizontal" />
+  <ChronixMenu :items="items" :value.sync="active" mode="horizontal" />
 </template>
 
 <script>
-import { CxMenu } from '@chronixjs/ui-vue2';
+import { ChronixMenu } from '@chronixjs/ui-vue2';
 export default {
-  components: { CxMenu },
+  components: { ChronixMenu },
   data() {
     return {
       active: '1',
@@ -131,7 +79,7 @@ export default {
 
 ```tsx [React]
 import { useState } from 'react';
-import { CxMenu } from '@chronixjs/ui-react';
+import { ChronixMenu } from '@chronixjs/ui-react';
 
 const menuItems = [
   { key: '1', label: 'Home' },
@@ -143,7 +91,9 @@ const menuItems = [
 export function App() {
   const [active, setActive] = useState('1');
 
-  return <CxMenu items={menuItems} value={active} onUpdateValue={setActive} mode="horizontal" />;
+  return (
+    <ChronixMenu items={menuItems} value={active} onUpdateValue={setActive} mode="horizontal" />
+  );
 }
 ```
 
@@ -157,12 +107,12 @@ Use the `children` array to create sub-menus.
 
 ```vue [Vue 3]
 <template>
-  <CxMenu :items="items" v-model:value="active" mode="vertical" />
+  <ChronixMenu :items="items" v-model:value="active" mode="vertical" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CxMenu } from '@chronixjs/ui-vue3';
+import { ChronixMenu } from '@chronixjs/ui-vue3';
 
 const active = ref('1');
 
@@ -192,13 +142,13 @@ const items = [
 
 ```vue [Vue 2]
 <template>
-  <CxMenu :items="items" :value.sync="active" mode="vertical" />
+  <ChronixMenu :items="items" :value.sync="active" mode="vertical" />
 </template>
 
 <script>
-import { CxMenu } from '@chronixjs/ui-vue2';
+import { ChronixMenu } from '@chronixjs/ui-vue2';
 export default {
-  components: { CxMenu },
+  components: { ChronixMenu },
   data() {
     return {
       active: '1',
@@ -231,7 +181,7 @@ export default {
 
 ```tsx [React]
 import { useState } from 'react';
-import { CxMenu } from '@chronixjs/ui-react';
+import { ChronixMenu } from '@chronixjs/ui-react';
 
 const menuItems = [
   { key: '1', label: 'Dashboard' },
@@ -258,7 +208,7 @@ const menuItems = [
 export function App() {
   const [active, setActive] = useState('1');
 
-  return <CxMenu items={menuItems} value={active} onUpdateValue={setActive} mode="vertical" />;
+  return <ChronixMenu items={menuItems} value={active} onUpdateValue={setActive} mode="vertical" />;
 }
 ```
 
@@ -273,14 +223,14 @@ Use `collapsed` to render icon-only mode, ideal for sidebar layouts.
 ```vue [Vue 3]
 <template>
   <div style="display: flex; gap: 16px;">
-    <CxMenu :items="items" v-model:value="active" mode="vertical" collapsed />
+    <ChronixMenu :items="items" v-model:value="active" mode="vertical" collapsed />
     <span>Active: {{ active }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CxMenu } from '@chronixjs/ui-vue3';
+import { ChronixMenu } from '@chronixjs/ui-vue3';
 
 const active = ref('1');
 
@@ -295,15 +245,15 @@ const items = [
 ```vue [Vue 2]
 <template>
   <div style="display: flex; gap: 16px;">
-    <CxMenu :items="items" :value.sync="active" mode="vertical" collapsed />
+    <ChronixMenu :items="items" :value.sync="active" mode="vertical" collapsed />
     <span>Active: {{ active }}</span>
   </div>
 </template>
 
 <script>
-import { CxMenu } from '@chronixjs/ui-vue2';
+import { ChronixMenu } from '@chronixjs/ui-vue2';
 export default {
-  components: { CxMenu },
+  components: { ChronixMenu },
   data() {
     return {
       active: '1',
@@ -320,7 +270,7 @@ export default {
 
 ```tsx [React]
 import { useState } from 'react';
-import { CxMenu } from '@chronixjs/ui-react';
+import { ChronixMenu } from '@chronixjs/ui-react';
 
 const menuItems = [
   { key: '1', label: 'Dashboard', icon: 'home' },
@@ -333,7 +283,7 @@ export function App() {
 
   return (
     <div style={{ display: 'flex', gap: 16 }}>
-      <CxMenu
+      <ChronixMenu
         items={menuItems}
         value={active}
         onUpdateValue={setActive}
@@ -356,12 +306,12 @@ Disable individual menu items or the entire menu.
 
 ```vue [Vue 3]
 <template>
-  <CxMenu :items="items" v-model:value="active" mode="vertical" />
+  <ChronixMenu :items="items" v-model:value="active" mode="vertical" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { CxMenu } from '@chronixjs/ui-vue3';
+import { ChronixMenu } from '@chronixjs/ui-vue3';
 
 const active = ref('1');
 
@@ -375,13 +325,13 @@ const items = [
 
 ```vue [Vue 2]
 <template>
-  <CxMenu :items="items" :value.sync="active" mode="vertical" />
+  <ChronixMenu :items="items" :value.sync="active" mode="vertical" />
 </template>
 
 <script>
-import { CxMenu } from '@chronixjs/ui-vue2';
+import { ChronixMenu } from '@chronixjs/ui-vue2';
 export default {
-  components: { CxMenu },
+  components: { ChronixMenu },
   data() {
     return {
       active: '1',
@@ -398,7 +348,7 @@ export default {
 
 ```tsx [React]
 import { useState } from 'react';
-import { CxMenu } from '@chronixjs/ui-react';
+import { ChronixMenu } from '@chronixjs/ui-react';
 
 const menuItems = [
   { key: '1', label: 'Dashboard' },
@@ -409,7 +359,7 @@ const menuItems = [
 export function App() {
   const [active, setActive] = useState('1');
 
-  return <CxMenu items={menuItems} value={active} onUpdateValue={setActive} mode="vertical" />;
+  return <ChronixMenu items={menuItems} value={active} onUpdateValue={setActive} mode="vertical" />;
 }
 ```
 

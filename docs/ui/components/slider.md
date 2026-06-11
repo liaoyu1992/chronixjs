@@ -1,3 +1,18 @@
+<script setup>
+import SliderBasic from './demos/slider/SliderBasic.vue';
+import sliderBasicCode from './demos/slider/SliderBasic.vue?raw';
+import sliderBasicVue2 from './demos/slider/SliderBasic.vue2?raw';
+import sliderBasicReact from './demos/slider/SliderBasic.react?raw';
+import SliderRange from './demos/slider/SliderRange.vue';
+import sliderRangeCode from './demos/slider/SliderRange.vue?raw';
+import sliderRangeVue2 from './demos/slider/SliderRange.vue2?raw';
+import sliderRangeReact from './demos/slider/SliderRange.react?raw';
+import SliderDisabled from './demos/slider/SliderDisabled.vue';
+import sliderDisabledCode from './demos/slider/SliderDisabled.vue?raw';
+import sliderDisabledVue2 from './demos/slider/SliderDisabled.vue2?raw';
+import sliderDisabledReact from './demos/slider/SliderDisabled.react?raw';
+</script>
+
 # Slider 滑块
 
 单滑块或范围滑块，支持可选的刻度标记和工具提示。
@@ -6,105 +21,31 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSlider v-model:value="val" :min="0" :max="100" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSlider } from '@chronixjs/ui-vue3';
-
-const val = ref(50);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSlider :value.sync="val" :min="0" :max="100" />
-</template>
-
-<script>
-import { CxSlider } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSlider },
-  data() {
-    return { val: 50 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxSlider } from '@chronixjs/ui-react';
-
-export function App() {
-  const [val, setVal] = useState(50);
-
-  return <CxSlider value={val} onUpdateValue={setVal} min={0} max={100} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="基础滑块用法。" :code="sliderBasicCode" :code-vue2="sliderBasicVue2" :code-react="sliderBasicReact">
+  <SliderBasic />
+</DemoBox>
 
 ## 范围模式
 
-::: code-group
+<DemoBox title="范围模式" description="使用 range 属性启用双滑块范围模式。" :code="sliderRangeCode" :code-vue2="sliderRangeVue2" :code-react="sliderRangeReact">
+  <SliderRange />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <CxSlider v-model:value="range" range :min="0" :max="100" />
-</template>
+## 禁用状态
 
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSlider } from '@chronixjs/ui-vue3';
-
-const range = ref<[number, number]>([20, 80]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSlider :value.sync="range" range :min="0" :max="100" />
-</template>
-
-<script>
-import { CxSlider } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSlider },
-  data() {
-    return { range: [20, 80] };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxSlider } from '@chronixjs/ui-react';
-
-export function App() {
-  const [range, setRange] = useState<[number, number]>([20, 80]);
-
-  return <CxSlider value={range} onUpdateValue={setRange} range min={0} max={100} />;
-}
-```
-
-:::
+<DemoBox title="禁用状态" description="禁用滑块不可交互。" :code="sliderDisabledCode" :code-vue2="sliderDisabledVue2" :code-react="sliderDisabledReact">
+  <SliderDisabled />
+</DemoBox>
 
 ## API 参考
 

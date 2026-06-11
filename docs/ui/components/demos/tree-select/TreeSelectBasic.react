@@ -1,0 +1,17 @@
+import { useState } from 'react';
+import { CxTreeSelect } from '@chronixjs/ui-react';
+
+const treeData = [
+  { key: 'node1', label: 'Node 1', children: [
+    { key: 'node1-1', label: 'Node 1-1' },
+    { key: 'node1-2', label: 'Node 1-2' },
+  ]},
+  { key: 'node2', label: 'Node 2', children: [
+    { key: 'node2-1', label: 'Node 2-1' },
+  ]},
+];
+
+export function App() {
+  const [selected, setSelected] = useState(undefined);
+  return <CxTreeSelect data={treeData} value={selected} onUpdateValue={setSelected} placeholder="Select..." />;
+}

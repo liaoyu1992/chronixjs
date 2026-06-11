@@ -1,0 +1,21 @@
+<template>
+  <div style="display: flex; flex-direction: column; gap: 16px;">
+    <CxSpace size="small">
+      <CxButton>Small</CxButton>
+      <CxButton>Small</CxButton>
+    </CxSpace>
+    <CxSpace size="medium">
+      <CxButton>Medium</CxButton>
+      <CxButton>Medium</CxButton>
+    </CxSpace>
+    <CxSpace size="large">
+      <CxButton>Large</CxButton>
+      <CxButton>Large</CxButton>
+    </CxSpace>
+  </div>
+</template>
+
+<script>
+import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
+export default { components: { CxSpace, CxButton } };
+</script>

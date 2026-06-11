@@ -1,3 +1,10 @@
+<script setup>
+import DynamicTagsBasic from './demos/dynamic-tags/DynamicTagsBasic.vue';
+import dynamicTagsBasicCode from './demos/dynamic-tags/DynamicTagsBasic.vue?raw';
+import dynamicTagsBasicVue2 from './demos/dynamic-tags/DynamicTagsBasic.vue2?raw';
+import dynamicTagsBasicReact from './demos/dynamic-tags/DynamicTagsBasic.react?raw';
+</script>
+
 # Dynamic Tags 动态标签
 
 内联标签编辑器，用户可以通过输入添加标签，并通过关闭图标移除标签。
@@ -16,49 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxDynamicTags v-model:value="tags" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxDynamicTags } from '@chronixjs/ui-vue3';
-
-const tags = ref<string[]>(['Vue', 'React', 'Angular']);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxDynamicTags :value.sync="tags" />
-</template>
-
-<script>
-import { CxDynamicTags } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxDynamicTags },
-  data() {
-    return { tags: ['Vue', 'React', 'Angular'] };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxDynamicTags } from '@chronixjs/ui-react';
-
-export function App() {
-  const [tags, setTags] = useState<string[]>(['Vue', 'React', 'Angular']);
-
-  return <CxDynamicTags value={tags} onUpdateValue={setTags} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="动态标签的基础用法，初始包含 Tag 1 和 Tag 2。" :code="dynamicTagsBasicCode" :code-vue2="dynamicTagsBasicVue2" :code-react="dynamicTagsBasicReact">
+  <DynamicTagsBasic />
+</DemoBox>
 
 ## API 参考
 

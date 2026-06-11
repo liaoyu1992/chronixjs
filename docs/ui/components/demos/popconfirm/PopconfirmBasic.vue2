@@ -1,0 +1,14 @@
+<template>
+  <CxPopconfirm title="Are you sure?">
+    <template slot="default">
+      <CxButton>Delete</CxButton>
+    </template>
+  </CxPopconfirm>
+</template>
+
+<script>
+import { CxPopconfirm, CxButton } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxPopconfirm, CxButton },
+};
+</script>

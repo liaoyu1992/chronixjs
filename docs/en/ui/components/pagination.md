@@ -1,3 +1,10 @@
+<script setup>
+import PaginationBasic from '../../../ui/components/demos/pagination/PaginationBasic.vue';
+import paginationBasicCode from '../../../ui/components/demos/pagination/PaginationBasic.vue?raw';
+import paginationBasicVue2 from '../../../ui/components/demos/pagination/PaginationBasic.vue2?raw';
+import paginationBasicReact from '../../../ui/components/demos/pagination/PaginationBasic.react?raw';
+</script>
+
 # Pagination
 
 Page navigation with ellipsis, quick jumper, and page size picker.
@@ -5,57 +12,16 @@ Page navigation with ellipsis, quick jumper, and page size picker.
 ## Install
 
 ::: code-group
-<<< @/snippets/vue3/install-ui.md
-<<< @/snippets/vue2/install-ui.md
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
+<<< @/snippets/vue2/install-ui.md [Vue 2]
+<<< @/snippets/react/install-ui.md [React]
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxPagination v-model:page="page" :page-count="50" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxPagination } from '@chronixjs/ui-vue3';
-
-const page = ref(1);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxPagination :page.sync="page" :page-count="50" />
-</template>
-
-<script>
-import { CxPagination } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxPagination },
-  data() {
-    return { page: 1 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxPagination } from '@chronixjs/ui-react';
-
-export function App() {
-  const [page, setPage] = useState(1);
-
-  return <CxPagination page={page} pageCount={50} onUpdatePage={setPage} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Basic pagination with v-model:page binding." :code="paginationBasicCode" :code-vue2="paginationBasicVue2" :code-react="paginationBasicReact">
+  <PaginationBasic />
+</DemoBox>
 
 ## With Item Count
 
