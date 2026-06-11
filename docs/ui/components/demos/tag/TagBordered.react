@@ -1,0 +1,12 @@
+import { CxTag } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <CxTag type="primary" bordered>有边框</CxTag>
+      <CxTag type="primary" bordered={false}>无边框</CxTag>
+      <CxTag type="success" bordered>有边框</CxTag>
+      <CxTag type="success" bordered={false}>无边框</CxTag>
+    </div>
+  );
+}

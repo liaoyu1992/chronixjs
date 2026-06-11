@@ -1,0 +1,13 @@
+<template>
+  <CxSwitch v-model:checked="enabled" />
+</template>
+
+<script>
+import { CxSwitch } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxSwitch },
+  data() {
+    return { enabled: false };
+  },
+};
+</script>

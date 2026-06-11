@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxInput } from '@chronixjs/ui-react';
+
+export function App() {
+  const [email, setEmail] = useState('invalid');
+  return <CxInput value={email} onUpdateValue={setEmail} error="请输入有效的邮箱地址" />;
+}

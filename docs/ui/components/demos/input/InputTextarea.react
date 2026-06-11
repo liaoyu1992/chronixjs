@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxInput } from '@chronixjs/ui-react';
+
+export function App() {
+  const [text, setText] = useState('');
+  return <CxInput value={text} onUpdateValue={setText} type="textarea" rows={4} placeholder="请输入多行文本" />;
+}

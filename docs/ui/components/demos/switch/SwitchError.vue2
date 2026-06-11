@@ -1,0 +1,19 @@
+<template>
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <CxSwitch v-model:checked="agreed" />
+      <span style="font-size: 13px; color: #888;">{{ agreed ? '已同意' : '未同意' }}</span>
+    </div>
+    <CxSwitch v-model:checked="agreed" error="请先同意用户协议" />
+  </div>
+</template>
+
+<script>
+import { CxSwitch } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxSwitch },
+  data() {
+    return { agreed: false };
+  },
+};
+</script>

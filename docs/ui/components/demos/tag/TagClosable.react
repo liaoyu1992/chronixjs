@@ -1,0 +1,16 @@
+import { useState } from 'react';
+import { CxTag } from '@chronixjs/ui-react';
+
+export function App() {
+  const [tags, setTags] = useState(['标签一', '标签二', '标签三']);
+  const handleClose = (index) => setTags(tags.filter((_, i) => i !== index));
+  return (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      {tags.map((tag, i) => (
+        <CxTag key={tag} closable onClose={() => handleClose(i)}>
+          {tag}
+        </CxTag>
+      ))}
+    </div>
+  );
+}

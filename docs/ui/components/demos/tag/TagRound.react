@@ -1,0 +1,11 @@
+import { CxTag } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <CxTag round>Round Default</CxTag>
+      <CxTag type="primary" round>Round Primary</CxTag>
+      <CxTag type="success" round>Round Success</CxTag>
+    </div>
+  );
+}

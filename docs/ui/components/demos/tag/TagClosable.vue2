@@ -1,0 +1,17 @@
+<template>
+  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+    <CxTag v-for="(tag, i) in tags" :key="tag" closable @close="tags.splice(i, 1)">
+      {{ tag }}
+    </CxTag>
+  </div>
+</template>
+
+<script>
+import { CxTag } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxTag },
+  data() {
+    return { tags: ['标签一', '标签二', '标签三'] };
+  },
+};
+</script>

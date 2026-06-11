@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress';
+import { resolve } from 'path';
 
 export default defineConfig({
   base: '/chronixjs/',
@@ -6,6 +7,15 @@ export default defineConfig({
   cleanUrls: true,
   lastUpdated: true,
   ignoreDeadLinks: true,
+
+  vite: {
+    resolve: {
+      alias: {
+        '@chronixjs/ui-vue3': resolve(__dirname, '../../adapters/ui-vue3/src/index.ts'),
+        '@chronixjs/ui': resolve(__dirname, '../../packages/ui/src/index.ts'),
+      },
+    },
+  },
 
   locales: {
     root: {

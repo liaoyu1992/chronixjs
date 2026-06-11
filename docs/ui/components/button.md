@@ -1,3 +1,22 @@
+<script setup>
+import ButtonBasic from './demos/button/ButtonBasic.vue';
+import buttonBasicCode from './demos/button/ButtonBasic.vue?raw';
+import buttonBasicVue2 from './demos/button/ButtonBasic.vue2?raw';
+import buttonBasicReact from './demos/button/ButtonBasic.react?raw';
+import ButtonSizes from './demos/button/ButtonSizes.vue';
+import buttonSizesCode from './demos/button/ButtonSizes.vue?raw';
+import buttonSizesVue2 from './demos/button/ButtonSizes.vue2?raw';
+import buttonSizesReact from './demos/button/ButtonSizes.react?raw';
+import ButtonDisabled from './demos/button/ButtonDisabled.vue';
+import buttonDisabledCode from './demos/button/ButtonDisabled.vue?raw';
+import buttonDisabledVue2 from './demos/button/ButtonDisabled.vue2?raw';
+import buttonDisabledReact from './demos/button/ButtonDisabled.react?raw';
+import ButtonBlock from './demos/button/ButtonBlock.vue';
+import buttonBlockCode from './demos/button/ButtonBlock.vue?raw';
+import buttonBlockVue2 from './demos/button/ButtonBlock.vue2?raw';
+import buttonBlockReact from './demos/button/ButtonBlock.react?raw';
+</script>
+
 # Button 按钮
 
 功能丰富的按钮组件，支持多种类型、尺寸和状态。
@@ -6,252 +25,52 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxButton type="primary">Primary Button</CxButton>
-</template>
-
-<script setup lang="ts">
-import { CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxButton type="primary">Primary Button</CxButton>
-</template>
-
-<script>
-import { CxButton } from '@chronixjs/ui-vue2';
-export default { components: { CxButton } };
-</script>
-```
-
-```tsx [React]
-import { CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxButton type="primary">Primary Button</CxButton>;
-}
-```
-
-:::
-
-## 按钮类型
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxButton>Default</CxButton>
-    <CxButton type="primary">Primary</CxButton>
-    <CxButton type="success">Success</CxButton>
-    <CxButton type="warning">Warning</CxButton>
-    <CxButton type="danger">Danger</CxButton>
-    <CxButton type="info">Info</CxButton>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 8px;">
-    <CxButton>Default</CxButton>
-    <CxButton type="primary">Primary</CxButton>
-    <CxButton type="success">Success</CxButton>
-    <CxButton type="warning">Warning</CxButton>
-    <CxButton type="danger">Danger</CxButton>
-    <CxButton type="info">Info</CxButton>
-  </div>
-</template>
-
-<script>
-import { CxButton } from '@chronixjs/ui-vue2';
-export default { components: { CxButton } };
-</script>
-```
-
-```tsx [React]
-import { CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 8 }}>
-      <CxButton>Default</CxButton>
-      <CxButton type="primary">Primary</CxButton>
-      <CxButton type="success">Success</CxButton>
-      <CxButton type="warning">Warning</CxButton>
-      <CxButton type="danger">Danger</CxButton>
-      <CxButton type="info">Info</CxButton>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="按钮的基础用法。" :code="buttonBasicCode" :code-vue2="buttonBasicVue2" :code-react="buttonBasicReact">
+  <ButtonBasic />
+</DemoBox>
 
 ## 尺寸
 
-::: code-group
+<DemoBox title="尺寸" description="通过 size 属性设置按钮尺寸。" :code="buttonSizesCode" :code-vue2="buttonSizesVue2" :code-react="buttonSizesReact">
+  <ButtonSizes />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 8px; align-items: center;">
-    <CxButton size="small">Small</CxButton>
-    <CxButton size="medium">Medium</CxButton>
-    <CxButton size="large">Large</CxButton>
-  </div>
-</template>
+## 禁用状态
 
-<script setup lang="ts">
-import { CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
+<DemoBox title="禁用状态" description="通过 disabled 属性禁用按钮。" :code="buttonDisabledCode" :code-vue2="buttonDisabledVue2" :code-react="buttonDisabledReact">
+  <ButtonDisabled />
+</DemoBox>
 
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 8px; align-items: center;">
-    <CxButton size="small">Small</CxButton>
-    <CxButton size="medium">Medium</CxButton>
-    <CxButton size="large">Large</CxButton>
-  </div>
-</template>
+## 块级按钮
 
-<script>
-import { CxButton } from '@chronixjs/ui-vue2';
-export default { components: { CxButton } };
-</script>
-```
-
-```tsx [React]
-import { CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <CxButton size="small">Small</CxButton>
-      <CxButton size="medium">Medium</CxButton>
-      <CxButton size="large">Large</CxButton>
-    </div>
-  );
-}
-```
-
-:::
-
-## 状态
-
-### 禁用状态
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxButton type="primary" disabled>Disabled</CxButton>
-</template>
-
-<script setup lang="ts">
-import { CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxButton type="primary" disabled>Disabled</CxButton>
-</template>
-
-<script>
-import { CxButton } from '@chronixjs/ui-vue2';
-export default { components: { CxButton } };
-</script>
-```
-
-```tsx [React]
-import { CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxButton type="primary" disabled>
-      Disabled
-    </CxButton>
-  );
-}
-```
-
-:::
-
-### 加载中
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxButton type="primary" loading>Loading...</CxButton>
-</template>
-
-<script setup lang="ts">
-import { CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxButton type="primary" loading>Loading...</CxButton>
-</template>
-
-<script>
-import { CxButton } from '@chronixjs/ui-vue2';
-export default { components: { CxButton } };
-</script>
-```
-
-```tsx [React]
-import { CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxButton type="primary" loading>
-      Loading...
-    </CxButton>
-  );
-}
-```
-
-:::
+<DemoBox title="块级按钮" description="通过 block 属性使按钮占满整行宽度。" :code="buttonBlockCode" :code-vue2="buttonBlockVue2" :code-react="buttonBlockReact">
+  <ButtonBlock />
+</DemoBox>
 
 ## API 参考
 
 ### 属性 (Props)
 
-| 属性       | 类型                                                                     | 默认值      | 说明           |
-| ---------- | ------------------------------------------------------------------------ | ----------- | -------------- |
-| `type`     | `'default' \| 'primary' \| 'success' \| 'warning' \| 'danger' \| 'info'` | `'default'` | 按钮样式类型   |
-| `size`     | `'small' \| 'medium' \| 'large'`                                         | `'medium'`  | 按钮尺寸       |
-| `disabled` | `boolean`                                                                | `false`     | 禁用按钮       |
-| `loading`  | `boolean`                                                                | `false`     | 显示加载旋转器 |
-| `block`    | `boolean`                                                                | `false`     | 撑满整行宽度   |
-| `plain`    | `boolean`                                                                | `false`     | 描边样式       |
-| `round`    | `boolean`                                                                | `false`     | 完全圆角       |
+| 属性       | 类型                              | 默认值      | 说明             |
+| ---------- | --------------------------------- | ----------- | ---------------- |
+| `variant`  | `'default' \| 'primary'`          | `'default'` | 按钮样式类型     |
+| `size`     | `'small' \| 'medium' \| 'large'`  | `'medium'`  | 按钮尺寸         |
+| `disabled` | `boolean`                         | `false`     | 禁用按钮         |
+| `block`    | `boolean`                         | `false`     | 撑满整行宽度     |
+| `htmlType` | `'button' \| 'submit' \| 'reset'` | `'button'`  | 原生 button 类型 |
 
 ### 事件 (Events)
 
-| 事件    | 载荷    | 说明       |
-| ------- | ------- | ---------- |
-| `click` | `Event` | 点击时触发 |
+| 事件    | 载荷         | 说明       |
+| ------- | ------------ | ---------- |
+| `click` | `MouseEvent` | 点击时触发 |

@@ -1,0 +1,9 @@
+import { CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxButton type="primary" disabled>
+      Disabled
+    </CxButton>
+  );
+}

@@ -1,0 +1,12 @@
+<template>
+  <div style="display: flex; flex-direction: column; gap: 12px; max-width: 320px;">
+    <CxInput size="small" placeholder="Small" />
+    <CxInput size="medium" placeholder="Medium" />
+    <CxInput size="large" placeholder="Large" />
+  </div>
+</template>
+
+<script>
+import { CxInput } from '@chronixjs/ui-vue2';
+export default { components: { CxInput } };
+</script>

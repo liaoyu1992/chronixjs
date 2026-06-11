@@ -1,3 +1,22 @@
+<script setup>
+import SwitchBasic from '../../../ui/components/demos/switch/SwitchBasic.vue';
+import switchBasicCode from '../../../ui/components/demos/switch/SwitchBasic.vue?raw';
+import switchBasicVue2 from '../../../ui/components/demos/switch/SwitchBasic.vue2?raw';
+import switchBasicReact from '../../../ui/components/demos/switch/SwitchBasic.react?raw';
+import SwitchSizes from '../../../ui/components/demos/switch/SwitchSizes.vue';
+import switchSizesCode from '../../../ui/components/demos/switch/SwitchSizes.vue?raw';
+import switchSizesVue2 from '../../../ui/components/demos/switch/SwitchSizes.vue2?raw';
+import switchSizesReact from '../../../ui/components/demos/switch/SwitchSizes.react?raw';
+import SwitchDisabled from '../../../ui/components/demos/switch/SwitchDisabled.vue';
+import switchDisabledCode from '../../../ui/components/demos/switch/SwitchDisabled.vue?raw';
+import switchDisabledVue2 from '../../../ui/components/demos/switch/SwitchDisabled.vue2?raw';
+import switchDisabledReact from '../../../ui/components/demos/switch/SwitchDisabled.react?raw';
+import SwitchError from '../../../ui/components/demos/switch/SwitchError.vue';
+import switchErrorCode from '../../../ui/components/demos/switch/SwitchError.vue?raw';
+import switchErrorVue2 from '../../../ui/components/demos/switch/SwitchError.vue2?raw';
+import switchErrorReact from '../../../ui/components/demos/switch/SwitchError.react?raw';
+</script>
+
 # Switch
 
 Toggle switch component for binary on/off states. Renders a native `<button role="switch">` with ARIA attributes for accessibility.
@@ -6,181 +25,37 @@ Toggle switch component for binary on/off states. Renders a native `<button role
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSwitch v-model:checked="enabled" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSwitch } from '@chronixjs/ui-vue3';
-
-const enabled = ref(false);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSwitch v-model:checked="enabled" />
-</template>
-
-<script>
-import { CxSwitch } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSwitch },
-  data() {
-    return { enabled: false };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxSwitch } from '@chronixjs/ui-react';
-
-export function App() {
-  const [enabled, setEnabled] = useState(false);
-  return <CxSwitch checked={enabled} onUpdateChecked={setEnabled} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Toggle switch on and off." :code="switchBasicCode" :code-vue2="switchBasicVue2" :code-react="switchBasicReact">
+  <SwitchBasic />
+</DemoBox>
 
 ## Sizes
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 16px; align-items: center;">
-    <CxSwitch size="small" />
-    <CxSwitch size="medium" />
-    <CxSwitch size="large" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSwitch } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 16px; align-items: center;">
-    <CxSwitch size="small" />
-    <CxSwitch size="medium" />
-    <CxSwitch size="large" />
-  </div>
-</template>
-
-<script>
-import { CxSwitch } from '@chronixjs/ui-vue2';
-export default { components: { CxSwitch } };
-</script>
-```
-
-```tsx [React]
-import { CxSwitch } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-      <CxSwitch size="small" />
-      <CxSwitch size="medium" />
-      <CxSwitch size="large" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Sizes" description="Set switch size with the size prop." :code="switchSizesCode" :code-vue2="switchSizesVue2" :code-react="switchSizesReact">
+  <SwitchSizes />
+</DemoBox>
 
 ## Disabled
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSwitch checked disabled />
-</template>
-
-<script setup lang="ts">
-import { CxSwitch } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<CxSwitch checked disabled />
-```
-
-:::
+<DemoBox title="Disabled" description="Disable the switch with the disabled prop." :code="switchDisabledCode" :code-vue2="switchDisabledVue2" :code-react="switchDisabledReact">
+  <SwitchDisabled />
+</DemoBox>
 
 ## Error State
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSwitch v-model:checked="agreed" error="You must enable this to continue" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSwitch } from '@chronixjs/ui-vue3';
-
-const agreed = ref(false);
-</script>
-```
-
-```tsx [React]
-<CxSwitch checked={agreed} onUpdateChecked={setAgreed} error="You must enable this" />
-```
-
-:::
-
-## With Labels
-
-Combine with text for descriptive toggles:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <CxSwitch v-model:checked="darkMode" />
-    <span>Dark Mode</span>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSwitch } from '@chronixjs/ui-vue3';
-
-const darkMode = ref(false);
-</script>
-```
-
-```tsx [React]
-<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-  <CxSwitch checked={darkMode} onUpdateChecked={setDarkMode} />
-  <span>Dark Mode</span>
-</div>
-```
-
-:::
+<DemoBox title="Error State" description="Show error message with the error prop." :code="switchErrorCode" :code-vue2="switchErrorVue2" :code-react="switchErrorReact">
+  <SwitchError />
+</DemoBox>
 
 ## Accessibility
 

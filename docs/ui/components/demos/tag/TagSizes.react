@@ -1,0 +1,11 @@
+import { CxTag } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <CxTag size="small">Small</CxTag>
+      <CxTag size="medium">Medium</CxTag>
+      <CxTag size="large">Large</CxTag>
+    </div>
+  );
+}

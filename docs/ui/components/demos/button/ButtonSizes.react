@@ -1,0 +1,11 @@
+import { CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <CxButton size="small">Small</CxButton>
+      <CxButton size="medium">Medium</CxButton>
+      <CxButton size="large">Large</CxButton>
+    </div>
+  );
+}

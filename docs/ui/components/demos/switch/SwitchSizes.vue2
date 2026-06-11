@@ -1,0 +1,12 @@
+<template>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <CxSwitch size="small" checked />
+    <CxSwitch size="medium" checked />
+    <CxSwitch size="large" checked />
+  </div>
+</template>
+
+<script>
+import { CxSwitch } from '@chronixjs/ui-vue2';
+export default { components: { CxSwitch } };
+</script>

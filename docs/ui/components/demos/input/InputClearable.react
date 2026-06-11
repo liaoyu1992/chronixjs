@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxInput } from '@chronixjs/ui-react';
+
+export function App() {
+  const [text, setText] = useState('可清除的内容');
+  return <CxInput value={text} onUpdateValue={setText} clearable placeholder="可清除输入框" />;
+}

@@ -1,0 +1,13 @@
+<template>
+  <CxInput v-model:value="text" clearable placeholder="可清除输入框" />
+</template>
+
+<script>
+import { CxInput } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxInput },
+  data() {
+    return { text: '可清除的内容' };
+  },
+};
+</script>

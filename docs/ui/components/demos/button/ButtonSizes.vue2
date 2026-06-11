@@ -1,0 +1,12 @@
+<template>
+  <div style="display: flex; gap: 8px; align-items: center;">
+    <CxButton size="small">Small</CxButton>
+    <CxButton size="medium">Medium</CxButton>
+    <CxButton size="large">Large</CxButton>
+  </div>
+</template>
+
+<script>
+import { CxButton } from '@chronixjs/ui-vue2';
+export default { components: { CxButton } };
+</script>

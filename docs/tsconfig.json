@@ -6,6 +6,7 @@
     "types": ["node"],
     "paths": {
       "@chronixjs/ui": ["../packages/ui/src"],
+      "@chronixjs/ui-vue3": ["../adapters/ui-vue3/src"],
       "@chronixjs/gantt": ["../packages/gantt/src"],
       "@chronixjs/table": ["../packages/table/src"],
       "@chronixjs/cx-kit": ["../packages/cx-kit/src"]

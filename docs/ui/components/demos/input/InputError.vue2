@@ -1,0 +1,15 @@
+<template>
+  <div style="max-width: 320px;">
+    <CxInput v-model:value="email" error="请输入有效的邮箱地址" />
+  </div>
+</template>
+
+<script>
+import { CxInput } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxInput },
+  data() {
+    return { email: 'invalid' };
+  },
+};
+</script>

@@ -1,3 +1,22 @@
+<script setup>
+import SwitchBasic from './demos/switch/SwitchBasic.vue';
+import switchBasicCode from './demos/switch/SwitchBasic.vue?raw';
+import switchBasicVue2 from './demos/switch/SwitchBasic.vue2?raw';
+import switchBasicReact from './demos/switch/SwitchBasic.react?raw';
+import SwitchSizes from './demos/switch/SwitchSizes.vue';
+import switchSizesCode from './demos/switch/SwitchSizes.vue?raw';
+import switchSizesVue2 from './demos/switch/SwitchSizes.vue2?raw';
+import switchSizesReact from './demos/switch/SwitchSizes.react?raw';
+import SwitchDisabled from './demos/switch/SwitchDisabled.vue';
+import switchDisabledCode from './demos/switch/SwitchDisabled.vue?raw';
+import switchDisabledVue2 from './demos/switch/SwitchDisabled.vue2?raw';
+import switchDisabledReact from './demos/switch/SwitchDisabled.react?raw';
+import SwitchError from './demos/switch/SwitchError.vue';
+import switchErrorCode from './demos/switch/SwitchError.vue?raw';
+import switchErrorVue2 from './demos/switch/SwitchError.vue2?raw';
+import switchErrorReact from './demos/switch/SwitchError.react?raw';
+</script>
+
 # Switch 开关
 
 用于开/关二元状态的切换开关组件。渲染为带有 ARIA 无障碍属性的原生 `<button role="switch">`。
@@ -6,181 +25,37 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSwitch v-model:checked="enabled" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSwitch } from '@chronixjs/ui-vue3';
-
-const enabled = ref(false);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSwitch v-model:checked="enabled" />
-</template>
-
-<script>
-import { CxSwitch } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSwitch },
-  data() {
-    return { enabled: false };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxSwitch } from '@chronixjs/ui-react';
-
-export function App() {
-  const [enabled, setEnabled] = useState(false);
-  return <CxSwitch checked={enabled} onUpdateChecked={setEnabled} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="开关的基础用法。" :code="switchBasicCode" :code-vue2="switchBasicVue2" :code-react="switchBasicReact">
+  <SwitchBasic />
+</DemoBox>
 
 ## 尺寸
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; gap: 16px; align-items: center;">
-    <CxSwitch size="small" />
-    <CxSwitch size="medium" />
-    <CxSwitch size="large" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSwitch } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; gap: 16px; align-items: center;">
-    <CxSwitch size="small" />
-    <CxSwitch size="medium" />
-    <CxSwitch size="large" />
-  </div>
-</template>
-
-<script>
-import { CxSwitch } from '@chronixjs/ui-vue2';
-export default { components: { CxSwitch } };
-</script>
-```
-
-```tsx [React]
-import { CxSwitch } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-      <CxSwitch size="small" />
-      <CxSwitch size="medium" />
-      <CxSwitch size="large" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="尺寸" description="通过 size 属性设置开关尺寸。" :code="switchSizesCode" :code-vue2="switchSizesVue2" :code-react="switchSizesReact">
+  <SwitchSizes />
+</DemoBox>
 
 ## 禁用状态
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSwitch checked disabled />
-</template>
-
-<script setup lang="ts">
-import { CxSwitch } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<CxSwitch checked disabled />
-```
-
-:::
+<DemoBox title="禁用状态" description="通过 disabled 属性禁用开关。" :code="switchDisabledCode" :code-vue2="switchDisabledVue2" :code-react="switchDisabledReact">
+  <SwitchDisabled />
+</DemoBox>
 
 ## 错误状态
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSwitch v-model:checked="agreed" error="You must enable this to continue" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSwitch } from '@chronixjs/ui-vue3';
-
-const agreed = ref(false);
-</script>
-```
-
-```tsx [React]
-<CxSwitch checked={agreed} onUpdateChecked={setAgreed} error="You must enable this" />
-```
-
-:::
-
-## 带标签
-
-与文本组合实现描述性切换：
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <CxSwitch v-model:checked="darkMode" />
-    <span>Dark Mode</span>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxSwitch } from '@chronixjs/ui-vue3';
-
-const darkMode = ref(false);
-</script>
-```
-
-```tsx [React]
-<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-  <CxSwitch checked={darkMode} onUpdateChecked={setDarkMode} />
-  <span>Dark Mode</span>
-</div>
-```
-
-:::
+<DemoBox title="错误状态" description="通过 error 属性显示错误提示信息。" :code="switchErrorCode" :code-vue2="switchErrorVue2" :code-react="switchErrorReact">
+  <SwitchError />
+</DemoBox>
 
 ## 无障碍
 
