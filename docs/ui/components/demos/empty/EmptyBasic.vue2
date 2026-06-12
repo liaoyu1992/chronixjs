@@ -1,0 +1,8 @@
+<template>
+  <CxEmpty />
+</template>
+
+<script>
+import { CxEmpty } from '@chronixjs/ui-vue2';
+export default { components: { CxEmpty } };
+</script>

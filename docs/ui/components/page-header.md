@@ -1,3 +1,10 @@
+<script setup>
+import PageHeaderBasic from './demos/page-header/PageHeaderBasic.vue';
+import pageHeaderBasicCode from './demos/page-header/PageHeaderBasic.vue?raw';
+import pageHeaderBasicVue2 from './demos/page-header/PageHeaderBasic.vue2?raw';
+import pageHeaderBasicReact from './demos/page-header/PageHeaderBasic.react?raw';
+</script>
+
 # Page Header 页头
 
 标准化的页面顶部标题块，支持可选的返回按钮、头像、标题、副标题、额外操作区域和页脚。
@@ -6,48 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxPageHeader title="Dashboard" subtitle="Overview of your account" />
-</template>
-
-<script setup lang="ts">
-import { CxPageHeader } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxPageHeader title="Dashboard" subtitle="Overview of your account" />
-</template>
-
-<script>
-import { CxPageHeader } from '@chronixjs/ui-vue2';
-export default { components: { CxPageHeader } };
-</script>
-```
-
-```tsx [React]
-import { CxPageHeader } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxPageHeader title="Dashboard" subtitle="Overview of your account" />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="带标题、副标题和返回按钮的页头。" :code="pageHeaderBasicCode" :code-vue2="pageHeaderBasicVue2" :code-react="pageHeaderBasicReact">
+  <PageHeaderBasic />
+</DemoBox>
 
 ## 带返回按钮和额外区域
 

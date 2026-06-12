@@ -1,0 +1,8 @@
+<template>
+  <CxSlider :value="30" disabled :min="0" :max="100" />
+</template>
+
+<script>
+import { CxSlider } from '@chronixjs/ui-vue2';
+export default { components: { CxSlider } };
+</script>

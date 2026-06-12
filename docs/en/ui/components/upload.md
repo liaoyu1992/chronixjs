@@ -1,3 +1,10 @@
+<script setup>
+import UploadBasic from '../../../ui/components/demos/upload/UploadBasic.vue';
+import uploadBasicCode from '../../../ui/components/demos/upload/UploadBasic.vue?raw';
+import uploadBasicVue2 from '../../../ui/components/demos/upload/UploadBasic.vue2?raw';
+import uploadBasicReact from '../../../ui/components/demos/upload/UploadBasic.react?raw';
+</script>
+
 # Upload
 
 File upload component with status tracking and progress display.
@@ -16,54 +23,9 @@ File upload component with status tracking and progress display.
 
 ## Basic Usage
 
-A simple file upload component pointing to an upload endpoint.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxUpload action="/api/upload" :file-list="fileList" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxUpload } from '@chronixjs/ui-vue3';
-
-const fileList = ref([]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxUpload action="/api/upload" :file-list="fileList" />
-</template>
-
-<script>
-import { CxUpload } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxUpload },
-  data() {
-    return {
-      fileList: [],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxUpload } from '@chronixjs/ui-react';
-
-export function App() {
-  const [fileList, setFileList] = useState([]);
-
-  return <CxUpload action="/api/upload" fileList={fileList} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Simple file upload restricted to image files via accept." :code="uploadBasicCode" :code-vue2="uploadBasicVue2" :code-react="uploadBasicReact">
+  <UploadBasic />
+</DemoBox>
 
 ## Multiple Files
 

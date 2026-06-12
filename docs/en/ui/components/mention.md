@@ -1,3 +1,10 @@
+<script setup>
+import MentionBasic from '../../../ui/components/demos/mention/MentionBasic.vue';
+import mentionBasicCode from '../../../ui/components/demos/mention/MentionBasic.vue?raw';
+import mentionBasicVue2 from '../../../ui/components/demos/mention/MentionBasic.vue2?raw';
+import mentionBasicReact from '../../../ui/components/demos/mention/MentionBasic.react?raw';
+</script>
+
 # Mention
 
 Textarea with `@trigger` detection that opens a Select-style dropdown.
@@ -6,84 +13,19 @@ Textarea with `@trigger` detection that opens a Select-style dropdown.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxMention v-model:value="text" :options="users" trigger="@" placeholder="Type @ to mention..." />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxMention } from '@chronixjs/ui-vue3';
-
-const text = ref('');
-const users = ref([
-  { key: 'alice', label: 'Alice', value: 'alice' },
-  { key: 'bob', label: 'Bob', value: 'bob' },
-  { key: 'charlie', label: 'Charlie', value: 'charlie' },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxMention :value.sync="text" :options="users" trigger="@" placeholder="Type @ to mention..." />
-</template>
-
-<script>
-import { CxMention } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxMention },
-  data() {
-    return {
-      text: '',
-      users: [
-        { key: 'alice', label: 'Alice', value: 'alice' },
-        { key: 'bob', label: 'Bob', value: 'bob' },
-        { key: 'charlie', label: 'Charlie', value: 'charlie' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxMention } from '@chronixjs/ui-react';
-
-export function App() {
-  const [text, setText] = useState('');
-  const [users] = useState([
-    { key: 'alice', label: 'Alice', value: 'alice' },
-    { key: 'bob', label: 'Bob', value: 'bob' },
-    { key: 'charlie', label: 'Charlie', value: 'charlie' },
-  ]);
-
-  return (
-    <CxMention
-      value={text}
-      onUpdateValue={setText}
-      options={users}
-      trigger="@"
-      placeholder="Type @ to mention..."
-    />
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Mention input with @ trigger for mentioning users." :code="mentionBasicCode" :code-vue2="mentionBasicVue2" :code-react="mentionBasicReact">
+  <MentionBasic />
+</DemoBox>
 
 ## API Reference
 

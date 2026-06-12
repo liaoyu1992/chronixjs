@@ -1,0 +1,8 @@
+<template>
+  <CxRate :value="4.5" readonly allow-half />
+</template>
+
+<script>
+import { CxRate } from '@chronixjs/ui-vue2';
+export default { components: { CxRate } };
+</script>

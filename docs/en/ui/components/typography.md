@@ -1,3 +1,10 @@
+<script setup>
+import TypographyBasic from '../../../ui/components/demos/typography/TypographyBasic.vue';
+import typographyBasicCode from '../../../ui/components/demos/typography/TypographyBasic.vue?raw';
+import typographyBasicVue2 from '../../../ui/components/demos/typography/TypographyBasic.vue2?raw';
+import typographyBasicReact from '../../../ui/components/demos/typography/TypographyBasic.react?raw';
+</script>
+
 # Typography
 
 A typography component for rendering headings, paragraphs, blockquotes, and text with style controls.
@@ -6,15 +13,19 @@ A typography component for rendering headings, paragraphs, blockquotes, and text
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
+
+<DemoBox title="Basic Usage" description="Heading-level typography." :code="typographyBasicCode" :code-vue2="typographyBasicVue2" :code-react="typographyBasicReact">
+  <TypographyBasic />
+</DemoBox>
 
 ### Plain Text
 
@@ -55,7 +66,7 @@ export function App() {
 
 ### Headings
 
-Set `variant="title"` and `level` (1–6) to render `<h1>` through `<h6>`:
+Set `variant="title"` and `level` (1-6) to render `<h1>` through `<h6>`:
 
 ::: code-group
 

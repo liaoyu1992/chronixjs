@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxRate } from '@chronixjs/ui-react';
+
+export function App() {
+  const [rating, setRating] = useState(7);
+  return <CxRate value={rating} onUpdateValue={setRating} count={10} />;
+}

@@ -1,3 +1,10 @@
+<script setup>
+import IconWrapperBasic from './demos/icon-wrapper/IconWrapperBasic.vue';
+import iconWrapperBasicCode from './demos/icon-wrapper/IconWrapperBasic.vue?raw';
+import iconWrapperBasicVue2 from './demos/icon-wrapper/IconWrapperBasic.vue2?raw';
+import iconWrapperBasicReact from './demos/icon-wrapper/IconWrapperBasic.react?raw';
+</script>
+
 # Icon Wrapper 图标包装器
 
 为任意图标内容提供尺寸和颜色包装。
@@ -16,48 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxIconWrapper :size="24" color="#3b82f6">
-    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" /></svg>
-  </CxIconWrapper>
-</template>
-
-<script setup lang="ts">
-import { CxIconWrapper } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxIconWrapper :size="24" color="#3b82f6">
-    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" /></svg>
-  </CxIconWrapper>
-</template>
-
-<script>
-import { CxIconWrapper } from '@chronixjs/ui-vue2';
-export default { components: { CxIconWrapper } };
-</script>
-```
-
-```tsx [React]
-import { CxIconWrapper } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxIconWrapper size={24} color="#3b82f6">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" />
-      </svg>
-    </CxIconWrapper>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用 IconWrapper 包裹自定义内容并设置尺寸和颜色。" :code="iconWrapperBasicCode" :code-vue2="iconWrapperBasicVue2" :code-react="iconWrapperBasicReact">
+  <IconWrapperBasic />
+</DemoBox>
 
 ## API 参考
 

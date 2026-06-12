@@ -1,203 +1,78 @@
+<script setup>
+import AlertBasic from '../../../ui/components/demos/alert/AlertBasic.vue';
+import alertBasicCode from '../../../ui/components/demos/alert/AlertBasic.vue?raw';
+import alertBasicVue2 from '../../../ui/components/demos/alert/AlertBasic.vue2?raw';
+import alertBasicReact from '../../../ui/components/demos/alert/AlertBasic.react?raw';
+import AlertTypes from '../../../ui/components/demos/alert/AlertTypes.vue';
+import alertTypesCode from '../../../ui/components/demos/alert/AlertTypes.vue?raw';
+import alertTypesVue2 from '../../../ui/components/demos/alert/AlertTypes.vue2?raw';
+import alertTypesReact from '../../../ui/components/demos/alert/AlertTypes.react?raw';
+import AlertTitle from '../../../ui/components/demos/alert/AlertTitle.vue';
+import alertTitleCode from '../../../ui/components/demos/alert/AlertTitle.vue?raw';
+import alertTitleVue2 from '../../../ui/components/demos/alert/AlertTitle.vue2?raw';
+import alertTitleReact from '../../../ui/components/demos/alert/AlertTitle.react?raw';
+import AlertClosable from '../../../ui/components/demos/alert/AlertClosable.vue';
+import alertClosableCode from '../../../ui/components/demos/alert/AlertClosable.vue?raw';
+import alertClosableVue2 from '../../../ui/components/demos/alert/AlertClosable.vue2?raw';
+import alertClosableReact from '../../../ui/components/demos/alert/AlertClosable.react?raw';
+</script>
+
 # Alert
 
-Displays important messages with semantic types (info, success, warning, error).
+Display important messages with semantic types (info, success, warning, error).
 
 ## Install
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAlert>Here is an info message.</CxAlert>
-</template>
-
-<script setup lang="ts">
-import { CxAlert } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAlert>Here is an info message.</CxAlert>
-</template>
-
-<script>
-import { CxAlert } from '@chronixjs/ui-vue2';
-export default { components: { CxAlert } };
-</script>
-```
-
-```tsx [React]
-import { CxAlert } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxAlert>Here is an info message.</CxAlert>;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Basic alert usage." :code="alertBasicCode" :code-vue2="alertBasicVue2" :code-react="alertBasicReact">
+  <AlertBasic />
+</DemoBox>
 
 ## Alert Types
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <CxAlert>Default message</CxAlert>
-    <CxAlert type="info">Info message</CxAlert>
-    <CxAlert type="success">Success message</CxAlert>
-    <CxAlert type="warning">Warning message</CxAlert>
-    <CxAlert type="error">Error message</CxAlert>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxAlert } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 8px;">
-    <CxAlert>Default message</CxAlert>
-    <CxAlert type="info">Info message</CxAlert>
-    <CxAlert type="success">Success message</CxAlert>
-    <CxAlert type="warning">Warning message</CxAlert>
-    <CxAlert type="error">Error message</CxAlert>
-  </div>
-</template>
-
-<script>
-import { CxAlert } from '@chronixjs/ui-vue2';
-export default { components: { CxAlert } };
-</script>
-```
-
-```tsx [React]
-import { CxAlert } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <CxAlert>Default message</CxAlert>
-      <CxAlert type="info">Info message</CxAlert>
-      <CxAlert type="success">Success message</CxAlert>
-      <CxAlert type="warning">Warning message</CxAlert>
-      <CxAlert type="error">Error message</CxAlert>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Alert Types" description="Set semantic type with the type prop." :code="alertTypesCode" :code-vue2="alertTypesVue2" :code-react="alertTypesReact">
+  <AlertTypes />
+</DemoBox>
 
 ## With Title
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAlert type="success" title="Success"> Your operation was successful. </CxAlert>
-</template>
-
-<script setup lang="ts">
-import { CxAlert } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAlert type="success" title="Success"> Your operation was successful. </CxAlert>
-</template>
-
-<script>
-import { CxAlert } from '@chronixjs/ui-vue2';
-export default { components: { CxAlert } };
-</script>
-```
-
-```tsx [React]
-import { CxAlert } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxAlert type="success" title="Success">
-      Your operation was successful.
-    </CxAlert>
-  );
-}
-```
-
-:::
+<DemoBox title="With Title" description="Add a title with the title prop." :code="alertTitleCode" :code-vue2="alertTitleVue2" :code-react="alertTitleReact">
+  <AlertTitle />
+</DemoBox>
 
 ## Closable
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAlert type="warning" closable> This alert can be closed by the user. </CxAlert>
-</template>
-
-<script setup lang="ts">
-import { CxAlert } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAlert type="warning" closable> This alert can be closed by the user. </CxAlert>
-</template>
-
-<script>
-import { CxAlert } from '@chronixjs/ui-vue2';
-export default { components: { CxAlert } };
-</script>
-```
-
-```tsx [React]
-import { CxAlert } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxAlert type="warning" closable>
-      This alert can be closed by the user.
-    </CxAlert>
-  );
-}
-```
-
-:::
+<DemoBox title="Closable" description="Show close button with the closable prop." :code="alertClosableCode" :code-vue2="alertClosableVue2" :code-react="alertClosableReact">
+  <AlertClosable />
+</DemoBox>
 
 ## API Reference
 
 ### Props
 
-| Prop       | Type                                                       | Default     | Description         |
-| ---------- | ---------------------------------------------------------- | ----------- | ------------------- |
-| `type`     | `'default' \| 'info' \| 'success' \| 'warning' \| 'error'` | `'default'` | Alert semantic type |
-| `title`    | `string`                                                   | `undefined` | Optional title text |
-| `closable` | `boolean`                                                  | `false`     | Show close button   |
-| `bordered` | `boolean`                                                  | `true`      | Show border         |
+| Prop       | Type                                                       | Default     | Description       |
+| ---------- | ---------------------------------------------------------- | ----------- | ----------------- |
+| `type`     | `'default' \| 'info' \| 'success' \| 'warning' \| 'error'` | `'default'` | Semantic type     |
+| `title`    | `string`                                                   | `undefined` | Optional title    |
+| `closable` | `boolean`                                                  | `false`     | Show close button |
+| `bordered` | `boolean`                                                  | `true`      | Show border       |
 
 ### Events
 
-| Event   | Payload      | Description                     |
-| ------- | ------------ | ------------------------------- |
-| `close` | `MouseEvent` | Fired when close button clicked |
+| Event   | Payload      | Description          |
+| ------- | ------------ | -------------------- |
+| `close` | `MouseEvent` | Fired on close click |
 
 ### Slots
 

@@ -1,3 +1,10 @@
+<script setup>
+import DescriptionsBasic from './demos/descriptions/DescriptionsBasic.vue';
+import descriptionsBasicCode from './demos/descriptions/DescriptionsBasic.vue?raw';
+import descriptionsBasicVue2 from './demos/descriptions/DescriptionsBasic.vue2?raw';
+import descriptionsBasicReact from './demos/descriptions/DescriptionsBasic.react?raw';
+</script>
+
 # Descriptions 描述列表
 
 多列键值对展示，用于在网格布局中呈现结构化数据。
@@ -16,63 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxDescriptions :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxDescriptions } from '@chronixjs/ui-vue3';
-
-const items = ref([
-  { key: 'name', label: 'Name', value: 'Chronix UI', span: 1 },
-  { key: 'version', label: 'Version', value: '0.1.0', span: 1 },
-  { key: 'license', label: 'License', value: 'MIT', span: 1 },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxDescriptions :items="items" />
-</template>
-
-<script>
-import { CxDescriptions } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxDescriptions },
-  data() {
-    return {
-      items: [
-        { key: 'name', label: 'Name', value: 'Chronix UI', span: 1 },
-        { key: 'version', label: 'Version', value: '0.1.0', span: 1 },
-        { key: 'license', label: 'License', value: 'MIT', span: 1 },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxDescriptions } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items] = useState([
-    { key: 'name', label: 'Name', value: 'Chronix UI', span: 1 },
-    { key: 'version', label: 'Version', value: '0.1.0', span: 1 },
-    { key: 'license', label: 'License', value: 'MIT', span: 1 },
-  ]);
-
-  return <CxDescriptions items={items} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="通过 items 传入键值对数据，columns 设置为 1 列。" :code="descriptionsBasicCode" :code-vue2="descriptionsBasicVue2" :code-react="descriptionsBasicReact">
+  <DescriptionsBasic />
+</DemoBox>
 
 ## 带边框
 

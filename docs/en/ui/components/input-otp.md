@@ -1,3 +1,10 @@
+<script setup>
+import InputOTPBasic from '../../../ui/components/demos/input-otp/InputOTPBasic.vue';
+import inputOTPBasicCode from '../../../ui/components/demos/input-otp/InputOTPBasic.vue?raw';
+import inputOTPBasicVue2 from '../../../ui/components/demos/input-otp/InputOTPBasic.vue2?raw';
+import inputOTPBasicReact from '../../../ui/components/demos/input-otp/InputOTPBasic.react?raw';
+</script>
+
 # Input OTP
 
 One-time-password entry surface with N independent cells sharing a single controlled value.
@@ -6,72 +13,19 @@ One-time-password entry surface with N independent cells sharing a single contro
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxInputOtp v-model:value="otp" :length="6" @complete="onComplete" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxInputOtp } from '@chronixjs/ui-vue3';
-
-const otp = ref('');
-
-function onComplete(value: string) {
-  console.log('OTP complete:', value);
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxInputOtp :value.sync="otp" :length="6" @complete="onComplete" />
-</template>
-
-<script>
-import { CxInputOtp } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxInputOtp },
-  data() {
-    return { otp: '' };
-  },
-  methods: {
-    onComplete(value) {
-      console.log('OTP complete:', value);
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxInputOtp } from '@chronixjs/ui-react';
-
-export function App() {
-  const [otp, setOtp] = useState('');
-
-  function onComplete(value: string) {
-    console.log('OTP complete:', value);
-  }
-
-  return <CxInputOtp value={otp} onUpdateValue={setOtp} length={6} onComplete={onComplete} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="OTP input with 6 cells." :code="inputOTPBasicCode" :code-vue2="inputOTPBasicVue2" :code-react="inputOTPBasicReact">
+  <InputOTPBasic />
+</DemoBox>
 
 ## API Reference
 

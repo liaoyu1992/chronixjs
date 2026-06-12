@@ -1,0 +1,15 @@
+import { CxDropdown, CxButton } from '@chronixjs/ui-react';
+
+const OPTIONS = [
+  { key: '1', label: 'Option 1' },
+  { key: '2', label: 'Option 2' },
+  { key: '3', label: 'Option 3' },
+];
+
+export function App() {
+  return (
+    <CxDropdown options={OPTIONS} trigger="click">
+      <CxButton>Click Me</CxButton>
+    </CxDropdown>
+  );
+}

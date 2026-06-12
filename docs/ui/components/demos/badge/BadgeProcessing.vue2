@@ -1,0 +1,10 @@
+<template>
+  <CxBadge dot processing type="error">
+    <CxButton>Live</CxButton>
+  </CxBadge>
+</template>
+
+<script>
+import { CxBadge, CxButton } from '@chronixjs/ui-vue2';
+export default { components: { CxBadge, CxButton } };
+</script>

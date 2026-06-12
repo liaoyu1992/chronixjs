@@ -1,0 +1,9 @@
+import { CxTypography } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxTypography variant="title" level={2}>
+      Hello World
+    </CxTypography>
+  );
+}

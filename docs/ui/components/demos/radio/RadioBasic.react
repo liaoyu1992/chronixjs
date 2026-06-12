@@ -1,0 +1,13 @@
+import { useState } from 'react';
+import { CxRadioGroup } from '@chronixjs/ui-react';
+
+const options = [
+  { key: 'vue', label: 'Vue', value: 'vue', disabled: false },
+  { key: 'react', label: 'React', value: 'react', disabled: false },
+  { key: 'angular', label: 'Angular', value: 'angular', disabled: false },
+];
+
+export function App() {
+  const [selected, setSelected] = useState('vue');
+  return <CxRadioGroup value={selected} onUpdateValue={setSelected} options={options} />;
+}

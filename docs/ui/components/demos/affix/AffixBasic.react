@@ -1,0 +1,11 @@
+import { CxAffix } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxAffix top={0}>
+      <div style={{ background: '#fff', padding: '8px 16px', border: '1px solid #ddd', display: 'inline-block' }}>
+        Sticky at top=0
+      </div>
+    </CxAffix>
+  );
+}

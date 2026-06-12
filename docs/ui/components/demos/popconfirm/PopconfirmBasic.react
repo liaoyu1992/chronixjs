@@ -1,0 +1,9 @@
+import { CxPopconfirm, CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxPopconfirm title="Are you sure?">
+      <CxButton>Delete</CxButton>
+    </CxPopconfirm>
+  );
+}

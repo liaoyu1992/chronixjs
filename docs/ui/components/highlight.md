@@ -1,3 +1,10 @@
+<script setup>
+import HighlightBasic from './demos/highlight/HighlightBasic.vue';
+import highlightBasicCode from './demos/highlight/HighlightBasic.vue?raw';
+import highlightBasicVue2 from './demos/highlight/HighlightBasic.vue2?raw';
+import highlightBasicReact from './demos/highlight/HighlightBasic.react?raw';
+</script>
+
 # Highlight 高亮
 
 将匹配的子字符串用 `<mark>` 元素包裹的文本高亮组件。
@@ -16,40 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxHighlight value="Chronix is a framework-agnostic component library" pattern="Chronix" />
-</template>
-
-<script setup lang="ts">
-import { CxHighlight } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxHighlight value="Chronix is a framework-agnostic component library" pattern="Chronix" />
-</template>
-
-<script>
-import { CxHighlight } from '@chronixjs/ui-vue2';
-export default { components: { CxHighlight } };
-</script>
-```
-
-```tsx [React]
-import { CxHighlight } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxHighlight value="Chronix is a framework-agnostic component library" pattern="Chronix" />
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="高亮文本中所有匹配的子字符串（默认不区分大小写）。" :code="highlightBasicCode" :code-vue2="highlightBasicVue2" :code-react="highlightBasicReact">
+  <HighlightBasic />
+</DemoBox>
 
 ## 区分大小写
 

@@ -1,0 +1,11 @@
+import { CxButton, CxButtonGroup } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxButtonGroup>
+      <CxButton>Left</CxButton>
+      <CxButton>Middle</CxButton>
+      <CxButton>Right</CxButton>
+    </CxButtonGroup>
+  );
+}

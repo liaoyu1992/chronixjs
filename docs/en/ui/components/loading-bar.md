@@ -1,102 +1,39 @@
+<script setup>
+import LoadingBarBasic from '../../../ui/components/demos/loading-bar/LoadingBarBasic.vue';
+import loadingBarBasicCode from '../../../ui/components/demos/loading-bar/LoadingBarBasic.vue?raw';
+import loadingBarBasicVue2 from '../../../ui/components/demos/loading-bar/LoadingBarBasic.vue2?raw';
+import loadingBarBasicReact from '../../../ui/components/demos/loading-bar/LoadingBarBasic.react?raw';
+</script>
+
 # Loading Bar
 
-Imperative top-of-viewport loading bar that indicates progress through states: idle, loading, finishing, error.
+An imperative loading bar fixed to the top of the viewport, indicating progress through states.
 
 ## Install
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-Loading bar is an imperative API — you control its state programmatically.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <button @click="startLoading">Start</button>
-  <button @click="finishLoading">Finish</button>
-  <CxLoadingBar :state="barState" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxLoadingBar } from '@chronixjs/ui-vue3';
-import type { LoadingBarState } from '@chronixjs/ui';
-
-const barState = ref<LoadingBarState>('idle');
-
-function startLoading() {
-  barState.value = 'loading';
-}
-
-function finishLoading() {
-  barState.value = 'finishing';
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <button @click="startLoading">Start</button>
-  <button @click="finishLoading">Finish</button>
-  <CxLoadingBar :state="barState" />
-</template>
-
-<script>
-import { CxLoadingBar } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxLoadingBar },
-  data() {
-    return { barState: 'idle' };
-  },
-  methods: {
-    startLoading() {
-      this.barState = 'loading';
-    },
-    finishLoading() {
-      this.barState = 'finishing';
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxLoadingBar } from '@chronixjs/ui-react';
-import type { LoadingBarState } from '@chronixjs/ui';
-
-export function App() {
-  const [barState, setBarState] = useState<LoadingBarState>('idle');
-
-  return (
-    <div>
-      <button onClick={() => setBarState('loading')}>Start</button>
-      <button onClick={() => setBarState('finishing')}>Finish</button>
-      <CxLoadingBar state={barState} />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Control the loading bar through state." :code="loadingBarBasicCode" :code-vue2="loadingBarBasicVue2" :code-react="loadingBarBasicReact">
+  <LoadingBarBasic />
+</DemoBox>
 
 ## API Reference
 
 ### LoadingBarState
 
-| Value         | Description                         |
-| ------------- | ----------------------------------- |
-| `'idle'`      | Bar is hidden                       |
-| `'loading'`   | Bar animates across the top         |
-| `'finishing'` | Bar completes and fades out         |
-| `'error'`     | Bar shows error color and fades out |
+| Value         | Description                                 |
+| ------------- | ------------------------------------------- |
+| `'idle'`      | Loading bar is hidden                       |
+| `'loading'`   | Loading bar animates across the top         |
+| `'finishing'` | Loading bar completes and fades out         |
+| `'error'`     | Loading bar shows error color and fades out |

@@ -1,0 +1,5 @@
+import { CxThing } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxThing title="Card Title" description="Card description" />;
+}

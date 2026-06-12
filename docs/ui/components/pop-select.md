@@ -1,3 +1,10 @@
+<script setup>
+import PopSelectBasic from './demos/pop-select/PopSelectBasic.vue';
+import popSelectBasicCode from './demos/pop-select/PopSelectBasic.vue?raw';
+import popSelectBasicVue2 from './demos/pop-select/PopSelectBasic.vue2?raw';
+import popSelectBasicReact from './demos/pop-select/PopSelectBasic.react?raw';
+</script>
+
 # Pop Select 弹出选择
 
 基于 Popover 封装的选项列表弹出面板，用于简单的下拉单选。
@@ -6,103 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxPopSelect v-model:value="selected" v-model:show="open" :options="options">
-    <button @click="open = true">{{ selectedLabel || 'Select...' }}</button>
-  </CxPopSelect>
-</template>
-
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-import { CxPopSelect } from '@chronixjs/ui-vue3';
-
-const selected = ref<string | undefined>(undefined);
-const open = ref(false);
-const options = ref([
-  { key: 'a', label: 'Apple', value: 'apple', disabled: false },
-  { key: 'b', label: 'Banana', value: 'banana', disabled: false },
-  { key: 'c', label: 'Cherry', value: 'cherry', disabled: false },
-]);
-
-const selectedLabel = computed(() => options.value.find((o) => o.value === selected.value)?.label);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxPopSelect :value.sync="selected" :show.sync="open" :options="options">
-    <button @click="open = true">{{ selectedLabel || 'Select...' }}</button>
-  </CxPopSelect>
-</template>
-
-<script>
-import { CxPopSelect } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxPopSelect },
-  data() {
-    return {
-      selected: undefined,
-      open: false,
-      options: [
-        { key: 'a', label: 'Apple', value: 'apple', disabled: false },
-        { key: 'b', label: 'Banana', value: 'banana', disabled: false },
-        { key: 'c', label: 'Cherry', value: 'cherry', disabled: false },
-      ],
-    };
-  },
-  computed: {
-    selectedLabel() {
-      const opt = this.options.find((o) => o.value === this.selected);
-      return opt ? opt.label : '';
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxPopSelect } from '@chronixjs/ui-react';
-
-export function App() {
-  const [selected, setSelected] = useState<string | undefined>(undefined);
-  const [open, setOpen] = useState(false);
-  const [options] = useState([
-    { key: 'a', label: 'Apple', value: 'apple', disabled: false },
-    { key: 'b', label: 'Banana', value: 'banana', disabled: false },
-    { key: 'c', label: 'Cherry', value: 'cherry', disabled: false },
-  ]);
-
-  const selectedLabel = options.find((o) => o.value === selected)?.label;
-
-  return (
-    <CxPopSelect
-      value={selected}
-      onUpdateValue={setSelected}
-      show={open}
-      onUpdateShow={setOpen}
-      options={options}
-    >
-      <button onClick={() => setOpen(true)}>{selectedLabel || 'Select...'}</button>
-    </CxPopSelect>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="点击触发，3 个选项的下拉选择。" :code="popSelectBasicCode" :code-vue2="popSelectBasicVue2" :code-react="popSelectBasicReact">
+  <PopSelectBasic />
+</DemoBox>
 
 ## API 参考
 

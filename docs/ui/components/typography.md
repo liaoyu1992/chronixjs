@@ -1,3 +1,10 @@
+<script setup>
+import TypographyBasic from './demos/typography/TypographyBasic.vue';
+import typographyBasicCode from './demos/typography/TypographyBasic.vue?raw';
+import typographyBasicVue2 from './demos/typography/TypographyBasic.vue2?raw';
+import typographyBasicReact from './demos/typography/TypographyBasic.react?raw';
+</script>
+
 # Typography 排版
 
 用于渲染标题、段落、引用和文本的排版组件，带有样式控制。
@@ -6,15 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
+
+<DemoBox title="基础用法" description="标题级别的排版。" :code="typographyBasicCode" :code-vue2="typographyBasicVue2" :code-react="typographyBasicReact">
+  <TypographyBasic />
+</DemoBox>
 
 ### 纯文本
 

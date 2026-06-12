@@ -1,0 +1,11 @@
+<template>
+  <CxCheckbox v-model:checked="checked" label="Accept terms" />
+</template>
+
+<script>
+import { CxCheckbox } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxCheckbox },
+  data() { return { checked: false }; },
+};
+</script>

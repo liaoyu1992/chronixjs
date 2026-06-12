@@ -1,3 +1,10 @@
+<script setup>
+import WatermarkBasic from './demos/watermark/WatermarkBasic.vue';
+import watermarkBasicCode from './demos/watermark/WatermarkBasic.vue?raw';
+import watermarkBasicVue2 from './demos/watermark/WatermarkBasic.vue2?raw';
+import watermarkBasicReact from './demos/watermark/WatermarkBasic.react?raw';
+</script>
+
 # Watermark 水印
 
 重复叠加的水印，用于在内容上显示 DRAFT / CONFIDENTIAL / 用户 ID 等水印。
@@ -16,52 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxWatermark content="DRAFT">
-    <div style="height: 300px; padding: 24px;">
-      <p>This content is watermarked.</p>
-    </div>
-  </CxWatermark>
-</template>
-
-<script setup lang="ts">
-import { CxWatermark } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxWatermark content="DRAFT">
-    <div style="height: 300px; padding: 24px;">
-      <p>This content is watermarked.</p>
-    </div>
-  </CxWatermark>
-</template>
-
-<script>
-import { CxWatermark } from '@chronixjs/ui-vue2';
-export default { components: { CxWatermark } };
-</script>
-```
-
-```tsx [React]
-import { CxWatermark } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxWatermark content="DRAFT">
-      <div style={{ height: 300, padding: 24 }}>
-        <p>This content is watermarked.</p>
-      </div>
-    </CxWatermark>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用 content 属性设置水印文本，包裹需要水印的内容区域。" :code="watermarkBasicCode" :code-vue2="watermarkBasicVue2" :code-react="watermarkBasicReact">
+  <WatermarkBasic />
+</DemoBox>
 
 ## 自定义样式
 

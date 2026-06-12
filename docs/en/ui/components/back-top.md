@@ -1,3 +1,10 @@
+<script setup>
+import BackTopBasic from '../../../ui/components/demos/back-top/BackTopBasic.vue';
+import backTopBasicCode from '../../../ui/components/demos/back-top/BackTopBasic.vue?raw';
+import backTopBasicVue2 from '../../../ui/components/demos/back-top/BackTopBasic.vue2?raw';
+import backTopBasicReact from '../../../ui/components/demos/back-top/BackTopBasic.react?raw';
+</script>
+
 # Back Top
 
 A floating "back to top" button that appears when the page is scrolled past a threshold.
@@ -6,118 +13,19 @@ A floating "back to top" button that appears when the page is scrolled past a th
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBackTop />
-</template>
-
-<script setup lang="ts">
-import { CxBackTop } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBackTop />
-</template>
-
-<script>
-import { CxBackTop } from '@chronixjs/ui-vue2';
-export default { components: { CxBackTop } };
-</script>
-```
-
-```tsx [React]
-import { CxBackTop } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxBackTop />;
-}
-```
-
-:::
-
-## Custom Position
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBackTop :right="60" :bottom="80" />
-</template>
-
-<script setup lang="ts">
-import { CxBackTop } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBackTop :right="60" :bottom="80" />
-</template>
-
-<script>
-import { CxBackTop } from '@chronixjs/ui-vue2';
-export default { components: { CxBackTop } };
-</script>
-```
-
-```tsx [React]
-import { CxBackTop } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxBackTop right={60} bottom={80} />;
-}
-```
-
-:::
-
-## Custom Visibility Threshold
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBackTop :visibility-threshold="300" behavior="smooth" />
-</template>
-
-<script setup lang="ts">
-import { CxBackTop } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBackTop :visibility-threshold="300" behavior="smooth" />
-</template>
-
-<script>
-import { CxBackTop } from '@chronixjs/ui-vue2';
-export default { components: { CxBackTop } };
-</script>
-```
-
-```tsx [React]
-import { CxBackTop } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxBackTop visibilityThreshold={300} behavior="smooth" />;
-}
-```
-
-:::
+<DemoBox title="Back to Top" description="A back-to-top button inside a scrollable area, visible after scrolling past the threshold." :code="backTopBasicCode" :code-vue2="backTopBasicVue2" :code-react="backTopBasicReact">
+  <BackTopBasic />
+</DemoBox>
 
 ## API Reference
 

@@ -1,0 +1,9 @@
+import { CxIconWrapper } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxIconWrapper size={32} color="#f59e0b">
+      <span>🔥</span>
+    </CxIconWrapper>
+  );
+}

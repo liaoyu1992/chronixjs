@@ -1,3 +1,10 @@
+<script setup>
+import GradientTextBasic from '../../../ui/components/demos/gradient-text/GradientTextBasic.vue';
+import gradientTextBasicCode from '../../../ui/components/demos/gradient-text/GradientTextBasic.vue?raw';
+import gradientTextBasicVue2 from '../../../ui/components/demos/gradient-text/GradientTextBasic.vue2?raw';
+import gradientTextBasicReact from '../../../ui/components/demos/gradient-text/GradientTextBasic.react?raw';
+</script>
+
 # Gradient Text
 
 Text with CSS linear-gradient applied via `background-clip: text`.
@@ -16,38 +23,9 @@ Text with CSS linear-gradient applied via `background-clip: text`.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxGradientText value="Chronix UI" :colors="['#3b82f6', '#a855f7']" />
-</template>
-
-<script setup lang="ts">
-import { CxGradientText } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxGradientText value="Chronix UI" :colors="['#3b82f6', '#a855f7']" />
-</template>
-
-<script>
-import { CxGradientText } from '@chronixjs/ui-vue2';
-export default { components: { CxGradientText } };
-</script>
-```
-
-```tsx [React]
-import { CxGradientText } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxGradientText value="Chronix UI" colors={['#3b82f6', '#a855f7']} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Create gradient text with two colors." :code="gradientTextBasicCode" :code-vue2="gradientTextBasicVue2" :code-react="gradientTextBasicReact">
+  <GradientTextBasic />
+</DemoBox>
 
 ## Custom Direction
 

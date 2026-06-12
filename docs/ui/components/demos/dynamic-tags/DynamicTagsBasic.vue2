@@ -1,0 +1,13 @@
+<template>
+  <CxDynamicTags :value.sync="tags" />
+</template>
+
+<script>
+import { CxDynamicTags } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxDynamicTags },
+  data() {
+    return { tags: ['Tag 1', 'Tag 2'] };
+  },
+};
+</script>

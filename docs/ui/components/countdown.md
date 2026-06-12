@@ -1,3 +1,10 @@
+<script setup>
+import CountdownBasic from './demos/countdown/CountdownBasic.vue';
+import countdownBasicCode from './demos/countdown/CountdownBasic.vue?raw';
+import countdownBasicVue2 from './demos/countdown/CountdownBasic.vue2?raw';
+import countdownBasicReact from './demos/countdown/CountdownBasic.react?raw';
+</script>
+
 # Countdown 倒计时
 
 实时倒计时器，倒数至零，支持可配置的精度。
@@ -16,38 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCountdown label="Time Remaining" :duration="60000" />
-</template>
-
-<script setup lang="ts">
-import { CxCountdown } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCountdown label="Time Remaining" :duration="60000" />
-</template>
-
-<script>
-import { CxCountdown } from '@chronixjs/ui-vue2';
-export default { components: { CxCountdown } };
-</script>
-```
-
-```tsx [React]
-import { CxCountdown } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxCountdown label="Time Remaining" duration={60000} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="设置 duration 为 60000 毫秒（1 分钟），默认激活倒计时。" :code="countdownBasicCode" :code-vue2="countdownBasicVue2" :code-react="countdownBasicReact">
+  <CountdownBasic />
+</DemoBox>
 
 ## 带精度
 

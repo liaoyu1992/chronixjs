@@ -1,0 +1,8 @@
+<template>
+  <CxNumberAnimation :from="0" :to="10000" :duration="2000" :active="true" :show-separator="true" />
+</template>
+
+<script>
+import { CxNumberAnimation } from '@chronixjs/ui-vue2';
+export default { components: { CxNumberAnimation } };
+</script>

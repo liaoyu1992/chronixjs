@@ -1,3 +1,10 @@
+<script setup>
+import CountdownBasic from '../../../ui/components/demos/countdown/CountdownBasic.vue';
+import countdownBasicCode from '../../../ui/components/demos/countdown/CountdownBasic.vue?raw';
+import countdownBasicVue2 from '../../../ui/components/demos/countdown/CountdownBasic.vue2?raw';
+import countdownBasicReact from '../../../ui/components/demos/countdown/CountdownBasic.react?raw';
+</script>
+
 # Countdown
 
 Live countdown timer that ticks down to zero, with configurable precision.
@@ -16,38 +23,9 @@ Live countdown timer that ticks down to zero, with configurable precision.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCountdown label="Time Remaining" :duration="60000" />
-</template>
-
-<script setup lang="ts">
-import { CxCountdown } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCountdown label="Time Remaining" :duration="60000" />
-</template>
-
-<script>
-import { CxCountdown } from '@chronixjs/ui-vue2';
-export default { components: { CxCountdown } };
-</script>
-```
-
-```tsx [React]
-import { CxCountdown } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxCountdown label="Time Remaining" duration={60000} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Set duration to 60000 ms (1 minute) with active countdown." :code="countdownBasicCode" :code-vue2="countdownBasicVue2" :code-react="countdownBasicReact">
+  <CountdownBasic />
+</DemoBox>
 
 ## With Precision
 

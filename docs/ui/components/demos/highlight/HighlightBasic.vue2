@@ -1,0 +1,8 @@
+<template>
+  <CxHighlight value="Hello World, hello universe" pattern="hello" />
+</template>
+
+<script>
+import { CxHighlight } from '@chronixjs/ui-vue2';
+export default { components: { CxHighlight } };
+</script>

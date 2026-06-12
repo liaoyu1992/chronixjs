@@ -1,0 +1,8 @@
+<template>
+  <CxQrCode value="https://chronixjs.com" :size="128" />
+</template>
+
+<script>
+import { CxQrCode } from '@chronixjs/ui-vue2';
+export default { components: { CxQrCode } };
+</script>

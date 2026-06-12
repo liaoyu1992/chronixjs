@@ -1,3 +1,10 @@
+<script setup>
+import ButtonGroupBasic from './demos/button-group/ButtonGroupBasic.vue';
+import buttonGroupBasicCode from './demos/button-group/ButtonGroupBasic.vue?raw';
+import buttonGroupBasicVue2 from './demos/button-group/ButtonGroupBasic.vue2?raw';
+import buttonGroupBasicReact from './demos/button-group/ButtonGroupBasic.react?raw';
+</script>
+
 # Button Group 按钮组
 
 弹性容器，将 `CxButton` 子元素分组并合并边框。
@@ -16,52 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxButtonGroup>
-    <CxButton>Left</CxButton>
-    <CxButton>Middle</CxButton>
-    <CxButton>Right</CxButton>
-  </CxButtonGroup>
-</template>
-
-<script setup lang="ts">
-import { CxButton, CxButtonGroup } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxButtonGroup>
-    <CxButton>Left</CxButton>
-    <CxButton>Middle</CxButton>
-    <CxButton>Right</CxButton>
-  </CxButtonGroup>
-</template>
-
-<script>
-import { CxButton, CxButtonGroup } from '@chronixjs/ui-vue2';
-export default { components: { CxButton, CxButtonGroup } };
-</script>
-```
-
-```tsx [React]
-import { CxButton, CxButtonGroup } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxButtonGroup>
-      <CxButton>Left</CxButton>
-      <CxButton>Middle</CxButton>
-      <CxButton>Right</CxButton>
-    </CxButtonGroup>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="将多个按钮放在按钮组中。" :code="buttonGroupBasicCode" :code-vue2="buttonGroupBasicVue2" :code-react="buttonGroupBasicReact">
+  <ButtonGroupBasic />
+</DemoBox>
 
 ## 垂直排列
 

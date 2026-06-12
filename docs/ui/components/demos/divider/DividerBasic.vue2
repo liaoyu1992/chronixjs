@@ -1,0 +1,12 @@
+<template>
+  <div>
+    <p style="margin: 0">Content above the divider.</p>
+    <CxDivider />
+    <p style="margin: 0">Content below the divider.</p>
+  </div>
+</template>
+
+<script>
+import { CxDivider } from '@chronixjs/ui-vue2';
+export default { components: { CxDivider } };
+</script>

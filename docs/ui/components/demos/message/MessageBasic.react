@@ -1,0 +1,14 @@
+import { useMessage } from '@chronixjs/ui-react';
+import { CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  const message = useMessage();
+  return (
+    <div style={{ display: 'flex', gap: 8 }}>
+      <CxButton onClick={() => message.info('This is an info message')}>Info</CxButton>
+      <CxButton onClick={() => message.success('Operation successful')}>Success</CxButton>
+      <CxButton onClick={() => message.warning('Something went wrong')}>Warning</CxButton>
+      <CxButton onClick={() => message.error('Error occurred')}>Error</CxButton>
+    </div>
+  );
+}

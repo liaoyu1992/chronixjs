@@ -1,0 +1,12 @@
+<template>
+  <div style="display: flex; flex-direction: column; gap: 24px;">
+    <CxEmpty size="small" description="Small empty" />
+    <CxEmpty size="medium" description="Medium empty" />
+    <CxEmpty size="large" description="Large empty" />
+  </div>
+</template>
+
+<script>
+import { CxEmpty } from '@chronixjs/ui-vue2';
+export default { components: { CxEmpty } };
+</script>

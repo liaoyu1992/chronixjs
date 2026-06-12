@@ -1,0 +1,20 @@
+<template>
+  <div>
+    <button style="padding: 6px 16px; cursor: pointer;" @click="show = true">Open Modal</button>
+    <CxModal :show.sync="show" title="Confirm">
+      <p>Are you sure you want to proceed?</p>
+      <template #footer>
+        <button style="padding: 4px 12px; cursor: pointer;" @click="show = false">Cancel</button>
+        <button style="padding: 4px 12px; cursor: pointer;" @click="show = false">Confirm</button>
+      </template>
+    </CxModal>
+  </div>
+</template>
+
+<script>
+import { CxModal } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxModal },
+  data() { return { show: false }; },
+};
+</script>

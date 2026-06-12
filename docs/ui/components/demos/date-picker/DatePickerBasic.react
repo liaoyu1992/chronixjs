@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxDatePicker } from '@chronixjs/ui-react';
+
+export function App() {
+  const [date, setDate] = useState(undefined);
+  return <CxDatePicker value={date} onUpdateValue={setDate} placeholder="Pick a date" />;
+}

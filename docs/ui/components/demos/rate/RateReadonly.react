@@ -1,0 +1,5 @@
+import { CxRate } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxRate value={4.5} readonly allowHalf />;
+}

@@ -1,0 +1,11 @@
+<template>
+  <CxDatePicker :value.sync="date" placeholder="Pick a date" />
+</template>
+
+<script>
+import { CxDatePicker } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxDatePicker },
+  data() { return { date: undefined }; },
+};
+</script>

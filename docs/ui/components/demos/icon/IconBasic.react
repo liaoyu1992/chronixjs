@@ -1,0 +1,5 @@
+import { CxIcon } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxIcon name="home" size={24} />;
+}

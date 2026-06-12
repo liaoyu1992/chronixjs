@@ -1,0 +1,11 @@
+<template>
+  <div style="position: relative; height: 200px; border: 1px dashed #ccc; border-radius: 8px;">
+    <p style="padding: 16px; color: #666;">Scroll area content</p>
+    <CxFloatButton shape="circle" type="primary" :right="24" :bottom="24" icon="plus" tooltip="Add new item" />
+  </div>
+</template>
+
+<script>
+import { CxFloatButton } from '@chronixjs/ui-vue2';
+export default { components: { CxFloatButton } };
+</script>

@@ -1,0 +1,11 @@
+import { CxSpace, CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxSpace>
+      <CxButton>Button 1</CxButton>
+      <CxButton>Button 2</CxButton>
+      <CxButton>Button 3</CxButton>
+    </CxSpace>
+  );
+}

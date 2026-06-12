@@ -1,3 +1,10 @@
+<script setup>
+import PageHeaderBasic from '../../../ui/components/demos/page-header/PageHeaderBasic.vue';
+import pageHeaderBasicCode from '../../../ui/components/demos/page-header/PageHeaderBasic.vue?raw';
+import pageHeaderBasicVue2 from '../../../ui/components/demos/page-header/PageHeaderBasic.vue2?raw';
+import pageHeaderBasicReact from '../../../ui/components/demos/page-header/PageHeaderBasic.react?raw';
+</script>
+
 # Page Header
 
 Standardized top-of-page heading block with optional back affordance, avatar, title, subtitle, extra actions, and footer.
@@ -6,48 +13,19 @@ Standardized top-of-page heading block with optional back affordance, avatar, ti
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxPageHeader title="Dashboard" subtitle="Overview of your account" />
-</template>
-
-<script setup lang="ts">
-import { CxPageHeader } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxPageHeader title="Dashboard" subtitle="Overview of your account" />
-</template>
-
-<script>
-import { CxPageHeader } from '@chronixjs/ui-vue2';
-export default { components: { CxPageHeader } };
-</script>
-```
-
-```tsx [React]
-import { CxPageHeader } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxPageHeader title="Dashboard" subtitle="Overview of your account" />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Page header with title, subtitle, and back button." :code="pageHeaderBasicCode" :code-vue2="pageHeaderBasicVue2" :code-react="pageHeaderBasicReact">
+  <PageHeaderBasic />
+</DemoBox>
 
 ## With Back Button and Extra
 

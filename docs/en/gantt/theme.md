@@ -1,72 +1,19 @@
+<script setup>
+import GanttThemeCustom from '../../gantt/demos/GanttThemeCustom.vue';
+import ganttThemeCustomCode from '../../gantt/demos/GanttThemeCustom.vue?raw';
+import ganttThemeCustomVue2 from '../../gantt/demos/GanttThemeCustom.vue2?raw';
+import ganttThemeCustomReact from '../../gantt/demos/GanttThemeCustom.react?raw';
+</script>
+
 # Gantt Theme
 
 Customize the Gantt chart appearance using the `ChronixTheme` interface. Pass a partial theme object to override only the tokens you need — all others fall back to defaults.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :theme="customTheme" />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { ChronixTheme } from '@chronixjs/gantt';
-
-const customTheme: Partial<ChronixTheme> = {
-  barBackgroundColor: '#6366f1', // Indigo bars
-  barBorderColor: '#4f46e5',
-  barTextColor: '#ffffff',
-  chartBackground: '#f8fafc',
-  headerCellFill: '#f1f5f9',
-  linkDefaultColor: '#94a3b8',
-};
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :theme="customTheme" />
-</template>
-
-<script>
-import { ChronixGantt } from '@chronixjs/gantt-vue2';
-
-export default {
-  components: { ChronixGantt },
-  data() {
-    return {
-      customTheme: {
-        barBackgroundColor: '#6366f1',
-        barBorderColor: '#4f46e5',
-        barTextColor: '#ffffff',
-        chartBackground: '#f8fafc',
-      },
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { ChronixTheme } from '@chronixjs/gantt';
-
-const customTheme: Partial<ChronixTheme> = {
-  barBackgroundColor: '#6366f1',
-  barBorderColor: '#4f46e5',
-  barTextColor: '#ffffff',
-  chartBackground: '#f8fafc',
-};
-
-export function App() {
-  return <ChronixGantt bars={bars} rows={rows} axisInput={axisInput} theme={customTheme} />;
-}
-```
-
-:::
+<DemoBox title="Custom Theme" description="Indigo bar colors with a light slate background." :code="ganttThemeCustomCode" :code-vue2="ganttThemeCustomVue2" :code-react="ganttThemeCustomReact">
+  <GanttThemeCustom />
+</DemoBox>
 
 ## Dark Mode Example
 

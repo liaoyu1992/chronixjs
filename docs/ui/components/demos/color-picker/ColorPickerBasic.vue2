@@ -1,0 +1,13 @@
+<template>
+  <CxColorPicker :value.sync="color" />
+</template>
+
+<script>
+import { CxColorPicker } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxColorPicker },
+  data() {
+    return { color: '#3b82f6' };
+  },
+};
+</script>

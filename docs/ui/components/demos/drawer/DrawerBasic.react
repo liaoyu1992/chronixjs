@@ -1,0 +1,14 @@
+import { useState } from 'react';
+import { CxDrawer, CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <CxButton onClick={() => setShow(true)}>Open Drawer</CxButton>
+      <CxDrawer show={show} onUpdateShow={setShow} title="Drawer Title">
+        <p>Drawer body content goes here.</p>
+      </CxDrawer>
+    </div>
+  );
+}

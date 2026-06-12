@@ -1,0 +1,12 @@
+import { useState } from 'react';
+import { CxList } from '@chronixjs/ui-react';
+
+export function App() {
+  const [items] = useState([
+    { key: '1', title: 'Item 1' },
+    { key: '2', title: 'Item 2' },
+    { key: '3', title: 'Item 3' },
+  ]);
+
+  return <CxList items={items} bordered />;
+}

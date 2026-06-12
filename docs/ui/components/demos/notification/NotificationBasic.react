@@ -1,0 +1,14 @@
+import { useNotification } from '@chronixjs/ui-react';
+import { CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  const notify = useNotification();
+  return (
+    <div style={{ display: 'flex', gap: 8 }}>
+      <CxButton onClick={() => notify.info({ title: 'Info', description: 'Notification content' })}>Info</CxButton>
+      <CxButton onClick={() => notify.success({ title: 'Success', description: 'Operation done' })}>Success</CxButton>
+      <CxButton onClick={() => notify.warning({ title: 'Warning', description: 'Check this' })}>Warning</CxButton>
+      <CxButton onClick={() => notify.error({ title: 'Error', description: 'Something failed' })}>Error</CxButton>
+    </div>
+  );
+}

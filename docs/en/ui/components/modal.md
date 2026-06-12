@@ -1,3 +1,10 @@
+<script setup>
+import ModalBasic from '../../../ui/components/demos/modal/ModalBasic.vue';
+import modalBasicCode from '../../../ui/components/demos/modal/ModalBasic.vue?raw';
+import modalBasicVue2 from '../../../ui/components/demos/modal/ModalBasic.vue2?raw';
+import modalBasicReact from '../../../ui/components/demos/modal/ModalBasic.react?raw';
+</script>
+
 # Modal
 
 Portal-mounted centered surface with translucent mask, focus trap, body scroll lock, and Escape close.
@@ -6,80 +13,19 @@ Portal-mounted centered surface with translucent mask, focus trap, body scroll l
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <button @click="show = true">Open Modal</button>
-  <CxModal v-model:show="show" title="Confirm">
-    <p>Are you sure you want to proceed?</p>
-    <template #footer>
-      <button @click="show = false">Cancel</button>
-      <button @click="show = false">Confirm</button>
-    </template>
-  </CxModal>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxModal } from '@chronixjs/ui-vue3';
-
-const show = ref(false);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <button @click="show = true">Open Modal</button>
-  <CxModal :show.sync="show" title="Confirm">
-    <p>Are you sure you want to proceed?</p>
-    <template #footer>
-      <button @click="show = false">Cancel</button>
-      <button @click="show = false">Confirm</button>
-    </template>
-  </CxModal>
-</template>
-
-<script>
-import { CxModal } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxModal },
-  data() {
-    return { show: false };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxModal } from '@chronixjs/ui-react';
-
-export function App() {
-  const [show, setShow] = useState(false);
-
-  return (
-    <div>
-      <button onClick={() => setShow(true)}>Open Modal</button>
-      <CxModal show={show} onUpdateShow={setShow} title="Confirm">
-        <p>Are you sure you want to proceed?</p>
-      </CxModal>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Click the button to open a modal dialog." :code="modalBasicCode" :code-vue2="modalBasicVue2" :code-react="modalBasicReact">
+  <ModalBasic />
+</DemoBox>
 
 ## API Reference
 
@@ -87,7 +33,7 @@ export function App() {
 
 | Prop           | Type                   | Default     | Description                               |
 | -------------- | ---------------------- | ----------- | ----------------------------------------- |
-| `show`         | `boolean \| undefined` | `undefined` | Controlled visibility                     |
+| `show`         | `boolean \| undefined` | `undefined` | Controlled visibility (v-model)           |
 | `title`        | `string \| undefined`  | `undefined` | Modal title                               |
 | `mask`         | `boolean`              | `true`      | Show translucent mask backdrop            |
 | `maskClosable` | `boolean`              | `true`      | Close on mask click                       |

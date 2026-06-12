@@ -1,0 +1,5 @@
+import { CxSpin } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxSpin size="medium" description="Loading..." />;
+}

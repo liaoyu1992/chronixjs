@@ -1,3 +1,22 @@
+<script setup>
+import ProgressBasic from './demos/progress/ProgressBasic.vue';
+import progressBasicCode from './demos/progress/ProgressBasic.vue?raw';
+import progressBasicVue2 from './demos/progress/ProgressBasic.vue2?raw';
+import progressBasicReact from './demos/progress/ProgressBasic.react?raw';
+import ProgressTypes from './demos/progress/ProgressTypes.vue';
+import progressTypesCode from './demos/progress/ProgressTypes.vue?raw';
+import progressTypesVue2 from './demos/progress/ProgressTypes.vue2?raw';
+import progressTypesReact from './demos/progress/ProgressTypes.react?raw';
+import ProgressIndicator from './demos/progress/ProgressIndicator.vue';
+import progressIndicatorCode from './demos/progress/ProgressIndicator.vue?raw';
+import progressIndicatorVue2 from './demos/progress/ProgressIndicator.vue2?raw';
+import progressIndicatorReact from './demos/progress/ProgressIndicator.react?raw';
+import ProgressCustomHeight from './demos/progress/ProgressCustomHeight.vue';
+import progressCustomHeightCode from './demos/progress/ProgressCustomHeight.vue?raw';
+import progressCustomHeightVue2 from './demos/progress/ProgressCustomHeight.vue2?raw';
+import progressCustomHeightReact from './demos/progress/ProgressCustomHeight.react?raw';
+</script>
+
 # Progress 进度条
 
 带语义类型和可配置显示的线性进度条。
@@ -5,278 +24,38 @@
 ## 安装
 
 ::: code-group
-<<< @/snippets/vue3/install-ui.md
-<<< @/snippets/vue2/install-ui.md
-<<< @/snippets/react/install-ui.md
+
+<<< @/snippets/vue3/install-ui.md [Vue 3]
+
+<<< @/snippets/vue2/install-ui.md [Vue 2]
+
+<<< @/snippets/react/install-ui.md [React]
+
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="30" />
-    <CxProgress :percentage="60" type="success" />
-    <CxProgress :percentage="100" type="warning" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="30" />
-    <CxProgress :percentage="60" type="success" />
-    <CxProgress :percentage="100" type="warning" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxProgress percentage={30} />
-      <CxProgress percentage={60} type="success" />
-      <CxProgress percentage={100} type="warning" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="线性进度条的基础用法。" :code="progressBasicCode" :code-vue2="progressBasicVue2" :code-react="progressBasicReact">
+  <ProgressBasic />
+</DemoBox>
 
 ## 进度条类型
 
-使用 `type` 应用语义颜色：`default`、`success`、`warning`、`error` 或 `info`。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="20" type="default" />
-    <CxProgress :percentage="40" type="success" />
-    <CxProgress :percentage="60" type="warning" />
-    <CxProgress :percentage="80" type="error" />
-    <CxProgress :percentage="90" type="info" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="20" type="default" />
-    <CxProgress :percentage="40" type="success" />
-    <CxProgress :percentage="60" type="warning" />
-    <CxProgress :percentage="80" type="error" />
-    <CxProgress :percentage="90" type="info" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxProgress percentage={20} type="default" />
-      <CxProgress percentage={40} type="success" />
-      <CxProgress percentage={60} type="warning" />
-      <CxProgress percentage={80} type="error" />
-      <CxProgress percentage={90} type="info" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="进度条类型" description="使用 type 应用语义颜色。" :code="progressTypesCode" :code-vue2="progressTypesVue2" :code-react="progressTypesReact">
+  <ProgressTypes />
+</DemoBox>
 
 ## 指示器位置
 
-控制百分比文本出现的位置。默认情况下指示器放置在进度条**外部**。设置 `indicator-placement="inside"` 可将其渲染在填充区域内。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="70" indicator-placement="outside" />
-    <CxProgress :percentage="70" indicator-placement="inside" :height="24" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="70" indicator-placement="outside" />
-    <CxProgress :percentage="70" indicator-placement="inside" :height="24" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxProgress percentage={70} indicatorPlacement="outside" />
-      <CxProgress percentage={70} indicatorPlacement="inside" height={24} />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="指示器位置" description="控制百分比文本出现的位置。" :code="progressIndicatorCode" :code-vue2="progressIndicatorVue2" :code-react="progressIndicatorReact">
+  <ProgressIndicator />
+</DemoBox>
 
 ## 自定义高度
 
-设置 `height` 属性（像素）来创建更粗或更细的进度条。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 16px;">
-    <CxProgress :percentage="50" :height="8" />
-    <CxProgress :percentage="50" :height="16" />
-    <CxProgress :percentage="50" :height="24" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 16px;">
-    <CxProgress :percentage="50" :height="8" />
-    <CxProgress :percentage="50" :height="16" />
-    <CxProgress :percentage="50" :height="24" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <CxProgress percentage={50} height={8} />
-      <CxProgress percentage={50} height={16} />
-      <CxProgress percentage={50} height={24} />
-    </div>
-  );
-}
-```
-
-:::
-
-## 隐藏百分比文本
-
-设置 `show-info` 为 `false` 可隐藏百分比文本。
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="40" :show-info="false" />
-    <CxProgress :percentage="75" :show-info="false" type="success" />
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxProgress } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 12px;">
-    <CxProgress :percentage="40" :show-info="false" />
-    <CxProgress :percentage="75" :show-info="false" type="success" />
-  </div>
-</template>
-
-<script>
-import { CxProgress } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxProgress },
-};
-</script>
-```
-
-```tsx [React]
-import { CxProgress } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <CxProgress percentage={40} showInfo={false} />
-      <CxProgress percentage={75} showInfo={false} type="success" />
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="自定义高度" description="设置 height 属性来创建更粗或更细的进度条。" :code="progressCustomHeightCode" :code-vue2="progressCustomHeightVue2" :code-react="progressCustomHeightReact">
+  <ProgressCustomHeight />
+</DemoBox>
 
 ## API 参考
 

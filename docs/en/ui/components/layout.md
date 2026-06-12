@@ -1,3 +1,10 @@
+<script setup>
+import LayoutBasic from '../../../ui/components/demos/layout/LayoutBasic.vue';
+import layoutBasicCode from '../../../ui/components/demos/layout/LayoutBasic.vue?raw';
+import layoutBasicVue2 from '../../../ui/components/demos/layout/LayoutBasic.vue2?raw';
+import layoutBasicReact from '../../../ui/components/demos/layout/LayoutBasic.react?raw';
+</script>
+
 # Layout
 
 A page layout system with Header, Sider, Content, and Footer areas.
@@ -16,89 +23,9 @@ A page layout system with Header, Sider, Content, and Footer areas.
 
 ## Basic Usage
 
-A classic page layout with header, sider, content, and footer:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxLayout>
-    <CxLayoutHeader>Header</CxLayoutHeader>
-    <CxLayout>
-      <CxLayoutSider>Sider</CxLayoutSider>
-      <CxLayoutContent>Content</CxLayoutContent>
-    </CxLayout>
-    <CxLayoutFooter>Footer</CxLayoutFooter>
-  </CxLayout>
-</template>
-
-<script setup lang="ts">
-import {
-  CxLayout,
-  CxLayoutHeader,
-  CxLayoutSider,
-  CxLayoutContent,
-  CxLayoutFooter,
-} from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxLayout>
-    <CxLayoutHeader>Header</CxLayoutHeader>
-    <CxLayout>
-      <CxLayoutSider>Sider</CxLayoutSider>
-      <CxLayoutContent>Content</CxLayoutContent>
-    </CxLayout>
-    <CxLayoutFooter>Footer</CxLayoutFooter>
-  </CxLayout>
-</template>
-
-<script>
-import {
-  CxLayout,
-  CxLayoutHeader,
-  CxLayoutSider,
-  CxLayoutContent,
-  CxLayoutFooter,
-} from '@chronixjs/ui-vue2';
-export default {
-  components: {
-    CxLayout,
-    CxLayoutHeader,
-    CxLayoutSider,
-    CxLayoutContent,
-    CxLayoutFooter,
-  },
-};
-</script>
-```
-
-```tsx [React]
-import {
-  CxLayout,
-  CxLayoutHeader,
-  CxLayoutSider,
-  CxLayoutContent,
-  CxLayoutFooter,
-} from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxLayout>
-      <CxLayoutHeader>Header</CxLayoutHeader>
-      <CxLayout>
-        <CxLayoutSider>Sider</CxLayoutSider>
-        <CxLayoutContent>Content</CxLayoutContent>
-      </CxLayout>
-      <CxLayoutFooter>Footer</CxLayoutFooter>
-    </CxLayout>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="A simple page layout with header, content, and footer." :code="layoutBasicCode" :code-vue2="layoutBasicVue2" :code-react="layoutBasicReact">
+  <LayoutBasic />
+</DemoBox>
 
 ## Collapsible Sider
 

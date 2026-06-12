@@ -1,0 +1,10 @@
+<template>
+  <p>
+    The famous equation: <CxEquation value="E = mc^2" display="inline" />
+  </p>
+</template>
+
+<script>
+import { CxEquation } from '@chronixjs/ui-vue2';
+export default { components: { CxEquation } };
+</script>

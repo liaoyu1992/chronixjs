@@ -1,3 +1,10 @@
+<script setup>
+import WatermarkBasic from '../../../ui/components/demos/watermark/WatermarkBasic.vue';
+import watermarkBasicCode from '../../../ui/components/demos/watermark/WatermarkBasic.vue?raw';
+import watermarkBasicVue2 from '../../../ui/components/demos/watermark/WatermarkBasic.vue2?raw';
+import watermarkBasicReact from '../../../ui/components/demos/watermark/WatermarkBasic.react?raw';
+</script>
+
 # Watermark
 
 Repeating overlay watermark for DRAFT / CONFIDENTIAL / user-ID watermarking on content.
@@ -16,52 +23,9 @@ Repeating overlay watermark for DRAFT / CONFIDENTIAL / user-ID watermarking on c
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxWatermark content="DRAFT">
-    <div style="height: 300px; padding: 24px;">
-      <p>This content is watermarked.</p>
-    </div>
-  </CxWatermark>
-</template>
-
-<script setup lang="ts">
-import { CxWatermark } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxWatermark content="DRAFT">
-    <div style="height: 300px; padding: 24px;">
-      <p>This content is watermarked.</p>
-    </div>
-  </CxWatermark>
-</template>
-
-<script>
-import { CxWatermark } from '@chronixjs/ui-vue2';
-export default { components: { CxWatermark } };
-</script>
-```
-
-```tsx [React]
-import { CxWatermark } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxWatermark content="DRAFT">
-      <div style={{ height: 300, padding: 24 }}>
-        <p>This content is watermarked.</p>
-      </div>
-    </CxWatermark>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Set watermark text with the content prop, wrapping the area to be watermarked." :code="watermarkBasicCode" :code-vue2="watermarkBasicVue2" :code-react="watermarkBasicReact">
+  <WatermarkBasic />
+</DemoBox>
 
 ## Custom Style
 

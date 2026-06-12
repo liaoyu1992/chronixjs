@@ -1,0 +1,5 @@
+import { CxEmpty } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxEmpty description="No results found" />;
+}

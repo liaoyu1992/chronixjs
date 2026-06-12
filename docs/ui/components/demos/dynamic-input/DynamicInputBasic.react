@@ -1,0 +1,8 @@
+import { useState } from 'react';
+import { CxDynamicInput } from '@chronixjs/ui-react';
+
+export function App() {
+  const [items, setItems] = useState<string[]>(['Item 1', 'Item 2', 'Item 3']);
+
+  return <CxDynamicInput value={items} onUpdateValue={setItems} />;
+}

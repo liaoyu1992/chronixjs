@@ -1,0 +1,13 @@
+<template>
+  <CxPagination :page.sync="page" :page-count="10" />
+</template>
+
+<script>
+import { CxPagination } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxPagination },
+  data() {
+    return { page: 1 };
+  },
+};
+</script>

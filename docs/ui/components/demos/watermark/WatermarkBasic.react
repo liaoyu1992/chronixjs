@@ -1,0 +1,13 @@
+import { ChronixWatermark } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <ChronixWatermark content="Chronix">
+      <div style={{ height: 300, padding: 24, background: '#fafafa', borderRadius: 8 }}>
+        <h3 style={{ margin: '0 0 12px' }}>Protected Content</h3>
+        <p style={{ color: '#666' }}>This area is covered by a watermark overlay.</p>
+        <p style={{ color: '#666' }}>The watermark text "Chronix" repeats across the entire region.</p>
+      </div>
+    </ChronixWatermark>
+  );
+}

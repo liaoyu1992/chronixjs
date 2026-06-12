@@ -1,0 +1,8 @@
+import { useState } from 'react';
+import { CxColorPicker } from '@chronixjs/ui-react';
+
+export function App() {
+  const [color, setColor] = useState<string | null>('#3b82f6');
+
+  return <CxColorPicker value={color} onUpdateValue={setColor} />;
+}

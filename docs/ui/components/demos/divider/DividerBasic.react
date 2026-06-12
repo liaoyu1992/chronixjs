@@ -1,0 +1,11 @@
+import { CxDivider } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div>
+      <p style={{ margin: 0 }}>Content above the divider.</p>
+      <CxDivider />
+      <p style={{ margin: 0 }}>Content below the divider.</p>
+    </div>
+  );
+}

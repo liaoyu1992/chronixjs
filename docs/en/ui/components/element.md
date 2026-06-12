@@ -1,3 +1,10 @@
+<script setup>
+import ElementBasic from '../../../ui/components/demos/element/ElementBasic.vue';
+import elementBasicCode from '../../../ui/components/demos/element/ElementBasic.vue?raw';
+import elementBasicVue2 from '../../../ui/components/demos/element/ElementBasic.vue2?raw';
+import elementBasicReact from '../../../ui/components/demos/element/ElementBasic.react?raw';
+</script>
+
 # Element
 
 Generic Chronix-themed HTML element wrapper with configurable tag.
@@ -16,46 +23,9 @@ Generic Chronix-themed HTML element wrapper with configurable tag.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxElement tag="section">
-    <p>Content inside a themed section element.</p>
-  </CxElement>
-</template>
-
-<script setup lang="ts">
-import { CxElement } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxElement tag="section">
-    <p>Content inside a themed section element.</p>
-  </CxElement>
-</template>
-
-<script>
-import { CxElement } from '@chronixjs/ui-vue2';
-export default { components: { CxElement } };
-</script>
-```
-
-```tsx [React]
-import { CxElement } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxElement tag="section">
-      <p>Content inside a themed section element.</p>
-    </CxElement>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Render a section element with the tag prop." :code="elementBasicCode" :code-vue2="elementBasicVue2" :code-react="elementBasicReact">
+  <ElementBasic />
+</DemoBox>
 
 ## API Reference
 

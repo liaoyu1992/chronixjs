@@ -1,0 +1,11 @@
+import { CxSkeleton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <CxSkeleton shape="text" width="70%" animated={false} />
+      <CxSkeleton shape="text" width="50%" animated={false} />
+      <CxSkeleton shape="rect" width={200} height={100} animated={false} />
+    </div>
+  );
+}

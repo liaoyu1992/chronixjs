@@ -1,3 +1,10 @@
+<script setup>
+import GanttBasic from '../../gantt/demos/GanttBasic.vue';
+import ganttBasicCode from '../../gantt/demos/GanttBasic.vue?raw';
+import ganttBasicVue2 from '../../gantt/demos/GanttBasic.vue2?raw';
+import ganttBasicReact from '../../gantt/demos/GanttBasic.react?raw';
+</script>
+
 # Gantt Chart
 
 A high-performance, framework-agnostic Gantt chart component with drag/resize, dependency links, and 6 timeline views.
@@ -31,62 +38,9 @@ pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxGantt :tasks="tasks" style="height: 500px;" />
-</template>
-
-<script setup lang="ts">
-import { CxGantt } from '@chronixjs/gantt-vue3';
-
-const tasks = [
-  { id: 1, name: 'Design', start: '2024-01-01', end: '2024-01-10', progress: 80 },
-  { id: 2, name: 'Development', start: '2024-01-08', end: '2024-01-25', progress: 40 },
-  { id: 3, name: 'Testing', start: '2024-01-20', end: '2024-02-01', progress: 0 },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxGantt :tasks="tasks" style="height: 500px;" />
-</template>
-
-<script>
-import { CxGantt } from '@chronixjs/gantt-vue2';
-
-export default {
-  components: { CxGantt },
-  data() {
-    return {
-      tasks: [
-        { id: 1, name: 'Design', start: '2024-01-01', end: '2024-01-10', progress: 80 },
-        { id: 2, name: 'Development', start: '2024-01-08', end: '2024-01-25', progress: 40 },
-        { id: 3, name: 'Testing', start: '2024-01-20', end: '2024-02-01', progress: 0 },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxGantt } from '@chronixjs/gantt-react';
-
-const tasks = [
-  { id: 1, name: 'Design', start: '2024-01-01', end: '2024-01-10', progress: 80 },
-  { id: 2, name: 'Development', start: '2024-01-08', end: '2024-01-25', progress: 40 },
-  { id: 3, name: 'Testing', start: '2024-01-20', end: '2024-02-01', progress: 0 },
-];
-
-export function App() {
-  return <CxGantt tasks={tasks} style={{ height: 500 }} />;
-}
-```
-
-:::
+<DemoBox title="Basic Gantt Chart" description="A minimal gantt chart with 3 tasks in week view." :code="ganttBasicCode" :code-vue2="ganttBasicVue2" :code-react="ganttBasicReact">
+  <GanttBasic />
+</DemoBox>
 
 ## Next Steps
 

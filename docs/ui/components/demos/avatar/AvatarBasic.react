@@ -1,0 +1,11 @@
+import { CxAvatar } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <CxAvatar text="JD" size={40} />
+      <CxAvatar text="AB" size={32} shape="square" />
+      <CxAvatar size={48}>👤</CxAvatar>
+    </div>
+  );
+}

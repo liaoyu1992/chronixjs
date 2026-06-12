@@ -1,0 +1,17 @@
+<template>
+  <CxPopover trigger="click">
+    <template slot="default">
+      <CxButton>Click me</CxButton>
+    </template>
+    <template slot="content">
+      <p>This is the popover content.</p>
+    </template>
+  </CxPopover>
+</template>
+
+<script>
+import { CxPopover, CxButton } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxPopover, CxButton },
+};
+</script>

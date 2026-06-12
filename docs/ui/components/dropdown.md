@@ -1,3 +1,10 @@
+<script setup>
+import DropdownBasic from './demos/dropdown/DropdownBasic.vue';
+import dropdownBasicCode from './demos/dropdown/DropdownBasic.vue?raw';
+import dropdownBasicVue2 from './demos/dropdown/DropdownBasic.vue2?raw';
+import dropdownBasicReact from './demos/dropdown/DropdownBasic.react?raw';
+</script>
+
 # Dropdown 下拉菜单
 
 通过悬停、点击或聚焦触发的弹出菜单，支持键盘导航。
@@ -16,85 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxDropdown :options="options" @select="onSelect">
-    <CxButton>Dropdown</CxButton>
-  </CxDropdown>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxDropdown, CxButton } from '@chronixjs/ui-vue3';
-
-const options = ref([
-  { key: '1', label: 'Option 1', value: 'opt1' },
-  { key: '2', label: 'Option 2', value: 'opt2' },
-  { key: '3', label: 'Option 3', value: 'opt3' },
-]);
-
-function onSelect(option: { key: string; label: string; value: string }) {
-  console.log('Selected:', option);
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxDropdown :options="options" @select="onSelect">
-    <CxButton>Dropdown</CxButton>
-  </CxDropdown>
-</template>
-
-<script>
-import { CxDropdown, CxButton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDropdown, CxButton },
-  data() {
-    return {
-      options: [
-        { key: '1', label: 'Option 1', value: 'opt1' },
-        { key: '2', label: 'Option 2', value: 'opt2' },
-        { key: '3', label: 'Option 3', value: 'opt3' },
-      ],
-    };
-  },
-  methods: {
-    onSelect(option) {
-      console.log('Selected:', option);
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxDropdown, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  const [options] = useState([
-    { key: '1', label: 'Option 1', value: 'opt1' },
-    { key: '2', label: 'Option 2', value: 'opt2' },
-    { key: '3', label: 'Option 3', value: 'opt3' },
-  ]);
-
-  function onSelect(option: { key: string; label: string; value: string }) {
-    console.log('Selected:', option);
-  }
-
-  return (
-    <CxDropdown options={options} onSelect={onSelect}>
-      <CxButton>Dropdown</CxButton>
-    </CxDropdown>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="点击触发的基础下拉菜单，包含 3 个选项。" :code="dropdownBasicCode" :code-vue2="dropdownBasicVue2" :code-react="dropdownBasicReact">
+  <DropdownBasic />
+</DemoBox>
 
 ## 触发方式
 

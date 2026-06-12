@@ -1,0 +1,17 @@
+import { useState } from 'react';
+import { CxCascader } from '@chronixjs/ui-react';
+
+const options = [
+  { key: 'zhejiang', label: 'Zhejiang', value: 'zhejiang', children: [
+    { key: 'hangzhou', label: 'Hangzhou', value: 'hangzhou', children: [{ key: 'xihu', label: 'West Lake', value: 'xihu' }] },
+    { key: 'ningbo', label: 'Ningbo', value: 'ningbo' },
+  ]},
+  { key: 'jiangsu', label: 'Jiangsu', value: 'jiangsu', children: [
+    { key: 'nanjing', label: 'Nanjing', value: 'nanjing' },
+  ]},
+];
+
+export function App() {
+  const [value, setValue] = useState(undefined);
+  return <CxCascader options={options} value={value} onUpdateValue={setValue} placeholder="Select region" />;
+}

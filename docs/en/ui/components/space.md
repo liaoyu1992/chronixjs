@@ -1,265 +1,61 @@
+<script setup>
+import SpaceBasic from '../../../ui/components/demos/space/SpaceBasic.vue';
+import spaceBasicCode from '../../../ui/components/demos/space/SpaceBasic.vue?raw';
+import spaceBasicVue2 from '../../../ui/components/demos/space/SpaceBasic.vue2?raw';
+import spaceBasicReact from '../../../ui/components/demos/space/SpaceBasic.react?raw';
+import SpaceVertical from '../../../ui/components/demos/space/SpaceVertical.vue';
+import spaceVerticalCode from '../../../ui/components/demos/space/SpaceVertical.vue?raw';
+import spaceVerticalVue2 from '../../../ui/components/demos/space/SpaceVertical.vue2?raw';
+import spaceVerticalReact from '../../../ui/components/demos/space/SpaceVertical.react?raw';
+import SpaceSizes from '../../../ui/components/demos/space/SpaceSizes.vue';
+import spaceSizesCode from '../../../ui/components/demos/space/SpaceSizes.vue?raw';
+import spaceSizesVue2 from '../../../ui/components/demos/space/SpaceSizes.vue2?raw';
+import spaceSizesReact from '../../../ui/components/demos/space/SpaceSizes.react?raw';
+</script>
+
 # Space
 
-A 1D layout primitive for consistent spacing between elements.
+One-dimensional layout primitive for consistent spacing between elements.
 
 ## Install
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSpace>
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script setup lang="ts">
-import { CxSpace, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSpace>
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script>
-import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSpace, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSpace, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxSpace>
-      <CxButton>Button 1</CxButton>
-      <CxButton>Button 2</CxButton>
-      <CxButton>Button 3</CxButton>
-    </CxSpace>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Horizontal layout of child elements." :code="spaceBasicCode" :code-vue2="spaceBasicVue2" :code-react="spaceBasicReact">
+  <SpaceBasic />
+</DemoBox>
 
 ## Vertical
 
-Use the `vertical` prop to stack children vertically.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSpace vertical>
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script setup lang="ts">
-import { CxSpace, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSpace vertical>
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script>
-import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSpace, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSpace, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxSpace vertical>
-      <CxButton>Button 1</CxButton>
-      <CxButton>Button 2</CxButton>
-      <CxButton>Button 3</CxButton>
-    </CxSpace>
-  );
-}
-```
-
-:::
+<DemoBox title="Vertical" description="Use vertical prop to stack children vertically." :code="spaceVerticalCode" :code-vue2="spaceVerticalVue2" :code-react="spaceVerticalReact">
+  <SpaceVertical />
+</DemoBox>
 
 ## Sizes
 
-Use the `size` prop with preset sizes: `small`, `medium` (default), and `large`.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 16px;">
-    <CxSpace size="small">
-      <CxButton>Small</CxButton>
-      <CxButton>Small</CxButton>
-    </CxSpace>
-    <CxSpace size="medium">
-      <CxButton>Medium</CxButton>
-      <CxButton>Medium</CxButton>
-    </CxSpace>
-    <CxSpace size="large">
-      <CxButton>Large</CxButton>
-      <CxButton>Large</CxButton>
-    </CxSpace>
-  </div>
-</template>
-
-<script setup lang="ts">
-import { CxSpace, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <div style="display: flex; flex-direction: column; gap: 16px;">
-    <CxSpace size="small">
-      <CxButton>Small</CxButton>
-      <CxButton>Small</CxButton>
-    </CxSpace>
-    <CxSpace size="medium">
-      <CxButton>Medium</CxButton>
-      <CxButton>Medium</CxButton>
-    </CxSpace>
-    <CxSpace size="large">
-      <CxButton>Large</CxButton>
-      <CxButton>Large</CxButton>
-    </CxSpace>
-  </div>
-</template>
-
-<script>
-import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSpace, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSpace, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <CxSpace size="small">
-        <CxButton>Small</CxButton>
-        <CxButton>Small</CxButton>
-      </CxSpace>
-      <CxSpace size="medium">
-        <CxButton>Medium</CxButton>
-        <CxButton>Medium</CxButton>
-      </CxSpace>
-      <CxSpace size="large">
-        <CxButton>Large</CxButton>
-        <CxButton>Large</CxButton>
-      </CxSpace>
-    </div>
-  );
-}
-```
-
-:::
-
-## Custom Gap
-
-Pass a number to `size` for a custom pixel gap.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxSpace :size="24">
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script setup lang="ts">
-import { CxSpace, CxButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxSpace :size="24">
-    <CxButton>Button 1</CxButton>
-    <CxButton>Button 2</CxButton>
-    <CxButton>Button 3</CxButton>
-  </CxSpace>
-</template>
-
-<script>
-import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxSpace, CxButton },
-};
-</script>
-```
-
-```tsx [React]
-import { CxSpace, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxSpace size={24}>
-      <CxButton>Button 1</CxButton>
-      <CxButton>Button 2</CxButton>
-      <CxButton>Button 3</CxButton>
-    </CxSpace>
-  );
-}
-```
-
-:::
+<DemoBox title="Sizes" description="Use size prop for preset spacing." :code="spaceSizesCode" :code-vue2="spaceSizesVue2" :code-react="spaceSizesReact">
+  <SpaceSizes />
+</DemoBox>
 
 ## API Reference
 
 ### Props
 
-| Prop       | Type                                                                                  | Default     | Description          |
-| ---------- | ------------------------------------------------------------------------------------- | ----------- | -------------------- |
-| `size`     | `'small' \| 'medium' \| 'large' \| number`                                            | `'medium'`  | Gap size             |
-| `vertical` | `boolean`                                                                             | `false`     | Vertical layout      |
-| `wrap`     | `boolean`                                                                             | `true`      | Wrap children        |
-| `align`    | `'start' \| 'center' \| 'end' \| 'baseline' \| 'stretch'`                             | `undefined` | Cross-axis alignment |
-| `justify`  | `'start' \| 'center' \| 'end' \| 'space-around' \| 'space-between' \| 'space-evenly'` | `undefined` | Main-axis justify    |
-| `inline`   | `boolean`                                                                             | `false`     | Inline-flex mode     |
+| Prop       | Type                                                                                  | Default     | Description      |
+| ---------- | ------------------------------------------------------------------------------------- | ----------- | ---------------- |
+| `size`     | `'small' \| 'medium' \| 'large' \| number`                                            | `'medium'`  | Spacing size     |
+| `vertical` | `boolean`                                                                             | `false`     | Vertical layout  |
+| `wrap`     | `boolean`                                                                             | `true`      | Wrap children    |
+| `align`    | `'start' \| 'center' \| 'end' \| 'baseline' \| 'stretch'`                             | `undefined` | Cross-axis align |
+| `justify`  | `'start' \| 'center' \| 'end' \| 'space-around' \| 'space-between' \| 'space-evenly'` | `undefined` | Main-axis align  |
+| `inline`   | `boolean`                                                                             | `false`     | Inline flex mode |

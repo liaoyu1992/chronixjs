@@ -1,3 +1,10 @@
+<script setup>
+import ResultBasic from '../../../ui/components/demos/result/ResultBasic.vue';
+import resultBasicCode from '../../../ui/components/demos/result/ResultBasic.vue?raw';
+import resultBasicVue2 from '../../../ui/components/demos/result/ResultBasic.vue2?raw';
+import resultBasicReact from '../../../ui/components/demos/result/ResultBasic.react?raw';
+</script>
+
 # Result
 
 A terminal-state display for operation results and error pages.
@@ -6,50 +13,19 @@ A terminal-state display for operation results and error pages.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxResult status="success" title="Success" description="Your operation was completed." />
-</template>
-
-<script setup lang="ts">
-import { CxResult } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxResult status="success" title="Success" description="Your operation was completed." />
-</template>
-
-<script>
-import { CxResult } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxResult },
-};
-</script>
-```
-
-```tsx [React]
-import { CxResult } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxResult status="success" title="Success" description="Your operation was completed." />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Success result display." :code="resultBasicCode" :code-vue2="resultBasicVue2" :code-react="resultBasicReact">
+  <ResultBasic />
+</DemoBox>
 
 ## Status Types
 

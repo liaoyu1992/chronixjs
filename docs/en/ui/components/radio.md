@@ -1,156 +1,66 @@
+<script setup>
+import RadioBasic from '../../../ui/components/demos/radio/RadioBasic.vue';
+import radioBasicCode from '../../../ui/components/demos/radio/RadioBasic.vue?raw';
+import radioBasicVue2 from '../../../ui/components/demos/radio/RadioBasic.vue2?raw';
+import radioBasicReact from '../../../ui/components/demos/radio/RadioBasic.react?raw';
+import RadioDisabled from '../../../ui/components/demos/radio/RadioDisabled.vue';
+import radioDisabledCode from '../../../ui/components/demos/radio/RadioDisabled.vue?raw';
+import radioDisabledVue2 from '../../../ui/components/demos/radio/RadioDisabled.vue2?raw';
+import radioDisabledReact from '../../../ui/components/demos/radio/RadioDisabled.react?raw';
+import RadioError from '../../../ui/components/demos/radio/RadioError.vue';
+import radioErrorCode from '../../../ui/components/demos/radio/RadioError.vue?raw';
+import radioErrorVue2 from '../../../ui/components/demos/radio/RadioError.vue2?raw';
+import radioErrorReact from '../../../ui/components/demos/radio/RadioError.react?raw';
+</script>
+
 # Radio
 
-Radio button component with group support. Use `CxRadioGroup` for mutually exclusive selections from a list of options.
+Radio button component with group support. Use RadioGroup for mutually exclusive selections from a list of options.
 
 ## Install
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
-
-:::
-
-## Basic Usage with RadioGroup
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxRadioGroup v-model:value="selected" :options="options" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxRadioGroup } from '@chronixjs/ui-vue3';
-
-const selected = ref('vue');
-const options = [
-  { key: 'vue', label: 'Vue', value: 'vue', disabled: false },
-  { key: 'react', label: 'React', value: 'react', disabled: false },
-  { key: 'angular', label: 'Angular', value: 'angular', disabled: false },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRadioGroup v-model:value="selected" :options="options" />
-</template>
-
-<script>
-import { CxRadioGroup } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRadioGroup },
-  data() {
-    return {
-      selected: 'vue',
-      options: [
-        { key: 'vue', label: 'Vue', value: 'vue', disabled: false },
-        { key: 'react', label: 'React', value: 'react', disabled: false },
-        { key: 'angular', label: 'Angular', value: 'angular', disabled: false },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxRadioGroup } from '@chronixjs/ui-react';
-
-const options = [
-  { key: 'vue', label: 'Vue', value: 'vue', disabled: false },
-  { key: 'react', label: 'React', value: 'react', disabled: false },
-  { key: 'angular', label: 'Angular', value: 'angular', disabled: false },
-];
-
-export function App() {
-  const [selected, setSelected] = useState('vue');
-  return <CxRadioGroup value={selected} onUpdateValue={setSelected} options={options} />;
-}
-```
+<<< @/snippets/react/install-ui.md [React]
 
 :::
+
+## Basic Usage
+
+<DemoBox title="Basic Usage" description="Use RadioGroup for mutually exclusive selections from a list of options." :code="radioBasicCode" :code-vue2="radioBasicVue2" :code-react="radioBasicReact">
+  <RadioBasic />
+</DemoBox>
 
 ## Disabled Options
 
-Disable individual options or the entire group:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <!-- Disabled group -->
-  <CxRadioGroup v-model:value="val" :options="opts" disabled />
-
-  <!-- Disabled option -->
-  <CxRadioGroup v-model:value="val" :options="optionsWithDisabled" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxRadioGroup } from '@chronixjs/ui-vue3';
-
-const val = ref('a');
-const optionsWithDisabled = [
-  { key: 'a', label: 'Option A', value: 'a', disabled: false },
-  { key: 'b', label: 'Option B (disabled)', value: 'b', disabled: true },
-  { key: 'c', label: 'Option C', value: 'c', disabled: false },
-];
-</script>
-```
-
-```tsx [React]
-const options = [
-  { key: 'a', label: 'Option A', value: 'a', disabled: false },
-  { key: 'b', label: 'Option B (disabled)', value: 'b', disabled: true },
-  { key: 'c', label: 'Option C', value: 'c', disabled: false },
-];
-
-<CxRadioGroup value={val} onUpdateValue={setVal} options={options} />;
-```
-
-:::
+<DemoBox title="Disabled Options" description="Individual options can be disabled." :code="radioDisabledCode" :code-vue2="radioDisabledVue2" :code-react="radioDisabledReact">
+  <RadioDisabled />
+</DemoBox>
 
 ## Error State
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxRadioGroup v-model:value="val" :options="opts" error="Please select an option" />
-</template>
-
-<script setup lang="ts">
-import { CxRadioGroup } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```tsx [React]
-<CxRadioGroup value={val} onUpdateValue={setVal} options={opts} error="Please select an option" />
-```
-
-:::
+<DemoBox title="Error State" description="Display an error message via the error prop." :code="radioErrorCode" :code-vue2="radioErrorVue2" :code-react="radioErrorReact">
+  <RadioError />
+</DemoBox>
 
 ## RadioOption Type
 
 ```typescript
 interface RadioOption {
-  readonly key: string; // Unique key for rendering
-  readonly label: string; // Display text
-  readonly value: string; // Selection value
-  readonly disabled: boolean; // Disable this option
+  readonly key: string;
+  readonly label: string;
+  readonly value: string;
+  readonly disabled: boolean;
 }
 ```
 
 ## API Reference
 
-### CxRadioGroup Props
+### RadioGroup Props
 
 | Prop       | Type                     | Default     | Description              |
 | ---------- | ------------------------ | ----------- | ------------------------ |
@@ -159,7 +69,7 @@ interface RadioOption {
 | `disabled` | `boolean`                | `false`     | Disable entire group     |
 | `error`    | `string`                 | `undefined` | Error message            |
 
-### CxRadioGroup Events
+### RadioGroup Events
 
 | Event          | Payload  | Description                 |
 | -------------- | -------- | --------------------------- |

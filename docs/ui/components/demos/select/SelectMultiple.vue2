@@ -1,0 +1,21 @@
+<template>
+  <CxSelect :options="options" :value.sync="selected" multiple placeholder="Pick several..." />
+</template>
+
+<script>
+import { CxSelect } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxSelect },
+  data() {
+    return {
+      selected: [],
+      options: [
+        { key: '1', label: 'Red', value: 'red' },
+        { key: '2', label: 'Green', value: 'green' },
+        { key: '3', label: 'Blue', value: 'blue' },
+        { key: '4', label: 'Yellow', value: 'yellow' },
+      ],
+    };
+  },
+};
+</script>

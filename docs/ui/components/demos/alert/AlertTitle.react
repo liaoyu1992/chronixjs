@@ -1,0 +1,9 @@
+import { CxAlert } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxAlert type="success" title="Success">
+      Your operation was successful.
+    </CxAlert>
+  );
+}

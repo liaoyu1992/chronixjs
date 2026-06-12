@@ -1,0 +1,12 @@
+<template>
+  <div>
+    <p style="margin: 0">Content above.</p>
+    <CxDivider dashed />
+    <p style="margin: 0">Content below.</p>
+  </div>
+</template>
+
+<script>
+import { CxDivider } from '@chronixjs/ui-vue2';
+export default { components: { CxDivider } };
+</script>

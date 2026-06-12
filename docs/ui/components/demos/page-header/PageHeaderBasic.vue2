@@ -1,0 +1,8 @@
+<template>
+  <CxPageHeader title="Page Title" subtitle="Subtitle" back />
+</template>
+
+<script>
+import { CxPageHeader } from '@chronixjs/ui-vue2';
+export default { components: { CxPageHeader } };
+</script>

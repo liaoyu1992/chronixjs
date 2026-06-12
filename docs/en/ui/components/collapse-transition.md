@@ -1,3 +1,10 @@
+<script setup>
+import CollapseTransitionBasic from '../../../ui/components/demos/collapse-transition/CollapseTransitionBasic.vue';
+import collapseTransitionBasicCode from '../../../ui/components/demos/collapse-transition/CollapseTransitionBasic.vue?raw';
+import collapseTransitionBasicVue2 from '../../../ui/components/demos/collapse-transition/CollapseTransitionBasic.vue2?raw';
+import collapseTransitionBasicReact from '../../../ui/components/demos/collapse-transition/CollapseTransitionBasic.react?raw';
+</script>
+
 # Collapse Transition
 
 Height transition wrapper for expand/collapse animations. Used internally by Collapse and exposed for ad-hoc needs.
@@ -16,62 +23,9 @@ Height transition wrapper for expand/collapse animations. Used internally by Col
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <button @click="visible = !visible">Toggle</button>
-  <CxCollapseTransition :show="visible">
-    <div style="padding: 16px;">Collapsible content here.</div>
-  </CxCollapseTransition>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCollapseTransition } from '@chronixjs/ui-vue3';
-
-const visible = ref(false);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <button @click="visible = !visible">Toggle</button>
-  <CxCollapseTransition :show="visible">
-    <div style="padding: 16px;">Collapsible content here.</div>
-  </CxCollapseTransition>
-</template>
-
-<script>
-import { CxCollapseTransition } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCollapseTransition },
-  data() {
-    return { visible: false };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCollapseTransition } from '@chronixjs/ui-react';
-
-export function App() {
-  const [visible, setVisible] = useState(false);
-
-  return (
-    <div>
-      <button onClick={() => setVisible(!visible)}>Toggle</button>
-      <CxCollapseTransition show={visible}>
-        <div style={{ padding: 16 }}>Collapsible content here.</div>
-      </CxCollapseTransition>
-    </div>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Toggle content visibility with the show prop." :code="collapseTransitionBasicCode" :code-vue2="collapseTransitionBasicVue2" :code-react="collapseTransitionBasicReact">
+  <CollapseTransitionBasic />
+</DemoBox>
 
 ## API Reference
 

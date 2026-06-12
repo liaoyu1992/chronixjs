@@ -1,0 +1,12 @@
+<template>
+  <div style="display: flex; gap: 24px; align-items: center;">
+    <CxSpin size="small" />
+    <CxSpin size="medium" />
+    <CxSpin size="large" />
+  </div>
+</template>
+
+<script>
+import { CxSpin } from '@chronixjs/ui-vue2';
+export default { components: { CxSpin } };
+</script>

@@ -1,0 +1,22 @@
+<template>
+  <CxButton @click="showDialog">Open Dialog</CxButton>
+</template>
+
+<script>
+import { useDiscreteDialog } from '@chronixjs/ui-vue2';
+import { CxButton } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxButton },
+  methods: {
+    showDialog() {
+      const dialog = useDiscreteDialog();
+      dialog.warning({
+        title: 'Confirm Delete',
+        content: 'Are you sure you want to delete this item?',
+        positiveText: 'Delete',
+        negativeText: 'Cancel',
+      });
+    },
+  },
+};
+</script>

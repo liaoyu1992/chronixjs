@@ -1,3 +1,10 @@
+<script setup>
+import StatisticBasic from './demos/statistic/StatisticBasic.vue';
+import statisticBasicCode from './demos/statistic/StatisticBasic.vue?raw';
+import statisticBasicVue2 from './demos/statistic/StatisticBasic.vue2?raw';
+import statisticBasicReact from './demos/statistic/StatisticBasic.react?raw';
+</script>
+
 # Statistic 统计数值
 
 用于仪表板和 KPI 摘要的数值展示组件，支持可选的前缀/后缀。
@@ -6,48 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxStatistic label="Total Users" :value="12345" />
-</template>
-
-<script setup lang="ts">
-import { CxStatistic } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxStatistic label="Total Users" :value="12345" />
-</template>
-
-<script>
-import { CxStatistic } from '@chronixjs/ui-vue2';
-export default { components: { CxStatistic } };
-</script>
-```
-
-```tsx [React]
-import { CxStatistic } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxStatistic label="Total Users" value={12345} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="展示带有标签的数值。" :code="statisticBasicCode" :code-vue2="statisticBasicVue2" :code-react="statisticBasicReact">
+  <StatisticBasic />
+</DemoBox>
 
 ## 精度
 

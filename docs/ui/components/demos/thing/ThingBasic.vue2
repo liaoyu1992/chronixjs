@@ -1,0 +1,8 @@
+<template>
+  <CxThing title="Card Title" description="Card description" />
+</template>
+
+<script>
+import { CxThing } from '@chronixjs/ui-vue2';
+export default { components: { CxThing } };
+</script>

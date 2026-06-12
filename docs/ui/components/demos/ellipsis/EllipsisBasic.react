@@ -1,0 +1,12 @@
+import { CxEllipsis } from '@chronixjs/ui-react';
+
+const LONG_TEXT =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.';
+
+export function App() {
+  return (
+    <div style={{ maxWidth: 360 }}>
+      <CxEllipsis content={LONG_TEXT} lineClamp={2} />
+    </div>
+  );
+}

@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxTimePicker } from '@chronixjs/ui-react';
+
+export function App() {
+  const [time, setTime] = useState(undefined);
+  return <CxTimePicker value={time} onUpdateValue={setTime} placeholder="Pick a time" />;
+}

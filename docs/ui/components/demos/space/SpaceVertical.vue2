@@ -1,0 +1,12 @@
+<template>
+  <CxSpace vertical>
+    <CxButton>Button 1</CxButton>
+    <CxButton>Button 2</CxButton>
+    <CxButton>Button 3</CxButton>
+  </CxSpace>
+</template>
+
+<script>
+import { CxSpace, CxButton } from '@chronixjs/ui-vue2';
+export default { components: { CxSpace, CxButton } };
+</script>

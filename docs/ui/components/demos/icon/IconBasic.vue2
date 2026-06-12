@@ -1,0 +1,8 @@
+<template>
+  <CxIcon name="home" :size="24" />
+</template>
+
+<script>
+import { CxIcon } from '@chronixjs/ui-vue2';
+export default { components: { CxIcon } };
+</script>

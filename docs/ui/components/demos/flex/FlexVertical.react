@@ -1,0 +1,11 @@
+import { CxFlex, CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxFlex direction="column" gap={12}>
+      <CxButton>Button 1</CxButton>
+      <CxButton variant="primary">Button 2</CxButton>
+      <CxButton>Button 3</CxButton>
+    </CxFlex>
+  );
+}

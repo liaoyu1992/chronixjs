@@ -1,0 +1,11 @@
+<template>
+  <div style="display: flex; gap: 12px; align-items: center;">
+    <CxAvatar src="https://picsum.photos/40/40" :size="40" />
+    <CxAvatar src="https://picsum.photos/48/48" :size="48" shape="square" />
+  </div>
+</template>
+
+<script>
+import { CxAvatar } from '@chronixjs/ui-vue2';
+export default { components: { CxAvatar } };
+</script>

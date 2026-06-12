@@ -1,3 +1,10 @@
+<script setup>
+import QRCodeBasic from './demos/qrcode/QRCodeBasic.vue';
+import qrcodeBasicCode from './demos/qrcode/QRCodeBasic.vue?raw';
+import qrcodeBasicVue2 from './demos/qrcode/QRCodeBasic.vue2?raw';
+import qrcodeBasicReact from './demos/qrcode/QRCodeBasic.react?raw';
+</script>
+
 # QR Code 二维码
 
 二维码 SVG 渲染（需要可选的对等依赖 `qrcode-generator`）。
@@ -6,103 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxQrCode value="https://chronixjs.dev" :size="200" />
-</template>
-
-<script setup lang="ts">
-import { CxQrCode } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxQrCode value="https://chronixjs.dev" :size="200" />
-</template>
-
-<script>
-import { CxQrCode } from '@chronixjs/ui-vue2';
-export default { components: { CxQrCode } };
-</script>
-```
-
-```tsx [React]
-import { CxQrCode } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxQrCode value="https://chronixjs.dev" size={200} />;
-}
-```
-
-:::
-
-## 自定义颜色
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxQrCode
-    value="https://chronixjs.dev"
-    :size="160"
-    foreground="#3b82f6"
-    background="#f0f9ff"
-    error-correction-level="H"
-  />
-</template>
-
-<script setup lang="ts">
-import { CxQrCode } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxQrCode
-    value="https://chronixjs.dev"
-    :size="160"
-    foreground="#3b82f6"
-    background="#f0f9ff"
-    error-correction-level="H"
-  />
-</template>
-
-<script>
-import { CxQrCode } from '@chronixjs/ui-vue2';
-export default { components: { CxQrCode } };
-</script>
-```
-
-```tsx [React]
-import { CxQrCode } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxQrCode
-      value="https://chronixjs.dev"
-      size={160}
-      foreground="#3b82f6"
-      background="#f0f9ff"
-      errorCorrectionLevel="H"
-    />
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用 value 属性设置编码内容，size 属性设置尺寸。" :code="qrcodeBasicCode" :code-vue2="qrcodeBasicVue2" :code-react="qrcodeBasicReact">
+  <QRCodeBasic />
+</DemoBox>
 
 ## API 参考
 

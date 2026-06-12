@@ -1,0 +1,5 @@
+import { CxHighlight } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxHighlight value="Hello World, hello universe" pattern="hello" />;
+}

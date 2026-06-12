@@ -1,0 +1,5 @@
+import { CxCountdown } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxCountdown label="Time Remaining" duration={60000} active={true} />;
+}

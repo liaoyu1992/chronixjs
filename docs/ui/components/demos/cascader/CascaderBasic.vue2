@@ -1,0 +1,24 @@
+<template>
+  <CxCascader :options="options" :value.sync="value" placeholder="Select region" />
+</template>
+
+<script>
+import { CxCascader } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxCascader },
+  data() {
+    return {
+      value: undefined,
+      options: [
+        { key: 'zhejiang', label: 'Zhejiang', value: 'zhejiang', children: [
+          { key: 'hangzhou', label: 'Hangzhou', value: 'hangzhou', children: [{ key: 'xihu', label: 'West Lake', value: 'xihu' }] },
+          { key: 'ningbo', label: 'Ningbo', value: 'ningbo' },
+        ]},
+        { key: 'jiangsu', label: 'Jiangsu', value: 'jiangsu', children: [
+          { key: 'nanjing', label: 'Nanjing', value: 'nanjing' },
+        ]},
+      ],
+    };
+  },
+};
+</script>

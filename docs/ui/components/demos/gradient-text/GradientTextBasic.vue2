@@ -1,0 +1,8 @@
+<template>
+  <CxGradientText value="Gradient Text" :colors="['#ff0000', '#0000ff']" />
+</template>
+
+<script>
+import { CxGradientText } from '@chronixjs/ui-vue2';
+export default { components: { CxGradientText } };
+</script>

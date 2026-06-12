@@ -1,3 +1,10 @@
+<script setup>
+import GanttLinksBasic from './demos/GanttLinksBasic.vue';
+import ganttLinksBasicCode from './demos/GanttLinksBasic.vue?raw';
+import ganttLinksBasicVue2 from './demos/GanttLinksBasic.vue2?raw';
+import ganttLinksBasicReact from './demos/GanttLinksBasic.react?raw';
+</script>
+
 # 依赖
 
 依赖连线用于连接条形，可视化任务之间的关系。连线渲染为 SVG 路径，支持可配置的路由和箭头标记。
@@ -31,133 +38,9 @@ const links: LinkSpec[] = [
 
 ## 基本用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :links="links" />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { BarSpec, RowSpec, LinkSpec, AxisRangePlanInput } from '@chronixjs/gantt';
-
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-12') },
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-2',
-    rowId: 'row-2',
-    range: { start: new Date('2026-01-12'), end: new Date('2026-01-20') },
-    dprIntent: 'crisp-pixel',
-  },
-];
-
-const rows: RowSpec[] = [
-  { id: 'row-1', columns: { name: 'Design' } },
-  { id: 'row-2', columns: { name: 'Develop' } },
-];
-
-// 完成-开始：bar-2 在 bar-1 完成后开始
-const links: LinkSpec[] = [
-  {
-    id: 'link-1',
-    fromBarId: 'bar-1',
-    toBarId: 'bar-2',
-    routing: 'square',
-    marker: 'arrow',
-  },
-];
-
-const axisInput: AxisRangePlanInput = {
-  viewId: 'week',
-  anchorDate: new Date('2026-01-05'),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-};
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :links="links" />
-</template>
-
-<script>
-import { ChronixGantt } from '@chronixjs/gantt-vue2';
-
-export default {
-  components: { ChronixGantt },
-  data() {
-    return {
-      bars: [
-        {
-          id: 'bar-1',
-          rowId: 'row-1',
-          range: { start: new Date('2026-01-05'), end: new Date('2026-01-12') },
-          dprIntent: 'crisp-pixel',
-        },
-        {
-          id: 'bar-2',
-          rowId: 'row-2',
-          range: { start: new Date('2026-01-12'), end: new Date('2026-01-20') },
-          dprIntent: 'crisp-pixel',
-        },
-      ],
-      rows: [
-        { id: 'row-1', columns: { name: 'Design' } },
-        { id: 'row-2', columns: { name: 'Develop' } },
-      ],
-      links: [
-        { id: 'link-1', fromBarId: 'bar-1', toBarId: 'bar-2', routing: 'square', marker: 'arrow' },
-      ],
-      axisInput: {
-        viewId: 'week',
-        anchorDate: new Date('2026-01-05'),
-        viewportWidth: 900,
-        locale: 'en',
-        weekendsVisible: true,
-      },
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { BarSpec, RowSpec, LinkSpec, AxisRangePlanInput } from '@chronixjs/gantt';
-
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-12') },
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-2',
-    rowId: 'row-2',
-    range: { start: new Date('2026-01-12'), end: new Date('2026-01-20') },
-    dprIntent: 'crisp-pixel',
-  },
-];
-
-const links: LinkSpec[] = [
-  { id: 'link-1', fromBarId: 'bar-1', toBarId: 'bar-2', routing: 'square', marker: 'arrow' },
-];
-
-export function App() {
-  return <ChronixGantt bars={bars} rows={rows} axisInput={axisInput} links={links} />;
-}
-```
-
-:::
+<DemoBox title="依赖连线" description="方角和曲线路由，带箭头标记和自定义颜色覆盖。" :code="ganttLinksBasicCode" :code-vue2="ganttLinksBasicVue2" :code-react="ganttLinksBasicReact">
+  <GanttLinksBasic />
+</DemoBox>
 
 ## 路由样式
 

@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxSlider } from '@chronixjs/ui-react';
+
+export function App() {
+  const [range, setRange] = useState<[number, number]>([20, 80]);
+  return <CxSlider value={range} onUpdateValue={setRange} range min={0} max={100} />;
+}

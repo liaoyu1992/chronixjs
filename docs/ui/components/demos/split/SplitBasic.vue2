@@ -1,0 +1,15 @@
+<template>
+  <CxSplit default-size="50%" style="height: 200px;">
+    <template slot="first">
+      <div style="padding: 16px;">Left Pane</div>
+    </template>
+    <template slot="second">
+      <div style="padding: 16px;">Right Pane</div>
+    </template>
+  </CxSplit>
+</template>
+
+<script>
+import { CxSplit } from '@chronixjs/ui-vue2';
+export default { components: { CxSplit } };
+</script>

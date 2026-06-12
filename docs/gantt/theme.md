@@ -1,72 +1,19 @@
+<script setup>
+import GanttThemeCustom from './demos/GanttThemeCustom.vue';
+import ganttThemeCustomCode from './demos/GanttThemeCustom.vue?raw';
+import ganttThemeCustomVue2 from './demos/GanttThemeCustom.vue2?raw';
+import ganttThemeCustomReact from './demos/GanttThemeCustom.react?raw';
+</script>
+
 # 甘特图主题
 
 使用 `ChronixTheme` 接口自定义甘特图外观。传入部分主题对象仅覆盖所需的令牌，其余令牌将使用默认值。
 
 ## 基本用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :theme="customTheme" />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { ChronixTheme } from '@chronixjs/gantt';
-
-const customTheme: Partial<ChronixTheme> = {
-  barBackgroundColor: '#6366f1', // 靛蓝色条形
-  barBorderColor: '#4f46e5',
-  barTextColor: '#ffffff',
-  chartBackground: '#f8fafc',
-  headerCellFill: '#f1f5f9',
-  linkDefaultColor: '#94a3b8',
-};
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :theme="customTheme" />
-</template>
-
-<script>
-import { ChronixGantt } from '@chronixjs/gantt-vue2';
-
-export default {
-  components: { ChronixGantt },
-  data() {
-    return {
-      customTheme: {
-        barBackgroundColor: '#6366f1',
-        barBorderColor: '#4f46e5',
-        barTextColor: '#ffffff',
-        chartBackground: '#f8fafc',
-      },
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { ChronixTheme } from '@chronixjs/gantt';
-
-const customTheme: Partial<ChronixTheme> = {
-  barBackgroundColor: '#6366f1',
-  barBorderColor: '#4f46e5',
-  barTextColor: '#ffffff',
-  chartBackground: '#f8fafc',
-};
-
-export function App() {
-  return <ChronixGantt bars={bars} rows={rows} axisInput={axisInput} theme={customTheme} />;
-}
-```
-
-:::
+<DemoBox title="自定义主题" description="靛蓝色条形，搭配浅石板灰背景。" :code="ganttThemeCustomCode" :code-vue2="ganttThemeCustomVue2" :code-react="ganttThemeCustomReact">
+  <GanttThemeCustom />
+</DemoBox>
 
 ## 暗色模式示例
 

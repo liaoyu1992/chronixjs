@@ -1,3 +1,10 @@
+<script setup>
+import TreeBasic from '../../../ui/components/demos/tree/TreeBasic.vue';
+import treeBasicCode from '../../../ui/components/demos/tree/TreeBasic.vue?raw';
+import treeBasicVue2 from '../../../ui/components/demos/tree/TreeBasic.vue2?raw';
+import treeBasicReact from '../../../ui/components/demos/tree/TreeBasic.react?raw';
+</script>
+
 # Tree
 
 Hierarchical tree view with expand/collapse, selection, drag-and-drop reorder, virtual scrolling, and async loading.
@@ -6,116 +13,19 @@ Hierarchical tree view with expand/collapse, selection, drag-and-drop reorder, v
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTree v-model:value="selected" :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxTree } from '@chronixjs/ui-vue3';
-import type { TreeNodeSpec } from '@chronixjs/ui';
-
-interface NodeData {
-  label: string;
-}
-
-const selected = ref<string | undefined>(undefined);
-const items = ref<TreeNodeSpec<NodeData>[]>([
-  {
-    key: 'root-1',
-    data: { label: 'Root 1' },
-    children: [
-      { key: 'child-1-1', data: { label: 'Child 1-1' } },
-      { key: 'child-1-2', data: { label: 'Child 1-2' } },
-    ],
-  },
-  {
-    key: 'root-2',
-    data: { label: 'Root 2' },
-    children: [{ key: 'child-2-1', data: { label: 'Child 2-1' } }],
-  },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTree :value.sync="selected" :items="items" />
-</template>
-
-<script>
-import { CxTree } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxTree },
-  data() {
-    return {
-      selected: undefined,
-      items: [
-        {
-          key: 'root-1',
-          data: { label: 'Root 1' },
-          children: [
-            { key: 'child-1-1', data: { label: 'Child 1-1' } },
-            { key: 'child-1-2', data: { label: 'Child 1-2' } },
-          ],
-        },
-        {
-          key: 'root-2',
-          data: { label: 'Root 2' },
-          children: [{ key: 'child-2-1', data: { label: 'Child 2-1' } }],
-        },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxTree } from '@chronixjs/ui-react';
-import type { TreeNodeSpec } from '@chronixjs/ui';
-
-interface NodeData {
-  label: string;
-}
-
-export function App() {
-  const [selected, setSelected] = useState<string | undefined>(undefined);
-  const [items] = useState<TreeNodeSpec<NodeData>[]>([
-    {
-      key: 'root-1',
-      data: { label: 'Root 1' },
-      children: [
-        { key: 'child-1-1', data: { label: 'Child 1-1' } },
-        { key: 'child-1-2', data: { label: 'Child 1-2' } },
-      ],
-    },
-    {
-      key: 'root-2',
-      data: { label: 'Root 2' },
-      children: [{ key: 'child-2-1', data: { label: 'Child 2-1' } }],
-    },
-  ]);
-
-  return <CxTree value={selected} onUpdateValue={setSelected} items={items} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Tree with nested items and default expand all." :code="treeBasicCode" :code-vue2="treeBasicVue2" :code-react="treeBasicReact">
+  <TreeBasic />
+</DemoBox>
 
 ## API Reference
 

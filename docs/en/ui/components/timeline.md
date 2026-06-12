@@ -1,3 +1,10 @@
+<script setup>
+import TimelineBasic from '../../../ui/components/demos/timeline/TimelineBasic.vue';
+import timelineBasicCode from '../../../ui/components/demos/timeline/TimelineBasic.vue?raw';
+import timelineBasicVue2 from '../../../ui/components/demos/timeline/TimelineBasic.vue2?raw';
+import timelineBasicReact from '../../../ui/components/demos/timeline/TimelineBasic.react?raw';
+</script>
+
 # Timeline
 
 A chronological event display with colored indicators and connecting lines.
@@ -6,126 +13,19 @@ A chronological event display with colored indicators and connecting lines.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTimeline :items="items" />
-</template>
-
-<script setup lang="ts">
-import { CxTimeline } from '@chronixjs/ui-vue3';
-
-const items = [
-  {
-    key: '1',
-    title: 'Event 1',
-    description: 'First event happened',
-    timestamp: '2024-01-01',
-    color: 'success',
-  },
-  {
-    key: '2',
-    title: 'Event 2',
-    description: 'Second event happened',
-    timestamp: '2024-01-15',
-    color: 'info',
-  },
-  {
-    key: '3',
-    title: 'Event 3',
-    description: 'Third event happened',
-    timestamp: '2024-02-01',
-    color: 'default',
-  },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTimeline :items="items" />
-</template>
-
-<script>
-import { CxTimeline } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTimeline },
-  data() {
-    return {
-      items: [
-        {
-          key: '1',
-          title: 'Event 1',
-          description: 'First event happened',
-          timestamp: '2024-01-01',
-          color: 'success',
-        },
-        {
-          key: '2',
-          title: 'Event 2',
-          description: 'Second event happened',
-          timestamp: '2024-01-15',
-          color: 'info',
-        },
-        {
-          key: '3',
-          title: 'Event 3',
-          description: 'Third event happened',
-          timestamp: '2024-02-01',
-          color: 'default',
-        },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxTimeline } from '@chronixjs/ui-react';
-
-const items = [
-  {
-    key: '1',
-    title: 'Event 1',
-    description: 'First event happened',
-    timestamp: '2024-01-01',
-    color: 'success',
-  },
-  {
-    key: '2',
-    title: 'Event 2',
-    description: 'Second event happened',
-    timestamp: '2024-01-15',
-    color: 'info',
-  },
-  {
-    key: '3',
-    title: 'Event 3',
-    description: 'Third event happened',
-    timestamp: '2024-02-01',
-    color: 'default',
-  },
-];
-
-export function App() {
-  return <CxTimeline items={items} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Timeline items with different status types." :code="timelineBasicCode" :code-vue2="timelineBasicVue2" :code-react="timelineBasicReact">
+  <TimelineBasic />
+</DemoBox>
 
 ## Custom Colors
 

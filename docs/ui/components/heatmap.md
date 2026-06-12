@@ -1,3 +1,10 @@
+<script setup>
+import HeatmapBasic from './demos/heatmap/HeatmapBasic.vue';
+import heatmapBasicCode from './demos/heatmap/HeatmapBasic.vue?raw';
+import heatmapBasicVue2 from './demos/heatmap/HeatmapBasic.vue2?raw';
+import heatmapBasicReact from './demos/heatmap/HeatmapBasic.react?raw';
+</script>
+
 # Heatmap 热力图
 
 SVG 单元格网格，在两个端点颜色之间进行线性颜色插值。
@@ -16,63 +23,9 @@ SVG 单元格网格，在两个端点颜色之间进行线性颜色插值。
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxHeatmap :cells="cells" :cell-size="20" color-low="#dbeafe" color-high="#1e3a8a" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxHeatmap } from '@chronixjs/ui-vue3';
-
-const cells = ref([
-  [1, 3, 5, 7],
-  [2, 4, 6, 8],
-  [0, 1, 9, 10],
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxHeatmap :cells="cells" :cell-size="20" color-low="#dbeafe" color-high="#1e3a8a" />
-</template>
-
-<script>
-import { CxHeatmap } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxHeatmap },
-  data() {
-    return {
-      cells: [
-        [1, 3, 5, 7],
-        [2, 4, 6, 8],
-        [0, 1, 9, 10],
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxHeatmap } from '@chronixjs/ui-react';
-
-export function App() {
-  const [cells] = useState([
-    [1, 3, 5, 7],
-    [2, 4, 6, 8],
-    [0, 1, 9, 10],
-  ]);
-
-  return <CxHeatmap cells={cells} cellSize={20} colorLow="#dbeafe" colorHigh="#1e3a8a" />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="7x5 网格的热力图，展示数值分布。" :code="heatmapBasicCode" :code-vue2="heatmapBasicVue2" :code-react="heatmapBasicReact">
+  <HeatmapBasic />
+</DemoBox>
 
 ## API 参考
 

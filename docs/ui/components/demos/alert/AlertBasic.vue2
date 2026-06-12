@@ -1,0 +1,8 @@
+<template>
+  <CxAlert>Here is an info message.</CxAlert>
+</template>
+
+<script>
+import { CxAlert } from '@chronixjs/ui-vue2';
+export default { components: { CxAlert } };
+</script>

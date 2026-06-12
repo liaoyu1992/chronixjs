@@ -1,0 +1,12 @@
+import { useState } from 'react';
+import { CxRadioGroup } from '@chronixjs/ui-react';
+
+const options = [
+  { key: 'a', label: 'Option A', value: 'a', disabled: false },
+  { key: 'b', label: 'Option B', value: 'b', disabled: false },
+];
+
+export function App() {
+  const [val, setVal] = useState('');
+  return <CxRadioGroup value={val} onUpdateValue={setVal} options={options} error="Please select an option" />;
+}

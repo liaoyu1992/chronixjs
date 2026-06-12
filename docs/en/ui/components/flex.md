@@ -1,3 +1,18 @@
+<script setup>
+import FlexBasic from '../../../ui/components/demos/flex/FlexBasic.vue';
+import flexBasicCode from '../../../ui/components/demos/flex/FlexBasic.vue?raw';
+import flexBasicVue2 from '../../../ui/components/demos/flex/FlexBasic.vue2?raw';
+import flexBasicReact from '../../../ui/components/demos/flex/FlexBasic.react?raw';
+import FlexVertical from '../../../ui/components/demos/flex/FlexVertical.vue';
+import flexVerticalCode from '../../../ui/components/demos/flex/FlexVertical.vue?raw';
+import flexVerticalVue2 from '../../../ui/components/demos/flex/FlexVertical.vue2?raw';
+import flexVerticalReact from '../../../ui/components/demos/flex/FlexVertical.react?raw';
+import FlexGap from '../../../ui/components/demos/flex/FlexGap.vue';
+import flexGapCode from '../../../ui/components/demos/flex/FlexGap.vue?raw';
+import flexGapVue2 from '../../../ui/components/demos/flex/FlexGap.vue2?raw';
+import flexGapReact from '../../../ui/components/demos/flex/FlexGap.react?raw';
+</script>
+
 # Flex
 
 Flexbox layout container with idiomatic CSS-aligned prop names.
@@ -6,111 +21,31 @@ Flexbox layout container with idiomatic CSS-aligned prop names.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
+<DemoBox title="Basic Usage" description="Horizontal layout with 3 buttons using Flex." :code="flexBasicCode" :code-vue2="flexBasicVue2" :code-react="flexBasicReact">
+  <FlexBasic />
+</DemoBox>
 
-```vue [Vue 3]
-<template>
-  <CxFlex gap="medium" align="center">
-    <div>Item 1</div>
-    <div>Item 2</div>
-    <div>Item 3</div>
-  </CxFlex>
-</template>
+## Column Direction
 
-<script setup lang="ts">
-import { CxFlex } from '@chronixjs/ui-vue3';
-</script>
-```
+<DemoBox title="Column Direction" description="Use the direction prop to set column layout." :code="flexVerticalCode" :code-vue2="flexVerticalVue2" :code-react="flexVerticalReact">
+  <FlexVertical />
+</DemoBox>
 
-```vue [Vue 2]
-<template>
-  <CxFlex gap="medium" align="center">
-    <div>Item 1</div>
-    <div>Item 2</div>
-    <div>Item 3</div>
-  </CxFlex>
-</template>
+## Custom Gap
 
-<script>
-import { CxFlex } from '@chronixjs/ui-vue2';
-export default { components: { CxFlex } };
-</script>
-```
-
-```tsx [React]
-import { CxFlex } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxFlex gap="medium" align="center">
-      <div>Item 1</div>
-      <div>Item 2</div>
-      <div>Item 3</div>
-    </CxFlex>
-  );
-}
-```
-
-:::
-
-## Column Direction with Wrap
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxFlex direction="column" :gap="12" justify="start" wrap="wrap">
-    <div>Row 1</div>
-    <div>Row 2</div>
-    <div>Row 3</div>
-  </CxFlex>
-</template>
-
-<script setup lang="ts">
-import { CxFlex } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxFlex direction="column" :gap="12" justify="start" wrap="wrap">
-    <div>Row 1</div>
-    <div>Row 2</div>
-    <div>Row 3</div>
-  </CxFlex>
-</template>
-
-<script>
-import { CxFlex } from '@chronixjs/ui-vue2';
-export default { components: { CxFlex } };
-</script>
-```
-
-```tsx [React]
-import { CxFlex } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxFlex direction="column" gap={12} justify="start" wrap="wrap">
-      <div>Row 1</div>
-      <div>Row 2</div>
-      <div>Row 3</div>
-    </CxFlex>
-  );
-}
-```
-
-:::
+<DemoBox title="Custom Gap" description="Set a numeric gap value in pixels." :code="flexGapCode" :code-vue2="flexGapVue2" :code-react="flexGapReact">
+  <FlexGap />
+</DemoBox>
 
 ## API Reference
 

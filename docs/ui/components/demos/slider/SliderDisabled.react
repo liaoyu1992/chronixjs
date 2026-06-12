@@ -1,0 +1,5 @@
+import { CxSlider } from '@chronixjs/ui-react';
+
+export function App() {
+  return <CxSlider value={30} disabled min={0} max={100} />;
+}

@@ -1,3 +1,10 @@
+<script setup>
+import FormBasic from '../../../ui/components/demos/form/FormBasic.vue';
+import formBasicCode from '../../../ui/components/demos/form/FormBasic.vue?raw';
+import formBasicVue2 from '../../../ui/components/demos/form/FormBasic.vue2?raw';
+import formBasicReact from '../../../ui/components/demos/form/FormBasic.react?raw';
+</script>
+
 # Form
 
 Form layout with validation support, label positioning, and field-level rules.
@@ -16,137 +23,9 @@ Form layout with validation support, label positioning, and field-level rules.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixForm :model="form" :rules="rules" ref="formRef">
-    <ChronixFormItem label="Username" path="username">
-      <CxInput v-model:value="form.username" />
-    </ChronixFormItem>
-    <ChronixFormItem label="Password" path="password">
-      <CxInput v-model:value="form.password" type="password" />
-    </ChronixFormItem>
-    <ChronixFormItem>
-      <CxButton type="primary" @click="handleSubmit">Submit</CxButton>
-    </ChronixFormItem>
-  </ChronixForm>
-</template>
-
-<script setup lang="ts">
-import { ref, reactive } from 'vue';
-import { ChronixForm, ChronixFormItem, CxInput, CxButton } from '@chronixjs/ui-vue3';
-
-const formRef = ref();
-const form = reactive({ username: '', password: '' });
-const rules = {
-  username: { required: true, message: 'Username is required', trigger: 'blur' },
-  password: { required: true, message: 'Password is required', trigger: 'blur' },
-};
-
-async function handleSubmit() {
-  try {
-    await formRef.value?.validate();
-    console.log('Form valid!');
-  } catch (e) {
-    console.log('Validation failed');
-  }
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <ChronixForm :model="form" :rules="rules" ref="formRef">
-    <ChronixFormItem label="Username" path="username">
-      <CxInput v-model:value="form.username" />
-    </ChronixFormItem>
-    <ChronixFormItem label="Password" path="password">
-      <CxInput v-model:value="form.password" type="password" />
-    </ChronixFormItem>
-    <ChronixFormItem>
-      <CxButton type="primary" @click="handleSubmit">Submit</CxButton>
-    </ChronixFormItem>
-  </ChronixForm>
-</template>
-
-<script>
-import { ChronixForm, ChronixFormItem, CxInput, CxButton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { ChronixForm, ChronixFormItem, CxInput, CxButton },
-  data() {
-    return {
-      form: { username: '', password: '' },
-      rules: {
-        username: { required: true, message: 'Username is required', trigger: 'blur' },
-        password: { required: true, message: 'Password is required', trigger: 'blur' },
-      },
-    };
-  },
-  methods: {
-    async handleSubmit() {
-      try {
-        await this.$refs.formRef.validate();
-        console.log('Form valid!');
-      } catch (e) {
-        console.log('Validation failed');
-      }
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState, useRef } from 'react';
-import { ChronixForm, ChronixFormItem, CxInput, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  const formRef = useRef<{ validate: () => Promise<void>; restoreValidation: () => void }>(null);
-  const [form, setForm] = useState({ username: '', password: '' });
-
-  const rules = {
-    username: { required: true, message: 'Username is required', trigger: 'blur' },
-    password: { required: true, message: 'Password is required', trigger: 'blur' },
-  };
-
-  function updateField(field: string, value: string) {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  }
-
-  async function handleSubmit() {
-    try {
-      await formRef.current?.validate();
-      console.log('Form valid!');
-    } catch (e) {
-      console.log('Validation failed');
-    }
-  }
-
-  return (
-    <ChronixForm model={form} rules={rules} ref={formRef}>
-      <ChronixFormItem label="Username" path="username">
-        <CxInput value={form.username} onUpdateValue={(v: string) => updateField('username', v)} />
-      </ChronixFormItem>
-      <ChronixFormItem label="Password" path="password">
-        <CxInput
-          value={form.password}
-          onUpdateValue={(v: string) => updateField('password', v)}
-          type="password"
-        />
-      </ChronixFormItem>
-      <ChronixFormItem>
-        <CxButton type="primary" onClick={handleSubmit}>
-          Submit
-        </CxButton>
-      </ChronixFormItem>
-    </ChronixForm>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="A simple form with two fields (name and email)." :code="formBasicCode" :code-vue2="formBasicVue2" :code-react="formBasicReact">
+  <FormBasic />
+</DemoBox>
 
 ## Label Placement
 

@@ -1,3 +1,10 @@
+<script setup>
+import FloatButtonBasic from '../../../ui/components/demos/float-button/FloatButtonBasic.vue';
+import floatButtonBasicCode from '../../../ui/components/demos/float-button/FloatButtonBasic.vue?raw';
+import floatButtonBasicVue2 from '../../../ui/components/demos/float-button/FloatButtonBasic.vue2?raw';
+import floatButtonBasicReact from '../../../ui/components/demos/float-button/FloatButtonBasic.react?raw';
+</script>
+
 # Float Button
 
 Floating action button anchored to a viewport corner with optional tooltip.
@@ -16,38 +23,9 @@ Floating action button anchored to a viewport corner with optional tooltip.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxFloatButton icon="plus" tooltip="Add new" />
-</template>
-
-<script setup lang="ts">
-import { CxFloatButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxFloatButton icon="plus" tooltip="Add new" />
-</template>
-
-<script>
-import { CxFloatButton } from '@chronixjs/ui-vue2';
-export default { components: { CxFloatButton } };
-</script>
-```
-
-```tsx [React]
-import { CxFloatButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxFloatButton icon="plus" tooltip="Add new" />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="A circle primary floating button with icon and tooltip." :code="floatButtonBasicCode" :code-vue2="floatButtonBasicVue2" :code-react="floatButtonBasicReact">
+  <FloatButtonBasic />
+</DemoBox>
 
 ## Square Shape with Description
 

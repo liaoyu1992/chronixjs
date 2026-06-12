@@ -1,0 +1,24 @@
+<template>
+  <CxTreeSelect :data="treeData" :value.sync="selected" placeholder="Select..." />
+</template>
+
+<script>
+import { CxTreeSelect } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxTreeSelect },
+  data() {
+    return {
+      selected: undefined,
+      treeData: [
+        { key: 'node1', label: 'Node 1', children: [
+          { key: 'node1-1', label: 'Node 1-1' },
+          { key: 'node1-2', label: 'Node 1-2' },
+        ]},
+        { key: 'node2', label: 'Node 2', children: [
+          { key: 'node2-1', label: 'Node 2-1' },
+        ]},
+      ],
+    };
+  },
+};
+</script>

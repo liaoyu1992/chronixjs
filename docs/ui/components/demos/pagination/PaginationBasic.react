@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxPagination } from '@chronixjs/ui-react';
+
+export function App() {
+  const [page, setPage] = useState(1);
+  return <CxPagination page={page} pageCount={10} onUpdatePage={setPage} />;
+}

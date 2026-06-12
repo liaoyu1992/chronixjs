@@ -1,0 +1,20 @@
+<template>
+  <CxAvatarGroup :items="items" :max="3" :size="32" />
+</template>
+
+<script>
+import { CxAvatarGroup } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxAvatarGroup },
+  data() {
+    return {
+      items: [
+        { key: 'a', src: 'https://i.pravatar.cc/32?img=1', text: undefined },
+        { key: 'b', src: 'https://i.pravatar.cc/32?img=2', text: undefined },
+        { key: 'c', src: undefined, text: 'JD' },
+        { key: 'd', src: 'https://i.pravatar.cc/32?img=4', text: undefined },
+      ],
+    };
+  },
+};
+</script>

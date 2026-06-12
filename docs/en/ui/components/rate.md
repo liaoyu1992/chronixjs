@@ -1,3 +1,22 @@
+<script setup>
+import RateBasic from '../../../ui/components/demos/rate/RateBasic.vue';
+import rateBasicCode from '../../../ui/components/demos/rate/RateBasic.vue?raw';
+import rateBasicVue2 from '../../../ui/components/demos/rate/RateBasic.vue2?raw';
+import rateBasicReact from '../../../ui/components/demos/rate/RateBasic.react?raw';
+import RateHalf from '../../../ui/components/demos/rate/RateHalf.vue';
+import rateHalfCode from '../../../ui/components/demos/rate/RateHalf.vue?raw';
+import rateHalfVue2 from '../../../ui/components/demos/rate/RateHalf.vue2?raw';
+import rateHalfReact from '../../../ui/components/demos/rate/RateHalf.react?raw';
+import RateReadonly from '../../../ui/components/demos/rate/RateReadonly.vue';
+import rateReadonlyCode from '../../../ui/components/demos/rate/RateReadonly.vue?raw';
+import rateReadonlyVue2 from '../../../ui/components/demos/rate/RateReadonly.vue2?raw';
+import rateReadonlyReact from '../../../ui/components/demos/rate/RateReadonly.react?raw';
+import RateCustomCount from '../../../ui/components/demos/rate/RateCustomCount.vue';
+import rateCustomCountCode from '../../../ui/components/demos/rate/RateCustomCount.vue?raw';
+import rateCustomCountVue2 from '../../../ui/components/demos/rate/RateCustomCount.vue2?raw';
+import rateCustomCountReact from '../../../ui/components/demos/rate/RateCustomCount.react?raw';
+</script>
+
 # Rate
 
 Star rating input with optional half-star precision.
@@ -6,191 +25,37 @@ Star rating input with optional half-star precision.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxRate v-model:value="rating" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxRate } from '@chronixjs/ui-vue3';
-
-const rating = ref(3);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRate :value.sync="rating" />
-</template>
-
-<script>
-import { CxRate } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRate },
-  data() {
-    return { rating: 3 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxRate } from '@chronixjs/ui-react';
-
-export function App() {
-  const [rating, setRating] = useState(3);
-  return <CxRate value={rating} onUpdateValue={setRating} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Basic star rating usage." :code="rateBasicCode" :code-vue2="rateBasicVue2" :code-react="rateBasicReact">
+  <RateBasic />
+</DemoBox>
 
 ## Half Star
 
-Enable half-star precision with the `allow-half` prop. Users can select values like 3.5.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxRate v-model:value="rating" allow-half />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxRate } from '@chronixjs/ui-vue3';
-
-const rating = ref(3.5);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRate :value.sync="rating" allow-half />
-</template>
-
-<script>
-import { CxRate } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRate },
-  data() {
-    return { rating: 3.5 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxRate } from '@chronixjs/ui-react';
-
-export function App() {
-  const [rating, setRating] = useState(3.5);
-  return <CxRate value={rating} onUpdateValue={setRating} allowHalf />;
-}
-```
-
-:::
-
-## Custom Count
-
-Use the `count` prop to display more (or fewer) stars. Default is 5.
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxRate v-model:value="rating" :count="10" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxRate } from '@chronixjs/ui-vue3';
-
-const rating = ref(7);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRate :value.sync="rating" :count="10" />
-</template>
-
-<script>
-import { CxRate } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRate },
-  data() {
-    return { rating: 7 };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxRate } from '@chronixjs/ui-react';
-
-export function App() {
-  const [rating, setRating] = useState(7);
-  return <CxRate value={rating} onUpdateValue={setRating} count={10} />;
-}
-```
-
-:::
+<DemoBox title="Half Star" description="Enable half-star precision with the allow-half prop." :code="rateHalfCode" :code-vue2="rateHalfVue2" :code-react="rateHalfReact">
+  <RateHalf />
+</DemoBox>
 
 ## Read Only
 
-Use the `readonly` prop for display-only ratings (e.g. showing an average score).
+<DemoBox title="Read Only" description="Use the readonly prop for display-only ratings." :code="rateReadonlyCode" :code-vue2="rateReadonlyVue2" :code-react="rateReadonlyReact">
+  <RateReadonly />
+</DemoBox>
 
-::: code-group
+## Custom Count
 
-```vue [Vue 3]
-<template>
-  <CxRate :value="4.5" readonly allow-half />
-</template>
-
-<script setup lang="ts">
-import { CxRate } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxRate :value="4.5" readonly allow-half />
-</template>
-
-<script>
-import { CxRate } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxRate },
-};
-</script>
-```
-
-```tsx [React]
-import { CxRate } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxRate value={4.5} readonly allowHalf />;
-}
-```
-
-:::
+<DemoBox title="Custom Count" description="Use the count prop to display more stars." :code="rateCustomCountCode" :code-vue2="rateCustomCountVue2" :code-react="rateCustomCountReact">
+  <RateCustomCount />
+</DemoBox>
 
 ## API Reference
 

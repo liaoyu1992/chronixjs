@@ -1,0 +1,13 @@
+<template>
+  <CxInputOtp :value.sync="otp" :length="6" />
+</template>
+
+<script>
+import { CxInputOtp } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxInputOtp },
+  data() {
+    return { otp: '' };
+  },
+};
+</script>

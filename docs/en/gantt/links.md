@@ -1,3 +1,10 @@
+<script setup>
+import GanttLinksBasic from '../../gantt/demos/GanttLinksBasic.vue';
+import ganttLinksBasicCode from '../../gantt/demos/GanttLinksBasic.vue?raw';
+import ganttLinksBasicVue2 from '../../gantt/demos/GanttLinksBasic.vue2?raw';
+import ganttLinksBasicReact from '../../gantt/demos/GanttLinksBasic.react?raw';
+</script>
+
 # Links & Dependencies
 
 Dependency links connect bars to visualize task relationships. Links render as SVG paths with configurable routing and arrow markers.
@@ -31,133 +38,9 @@ const links: LinkSpec[] = [
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :links="links" />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { BarSpec, RowSpec, LinkSpec, AxisRangePlanInput } from '@chronixjs/gantt';
-
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-12') },
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-2',
-    rowId: 'row-2',
-    range: { start: new Date('2026-01-12'), end: new Date('2026-01-20') },
-    dprIntent: 'crisp-pixel',
-  },
-];
-
-const rows: RowSpec[] = [
-  { id: 'row-1', columns: { name: 'Design' } },
-  { id: 'row-2', columns: { name: 'Develop' } },
-];
-
-// Finish-to-Start: bar-2 starts after bar-1 finishes
-const links: LinkSpec[] = [
-  {
-    id: 'link-1',
-    fromBarId: 'bar-1',
-    toBarId: 'bar-2',
-    routing: 'square',
-    marker: 'arrow',
-  },
-];
-
-const axisInput: AxisRangePlanInput = {
-  viewId: 'week',
-  anchorDate: new Date('2026-01-05'),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-};
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :links="links" />
-</template>
-
-<script>
-import { ChronixGantt } from '@chronixjs/gantt-vue2';
-
-export default {
-  components: { ChronixGantt },
-  data() {
-    return {
-      bars: [
-        {
-          id: 'bar-1',
-          rowId: 'row-1',
-          range: { start: new Date('2026-01-05'), end: new Date('2026-01-12') },
-          dprIntent: 'crisp-pixel',
-        },
-        {
-          id: 'bar-2',
-          rowId: 'row-2',
-          range: { start: new Date('2026-01-12'), end: new Date('2026-01-20') },
-          dprIntent: 'crisp-pixel',
-        },
-      ],
-      rows: [
-        { id: 'row-1', columns: { name: 'Design' } },
-        { id: 'row-2', columns: { name: 'Develop' } },
-      ],
-      links: [
-        { id: 'link-1', fromBarId: 'bar-1', toBarId: 'bar-2', routing: 'square', marker: 'arrow' },
-      ],
-      axisInput: {
-        viewId: 'week',
-        anchorDate: new Date('2026-01-05'),
-        viewportWidth: 900,
-        locale: 'en',
-        weekendsVisible: true,
-      },
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { BarSpec, RowSpec, LinkSpec, AxisRangePlanInput } from '@chronixjs/gantt';
-
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-12') },
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-2',
-    rowId: 'row-2',
-    range: { start: new Date('2026-01-12'), end: new Date('2026-01-20') },
-    dprIntent: 'crisp-pixel',
-  },
-];
-
-const links: LinkSpec[] = [
-  { id: 'link-1', fromBarId: 'bar-1', toBarId: 'bar-2', routing: 'square', marker: 'arrow' },
-];
-
-export function App() {
-  return <ChronixGantt bars={bars} rows={rows} axisInput={axisInput} links={links} />;
-}
-```
-
-:::
+<DemoBox title="Dependency Links" description="Square and smooth routing with arrow markers and custom color override." :code="ganttLinksBasicCode" :code-vue2="ganttLinksBasicVue2" :code-react="ganttLinksBasicReact">
+  <GanttLinksBasic />
+</DemoBox>
 
 ## Routing Styles
 
@@ -236,91 +119,6 @@ const links: LinkSpec[] = [
   },
 ];
 ```
-
-## Link Render Callback
-
-Dynamically customize link appearance with `onLineCallback`:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt
-    :bars="bars"
-    :rows="rows"
-    :axis-input="axisInput"
-    :links="links"
-    :on-line-callback="customLinkRender"
-  />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { LinkRenderFunc } from '@chronixjs/gantt';
-
-const customLinkRender: LinkRenderFunc = (arg) => {
-  // Color critical path links red
-  if (arg.fromBar.id === 'bar-1') {
-    return { color: '#ef4444' };
-  }
-  return undefined; // use default styling
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { LinkRenderFunc } from '@chronixjs/gantt';
-
-const customLinkRender: LinkRenderFunc = (arg) => {
-  if (arg.fromBar.id === 'bar-1') {
-    return { color: '#ef4444' };
-  }
-  return undefined;
-};
-
-export function App() {
-  return (
-    <ChronixGantt
-      bars={bars}
-      rows={rows}
-      axisInput={axisInput}
-      links={links}
-      onLineCallback={customLinkRender}
-    />
-  );
-}
-```
-
-:::
-
-## Orphan Handling
-
-When a link references a bar that doesn't exist, the `link-orphan` event fires:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt
-    :bars="bars"
-    :rows="rows"
-    :axis-input="axisInput"
-    :links="links"
-    @link-orphan="onOrphan"
-  />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-
-function onOrphan(linkId: string) {
-  console.warn(`Link ${linkId} references a missing bar`);
-}
-</script>
-```
-
-:::
 
 ## API Reference
 

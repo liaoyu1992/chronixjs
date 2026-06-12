@@ -1,0 +1,8 @@
+<template>
+  <CxResult status="success" title="Success" description="Operation completed" />
+</template>
+
+<script>
+import { CxResult } from '@chronixjs/ui-vue2';
+export default { components: { CxResult } };
+</script>

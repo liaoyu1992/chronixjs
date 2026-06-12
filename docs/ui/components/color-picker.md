@@ -1,3 +1,10 @@
+<script setup>
+import ColorPickerBasic from './demos/color-picker/ColorPickerBasic.vue';
+import colorPickerBasicCode from './demos/color-picker/ColorPickerBasic.vue?raw';
+import colorPickerBasicVue2 from './demos/color-picker/ColorPickerBasic.vue2?raw';
+import colorPickerBasicReact from './demos/color-picker/ColorPickerBasic.react?raw';
+</script>
+
 # Color Picker 颜色选择器
 
 带有十六进制输入、色相条和可选色板的颜色选择器。
@@ -16,49 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxColorPicker v-model:value="color" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxColorPicker } from '@chronixjs/ui-vue3';
-
-const color = ref<string | null>('#3b82f6');
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxColorPicker :value.sync="color" />
-</template>
-
-<script>
-import { CxColorPicker } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxColorPicker },
-  data() {
-    return { color: '#3b82f6' };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxColorPicker } from '@chronixjs/ui-react';
-
-export function App() {
-  const [color, setColor] = useState<string | null>('#3b82f6');
-
-  return <CxColorPicker value={color} onUpdateValue={setColor} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="颜色选择器的基础用法。" :code="colorPickerBasicCode" :code-vue2="colorPickerBasicVue2" :code-react="colorPickerBasicReact">
+  <ColorPickerBasic />
+</DemoBox>
 
 ## 带色板
 

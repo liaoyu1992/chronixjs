@@ -1,3 +1,10 @@
+<script setup>
+import DescriptionsBasic from '../../../ui/components/demos/descriptions/DescriptionsBasic.vue';
+import descriptionsBasicCode from '../../../ui/components/demos/descriptions/DescriptionsBasic.vue?raw';
+import descriptionsBasicVue2 from '../../../ui/components/demos/descriptions/DescriptionsBasic.vue2?raw';
+import descriptionsBasicReact from '../../../ui/components/demos/descriptions/DescriptionsBasic.react?raw';
+</script>
+
 # Descriptions
 
 Multi-column key-value display for presenting structured data in a grid layout.
@@ -16,63 +23,9 @@ Multi-column key-value display for presenting structured data in a grid layout.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxDescriptions :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxDescriptions } from '@chronixjs/ui-vue3';
-
-const items = ref([
-  { key: 'name', label: 'Name', value: 'Chronix UI', span: 1 },
-  { key: 'version', label: 'Version', value: '0.1.0', span: 1 },
-  { key: 'license', label: 'License', value: 'MIT', span: 1 },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxDescriptions :items="items" />
-</template>
-
-<script>
-import { CxDescriptions } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxDescriptions },
-  data() {
-    return {
-      items: [
-        { key: 'name', label: 'Name', value: 'Chronix UI', span: 1 },
-        { key: 'version', label: 'Version', value: '0.1.0', span: 1 },
-        { key: 'license', label: 'License', value: 'MIT', span: 1 },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxDescriptions } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items] = useState([
-    { key: 'name', label: 'Name', value: 'Chronix UI', span: 1 },
-    { key: 'version', label: 'Version', value: '0.1.0', span: 1 },
-    { key: 'license', label: 'License', value: 'MIT', span: 1 },
-  ]);
-
-  return <CxDescriptions items={items} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Pass key-value data via items and set columns to 1." :code="descriptionsBasicCode" :code-vue2="descriptionsBasicVue2" :code-react="descriptionsBasicReact">
+  <DescriptionsBasic />
+</DemoBox>
 
 ## Bordered
 

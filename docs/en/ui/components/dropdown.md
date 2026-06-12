@@ -1,3 +1,10 @@
+<script setup>
+import DropdownBasic from '../../../ui/components/demos/dropdown/DropdownBasic.vue';
+import dropdownBasicCode from '../../../ui/components/demos/dropdown/DropdownBasic.vue?raw';
+import dropdownBasicVue2 from '../../../ui/components/demos/dropdown/DropdownBasic.vue2?raw';
+import dropdownBasicReact from '../../../ui/components/demos/dropdown/DropdownBasic.react?raw';
+</script>
+
 # Dropdown
 
 A popup menu triggered by hover, click, or focus with keyboard navigation.
@@ -16,85 +23,9 @@ A popup menu triggered by hover, click, or focus with keyboard navigation.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxDropdown :options="options" @select="onSelect">
-    <CxButton>Dropdown</CxButton>
-  </CxDropdown>
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxDropdown, CxButton } from '@chronixjs/ui-vue3';
-
-const options = ref([
-  { key: '1', label: 'Option 1', value: 'opt1' },
-  { key: '2', label: 'Option 2', value: 'opt2' },
-  { key: '3', label: 'Option 3', value: 'opt3' },
-]);
-
-function onSelect(option: { key: string; label: string; value: string }) {
-  console.log('Selected:', option);
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxDropdown :options="options" @select="onSelect">
-    <CxButton>Dropdown</CxButton>
-  </CxDropdown>
-</template>
-
-<script>
-import { CxDropdown, CxButton } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxDropdown, CxButton },
-  data() {
-    return {
-      options: [
-        { key: '1', label: 'Option 1', value: 'opt1' },
-        { key: '2', label: 'Option 2', value: 'opt2' },
-        { key: '3', label: 'Option 3', value: 'opt3' },
-      ],
-    };
-  },
-  methods: {
-    onSelect(option) {
-      console.log('Selected:', option);
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxDropdown, CxButton } from '@chronixjs/ui-react';
-
-export function App() {
-  const [options] = useState([
-    { key: '1', label: 'Option 1', value: 'opt1' },
-    { key: '2', label: 'Option 2', value: 'opt2' },
-    { key: '3', label: 'Option 3', value: 'opt3' },
-  ]);
-
-  function onSelect(option: { key: string; label: string; value: string }) {
-    console.log('Selected:', option);
-  }
-
-  return (
-    <CxDropdown options={options} onSelect={onSelect}>
-      <CxButton>Dropdown</CxButton>
-    </CxDropdown>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Click-triggered dropdown with 3 options." :code="dropdownBasicCode" :code-vue2="dropdownBasicVue2" :code-react="dropdownBasicReact">
+  <DropdownBasic />
+</DemoBox>
 
 ## Trigger Modes
 

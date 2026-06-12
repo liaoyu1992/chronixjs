@@ -1,0 +1,9 @@
+import { CxElement } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxElement tag="section">
+      <p>Content inside a themed section element.</p>
+    </CxElement>
+  );
+}

@@ -1,0 +1,13 @@
+import { useState } from 'react';
+import { CxTabs } from '@chronixjs/ui-react';
+
+const items = [
+  { key: 'tab1', label: 'Tab 1', content: 'Content of Tab 1' },
+  { key: 'tab2', label: 'Tab 2', content: 'Content of Tab 2' },
+  { key: 'tab3', label: 'Tab 3', content: 'Content of Tab 3' },
+];
+
+export function App() {
+  const [activeTab, setActiveTab] = useState('tab1');
+  return <CxTabs value={activeTab} onUpdateValue={setActiveTab} items={items} />;
+}

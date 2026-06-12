@@ -1,3 +1,10 @@
+<script setup>
+import FloatButtonBasic from './demos/float-button/FloatButtonBasic.vue';
+import floatButtonBasicCode from './demos/float-button/FloatButtonBasic.vue?raw';
+import floatButtonBasicVue2 from './demos/float-button/FloatButtonBasic.vue2?raw';
+import floatButtonBasicReact from './demos/float-button/FloatButtonBasic.react?raw';
+</script>
+
 # Float Button 浮动按钮
 
 固定在视口角落的浮动操作按钮，支持可选提示信息。
@@ -16,38 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxFloatButton icon="plus" tooltip="Add new" />
-</template>
-
-<script setup lang="ts">
-import { CxFloatButton } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxFloatButton icon="plus" tooltip="Add new" />
-</template>
-
-<script>
-import { CxFloatButton } from '@chronixjs/ui-vue2';
-export default { components: { CxFloatButton } };
-</script>
-```
-
-```tsx [React]
-import { CxFloatButton } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxFloatButton icon="plus" tooltip="Add new" />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="圆形主要浮动按钮，带有图标和提示信息。" :code="floatButtonBasicCode" :code-vue2="floatButtonBasicVue2" :code-react="floatButtonBasicReact">
+  <FloatButtonBasic />
+</DemoBox>
 
 ## 方形带描述
 

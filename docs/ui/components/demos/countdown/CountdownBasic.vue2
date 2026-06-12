@@ -1,0 +1,8 @@
+<template>
+  <CxCountdown label="Time Remaining" :duration="60000" :active="true" />
+</template>
+
+<script>
+import { CxCountdown } from '@chronixjs/ui-vue2';
+export default { components: { CxCountdown } };
+</script>

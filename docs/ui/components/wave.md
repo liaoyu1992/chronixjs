@@ -1,3 +1,10 @@
+<script setup>
+import WaveBasic from './demos/wave/WaveBasic.vue';
+import waveBasicCode from './demos/wave/WaveBasic.vue?raw';
+import waveBasicVue2 from './demos/wave/WaveBasic.vue2?raw';
+import waveBasicReact from './demos/wave/WaveBasic.react?raw';
+</script>
+
 # Wave 波浪
 
 CSS 涟漪包裹器 -- pointerdown 事件在包裹的元素上触发短暂的关键帧动画。
@@ -16,46 +23,9 @@ CSS 涟漪包裹器 -- pointerdown 事件在包裹的元素上触发短暂的关
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxWave>
-    <button>Click me for a ripple</button>
-  </CxWave>
-</template>
-
-<script setup lang="ts">
-import { CxWave } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxWave>
-    <button>Click me for a ripple</button>
-  </CxWave>
-</template>
-
-<script>
-import { CxWave } from '@chronixjs/ui-vue2';
-export default { components: { CxWave } };
-</script>
-```
-
-```tsx [React]
-import { CxWave } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxWave>
-      <button>Click me for a ripple</button>
-    </CxWave>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="Wave 包裹一个元素，点击时显示涟漪动画效果。" :code="waveBasicCode" :code-vue2="waveBasicVue2" :code-react="waveBasicReact">
+  <WaveBasic />
+</DemoBox>
 
 ## 自定义颜色
 

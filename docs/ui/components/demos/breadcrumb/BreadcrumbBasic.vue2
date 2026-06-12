@@ -1,0 +1,19 @@
+<template>
+  <CxBreadcrumb :items="items" />
+</template>
+
+<script>
+import { CxBreadcrumb } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxBreadcrumb },
+  data() {
+    return {
+      items: [
+        { key: 'home', label: 'Home', href: '/' },
+        { key: 'products', label: 'Products', href: '/products' },
+        { key: 'detail', label: 'Detail' },
+      ],
+    };
+  },
+};
+</script>

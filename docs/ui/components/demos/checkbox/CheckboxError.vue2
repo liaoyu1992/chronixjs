@@ -1,0 +1,11 @@
+<template>
+  <CxCheckbox v-model:checked="agreed" error="You must agree to continue" label="Terms" />
+</template>
+
+<script>
+import { CxCheckbox } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxCheckbox },
+  data() { return { agreed: false }; },
+};
+</script>

@@ -1,3 +1,10 @@
+<script setup>
+import BreadcrumbBasic from '../../../ui/components/demos/breadcrumb/BreadcrumbBasic.vue';
+import breadcrumbBasicCode from '../../../ui/components/demos/breadcrumb/BreadcrumbBasic.vue?raw';
+import breadcrumbBasicVue2 from '../../../ui/components/demos/breadcrumb/BreadcrumbBasic.vue2?raw';
+import breadcrumbBasicReact from '../../../ui/components/demos/breadcrumb/BreadcrumbBasic.react?raw';
+</script>
+
 # Breadcrumb
 
 Hierarchical path navigation showing the user's current location within a page hierarchy.
@@ -16,63 +23,9 @@ Hierarchical path navigation showing the user's current location within a page h
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxBreadcrumb :items="items" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxBreadcrumb } from '@chronixjs/ui-vue3';
-
-const items = ref([
-  { key: 'home', label: 'Home', href: '/', clickable: false },
-  { key: 'products', label: 'Products', href: '/products', clickable: true },
-  { key: 'detail', label: 'Detail', href: undefined, clickable: false },
-]);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxBreadcrumb :items="items" />
-</template>
-
-<script>
-import { CxBreadcrumb } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxBreadcrumb },
-  data() {
-    return {
-      items: [
-        { key: 'home', label: 'Home', href: '/', clickable: false },
-        { key: 'products', label: 'Products', href: '/products', clickable: true },
-        { key: 'detail', label: 'Detail', href: undefined, clickable: false },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxBreadcrumb } from '@chronixjs/ui-react';
-
-export function App() {
-  const [items] = useState([
-    { key: 'home', label: 'Home', href: '/', clickable: false },
-    { key: 'products', label: 'Products', href: '/products', clickable: true },
-    { key: 'detail', label: 'Detail', href: undefined, clickable: false },
-  ]);
-
-  return <CxBreadcrumb items={items} />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Use the items prop to set breadcrumb navigation items." :code="breadcrumbBasicCode" :code-vue2="breadcrumbBasicVue2" :code-react="breadcrumbBasicReact">
+  <BreadcrumbBasic />
+</DemoBox>
 
 ## Custom Separator
 

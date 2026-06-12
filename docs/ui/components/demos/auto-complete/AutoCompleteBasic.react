@@ -1,0 +1,22 @@
+import { useState } from 'react';
+import { CxAutoComplete } from '@chronixjs/ui-react';
+
+const options = [
+  { key: 'apple', label: 'Apple', value: 'apple' },
+  { key: 'banana', label: 'Banana', value: 'banana' },
+  { key: 'cherry', label: 'Cherry', value: 'cherry' },
+  { key: 'durian', label: 'Durian', value: 'durian' },
+];
+
+export function App() {
+  const [value, setValue] = useState('');
+
+  return (
+    <CxAutoComplete
+      value={value}
+      onUpdateValue={setValue}
+      options={options}
+      placeholder="Type to search..."
+    />
+  );
+}

@@ -1,3 +1,10 @@
+<script setup>
+import AffixBasic from './demos/affix/AffixBasic.vue';
+import affixBasicCode from './demos/affix/AffixBasic.vue?raw';
+import affixBasicVue2 from './demos/affix/AffixBasic.vue2?raw';
+import affixBasicReact from './demos/affix/AffixBasic.react?raw';
+</script>
+
 # Affix 固钉
 
 当子元素的自然滚动位置超过顶部或底部阈值时，将其固定在视口中。
@@ -16,46 +23,9 @@
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxAffix :top="0">
-    <div style="background: #fff; padding: 8px 16px;">Sticky Header</div>
-  </CxAffix>
-</template>
-
-<script setup lang="ts">
-import { CxAffix } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxAffix :top="0">
-    <div style="background: #fff; padding: 8px 16px;">Sticky Header</div>
-  </CxAffix>
-</template>
-
-<script>
-import { CxAffix } from '@chronixjs/ui-vue2';
-export default { components: { CxAffix } };
-</script>
-```
-
-```tsx [React]
-import { CxAffix } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxAffix top={0}>
-      <div style={{ background: '#fff', padding: '8px 16px' }}>Sticky Header</div>
-    </CxAffix>
-  );
-}
-```
-
-:::
+<DemoBox title="基础用法" description="使用 top 属性将元素固定在视口顶部。" :code="affixBasicCode" :code-vue2="affixBasicVue2" :code-react="affixBasicReact">
+  <AffixBasic />
+</DemoBox>
 
 ## 底部固定
 

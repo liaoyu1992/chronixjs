@@ -1,3 +1,10 @@
+<script setup>
+import TableBasic from '../../table/demos/TableBasic.vue';
+import tableBasicCode from '../../table/demos/TableBasic.vue?raw';
+import tableBasicVue2 from '../../table/demos/TableBasic.vue2?raw';
+import tableBasicReact from '../../table/demos/TableBasic.react?raw';
+</script>
+
 # Data Table
 
 A high-performance, framework-agnostic data table with virtual scrolling, tree data, inline editing, and CSV export.
@@ -33,79 +40,9 @@ pnpm add @chronixjs/table-react@alpha react@^18 react-dom@^18
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTable :columns="columns" :rows="rows" style="height: 400px;" />
-</template>
-
-<script setup lang="ts">
-import { CxTable } from '@chronixjs/table-vue3';
-
-const columns = [
-  { key: 'name', title: 'Name', width: 200, sortable: true },
-  { key: 'email', title: 'Email', width: 300 },
-  { key: 'role', title: 'Role', width: 150, sortable: true },
-];
-
-const rows = [
-  { name: 'Alice', email: 'alice@example.com', role: 'Engineer' },
-  { name: 'Bob', email: 'bob@example.com', role: 'Designer' },
-  { name: 'Carol', email: 'carol@example.com', role: 'Manager' },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTable :columns="columns" :rows="rows" style="height: 400px;" />
-</template>
-
-<script>
-import { CxTable } from '@chronixjs/table-vue2';
-
-export default {
-  components: { CxTable },
-  data() {
-    return {
-      columns: [
-        { key: 'name', title: 'Name', width: 200, sortable: true },
-        { key: 'email', title: 'Email', width: 300 },
-        { key: 'role', title: 'Role', width: 150, sortable: true },
-      ],
-      rows: [
-        { name: 'Alice', email: 'alice@example.com', role: 'Engineer' },
-        { name: 'Bob', email: 'bob@example.com', role: 'Designer' },
-        { name: 'Carol', email: 'carol@example.com', role: 'Manager' },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxTable } from '@chronixjs/table-react';
-
-const columns = [
-  { key: 'name', title: 'Name', width: 200, sortable: true },
-  { key: 'email', title: 'Email', width: 300 },
-  { key: 'role', title: 'Role', width: 150, sortable: true },
-];
-
-const rows = [
-  { name: 'Alice', email: 'alice@example.com', role: 'Engineer' },
-  { name: 'Bob', email: 'bob@example.com', role: 'Designer' },
-  { name: 'Carol', email: 'carol@example.com', role: 'Manager' },
-];
-
-export function App() {
-  return <CxTable columns={columns} rows={rows} style={{ height: 400 }} />;
-}
-```
-
-:::
+<DemoBox title="Basic Data Table" description="A simple table with sortable Name and Role columns." :code="tableBasicCode" :code-vue2="tableBasicVue2" :code-react="tableBasicReact">
+  <TableBasic />
+</DemoBox>
 
 ## Next Steps
 

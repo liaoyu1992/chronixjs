@@ -1,0 +1,11 @@
+<template>
+  <CxTimePicker :value.sync="time" placeholder="Pick a time" />
+</template>
+
+<script>
+import { CxTimePicker } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxTimePicker },
+  data() { return { time: undefined }; },
+};
+</script>

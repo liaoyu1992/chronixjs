@@ -1,0 +1,12 @@
+<template>
+  <div>
+    <CxDivider title-placement="left">Left</CxDivider>
+    <CxDivider title-placement="center">Center</CxDivider>
+    <CxDivider title-placement="right">Right</CxDivider>
+  </div>
+</template>
+
+<script>
+import { CxDivider } from '@chronixjs/ui-vue2';
+export default { components: { CxDivider } };
+</script>

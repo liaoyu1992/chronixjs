@@ -1,0 +1,19 @@
+<template>
+  <CxDescriptions :items="items" :columns="1" />
+</template>
+
+<script>
+import { CxDescriptions } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxDescriptions },
+  data() {
+    return {
+      items: [
+        { key: 'name', label: 'Name', value: 'Chronix UI' },
+        { key: 'version', label: 'Version', value: '0.1.0' },
+        { key: 'license', label: 'License', value: 'MIT' },
+      ],
+    };
+  },
+};
+</script>

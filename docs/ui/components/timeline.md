@@ -1,3 +1,10 @@
+<script setup>
+import TimelineBasic from './demos/timeline/TimelineBasic.vue';
+import timelineBasicCode from './demos/timeline/TimelineBasic.vue?raw';
+import timelineBasicVue2 from './demos/timeline/TimelineBasic.vue2?raw';
+import timelineBasicReact from './demos/timeline/TimelineBasic.react?raw';
+</script>
+
 # Timeline 时间线
 
 带有彩色指示器和连接线的按时间顺序展示事件。
@@ -6,126 +13,19 @@
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## 基础用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxTimeline :items="items" />
-</template>
-
-<script setup lang="ts">
-import { CxTimeline } from '@chronixjs/ui-vue3';
-
-const items = [
-  {
-    key: '1',
-    title: 'Event 1',
-    description: 'First event happened',
-    timestamp: '2024-01-01',
-    color: 'success',
-  },
-  {
-    key: '2',
-    title: 'Event 2',
-    description: 'Second event happened',
-    timestamp: '2024-01-15',
-    color: 'info',
-  },
-  {
-    key: '3',
-    title: 'Event 3',
-    description: 'Third event happened',
-    timestamp: '2024-02-01',
-    color: 'default',
-  },
-];
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxTimeline :items="items" />
-</template>
-
-<script>
-import { CxTimeline } from '@chronixjs/ui-vue2';
-
-export default {
-  components: { CxTimeline },
-  data() {
-    return {
-      items: [
-        {
-          key: '1',
-          title: 'Event 1',
-          description: 'First event happened',
-          timestamp: '2024-01-01',
-          color: 'success',
-        },
-        {
-          key: '2',
-          title: 'Event 2',
-          description: 'Second event happened',
-          timestamp: '2024-01-15',
-          color: 'info',
-        },
-        {
-          key: '3',
-          title: 'Event 3',
-          description: 'Third event happened',
-          timestamp: '2024-02-01',
-          color: 'default',
-        },
-      ],
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { CxTimeline } from '@chronixjs/ui-react';
-
-const items = [
-  {
-    key: '1',
-    title: 'Event 1',
-    description: 'First event happened',
-    timestamp: '2024-01-01',
-    color: 'success',
-  },
-  {
-    key: '2',
-    title: 'Event 2',
-    description: 'Second event happened',
-    timestamp: '2024-01-15',
-    color: 'info',
-  },
-  {
-    key: '3',
-    title: 'Event 3',
-    description: 'Third event happened',
-    timestamp: '2024-02-01',
-    color: 'default',
-  },
-];
-
-export function App() {
-  return <CxTimeline items={items} />;
-}
-```
-
-:::
+<DemoBox title="基础用法" description="通过 items 属性配置时间线条目，支持不同类型的状态指示。" :code="timelineBasicCode" :code-vue2="timelineBasicVue2" :code-react="timelineBasicReact">
+  <TimelineBasic />
+</DemoBox>
 
 ## 自定义颜色
 

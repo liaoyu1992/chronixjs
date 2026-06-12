@@ -1,0 +1,7 @@
+import { useState } from 'react';
+import { CxSlider } from '@chronixjs/ui-react';
+
+export function App() {
+  const [val, setVal] = useState(50);
+  return <CxSlider value={val} onUpdateValue={setVal} min={0} max={100} />;
+}

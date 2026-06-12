@@ -1,3 +1,10 @@
+<script setup>
+import NumberAnimationBasic from '../../../ui/components/demos/number-animation/NumberAnimationBasic.vue';
+import numberAnimationBasicCode from '../../../ui/components/demos/number-animation/NumberAnimationBasic.vue?raw';
+import numberAnimationBasicVue2 from '../../../ui/components/demos/number-animation/NumberAnimationBasic.vue2?raw';
+import numberAnimationBasicReact from '../../../ui/components/demos/number-animation/NumberAnimationBasic.react?raw';
+</script>
+
 # Number Animation
 
 Animated number display that tweens from one value to another over a configurable duration.
@@ -6,83 +13,19 @@ Animated number display that tweens from one value to another over a configurabl
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxNumberAnimation :from="0" :to="9999" :duration="2000" />
-</template>
-
-<script setup lang="ts">
-import { CxNumberAnimation } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxNumberAnimation :from="0" :to="9999" :duration="2000" />
-</template>
-
-<script>
-import { CxNumberAnimation } from '@chronixjs/ui-vue2';
-export default { components: { CxNumberAnimation } };
-</script>
-```
-
-```tsx [React]
-import { CxNumberAnimation } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxNumberAnimation from={0} to={9999} duration={2000} />;
-}
-```
-
-:::
-
-## With Precision and Separator
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxNumberAnimation :from="0" :to="1234567.89" :duration="3000" :precision="2" show-separator />
-</template>
-
-<script setup lang="ts">
-import { CxNumberAnimation } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxNumberAnimation :from="0" :to="1234567.89" :duration="3000" :precision="2" show-separator />
-</template>
-
-<script>
-import { CxNumberAnimation } from '@chronixjs/ui-vue2';
-export default { components: { CxNumberAnimation } };
-</script>
-```
-
-```tsx [React]
-import { CxNumberAnimation } from '@chronixjs/ui-react';
-
-export function App() {
-  return <CxNumberAnimation from={0} to={1234567.89} duration={3000} precision={2} showSeparator />;
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Animate from 0 to 10,000 over 2 seconds with thousands separator." :code="numberAnimationBasicCode" :code-vue2="numberAnimationBasicVue2" :code-react="numberAnimationBasicReact">
+  <NumberAnimationBasic />
+</DemoBox>
 
 ## API Reference
 

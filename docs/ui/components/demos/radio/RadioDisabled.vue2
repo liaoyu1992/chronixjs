@@ -1,0 +1,20 @@
+<template>
+  <CxRadioGroup v-model:value="val" :options="options" />
+</template>
+
+<script>
+import { CxRadioGroup } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxRadioGroup },
+  data() {
+    return {
+      val: 'a',
+      options: [
+        { key: 'a', label: 'Option A', value: 'a', disabled: false },
+        { key: 'b', label: 'Option B (disabled)', value: 'b', disabled: true },
+        { key: 'c', label: 'Option C', value: 'c', disabled: false },
+      ],
+    };
+  },
+};
+</script>

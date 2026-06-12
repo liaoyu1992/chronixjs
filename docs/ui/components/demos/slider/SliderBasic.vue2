@@ -1,0 +1,11 @@
+<template>
+  <CxSlider :value.sync="val" :min="0" :max="100" />
+</template>
+
+<script>
+import { CxSlider } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxSlider },
+  data() { return { val: 50 }; },
+};
+</script>

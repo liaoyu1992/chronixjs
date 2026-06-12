@@ -1,3 +1,10 @@
+<script setup>
+import GanttBarProgress from './demos/GanttBarProgress.vue';
+import ganttBarProgressCode from './demos/GanttBarProgress.vue?raw';
+import ganttBarProgressVue2 from './demos/GanttBarProgress.vue2?raw';
+import ganttBarProgressReact from './demos/GanttBarProgress.react?raw';
+</script>
+
 # 条形图
 
 条形图表示甘特图时间线中的任务。每个条形对应一个任务，在视觉上从其开始日期延伸到结束日期。条形图支持拖拽移动、调整大小和进度调整。
@@ -31,114 +38,9 @@ const bar: BarSpec = {
 
 ## 基本用法
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { BarSpec, RowSpec, AxisRangePlanInput } from '@chronixjs/gantt';
-
-const rows: RowSpec[] = [
-  { id: 'row-1', columns: { name: 'Task A' } },
-  { id: 'row-2', columns: { name: 'Task B' } },
-];
-
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-15') },
-    title: 'Design Phase',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-2',
-    rowId: 'row-2',
-    range: { start: new Date('2026-01-10'), end: new Date('2026-01-20') },
-    title: 'Development',
-    dprIntent: 'crisp-pixel',
-  },
-];
-
-const axisInput: AxisRangePlanInput = {
-  viewId: 'week',
-  anchorDate: new Date('2026-01-05'),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-};
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" />
-</template>
-
-<script>
-import { ChronixGantt } from '@chronixjs/gantt-vue2';
-
-export default {
-  components: { ChronixGantt },
-  data() {
-    return {
-      bars: [
-        {
-          id: 'bar-1',
-          rowId: 'row-1',
-          range: { start: new Date('2026-01-05'), end: new Date('2026-01-15') },
-          title: 'Design Phase',
-          dprIntent: 'crisp-pixel',
-        },
-      ],
-      rows: [{ id: 'row-1', columns: { name: 'Task A' } }],
-      axisInput: {
-        viewId: 'week',
-        anchorDate: new Date('2026-01-05'),
-        viewportWidth: 900,
-        locale: 'en',
-        weekendsVisible: true,
-      },
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { BarSpec, RowSpec, AxisRangePlanInput } from '@chronixjs/gantt';
-
-const rows: RowSpec[] = [{ id: 'row-1', columns: { name: 'Task A' } }];
-
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-15') },
-    title: 'Design Phase',
-    dprIntent: 'crisp-pixel',
-  },
-];
-
-const axisInput: AxisRangePlanInput = {
-  viewId: 'week',
-  anchorDate: new Date('2026-01-05'),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-};
-
-export function App() {
-  return <ChronixGantt bars={bars} rows={rows} axisInput={axisInput} />;
-}
-```
-
-:::
+<DemoBox title="带进度和样式的条形" description="自定义颜色和进度指示器的条形图。" :code="ganttBarProgressCode" :code-vue2="ganttBarProgressVue2" :code-react="ganttBarProgressReact">
+  <GanttBarProgress />
+</DemoBox>
 
 ## 单条形样式
 

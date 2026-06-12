@@ -1,3 +1,10 @@
+<script setup>
+import ButtonGroupBasic from '../../../ui/components/demos/button-group/ButtonGroupBasic.vue';
+import buttonGroupBasicCode from '../../../ui/components/demos/button-group/ButtonGroupBasic.vue?raw';
+import buttonGroupBasicVue2 from '../../../ui/components/demos/button-group/ButtonGroupBasic.vue2?raw';
+import buttonGroupBasicReact from '../../../ui/components/demos/button-group/ButtonGroupBasic.react?raw';
+</script>
+
 # Button Group
 
 Flex container that groups `CxButton` children with merged borders.
@@ -16,52 +23,9 @@ Flex container that groups `CxButton` children with merged borders.
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxButtonGroup>
-    <CxButton>Left</CxButton>
-    <CxButton>Middle</CxButton>
-    <CxButton>Right</CxButton>
-  </CxButtonGroup>
-</template>
-
-<script setup lang="ts">
-import { CxButton, CxButtonGroup } from '@chronixjs/ui-vue3';
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxButtonGroup>
-    <CxButton>Left</CxButton>
-    <CxButton>Middle</CxButton>
-    <CxButton>Right</CxButton>
-  </CxButtonGroup>
-</template>
-
-<script>
-import { CxButton, CxButtonGroup } from '@chronixjs/ui-vue2';
-export default { components: { CxButton, CxButtonGroup } };
-</script>
-```
-
-```tsx [React]
-import { CxButton, CxButtonGroup } from '@chronixjs/ui-react';
-
-export function App() {
-  return (
-    <CxButtonGroup>
-      <CxButton>Left</CxButton>
-      <CxButton>Middle</CxButton>
-      <CxButton>Right</CxButton>
-    </CxButtonGroup>
-  );
-}
-```
-
-:::
+<DemoBox title="Basic Usage" description="Group multiple buttons together in a button group." :code="buttonGroupBasicCode" :code-vue2="buttonGroupBasicVue2" :code-react="buttonGroupBasicReact">
+  <ButtonGroupBasic />
+</DemoBox>
 
 ## Vertical
 

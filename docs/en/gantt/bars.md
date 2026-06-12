@@ -1,3 +1,10 @@
+<script setup>
+import GanttBarProgress from '../../gantt/demos/GanttBarProgress.vue';
+import ganttBarProgressCode from '../../gantt/demos/GanttBarProgress.vue?raw';
+import ganttBarProgressVue2 from '../../gantt/demos/GanttBarProgress.vue2?raw';
+import ganttBarProgressReact from '../../gantt/demos/GanttBarProgress.react?raw';
+</script>
+
 # Bars
 
 Bars represent tasks in the Gantt chart timeline. Each bar corresponds to a task and visually spans from its start date to its end date. Bars support drag-to-move, resize, and progress adjustment.
@@ -31,114 +38,9 @@ const bar: BarSpec = {
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { BarSpec, RowSpec, AxisRangePlanInput } from '@chronixjs/gantt';
-
-const rows: RowSpec[] = [
-  { id: 'row-1', columns: { name: 'Task A' } },
-  { id: 'row-2', columns: { name: 'Task B' } },
-];
-
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-15') },
-    title: 'Design Phase',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-2',
-    rowId: 'row-2',
-    range: { start: new Date('2026-01-10'), end: new Date('2026-01-20') },
-    title: 'Development',
-    dprIntent: 'crisp-pixel',
-  },
-];
-
-const axisInput: AxisRangePlanInput = {
-  viewId: 'week',
-  anchorDate: new Date('2026-01-05'),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-};
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" />
-</template>
-
-<script>
-import { ChronixGantt } from '@chronixjs/gantt-vue2';
-
-export default {
-  components: { ChronixGantt },
-  data() {
-    return {
-      bars: [
-        {
-          id: 'bar-1',
-          rowId: 'row-1',
-          range: { start: new Date('2026-01-05'), end: new Date('2026-01-15') },
-          title: 'Design Phase',
-          dprIntent: 'crisp-pixel',
-        },
-      ],
-      rows: [{ id: 'row-1', columns: { name: 'Task A' } }],
-      axisInput: {
-        viewId: 'week',
-        anchorDate: new Date('2026-01-05'),
-        viewportWidth: 900,
-        locale: 'en',
-        weekendsVisible: true,
-      },
-    };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { BarSpec, RowSpec, AxisRangePlanInput } from '@chronixjs/gantt';
-
-const rows: RowSpec[] = [{ id: 'row-1', columns: { name: 'Task A' } }];
-
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-15') },
-    title: 'Design Phase',
-    dprIntent: 'crisp-pixel',
-  },
-];
-
-const axisInput: AxisRangePlanInput = {
-  viewId: 'week',
-  anchorDate: new Date('2026-01-05'),
-  viewportWidth: 900,
-  locale: 'en',
-  weekendsVisible: true,
-};
-
-export function App() {
-  return <ChronixGantt bars={bars} rows={rows} axisInput={axisInput} />;
-}
-```
-
-:::
+<DemoBox title="Bars with Progress & Styling" description="Bars with custom colors and progress indicators." :code="ganttBarProgressCode" :code-vue2="ganttBarProgressVue2" :code-react="ganttBarProgressReact">
+  <GanttBarProgress />
+</DemoBox>
 
 ## Per-Bar Styling
 
@@ -196,68 +98,6 @@ const bars: BarSpec[] = [
 | `textColor`       | `string`  |         | Progress text color              |
 | `textFormat`      | `string`  |         | Template (`{value}` placeholder) |
 | `showText`        | `boolean` | `true`  | Show percentage label            |
-
-## Styling Callbacks
-
-For dynamic styling based on bar state, use callback props:
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <ChronixGantt
-    :bars="bars"
-    :rows="rows"
-    :axis-input="axisInput"
-    :bar-background-color-callback="getBarColor"
-  />
-</template>
-
-<script setup lang="ts">
-import { ChronixGantt } from '@chronixjs/gantt-vue3';
-import type { BarColorFunc } from '@chronixjs/gantt';
-
-const getBarColor: BarColorFunc = (arg) => {
-  if (arg.isSelected) return '#1e40af';
-  if (arg.bar.progress && arg.bar.progress.value > 80) return '#10b981';
-  return undefined; // fall back to default
-};
-</script>
-```
-
-```tsx [React]
-import { ChronixGantt } from '@chronixjs/gantt-react';
-import type { BarColorFunc } from '@chronixjs/gantt';
-
-const getBarColor: BarColorFunc = (arg) => {
-  if (arg.isSelected) return '#1e40af';
-  return undefined;
-};
-
-export function App() {
-  return (
-    <ChronixGantt
-      bars={bars}
-      rows={rows}
-      axisInput={axisInput}
-      barBackgroundColorCallback={getBarColor}
-    />
-  );
-}
-```
-
-:::
-
-Available callback props:
-
-| Prop                         | Signature                                               |
-| ---------------------------- | ------------------------------------------------------- |
-| `barBackgroundColorCallback` | `(arg: BarStyleArg) => string \| undefined`             |
-| `barBorderColorCallback`     | `(arg: BarStyleArg) => string \| undefined`             |
-| `barTextColorCallback`       | `(arg: BarStyleArg) => string \| undefined`             |
-| `barFontSizeCallback`        | `(arg: BarStyleArg) => number \| undefined`             |
-| `barFontWeightCallback`      | `(arg: BarStyleArg) => number \| string \| undefined`   |
-| `barClassNamesCallback`      | `(arg: BarStyleArg) => string \| string[] \| undefined` |
 
 ## Drag & Drop
 

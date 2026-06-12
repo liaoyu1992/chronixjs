@@ -1,3 +1,10 @@
+<script setup>
+import CalendarBasic from '../../../ui/components/demos/calendar/CalendarBasic.vue';
+import calendarBasicCode from '../../../ui/components/demos/calendar/CalendarBasic.vue?raw';
+import calendarBasicVue2 from '../../../ui/components/demos/calendar/CalendarBasic.vue2?raw';
+import calendarBasicReact from '../../../ui/components/demos/calendar/CalendarBasic.react?raw';
+</script>
+
 # Calendar
 
 Standalone calendar (always visible, no popup) for date selection.
@@ -6,121 +13,19 @@ Standalone calendar (always visible, no popup) for date selection.
 
 ::: code-group
 
-<<< @/snippets/vue3/install-ui.md
+<<< @/snippets/vue3/install-ui.md [Vue 3]
 
-<<< @/snippets/vue2/install-ui.md
+<<< @/snippets/vue2/install-ui.md [Vue 2]
 
-<<< @/snippets/react/install-ui.md
+<<< @/snippets/react/install-ui.md [React]
 
 :::
 
 ## Basic Usage
 
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCalendar v-model:value="selected" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCalendar } from '@chronixjs/ui-vue3';
-
-const selected = ref<Date | undefined>(undefined);
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCalendar :value.sync="selected" />
-</template>
-
-<script>
-import { CxCalendar } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCalendar },
-  data() {
-    return { selected: undefined };
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCalendar } from '@chronixjs/ui-react';
-
-export function App() {
-  const [selected, setSelected] = useState<Date | undefined>(undefined);
-
-  return <CxCalendar value={selected} onUpdateValue={setSelected} />;
-}
-```
-
-:::
-
-## Disabled Dates
-
-::: code-group
-
-```vue [Vue 3]
-<template>
-  <CxCalendar v-model:value="selected" :is-date-disabled="isWeekend" />
-</template>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-import { CxCalendar } from '@chronixjs/ui-vue3';
-
-const selected = ref<Date | undefined>(undefined);
-
-function isWeekend(date: Date): boolean {
-  const day = date.getDay();
-  return day === 0 || day === 6;
-}
-</script>
-```
-
-```vue [Vue 2]
-<template>
-  <CxCalendar :value.sync="selected" :is-date-disabled="isWeekend" />
-</template>
-
-<script>
-import { CxCalendar } from '@chronixjs/ui-vue2';
-export default {
-  components: { CxCalendar },
-  data() {
-    return { selected: undefined };
-  },
-  methods: {
-    isWeekend(date) {
-      const day = date.getDay();
-      return day === 0 || day === 6;
-    },
-  },
-};
-</script>
-```
-
-```tsx [React]
-import { useState } from 'react';
-import { CxCalendar } from '@chronixjs/ui-react';
-
-export function App() {
-  const [selected, setSelected] = useState<Date | undefined>(undefined);
-
-  function isWeekend(date: Date): boolean {
-    const day = date.getDay();
-    return day === 0 || day === 6;
-  }
-
-  return <CxCalendar value={selected} onUpdateValue={setSelected} isDateDisabled={isWeekend} />;
-}
-```
-
-:::
+<DemoBox title="Basic Calendar" description="A basic calendar component for date selection." :code="calendarBasicCode" :code-vue2="calendarBasicVue2" :code-react="calendarBasicReact">
+  <CalendarBasic />
+</DemoBox>
 
 ## API Reference
 

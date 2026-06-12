@@ -1,0 +1,9 @@
+import { CxEquation } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <p>
+      The famous equation: <CxEquation value="E = mc^2" display="inline" />
+    </p>
+  );
+}

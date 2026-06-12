@@ -1,0 +1,9 @@
+import { CxBadge, CxButton } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <CxBadge dot>
+      <CxButton>Updates</CxButton>
+    </CxBadge>
+  );
+}

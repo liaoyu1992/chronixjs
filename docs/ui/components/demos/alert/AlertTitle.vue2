@@ -1,0 +1,8 @@
+<template>
+  <CxAlert type="success" title="Success">Your operation was successful.</CxAlert>
+</template>
+
+<script>
+import { CxAlert } from '@chronixjs/ui-vue2';
+export default { components: { CxAlert } };
+</script>

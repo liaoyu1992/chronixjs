@@ -1,0 +1,13 @@
+import { CxProgress } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <CxProgress percentage={20} type="default" />
+      <CxProgress percentage={40} type="success" />
+      <CxProgress percentage={60} type="warning" />
+      <CxProgress percentage={80} type="error" />
+      <CxProgress percentage={90} type="info" />
+    </div>
+  );
+}

@@ -1,0 +1,11 @@
+import { CxDivider } from '@chronixjs/ui-react';
+
+export function App() {
+  return (
+    <div>
+      <p style={{ margin: 0 }}>Content above.</p>
+      <CxDivider dashed />
+      <p style={{ margin: 0 }}>Content below.</p>
+    </div>
+  );
+}

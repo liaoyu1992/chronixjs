@@ -1,0 +1,29 @@
+<template>
+  <div style="height: 200px; overflow: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px;">
+    <CxInfiniteScroll :distance="100" :loading="loading" @load="onLoad">
+      <div v-for="item in items" :key="item" style="padding: 4px 0;">{{ item }}</div>
+    </CxInfiniteScroll>
+  </div>
+</template>
+
+<script>
+import { CxInfiniteScroll } from '@chronixjs/ui-vue2';
+export default {
+  components: { CxInfiniteScroll },
+  data() {
+    return {
+      items: Array.from({ length: 20 }, (_, i) => `Item ${i + 1}`),
+      loading: false,
+    };
+  },
+  methods: {
+    async onLoad() {
+      this.loading = true;
+      const start = this.items.length;
+      const newItems = Array.from({ length: 10 }, (_, i) => `Item ${start + i + 1}`);
+      this.items.push(...newItems);
+      this.loading = false;
+    },
+  },
+};
+</script>

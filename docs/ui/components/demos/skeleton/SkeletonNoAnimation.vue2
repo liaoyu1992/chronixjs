@@ -1,0 +1,12 @@
+<template>
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <CxSkeleton shape="text" width="70%" :animated="false" />
+    <CxSkeleton shape="text" width="50%" :animated="false" />
+    <CxSkeleton shape="rect" :width="200" :height="100" :animated="false" />
+  </div>
+</template>
+
+<script>
+import { CxSkeleton } from '@chronixjs/ui-vue2';
+export default { components: { CxSkeleton } };
+</script>
