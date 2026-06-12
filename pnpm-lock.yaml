@@ -413,6 +413,9 @@ importers:
 
   docs:
     dependencies:
+      '@chronixjs/cx-kit':
+        specifier: workspace:*
+        version: link:../packages/cx-kit
       '@chronixjs/ui':
         specifier: workspace:*
         version: link:../packages/ui

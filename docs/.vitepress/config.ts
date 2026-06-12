@@ -17,6 +17,7 @@ export default defineConfig({
         '@chronixjs/gantt': resolve(__dirname, '../../packages/gantt/src/index.ts'),
         '@chronixjs/table-vue3': resolve(__dirname, '../../adapters/table-vue3/src/index.ts'),
         '@chronixjs/table': resolve(__dirname, '../../packages/table/src/index.ts'),
+        '@chronixjs/cx-kit': resolve(__dirname, '../../packages/cx-kit/src/index.ts'),
       },
     },
   },
