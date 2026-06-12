@@ -7,13 +7,14 @@ on:
 jobs:
   auto-approve:
     runs-on: ubuntu-latest
-    # Only run for repo admins/maintainers
+    # Only run for repo owner
     if: contains(fromJSON('["liaoyu1992"]'), github.event.pull_request.user.login)
-    permissions:
-      pull-requests: write
     steps:
       - name: Approve PR
-        uses: hmarr/auto-approve-action@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          review-message: "🤖 Auto-approved (repo admin PR)"
+        env:
+          GH_TOKEN: ${{ secrets.BOT_REVIEWER_TOKEN }}
+        run: |
+          gh pr review ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --approve \
+            --body "🤖 Auto-approved by bot reviewer"
