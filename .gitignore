@@ -30,6 +30,21 @@ goldens/.cache
 .claude/*.jsonl
 .history
 
+# claude-smart self-evolution system — runtime + personal data stays local.
+# System code (.claude/bin, .claude/hooks, .claude/memory/*.py) and team
+# instincts (.claude/homunculus/instincts/team/) ARE tracked for portability.
+.claude/data/
+.claude/homunculus/instincts/personal/
+.claude/homunculus/instincts/promote-candidates.md
+.claude/rules/auto-evolved.md
+.claude/rules/injected-memory.md
+.claude/memory/raw/
+.claude/settings.local.json
+
+# Python bytecode (claude-smart scripts)
+__pycache__/
+*.py[cod]
+
 # Docs
 docs/.vitepress/dist
 docs/.vitepress/cache

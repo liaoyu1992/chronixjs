@@ -81,3 +81,77 @@ Core must build before adapters typecheck (adapters import from `@chronixjs/ui` 
 1. `cd packages/ui && pnpm build`
 2. Adapter typecheck + test
 3. Demo typecheck
+
+## Self-Evolution & Persistent Memory (claude-smart)
+
+A hook-driven learning loop under `.claude/`. It observes tool usage, extracts
+behavioral patterns + factual knowledge, and re-injects relevant memory at each
+session start — no manual upkeep required.
+
+### The closed loop
+
+```
+observe (every tool call) → analyze (session end) → evolve/extract → inject (next start)
+```
+
+| Hook (`.claude/settings.local.json`)  | When            | What it does                                                                                                    |
+| ------------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------- |
+| `PreToolUse(Bash)` + `PostToolUse(*)` | every tool call | `hooks/observe.sh` → `bin/observe.py` appends a record to `data/observations/observations.jsonl`                |
+| `Stop`                                | session end     | `hooks/stop-evolve.sh` runs: analyze-instincts → auto-evolve → extract-memory → promote-to-team                 |
+| `SessionStart`                        | session start   | `hooks/session-inject.sh` recalls Top-5 memories (Ollama+Qdrant, else BM25) → writes `rules/injected-memory.md` |
+
+`.claude/rules/*.md` is auto-loaded by Claude Code (same priority as `CLAUDE.md`),
+so injected memory reaches the model automatically. Hooks are registered in
+`.claude/settings.local.json` (local/non-imposing — not committed; copy them into
+your own settings to opt in).
+
+### Directory layout — Git-tracked vs local
+
+| Path                                                | Git        | Purpose                                   |
+| --------------------------------------------------- | ---------- | ----------------------------------------- |
+| `bin/*.py`, `hooks/*.sh`, `memory/*.py`             | ✅ tracked | system code (portable)                    |
+| `homunculus/instincts/team/*.md`                    | ✅ tracked | **team** instincts (curated, PR-reviewed) |
+| `homunculus/instincts/personal/*.md`                | 🔒 local   | auto-generated personal instincts         |
+| `data/` (observations + qdrant vectors)             | 🔒 local   | runtime data, rotated monthly             |
+| `rules/injected-memory.md`, `rules/auto-evolved.md` | 🔒 local   | regenerated each session                  |
+| `memory/raw/*.md`                                   | 🔒 local   | auto-extracted knowledge memories         |
+
+### Add a memory by hand
+
+Create `.claude/memory/<slug>.md`:
+
+```markdown
+---
+name: build-core-first
+description: Core must build before adapters typecheck
+metadata:
+  type: project # user | feedback | project | reference
+created: '2026-06-15'
+updated: '2026-06-15'
+---
+
+<body — 2-5 sentences>
+```
+
+TTL by type: `user`/`feedback` permanent, `project` 60d, `reference` 90d.
+
+### Promote a personal instinct to the team
+
+```bash
+python3 .claude/bin/promote-to-team.py .claude          # refresh candidate list
+cat .claude/homunculus/instincts/promote-candidates.md  # review (gitignored)
+python3 .claude/bin/adopt-instinct.py .claude <id>      # draft team/<id>.md
+# edit the draft (add Why/Example), then git add team/ + PR
+```
+
+### Prerequisites & Windows notes
+
+- **Optional** Ollama + `nomic-embed-text` → semantic vector recall; without it the system
+  degrades to BM25 keyword recall (observe/extract still work).
+- **Optional** `qdrant-client` → Qdrant backend; otherwise NumPy flat-search.
+- Verified on this machine: Python 3.14, `numpy`/`requests`/`pyyaml`/`qdrant-client`, Ollama ✓.
+- The `Stop` AI path calls `claude --print --model claude-haiku-4-5` for semantic analysis; if
+  that model is unreachable it silently no-ops (statistical extraction still runs).
+- **Windows fixes vs upstream**: hook wrappers convert MSYS `/c/...` → `C:\...` via `cygpath`
+  (pathlib otherwise mis-resolves to `C:\c\...`); observation readers use `errors="replace"` so
+  lone-surrogate bytes (emoji/mixed encoding) don't crash rotation/analysis.
