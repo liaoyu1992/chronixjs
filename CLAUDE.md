@@ -155,3 +155,11 @@ python3 .claude/bin/adopt-instinct.py .claude <id>      # draft team/<id>.md
 - **Windows fixes vs upstream**: hook wrappers convert MSYS `/c/...` → `C:\...` via `cygpath`
   (pathlib otherwise mis-resolves to `C:\c\...`); observation readers use `errors="replace"` so
   lone-surrogate bytes (emoji/mixed encoding) don't crash rotation/analysis.
+
+## CI & PR Flow
+
+Owner (`liaoyu1992`) PRs are auto-merged: `Auto-approve admin PRs`
+(`.github/workflows/auto-approve.yml`) approves via `BOT_REVIEWER_TOKEN`, then enables GitHub
+auto-merge (squash + delete-branch). The PR merges automatically once the required
+`verify (node 20/22)` checks pass. A failing `auto-approve` run usually means the
+`BOT_REVIEWER_TOKEN` expired or lost scope — update the secret and `gh run rerun <id>`.
