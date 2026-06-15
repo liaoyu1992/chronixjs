@@ -18,3 +18,16 @@ jobs:
             --repo ${{ github.repository }} \
             --approve \
             --body "🤖 Auto-approved by bot reviewer"
+      - name: Enable auto-merge (squash) once required checks pass
+        # Requires repo setting: Settings → General → Pull Requests → "Allow auto-merge"
+        # Best-effort — the approval above is the critical step; a failure here
+        # (e.g. draft PR, token lacking merge scope) must NOT block the merge.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.BOT_REVIEWER_TOKEN }}
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --squash \
+            --delete-branch \
+            --auto
