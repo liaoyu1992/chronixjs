@@ -71,7 +71,7 @@ def archive_old_data(obs_dir: Path, obs_file: Path):
         archive_file = obs_dir / f"observations-{month_key}.jsonl"
         existing = []
         if archive_file.exists():
-            with open(archive_file, "r", encoding="utf-8") as f:
+            with open(archive_file, "r", encoding="utf-8", errors="replace") as f:
                 existing = f.readlines()
 
         with open(archive_file, "w", encoding="utf-8") as f:

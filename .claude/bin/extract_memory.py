@@ -17,6 +17,7 @@ Usage: python3 extract_memory.py <claude_dir>
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import hashlib
@@ -25,7 +26,10 @@ from pathlib import Path
 
 # ---------- Configuration ----------
 
-CLAUDE_CLI = "claude"
+# Resolve the full path: on Windows `claude` is a .CMD shim that a bare
+# subprocess.run(["claude", ...]) cannot launch (FileNotFoundError). shutil.which
+# returns the absolute path (e.g. C:\...\claude.CMD) which subprocess CAN run.
+CLAUDE_CLI = shutil.which("claude") or "claude"
 EXTRACT_MODEL = "claude-haiku-4-5-20251001"
 MAX_OBS_FOR_EXTRACT = 200  # Limit observations sent to AI for cost control
 
@@ -159,7 +163,12 @@ def run_extraction(session_obs: list[dict]) -> list[dict]:
     try:
         result = subprocess.run(
             [CLAUDE_CLI, "--print", "--model", EXTRACT_MODEL, "-p", prompt],
-            capture_output=True, text=True, timeout=60
+            capture_output=True, timeout=60,
+            # claude emits UTF-8; on Windows text=True would decode as the locale
+            # codec (GBK) and crash on non-ASCII output. Decode as UTF-8 explicitly.
+            encoding="utf-8", errors="replace",
+            # EOF on stdin so claude doesn't block ~3s waiting for hook JSON
+            stdin=subprocess.DEVNULL,
         )
         output = result.stdout.strip()
 

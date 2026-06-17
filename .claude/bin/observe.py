@@ -138,7 +138,9 @@ def write_observation(phase: str, raw_input: str, claude_dir: str):
 
     obs_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(obs_file, "a", encoding="utf-8", errors="surrogatepass") as f:
+    # NOTE: do NOT use errors="surrogatepass" — it can write lone surrogate
+    # bytes (0xED ...) that are invalid UTF-8 and crash every downstream reader.
+    with open(obs_file, "a", encoding="utf-8") as f:
         f.write(json.dumps(observation, ensure_ascii=False, default=str) + "\n")
 
 
@@ -153,7 +155,16 @@ def main():
     if phase not in ("pre", "post"):
         phase = "post"
 
-    raw_input = sys.stdin.read()
+    # Read raw stdin bytes and force UTF-8 decode. On Windows (especially zh-CN
+    # systems) Python wraps stdin in the locale codec (cp936/GBK); Claude Code
+    # pipes UTF-8 JSON, so sys.stdin.read() mis-decodes multibyte input into
+    # surrogate codepoints, which then get written as invalid 0xED bytes.
+    # errors="replace" turns any genuinely malformed bytes into U+FFFD so we
+    # never persist invalid UTF-8.
+    try:
+        raw_input = sys.stdin.buffer.read().decode("utf-8", errors="replace")
+    except (AttributeError, ValueError):
+        raw_input = sys.stdin.read()
     if not raw_input.strip():
         return
 

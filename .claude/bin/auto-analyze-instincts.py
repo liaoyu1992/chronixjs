@@ -4,7 +4,7 @@ auto-analyze-instincts.py - Dual-Path Instinct Analysis Engine
 
 Runs at session end (Stop Hook). Analyzes observation data through two paths:
   - Path A: Statistical pattern detection (5 hardcoded detectors)
-  - Path B: AI semantic analysis (via Claude CLI with Haiku)
+  - Path B: AI semantic analysis (direct gateway call via Anthropic Messages API)
 
 Generates/updates Instinct files in .claude/homunculus/instincts/personal/
 
@@ -14,17 +14,45 @@ Usage: python3 auto-analyze-instincts.py <claude_dir>
 import json
 import os
 import re
-import subprocess
 import sys
 import hashlib
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
 # ---------- Configuration ----------
 
-CLAUDE_CLI = "claude"
-ANALYSIS_MODEL = "claude-haiku-4-5-20251001"
 MAX_OBS_FOR_AI = 200  # Limit observations sent to AI for cost control
+
+# Last-resort model id. The configured gateway reliably accepts Anthropic-format
+# ids (it maps them onto its own backend), so this always works. Used when no
+# session-model signal is present and as the retry fallback in run_ai_analysis.
+FALLBACK_MODEL = "claude-haiku-4-5-20251001"
+
+
+def resolve_analysis_model() -> str:
+    """Pick the model id for AI semantic analysis, preferring the session's model.
+
+    Resolution order:
+      1. CLAUDE_SMART_ANALYSIS_MODEL env — explicit override, always wins.
+      2. The session's opus-tier model from ANTHROPIC_DEFAULT_OPUS_MODEL, with
+         Claude Code variant markers ([1m], etc.) stripped — e.g.
+         "glm-5.2[1m]" -> "glm-5.2". This makes the analyzer follow whatever
+         capable model the main session runs on, instead of a fixed cheap tier.
+      3. FALLBACK_MODEL when neither is set.
+
+    Native backend names can be intermittently overloaded (HTTP 529) or rejected
+    if a marker slips through; run_ai_analysis retries and falls back to
+    FALLBACK_MODEL on a hard 4xx, so an imperfect resolution degrades, not breaks.
+    """
+    explicit = os.environ.get("CLAUDE_SMART_ANALYSIS_MODEL", "").strip()
+    if explicit:
+        return explicit
+    opus = os.environ.get("ANTHROPIC_DEFAULT_OPUS_MODEL", "").strip()
+    if opus:
+        return re.sub(r"\[[^\]]*\]", "", opus)
+    return FALLBACK_MODEL
 
 
 # ---------- Path Helpers ----------
@@ -307,49 +335,168 @@ Observation Log:
 Output ONLY the JSON array, no other text."""
 
 
+def _call_messages_api(prompt: str, model: str) -> str:
+    """Call the configured Anthropic-compatible gateway directly over HTTPS.
+
+    We deliberately avoid shelling out to the `claude` CLI here. The Stop hook
+    runs while a live `claude` session is still holding Claude Code's shared
+    state (~/.claude.json, session files), and a nested `claude -p` subprocess
+    deadlocks in that situation — verified: it never returns regardless of
+    flags, MCP config, model, or working directory, even though the gateway
+    itself answers in <1s. POSTing /v1/messages directly sidesteps the nested
+    CLI entirely and is the only reliable path from inside a hook.
+    """
+    base_url = os.environ.get(
+        "ANTHROPIC_BASE_URL", "https://api.anthropic.com"
+    ).rstrip("/")
+    token = (
+        os.environ.get("ANTHROPIC_AUTH_TOKEN")
+        or os.environ.get("ANTHROPIC_API_KEY", "")
+    )
+    if not token:
+        raise RuntimeError(
+            "no ANTHROPIC_AUTH_TOKEN/ANTHROPIC_API_KEY in env; "
+            "AI semantic analysis unavailable"
+        )
+
+    payload = json.dumps({
+        "model": model,
+        "max_tokens": 4096,
+        "messages": [{"role": "user", "content": prompt}],
+    }).encode("utf-8")
+
+    req = urllib.request.Request(
+        f"{base_url}/v1/messages",
+        data=payload,
+        headers={
+            "Content-Type": "application/json",
+            "anthropic-version": "2023-06-01",
+            "Authorization": f"Bearer {token}",
+            # Some gateways key on x-api-key instead of the Bearer header;
+            # send both so we work against either convention.
+            "x-api-key": token,
+        },
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=60) as resp:
+        body = json.loads(resp.read().decode("utf-8", errors="replace"))
+
+    # Anthropic Messages shape: content is a list of blocks; concatenate text.
+    texts = [
+        block.get("text", "")
+        for block in body.get("content", [])
+        if block.get("type") == "text"
+    ]
+    return "\n".join(t for t in texts if t)
+
+
+def _parse_ai_instincts(output: str) -> list[dict]:
+    """Parse the model's JSON-array output into instinct dicts.
+
+    Tolerates markdown code fences, leading/trailing explanatory prose, and a
+    single object (wrapped into a one-element list). The gateway maps us onto a
+    small model whose instruction-following on "output ONLY JSON" is imperfect,
+    so we try several candidate slices before giving up.
+    """
+    cleaned = re.sub(r'```(?:json)?\s*', '', output)
+    cleaned = re.sub(r'```\s*', '', cleaned).strip()
+
+    candidates = [cleaned]
+    # Whole-array slices: first '[' ... last ']'
+    first_bracket = cleaned.find('[')
+    last_bracket = cleaned.rfind(']')
+    if first_bracket >= 0 and last_bracket > first_bracket:
+        candidates.append(cleaned[first_bracket:last_bracket + 1])
+    # Single-object fallback: first '{' ... last '}'
+    first_brace = cleaned.find('{')
+    last_brace = cleaned.rfind('}')
+    if first_brace >= 0 and last_brace > first_brace:
+        candidates.append(cleaned[first_brace:last_brace + 1])
+
+    seen = set()
+    for text in candidates:
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(data, dict):
+            data = [data]
+        if isinstance(data, list):
+            instincts = [
+                inst for inst in data
+                if isinstance(inst, dict) and inst.get("id") and inst.get("trigger")
+            ]
+            for inst in instincts:
+                inst.setdefault("confidence_delta", 0.05)
+                seen.add(inst["id"])
+            if instincts:
+                return instincts
+    return []
+
+
+# On a retry, append a firmer JSON-only nudge — the gateway-mapped model
+# sometimes wraps output in prose/fences that parse to nothing.
+FIRMER_SUFFIX = (
+    "\n\nIMPORTANT: respond with ONLY a raw JSON array (no markdown code fences, "
+    "no explanation). If you identified any patterns above, the array MUST be "
+    "non-empty."
+)
+
+
+def _log_ai_failure(err: Exception) -> None:
+    """Append an AI-analysis failure to ai-analysis-errors.log (best-effort).
+
+    Surfaces failures instead of silently returning [] — the original
+    implementation swallowed every error, which hid the nested-CLI deadlock as
+    a permanent "0 AI instincts".
+    """
+    try:
+        err_log = (
+            Path(__file__).resolve().parents[1]
+            / "data" / "observations" / "ai-analysis-errors.log"
+        )
+        err_log.parent.mkdir(parents=True, exist_ok=True)
+        with open(err_log, "a", encoding="utf-8") as f:
+            ts = datetime.now(timezone.utc).isoformat()
+            f.write(f"{ts} AI analysis failed: {type(err).__name__}: {err}\n")
+    except Exception:
+        pass
+
+
 def run_ai_analysis(session_obs: list[dict]) -> list[dict]:
-    """Run AI semantic analysis via Claude CLI."""
+    """Run AI semantic analysis via direct gateway calls (no nested CLI).
+
+    Resolves the model to match the session's, then makes up to two attempts:
+    a transient failure (529 overloaded, timeout) or an empty parse retries
+    once; a hard 4xx "model not found" switches to the reliable fallback model
+    before the retry. Logs only when both attempts are exhausted.
+    """
     if not session_obs:
         return []
 
-    prompt = build_ai_prompt(session_obs)
+    base_prompt = build_ai_prompt(session_obs)
+    model = resolve_analysis_model()
+    last_error: Exception | None = None
 
-    try:
-        result = subprocess.run(
-            [CLAUDE_CLI, "--print", "--model", ANALYSIS_MODEL, "-p", prompt],
-            capture_output=True, text=True, timeout=60
-        )
-        output = result.stdout.strip()
-
-        # Strip markdown code fences first
-        cleaned = re.sub(r'```(?:json)?\s*', '', output)
-        cleaned = re.sub(r'```\s*', '', cleaned).strip()
-
-        # Try direct JSON parse first
+    for attempt in range(2):
+        prompt = base_prompt if attempt == 0 else base_prompt + FIRMER_SUFFIX
         try:
-            instincts = json.loads(cleaned)
-            if isinstance(instincts, list):
-                for inst in instincts:
-                    inst.setdefault("confidence_delta", 0.05)
+            output = _call_messages_api(prompt, model)
+            instincts = _parse_ai_instincts(output)
+            if instincts:
                 return instincts
-        except json.JSONDecodeError:
-            pass
+            # Parsed empty -> retry (attempt 1 uses the firmer prompt).
+        except urllib.error.HTTPError as e:
+            last_error = e
+            # Hard rejection of the model id -> retry against the reliable fallback.
+            if e.code in (400, 404) and model != FALLBACK_MODEL:
+                model = FALLBACK_MODEL
+            # 5xx / overload / other transient -> retry the same model.
+        except Exception as e:
+            last_error = e
 
-        # Fallback: find the last top-level JSON array (non-greedy from end)
-        # Match from last '[' to last ']' to avoid grabbing explanatory text
-        last_bracket = cleaned.rfind('[')
-        if last_bracket >= 0:
-            try:
-                instincts = json.loads(cleaned[last_bracket:])
-                if isinstance(instincts, list):
-                    for inst in instincts:
-                        inst.setdefault("confidence_delta", 0.05)
-                    return instincts
-            except json.JSONDecodeError:
-                pass
-    except (subprocess.TimeoutExpired, json.JSONDecodeError, Exception):
-        pass
-
+    if last_error is not None:
+        _log_ai_failure(last_error)
     return []
 
 
