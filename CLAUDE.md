@@ -150,11 +150,17 @@ python3 .claude/bin/adopt-instinct.py .claude <id>      # draft team/<id>.md
   degrades to BM25 keyword recall (observe/extract still work).
 - **Optional** `qdrant-client` → Qdrant backend; otherwise NumPy flat-search.
 - Verified on this machine: Python 3.14, `numpy`/`requests`/`pyyaml`/`qdrant-client`, Ollama ✓.
-- The `Stop` AI path calls `claude --print --model claude-haiku-4-5` for semantic analysis; if
-  that model is unreachable it silently no-ops (statistical extraction still runs).
-- **Windows fixes vs upstream**: hook wrappers convert MSYS `/c/...` → `C:\...` via `cygpath`
-  (pathlib otherwise mis-resolves to `C:\c\...`); observation readers use `errors="replace"` so
-  lone-surrogate bytes (emoji/mixed encoding) don't crash rotation/analysis.
+- The `Stop` AI path (`auto-analyze-instincts.py`) does a direct HTTPS POST to the
+  Anthropic-compatible gateway (`$ANTHROPIC_BASE_URL/v1/messages`) — not a nested `claude -p`,
+  which deadlocks against the live session's shared state. It follows the session's model
+  (`$ANTHROPIC_DEFAULT_OPUS_MODEL` with `[1m]`-style markers stripped), overridable via
+  `$CLAUDE_SMART_ANALYSIS_MODEL`, falling back to `claude-haiku-4-5-20251001`; transient failures
+  (529/timeout) retry once, hard failures log to `data/observations/ai-analysis-errors.log`, and
+  statistical extraction still runs regardless.
+- **Windows note (chronix-local)**: `hooks/observe.sh` converts MSYS `/c/...` → `C:\...` via
+  `cygpath` (pathlib otherwise mis-resolves to `C:\c\...`) — this wrapper is chronix-local, not yet
+  upstream. The UTF-8 handling (observation readers use `errors="replace"`, stdin decoded as UTF-8
+  bytes, `claude` resolved via `shutil.which`) now ships from upstream.
 
 ## CI & PR Flow
 
