@@ -16,6 +16,7 @@ import os
 import re
 import sys
 import hashlib
+import importlib.util
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -24,6 +25,12 @@ from pathlib import Path
 # ---------- Configuration ----------
 
 MAX_OBS_FOR_AI = 200  # Limit observations sent to AI for cost control
+
+# Semantic-merge threshold: a new instinct whose trigger+action tokens overlap
+# an existing instinct by >= this Jaccard score is treated as the same instinct
+# (reinforces it instead of spawning a new 0.5-confidence file). Cures AI-instinct
+# id drift — the root cause of the 90+ file pile-up where none ever reached 0.7.
+MERGE_SIM_THRESHOLD = 0.5
 
 # Last-resort model id. The configured gateway reliably accepts Anthropic-format
 # ids (it maps them onto its own backend), so this always works. Used when no
@@ -502,6 +509,41 @@ def run_ai_analysis(session_obs: list[dict]) -> list[dict]:
 
 # ---------- Instinct File Management ----------
 
+
+def _load_auto_evolve():
+    """Load auto-evolve.py (hyphenated name, not importable directly) for its
+    tokenize / jaccard / _extract_action / load_all_instincts primitives, which
+    we reuse for semantic merging instead of reimplementing them."""
+    ae_path = Path(__file__).resolve().parent / "auto-evolve.py"
+    spec = importlib.util.spec_from_file_location("auto_evolve", ae_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def find_merge_target_id(ae, existing_instincts: list[dict], instinct: dict):
+    """Find the id of the closest existing instinct by Jaccard similarity.
+
+    Compares trigger + action text (the new instinct's `action` field vs the
+    existing instinct's `## Action` body section), matching auto-evolve's
+    deduplicate logic. Returns the existing id to reuse, or None to create new.
+    """
+    new_tokens = ae.tokenize(
+        instinct.get("trigger", "") + " " + instinct.get("action", "")
+    )
+    best_id = None
+    best_sim = MERGE_SIM_THRESHOLD
+    for ex in existing_instincts:
+        ex_tokens = ae.tokenize(
+            ex.get("trigger", "") + " " + ae._extract_action(ex.get("body", ""))
+        )
+        sim = ae.jaccard(new_tokens, ex_tokens)
+        if sim >= best_sim:
+            best_sim = sim
+            best_id = ex.get("id") or Path(ex.get("file", "x.md")).stem
+    return best_id
+
+
 def load_existing_instinct(instincts_dir: Path, instinct_id: str) -> dict | None:
     """Load an existing instinct file by ID."""
     instinct_file = instincts_dir / f"{instinct_id}.md"
@@ -651,9 +693,23 @@ def main():
     # Combine and write instinct files
     all_new_instincts = stat_instincts + ai_instincts
 
+    # Load existing instincts once for semantic merge. Reusing auto-evolve's
+    # tokenize/jaccard lets a repeated-but-differently-worded instinct reinforce
+    # its existing file instead of spawning a new 0.5-confidence one.
+    ae = _load_auto_evolve()
+    existing_instincts = ae.load_all_instincts(paths["instincts_dir"])
+
+    merged = 0
     for instinct in all_new_instincts:
         if not instinct.get("id") or not instinct.get("trigger"):
             continue
+        # Exact id already exists -> reinforce directly. Otherwise look for a
+        # near-duplicate to merge into (cures AI-instinct id drift).
+        if not load_existing_instinct(paths["instincts_dir"], instinct["id"]):
+            merge_id = find_merge_target_id(ae, existing_instincts, instinct)
+            if merge_id and merge_id != instinct["id"]:
+                instinct["id"] = merge_id
+                merged += 1
         try:
             write_instinct_file(paths["instincts_dir"], instinct)
         except Exception:
@@ -666,6 +722,14 @@ def main():
         with open(log_file, "a", encoding="utf-8") as f:
             ts = datetime.now(timezone.utc).isoformat()
             f.write(f"{ts} Analyzed {len(all_obs)} obs → {len(stat_instincts)} stat + {len(ai_instincts)} AI instincts\n")
+
+    # Mark the latest session as analyzed (crash-recovery signal for SessionStart).
+    try:
+        marker = paths["claude_dir"] / "data" / "observations" / ".last_analyzed_session"
+        latest_session = all_obs[-1].get("session_id", "") if all_obs else ""
+        marker.write_text(latest_session, encoding="utf-8")
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":
