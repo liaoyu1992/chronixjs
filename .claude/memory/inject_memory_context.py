@@ -29,11 +29,20 @@ from vector_store import MemoryVectorStore, COLLECTION_NAME
 # --- Anti-bloat ---
 MAX_INJECTED_LINES = 160  # Prune injected-memory.md beyond this
 
+# --- Injection budget (top-K selection) ---
+# user/feedback are always kept (few, high-value); project/reference are ranked
+# by relevance and capped, so injected-memory.md stays focused instead of
+# dumping every memory in the store.
+INJECT_BUDGET = 10
+PROJECT_REFERENCE_SLOTS = 6
+
 # --- Memory TTL by type (days) ---
 # Article Image 8 spec: user/feedback 永久, project 60天, reference 90天
+# Pitfalls are permanent because they represent hard-earned knowledge.
 MEMORY_TTL = {
-    "user": None,       # 永久 (permanent)
-    "feedback": None,   # 永久 (permanent)
+    "user": None,       # 永久
+    "feedback": None,   # 永久
+    "pitfall": None,    # 永久 (pitfalls are long-term knowledge)
     "project": 60,
     "reference": 90,
 }
@@ -178,10 +187,17 @@ def bm25_recall(memories: list[dict], query: str, top_k: int = 5) -> list[dict]:
 
     scored.sort(key=lambda x: -x[0])
 
+    top = scored[:top_k]
+    # Normalize BM25 absolute scores to [0,1] so format_injected_memory's
+    # "{score:.0%}" renders sensibly. The vector path (recall_memories) already
+    # returns cosine similarity in [0,1]; without this, the BM25 fallback
+    # produced meaningless values like "535% match".
+    max_score = top[0][0] if top and top[0][0] > 0 else 1.0
+
     result = []
-    for score, mem in scored[:top_k]:
+    for score, mem in top:
         mem_copy = dict(mem)
-        mem_copy["score"] = score
+        mem_copy["score"] = (score / max_score) if max_score > 0 else 0.0
         result.append(mem_copy)
     return result
 
@@ -280,6 +296,38 @@ def sync_embeddings(memory_dir: Path, memories: list[dict], store: MemoryVectorS
             continue
 
 
+def select_top_k(memories: list[dict]) -> list[dict]:
+    """Select memories for injection by type priority + relevance score.
+
+    user/feedback/pitfall are always kept (rare and high-value); project/reference are
+    ranked by score and capped. Returns at most INJECT_BUDGET entries, ordered
+    by type priority then score, so format_injected_memory renders the most
+    relevant memories first.
+    """
+    type_order = ["user", "feedback", "pitfall", "project", "reference"]
+    buckets: dict[str, list[dict]] = {t: [] for t in type_order}
+    for mem in memories:
+        mem_type = mem.get("_type") or mem.get("type", "project")
+        buckets.setdefault(mem_type, []).append(mem)
+
+    for t in type_order:
+        buckets[t].sort(key=lambda m: m.get("score", 0.0), reverse=True)
+
+    kept: list[dict] = []
+    kept.extend(buckets["user"])
+    kept.extend(buckets["feedback"])
+    kept.extend(buckets["pitfall"][:3])  # Keep up to 3 pitfalls (high-value, limited)
+    kept.extend(buckets["project"][:PROJECT_REFERENCE_SLOTS])
+    kept.extend(buckets["reference"][:PROJECT_REFERENCE_SLOTS])
+
+    priority = {t: i for i, t in enumerate(type_order)}
+    kept.sort(key=lambda m: (
+        priority.get(m.get("_type") or m.get("type", "project"), 9),
+        -m.get("score", 0.0),
+    ))
+    return kept[:INJECT_BUDGET]
+
+
 def format_injected_memory(memories: list[dict]) -> str:
     """Format recalled memories into structured Markdown for Claude's context."""
     if not memories:
@@ -295,10 +343,11 @@ def format_injected_memory(memories: list[dict]) -> str:
     ]
 
     # Group by type (priority order)
-    type_order = ["user", "feedback", "project", "reference"]
+    type_order = ["user", "feedback", "pitfall", "project", "reference"]
     type_labels = {
         "user": "👤 用户偏好",
         "feedback": "💡 行为反馈",
+        "pitfall": "⚠️ 业务防坑",
         "project": "📂 项目知识",
         "reference": "🔗 参考资源",
     }
@@ -341,15 +390,16 @@ def prune_to_lines(content: str, max_lines: int = MAX_INJECTED_LINES) -> str:
         return content
 
     # Remove sections starting from lowest priority
-    priority_order = ["reference", "project", "feedback", "user"]
+    priority_order = ["reference", "project", "pitfall", "feedback", "user"]
 
     for remove_type in priority_order:
         if len(lines) <= max_lines:
             break
         header = f"## "
-        type_labels = {"reference": "参考资源", "project": "项目知识", "feedback": "行为反馈", "user": "用户偏好"}
+        type_labels = {"reference": "参考资源", "project": "项目知识", "pitfall": "业务防坑", "feedback": "行为反馈", "user": "用户偏好"}
         target_header = f"## 🔗 {type_labels[remove_type]}" if remove_type == "reference" else \
                         f"## 📂 {type_labels[remove_type]}" if remove_type == "project" else \
+                        f"## ⚠️ {type_labels[remove_type]}" if remove_type == "pitfall" else \
                         f"## 💡 {type_labels[remove_type]}" if remove_type == "feedback" else \
                         f"## 👤 {type_labels[remove_type]}"
 
@@ -380,6 +430,47 @@ def write_injected_rules(rules_file: Path, content: str):
         rules_file.unlink()
 
 
+def _maybe_recover_analysis(base: Path):
+    """Crash recovery: if the last session never got a clean Stop (so its
+    observations were never analyzed), re-run analysis now. Best-effort and
+    never blocks injection. Detected via the .last_analyzed_session marker that
+    auto-analyze writes on success."""
+    try:
+        obs_file = base / "data" / "observations" / "observations.jsonl"
+        marker = base / "data" / "observations" / ".last_analyzed_session"
+        if not obs_file.exists():
+            return
+
+        latest = ""
+        session_counts = {}
+        with open(obs_file, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    sid = json.loads(line).get("session_id", "")
+                except json.JSONDecodeError:
+                    continue
+                if sid:
+                    latest = sid
+                    session_counts[sid] = session_counts.get(sid, 0) + 1
+
+        analyzed = marker.read_text(encoding="utf-8").strip() if marker.exists() else ""
+
+        # Latest session differs from the last analyzed one AND has enough
+        # observations -> the previous session likely ended without a clean Stop.
+        if latest and latest != analyzed and session_counts.get(latest, 0) >= 10:
+            subprocess.run(
+                ["python3", str(base / "bin" / "auto-analyze-instincts.py"), str(base)],
+                timeout=120,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+    except Exception:
+        pass
+
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: inject_memory_context.py <claude_dir>", file=sys.stderr)
@@ -387,6 +478,11 @@ def main():
 
     claude_dir = sys.argv[1]
     base = Path(claude_dir)
+
+    # Crash recovery: re-analyze the previous session if it never got a clean
+    # Stop. Runs before injection; best-effort, never blocks.
+    _maybe_recover_analysis(base)
+
     memory_dir = base / "memory"
     raw_dir = base / "memory" / "raw"  # extract_memory.py output (article Image 4)
     rules_file = base / "rules" / "injected-memory.md"
@@ -436,27 +532,31 @@ def main():
     if not used_vector and query and all_memories:
         recalled = bm25_recall(all_memories, query, top_k=5)
 
-    # Step 5: Merge recalled with all memories (recalled ones get priority)
-    if recalled:
-        recalled_names = {r.get("name") for r in recalled}
-        result = []
+    # Step 5: Select top-K by type priority + relevance.
+    # Build a name->memory map (recalled results seed/override relevance scores),
+    # then keep all high-value user/feedback memories and cap project/reference by
+    # score. This replaces the old "dump all_memories" merge, which made the
+    # top-K recall meaningless — it only changed ordering, never selection.
+    by_name: dict[str, dict] = {}
+    for mem in all_memories:
+        name = mem.get("name", "")
+        if name:
+            by_name[name] = mem
+    for r in recalled:
+        name = r.get("name", "")
+        if name in by_name:
+            by_name[name]["score"] = r.get("score", 0)
+        elif name:
+            by_name[name] = r
 
-        for r in recalled:
-            matching = [m for m in all_memories if m.get("name") == r.get("name")]
-            if matching:
-                mem = matching[0]
-                mem["score"] = r.get("score", 0)
-                result.append(mem)
-            else:
-                result.append(r)
+    candidates = list(by_name.values())
+    for mem in candidates:
+        if not isinstance(mem.get("score"), (int, float)):
+            mem["score"] = 0.0
+        if not mem.get("_type"):
+            mem["_type"] = mem.get("type", "project")
 
-        for mem in all_memories:
-            if mem.get("name") not in recalled_names:
-                result.append(mem)
-
-        final_memories = result
-    else:
-        final_memories = all_memories
+    final_memories = select_top_k(candidates)
 
     # Step 6: Format and write (with 160-line pruning)
     content = format_injected_memory(final_memories)

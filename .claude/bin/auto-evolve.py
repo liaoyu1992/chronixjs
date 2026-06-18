@@ -210,8 +210,10 @@ def write_evolved_rules(rules_file: Path, domain_groups: dict[str, list[dict]]):
     """Write the auto-evolved.md rules file (overwritten each time)."""
     rules_file.parent.mkdir(parents=True, exist_ok=True)
 
-    # Filter: only domains with >= 2 instincts (article spec)
-    valid_domains = {d: insts for d, insts in domain_groups.items() if len(insts) >= 2}
+    # Filter: keep every domain with at least one instinct. The old ">= 2"
+    # threshold silently dropped single high-confidence rules (e.g. a lone
+    # read-before-edit instinct), starving auto-evolved.md.
+    valid_domains = {d: insts for d, insts in domain_groups.items() if len(insts) >= 1}
 
     if not valid_domains:
         # Don't write empty file

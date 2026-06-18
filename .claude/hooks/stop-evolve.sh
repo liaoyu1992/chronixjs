@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
-# stop-evolve.sh - Session-end self-evolution pipeline (Stop hook)
-# Chains four independent stages; each is wrapped in `|| true` so a failure
-# in one never skips the rest:
-#   1. auto-analyze-instincts  — observe patterns → personal instincts (stat + AI)
-#   2. auto-evolve             — aggregate high-confidence instincts → auto-evolved.md
-#   3. extract_memory          — pull factual knowledge → memory/raw/*.md
-#   4. promote-to-team         — surface team-promotion candidates (gitignored)
+# stop-evolve.sh - Session-end analysis pipeline (Stop Hook entry point)
+#
+# Runs the four self-learning scripts in sequence. Each is independently
+# fault-tolerant (`|| true`): a failure in one — e.g. AI analysis hitting HTTP
+# 529, or a transient network error — no longer aborts the rest. Previously the
+# `&&` chain in settings.local.json let a single error skip auto-evolve,
+# extract_memory, and promote-to-team, wiping out an entire session's learning.
+#
+# Usage: bash stop-evolve.sh
+# (settings.local.json Stop hook: "command": "bash .claude/hooks/stop-evolve.sh")
+#
+# CHRONIX-LOCAL NOTE: This file includes cygpath handling for Windows MSYS,
+# which is NOT present in upstream claude-smart's stop.sh.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

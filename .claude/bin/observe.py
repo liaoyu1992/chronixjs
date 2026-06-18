@@ -107,6 +107,8 @@ def write_observation(phase: str, raw_input: str, claude_dir: str):
     tool_name = "unknown"
     tool_input = {}
     bash_desc = None
+    exit_code = None
+    error_output = None
 
     if isinstance(data, dict):
         tool_name = data.get("tool_name", data.get("tool", "unknown"))
@@ -121,11 +123,20 @@ def write_observation(phase: str, raw_input: str, claude_dir: str):
         if tool_name == "Bash" and isinstance(tool_input, dict):
             bash_desc = tool_input.get("description", None)
 
+        # Extract execution results if available (for pitfall detection)
+        exit_code = data.get("exit_code", data.get("result", {}).get("exit_code"))
+        error_output = data.get("error", data.get("stderr", data.get("result", {}).get("stderr")))
+        # Limit error output size to avoid bloat
+        if isinstance(error_output, str) and len(error_output) > 1000:
+            error_output = error_output[:1000] + "..."
+
     # Normalize all absolute paths to relative paths
     tool_input = normalize_paths(tool_input, project_root)
     if isinstance(bash_desc, str) and len(bash_desc) >= 3:
         bash_desc_normalized = normalize_paths({"v": bash_desc}, project_root)["v"]
         bash_desc = bash_desc_normalized
+    if isinstance(error_output, str) and len(error_output) >= 3:
+        error_output = normalize_paths({"v": error_output}, project_root)["v"]
 
     observation = {
         "session_id": get_session_id(obs_dir),
@@ -134,6 +145,8 @@ def write_observation(phase: str, raw_input: str, claude_dir: str):
         "tool": tool_name,
         "input": tool_input,
         "bash_desc": bash_desc,
+        "exit_code": exit_code,
+        "error": error_output,
     }
 
     obs_dir.mkdir(parents=True, exist_ok=True)
