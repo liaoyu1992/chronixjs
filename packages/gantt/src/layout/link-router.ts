@@ -144,7 +144,7 @@ class DependencyLineAlgorithm {
       if (goDownFirst) {
         // --- Target on left-bottom ---
         // Path: right->down->left->down
-        const extraOffset = line.extraVerticalOffset || 0;
+        const extraOffset = line.extraVerticalOffset ?? 0;
         const secondSegmentY = fromY + topOffset + 20 + extraOffset;
 
         line.points.push({ x: fromX + leftOffset + 10, y: secondSegmentY, type: 'L' });
@@ -153,7 +153,7 @@ class DependencyLineAlgorithm {
       } else {
         // --- Target on left-top ---
         // Path: right->up->left->down
-        const extraOffset = line.extraVerticalOffset || 0;
+        const extraOffset = line.extraVerticalOffset ?? 0;
         const secondSegmentY = fromY - 20 - extraOffset;
 
         line.points.push({ x: fromX + leftOffset + 10, y: secondSegmentY, type: 'L' });
