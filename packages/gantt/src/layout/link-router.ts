@@ -12,6 +12,33 @@ import type {
  *
  * Two routings are supported. `'square'` emits a 3-segment orthogonal
  * polyline from the predecessor's right edge to the successor's left
+ * edge with a configurable horizontal nub before the vertical turn.
+ * `'smooth'` emits a cubic Bézier curve into a pre-target landing
+ * point + a short horizontal `L` segment so the marker still enters
+ * the target horizontally.
+ *
+ * Smooth routing is FORWARD-ONLY (target's x ≥ source's x). Same-row
+ * forward emits a straight `L` (no curve needed — matches the
+ * reference's performance optimization). Cross-row forward emits the
+ * cubic-Bézier variant. Backward smooth routing throws — the parked
+ * variant exists for circular/manual dependency overrides the
+ * original demo doesn't exercise.
+ *
+ * The marker only carries position + angle — the SHAPE comes from
+ * `LinkSpec.marker` and is resolved by the render layer. This keeps
+ * routing free of marker-rendering concerns and lets the same routed
+ * path serve any marker style.
+ */
+export interface LinkRouter {
+  route(input: LinkRouterInput): LinkRouterOutput;
+}
+
+/**
+ * Phase 2 layout pass #4. Computes SVG path strings + marker positions
+ * for dependency lines between placed bars.
+ *
+ * Two routings are supported. `'square'` emits a 3-segment orthogonal
+ * polyline from the predecessor's right edge to the successor's left
  * edge. `'smooth'` emits a cubic Bézier curve into a pre-target landing
  * point + a short horizontal `L` segment so the marker still enters
  * the target horizontally.
