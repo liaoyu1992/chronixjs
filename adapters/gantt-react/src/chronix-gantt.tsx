@@ -1437,7 +1437,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
         nearHandleIds.add(bar.barId);
       }
     }
-    setHoveredProgressHandleIds(nearHandleIds);
+    _setHoveredProgressHandleIds(nearHandleIds);
   }
 
   function onPointerUp(e: ReactPointerEvent<SVGSVGElement>): void {
@@ -1505,8 +1505,10 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   const lastHoveredBarIdRef = useRef<string | null>(null);
   // Track hovered bar IDs for progress handle visibility (intentionally unused for now)
   const [_hoveredBarIds, _setHoveredBarIds] = useState<Set<string>>(new Set());
-  // Track hovered progress handle IDs (separate from bar hover)
-  const [hoveredProgressHandleIds, setHoveredProgressHandleIds] = useState<Set<string>>(new Set());
+  // Track hovered progress handle IDs (separate from bar hover, intentionally unused for now)
+  const [_hoveredProgressHandleIds, _setHoveredProgressHandleIds] = useState<Set<string>>(
+    new Set(),
+  );
   function onBarsPointerOver(e: ReactPointerEvent<SVGGElement>): void {
     if (pointer.activeTransaction) return;
     const target = e.target as Element | null;

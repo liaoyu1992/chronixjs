@@ -251,7 +251,6 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
     // can be used directly as content-x/y (no rect.left/top subtraction).
     // Use defineProperty to ensure it overrides jsdom's implementation.
     const svgProto = SVGSVGElement.prototype;
-    const originalGetBoundingClientRect = svgProto.getBoundingClientRect;
     Object.defineProperty(svgProto, 'getBoundingClientRect', {
       configurable: true,
       writable: true,
@@ -273,7 +272,7 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         // Fallback to large dimensions for tests that don't set attributes
         return {
@@ -288,7 +287,7 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });
