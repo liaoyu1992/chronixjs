@@ -54,6 +54,65 @@ describe('<ChronixGantt> drag-distance gate — Phase 25', () => {
 
   beforeEach(() => {
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    // jsdom doesn't implement setPointerCapture / releasePointerCapture +
+    // doesn't honor getBoundingClientRect from CSS. Stub both so the
+    // adapter's pointer plumbing exercises the full begin / advance /
+    // commit path. Bounding-rect zero-origin lets us treat clientX/Y as
+    // content-x/y directly (no rect.left/top subtraction).
+    const proto = Element.prototype as unknown as {
+      setPointerCapture?: (this: void, id: number) => void;
+      releasePointerCapture?: (this: void, id: number) => void;
+      hasPointerCapture?: (this: void, id: number) => boolean;
+    };
+    proto.setPointerCapture ??= function noopSetPointerCapture(): void {
+      /* jsdom stub */
+    };
+    proto.releasePointerCapture ??= function noopReleasePointerCapture(): void {
+      /* jsdom stub */
+    };
+    proto.hasPointerCapture ??= function noopHasPointerCapture(): boolean {
+      return false;
+    };
+    // Return zero-origin rect with non-zero dimensions so clientX/Y
+    // can be used directly as content-x/y (no rect.left/top subtraction).
+    const svgProto = SVGSVGElement.prototype;
+    Object.defineProperty(svgProto, 'getBoundingClientRect', {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      value: function (this: SVGSVGElement): DOMRect {
+        const width = this.width?.baseVal?.value ?? 10000;
+        const height = this.height?.baseVal?.value ?? 1000;
+        if (width > 0 && height > 0) {
+          return {
+            left: 0,
+            top: 0,
+            width,
+            height,
+            right: width,
+            bottom: height,
+            x: 0,
+            y: 0,
+            toJSON() {
+              return this;
+            },
+          } as DOMRect;
+        }
+        return {
+          left: 0,
+          top: 0,
+          width: 10000,
+          height: 1000,
+          right: 10000,
+          bottom: 1000,
+          x: 0,
+          y: 0,
+          toJSON() {
+            return this;
+          },
+        } as DOMRect;
+      },
+    });
   });
 
   afterEach(() => {

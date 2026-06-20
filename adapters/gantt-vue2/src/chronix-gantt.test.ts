@@ -264,6 +264,68 @@ const pointerOpts = (clientX: number, clientY: number, pointerId = 1) => ({
 });
 
 describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction (Phase 31.2)', () => {
+  beforeEach(() => {
+    // jsdom doesn't implement setPointerCapture / releasePointerCapture +
+    // doesn't honor getBoundingClientRect from CSS. Stub both so the
+    // adapter's pointer plumbing exercises the full begin / advance /
+    // commit path. Bounding-rect zero-origin lets us treat clientX/Y as
+    // content-x/y directly (no rect.left/top subtraction).
+    const proto = Element.prototype as unknown as {
+      setPointerCapture?: (this: void, id: number) => void;
+      releasePointerCapture?: (this: void, id: number) => void;
+      hasPointerCapture?: (this: void, id: number) => boolean;
+    };
+    proto.setPointerCapture ??= function noopSetPointerCapture(): void {
+      /* jsdom stub */
+    };
+    proto.releasePointerCapture ??= function noopReleasePointerCapture(): void {
+      /* jsdom stub */
+    };
+    proto.hasPointerCapture ??= function noopHasPointerCapture(): boolean {
+      return false;
+    };
+    // Return zero-origin rect with non-zero dimensions so clientX/Y
+    // can be used directly as content-x/y (no rect.left/top subtraction).
+    const svgProto = SVGSVGElement.prototype;
+    Object.defineProperty(svgProto, 'getBoundingClientRect', {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      value: function (this: SVGSVGElement): DOMRect {
+        const width = this.width?.baseVal?.value ?? 10000;
+        const height = this.height?.baseVal?.value ?? 1000;
+        if (width > 0 && height > 0) {
+          return {
+            left: 0,
+            top: 0,
+            width,
+            height,
+            right: width,
+            bottom: height,
+            x: 0,
+            y: 0,
+            toJSON() {
+              return this;
+            },
+          } as DOMRect;
+        }
+        return {
+          left: 0,
+          top: 0,
+          width: 10000,
+          height: 1000,
+          right: 10000,
+          bottom: 1000,
+          x: 0,
+          y: 0,
+          toJSON() {
+            return this;
+          },
+        } as DOMRect;
+      },
+    });
+  });
+
   it('pointerdown → pointermove (+60px) → pointerup on bar emits bar-drop with +1 hour shift', async () => {
     const wrapper = mount(GanttForTest, {
       propsData: {
@@ -501,6 +563,68 @@ const phase19AxisInput: AxisRangePlanInput = {
 };
 
 describe('<ChronixGantt> validation gates (Phase 19) — Phase 31.2.1', () => {
+  beforeEach(() => {
+    // jsdom doesn't implement setPointerCapture / releasePointerCapture +
+    // doesn't honor getBoundingClientRect from CSS. Stub both so the
+    // adapter's pointer plumbing exercises the full begin / advance /
+    // commit path. Bounding-rect zero-origin lets us treat clientX/Y as
+    // content-x/y directly (no rect.left/top subtraction).
+    const proto = Element.prototype as unknown as {
+      setPointerCapture?: (this: void, id: number) => void;
+      releasePointerCapture?: (this: void, id: number) => void;
+      hasPointerCapture?: (this: void, id: number) => boolean;
+    };
+    proto.setPointerCapture ??= function noopSetPointerCapture(): void {
+      /* jsdom stub */
+    };
+    proto.releasePointerCapture ??= function noopReleasePointerCapture(): void {
+      /* jsdom stub */
+    };
+    proto.hasPointerCapture ??= function noopHasPointerCapture(): boolean {
+      return false;
+    };
+    // Return zero-origin rect with non-zero dimensions so clientX/Y
+    // can be used directly as content-x/y (no rect.left/top subtraction).
+    const svgProto = SVGSVGElement.prototype;
+    Object.defineProperty(svgProto, 'getBoundingClientRect', {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      value: function (this: SVGSVGElement): DOMRect {
+        const width = this.width?.baseVal?.value ?? 10000;
+        const height = this.height?.baseVal?.value ?? 1000;
+        if (width > 0 && height > 0) {
+          return {
+            left: 0,
+            top: 0,
+            width,
+            height,
+            right: width,
+            bottom: height,
+            x: 0,
+            y: 0,
+            toJSON() {
+              return this;
+            },
+          } as DOMRect;
+        }
+        return {
+          left: 0,
+          top: 0,
+          width: 10000,
+          height: 1000,
+          right: 10000,
+          bottom: 1000,
+          x: 0,
+          y: 0,
+          toJSON() {
+            return this;
+          },
+        } as DOMRect;
+      },
+    });
+  });
+
   it('bar-drag rejected by eventOverlap: false → onBarDrop not emitted, bar-drop-rejected fires with reason "overlap"', async () => {
     // b1 on r1 (8-12), b2 on r2 (9-13). Drag b1 right +60px (1 hour)
     // so its new range becomes 9-13 on r1 — cross-row time intersect
@@ -2312,6 +2436,68 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — geometry prop alignment (Phase 
 });
 
 describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Phase 53)', () => {
+  beforeEach(() => {
+    // jsdom doesn't implement setPointerCapture / releasePointerCapture +
+    // doesn't honor getBoundingClientRect from CSS. Stub both so the
+    // adapter's pointer plumbing exercises the full begin / advance /
+    // commit path. Bounding-rect zero-origin lets us treat clientX/Y as
+    // content-x/y directly (no rect.left/top subtraction).
+    const proto = Element.prototype as unknown as {
+      setPointerCapture?: (this: void, id: number) => void;
+      releasePointerCapture?: (this: void, id: number) => void;
+      hasPointerCapture?: (this: void, id: number) => boolean;
+    };
+    proto.setPointerCapture ??= function noopSetPointerCapture(): void {
+      /* jsdom stub */
+    };
+    proto.releasePointerCapture ??= function noopReleasePointerCapture(): void {
+      /* jsdom stub */
+    };
+    proto.hasPointerCapture ??= function noopHasPointerCapture(): boolean {
+      return false;
+    };
+    // Return zero-origin rect with non-zero dimensions so clientX/Y
+    // can be used directly as content-x/y (no rect.left/top subtraction).
+    const svgProto = SVGSVGElement.prototype;
+    Object.defineProperty(svgProto, 'getBoundingClientRect', {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      value: function (this: SVGSVGElement): DOMRect {
+        const width = this.width?.baseVal?.value ?? 10000;
+        const height = this.height?.baseVal?.value ?? 1000;
+        if (width > 0 && height > 0) {
+          return {
+            left: 0,
+            top: 0,
+            width,
+            height,
+            right: width,
+            bottom: height,
+            x: 0,
+            y: 0,
+            toJSON() {
+              return this;
+            },
+          } as DOMRect;
+        }
+        return {
+          left: 0,
+          top: 0,
+          width: 10000,
+          height: 1000,
+          right: 10000,
+          bottom: 1000,
+          x: 0,
+          y: 0,
+          toJSON() {
+            return this;
+          },
+        } as DOMRect;
+      },
+    });
+  });
+
   // chronix-vue3 emits 3 cx-gantt-progress-* elements per bar that
   // declares both `progress.value` + `pointerOverlayId`. chronix-vue2
   // never ported them at Phase 31 scaffold; Phase 53 closes the gap.

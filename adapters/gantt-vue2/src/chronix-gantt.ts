@@ -2496,7 +2496,7 @@ export const ChronixGantt = defineComponent({
           const clamped = Math.max(0, Math.min(100, displayedProgress));
           const fillWidth = (clamped / 100) * bar.width;
           const handleX = bar.x + fillWidth;
-          const effectiveHandleSize = progressHandleSize ?? 12;
+          const effectiveHandleSize = props.progressHandleSize ?? 12;
           barChildren.push(
             h('rect', {
               key: `${bar.barId}-progress-handle`,

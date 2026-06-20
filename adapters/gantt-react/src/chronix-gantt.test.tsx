@@ -247,6 +247,50 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
     proto.hasPointerCapture ??= function noopHasPointerCapture(): boolean {
       return false;
     };
+    // Return zero-origin rect with non-zero dimensions so clientX/Y
+    // can be used directly as content-x/y (no rect.left/top subtraction).
+    // Use defineProperty to ensure it overrides jsdom's implementation.
+    const svgProto = SVGSVGElement.prototype;
+    const originalGetBoundingClientRect = svgProto.getBoundingClientRect;
+    Object.defineProperty(svgProto, 'getBoundingClientRect', {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      value: function (this: SVGSVGElement): DOMRect {
+        // If the SVG has explicit width/height attributes, use them
+        const width = this.width?.baseVal?.value ?? 10000;
+        const height = this.height?.baseVal?.value ?? 1000;
+        if (width > 0 && height > 0) {
+          return {
+            left: 0,
+            top: 0,
+            width,
+            height,
+            right: width,
+            bottom: height,
+            x: 0,
+            y: 0,
+            toJSON() {
+              return this;
+            },
+          } as DOMRect;
+        }
+        // Fallback to large dimensions for tests that don't set attributes
+        return {
+          left: 0,
+          top: 0,
+          width: 10000,
+          height: 1000,
+          right: 10000,
+          bottom: 1000,
+          x: 0,
+          y: 0,
+          toJSON() {
+            return this;
+          },
+        } as DOMRect;
+      },
+    });
   });
 
   const MS_PER_HOUR_MS = 60 * 60 * 1000;
