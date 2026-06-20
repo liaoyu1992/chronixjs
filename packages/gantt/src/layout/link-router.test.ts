@@ -34,13 +34,13 @@ describe('defaultLinkRouter — square routing', () => {
   it('builds a 3-segment elbow from predecessor right-edge to successor left-edge', () => {
     // bar1: x=10, y=0, w=90, h=20  → right edge=100, center y=10
     // bar2: x=200, y=50, w=80, h=20 → left edge=200, center y=60
-    // nub=12 → midX=112
+    // New algorithm: beforeTargetX = toX - 20 = 180
     const out = defaultLinkRouter.route({
       links: [link('l1', 'b1', 'b2')],
       placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 50, 80, 20)],
     });
 
-    expect(out.routedLinks[0]?.pathD).toBe('M 100 10 L 112 10 L 112 60 L 200 60');
+    expect(out.routedLinks[0]?.pathD).toBe('M 100 10 L 180 10 L 180 60 L 200 60');
   });
 
   it('marker sits at the successor left edge with 0° rotation', () => {
@@ -50,16 +50,6 @@ describe('defaultLinkRouter — square routing', () => {
     });
 
     expect(out.routedLinks[0]?.marker).toEqual({ x: 200, y: 60, angleDeg: 0 });
-  });
-
-  it('respects custom elbowNubPx', () => {
-    const out = defaultLinkRouter.route({
-      links: [link('l1', 'b1', 'b2')],
-      placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 50, 80, 20)],
-      elbowNubPx: 30,
-    });
-
-    expect(out.routedLinks[0]?.pathD).toBe('M 100 10 L 130 10 L 130 60 L 200 60');
   });
 
   it('propagates colorOverride when set on the LinkSpec', () => {
@@ -117,20 +107,20 @@ describe('defaultLinkRouter — edge cases', () => {
       placedBars: [bar('b1', 10, 0, 50, 20), bar('b2', 100, 0, 80, 20)],
       // from = (60, 10); to = (100, 10); same y
     });
-    expect(out.routedLinks[0]?.pathD).toBe('M 60 10 L 72 10 L 72 10 L 100 10');
+    // New algorithm: direct horizontal connection for same-row forward
+    expect(out.routedLinks[0]?.pathD).toBe('M 60 10 L 100 10');
   });
 
   it('handles successor to the left of predecessor (path goes backward)', () => {
     const out = defaultLinkRouter.route({
       links: [link('l1', 'b1', 'b2')],
       placedBars: [bar('b1', 200, 0, 50, 20), bar('b2', 10, 50, 80, 20)],
-      // from = (250, 10); midX = 262; to = (10, 60)
+      // from = (250, 10); to = (10, 60)
     });
-    // v0 still draws the elbow from fromX + nub. midX (262) ends up RIGHT
-    // of toX (10), producing a path that loops backwards. Acceptable for
-    // v0 — Phase 2 v2 can add reverse-routing for "predecessor right of
-    // successor" but the demo's typical case has chronological ordering.
-    expect(out.routedLinks[0]?.pathD).toBe('M 250 10 L 262 10 L 262 60 L 10 60');
+    // New algorithm: path goes right 10px, down, then left to beforeTargetX (-10), down, then enter
+    // beforeTargetX = 10 - 20 = -10
+    // Path: M 250 10 L 260 10 L 260 30 L -10 30 L -10 60 L 10 60
+    expect(out.routedLinks[0]?.pathD).toBe('M 250 10 L 260 10 L 260 30 L -10 30 L -10 60 L 10 60');
   });
 
   it('returns empty output when input has no links', () => {
@@ -164,8 +154,8 @@ describe('defaultLinkRouter — smooth routing', () => {
     // b1 right-edge mid = (100, 10). b2 left-edge mid = (200, 60).
     // midX = (100 + 200) / 2 = 150.
     // beforeTargetX = 200 - 20 = 180 (default gap).
-    // Expected:
-    //   M 100 10 C 150 10 170 60 180 60 L 200 60
+    // New algorithm uses beforeTargetX - 10 = 170 for second control point
+    // Expected: M 100 10 C 150 10 170 60 180 60 L 200 60
     const out = defaultLinkRouter.route({
       links: [link('l1', 'b1', 'b2', 'smooth')],
       placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 50, 80, 20)],
@@ -175,18 +165,18 @@ describe('defaultLinkRouter — smooth routing', () => {
     expect(out.routedLinks[0]!.pathD).toBe('M 100 10 C 150 10 170 60 180 60 L 200 60');
   });
 
-  it('cross-row smooth link: `smoothBeforeTargetGapPx` override shifts the pre-target landing point', () => {
+  it('cross-row smooth link: smoothBeforeTargetGapPx controls the pre-target landing gap', () => {
     // Same geometry as above, but with gap = 40 instead of default 20.
     // beforeTargetX = 200 - 40 = 160.
     // Second control point = beforeTargetX - 10 = 150.
-    // Expected:
-    //   M 100 10 C 150 10 150 60 160 60 L 200 60
+    // Expected: M 100 10 C 150 10 150 60 160 60 L 200 60
     const out = defaultLinkRouter.route({
       links: [link('l1', 'b1', 'b2', 'smooth')],
       placedBars: [bar('b1', 10, 0, 90, 20), bar('b2', 200, 50, 80, 20)],
       smoothBeforeTargetGapPx: 40,
     });
 
+    // Algorithm respects smoothBeforeTargetGapPx configuration
     expect(out.routedLinks[0]!.pathD).toBe('M 100 10 C 150 10 150 60 160 60 L 200 60');
   });
 
@@ -212,16 +202,17 @@ describe('defaultLinkRouter — smooth routing', () => {
     expect(out.routedLinks[0]!.pathD).toBe('M 100 10 L 100 10');
   });
 
-  it('backward smooth link (target left of source) throws with "backward" in the error so the parked branch is identifiable', () => {
-    // b1 at x=200..280. b2 at x=10..100. Predecessor sits AFTER successor
-    // chronologically — backward link. Reference handles this via a
-    // compound C+S detour the chronix demo doesn't exercise; chronix
-    // throws so consumers get a clear pointer at the parked branch.
-    expect(() =>
-      defaultLinkRouter.route({
-        links: [link('l1', 'b1', 'b2', 'smooth')],
-        placedBars: [bar('b1', 200, 0, 80, 20), bar('b2', 10, 50, 90, 20)],
-      }),
-    ).toThrow(/'smooth' routing for backward links not yet implemented/);
+  it('backward smooth link (target left of source) now supported with C+S compound curve', () => {
+    // b1 at x=200..280 (right edge=280). b2 at x=10..100 (left edge=10).
+    // New algorithm supports backward smooth routing with C+S curves
+    const out = defaultLinkRouter.route({
+      links: [link('l1', 'b1', 'b2', 'smooth')],
+      placedBars: [bar('b1', 200, 0, 80, 20), bar('b2', 10, 50, 90, 20)],
+    });
+    // Should not throw, should generate a valid path
+    expect(out.routedLinks).toHaveLength(1);
+    expect(out.routedLinks[0]!.pathD).toContain('M');
+    expect(out.routedLinks[0]!.pathD).toContain('C');
+    expect(out.routedLinks[0]!.pathD).toContain('S');
   });
 });

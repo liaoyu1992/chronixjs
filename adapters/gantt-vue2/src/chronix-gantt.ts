@@ -2616,6 +2616,125 @@ export const ChronixGantt = defineComponent({
       const linkSpecById = new Map<string, LinkSpec>(props.links.map((l) => [l.id, l]));
       const placedBarById = new Map<string, PlacedBar>(placedBars.value.map((p) => [p.barId, p]));
       const linkSlotTemplate = props.slotRegistry?.get(LINK_SLOT_NAME);
+      // Strips keyed by rowId for O(1) lookup in cross-row snap logic.
+      const stripByRowId = new Map(strips.value.map((s) => [s.rowId, s]));
+
+      // Helper: compute the "live" (drag-adjusted) position of a bar.
+      // Returns a PlacedBar with x/y/width adjusted by the active transaction
+      // if this bar is currently being dragged or resized. Otherwise returns
+      // the original position unchanged.
+      function getLiveBar(bar: PlacedBar): PlacedBar {
+        const activeTxn = pointer.activeTransaction.value;
+        // Check if this is a bar-related transaction and if it's for this bar
+        if (!activeTxn) return bar;
+        if (
+          activeTxn.kind !== 'bar-drag' &&
+          activeTxn.kind !== 'bar-resize' &&
+          activeTxn.kind !== 'progress-handle'
+        ) {
+          return bar;
+        }
+        if (activeTxn.barId !== bar.barId) {
+          return bar;
+        }
+
+        let liveX = bar.x;
+        let liveY = bar.y;
+        let liveWidth = bar.width;
+
+        if (activeTxn.kind === 'bar-drag') {
+          liveX = bar.x + activeTxn.deltaX;
+          // Cross-row snap: same logic as bar rendering
+          const projectedRowId = pointer.projectedRowId.value;
+          const sourceBar = props.bars.find((b) => b.id === bar.barId);
+          const sourceRowId = sourceBar?.rowId;
+          if (
+            projectedRowId !== null &&
+            sourceRowId !== undefined &&
+            projectedRowId !== sourceRowId
+          ) {
+            const sourceStrip = stripByRowId.get(sourceRowId);
+            const targetStrip = stripByRowId.get(projectedRowId);
+            if (sourceStrip && targetStrip) {
+              const intraStripOffset = bar.y - sourceStrip.y;
+              liveY = targetStrip.y + intraStripOffset;
+            } else {
+              liveY = bar.y + activeTxn.deltaY;
+            }
+          } else {
+            liveY = bar.y + activeTxn.deltaY;
+          }
+        } else if (activeTxn.kind === 'bar-resize') {
+          if (activeTxn.edge === 'start') {
+            liveX = bar.x + activeTxn.deltaX;
+            liveWidth = Math.max(0, bar.width - activeTxn.deltaX);
+          } else {
+            liveWidth = Math.max(0, bar.width + activeTxn.deltaX);
+          }
+        }
+
+        return { ...bar, x: liveX, y: liveY, width: liveWidth };
+      }
+
+      // Helper: recompute a link's path using live (drag-adjusted) bar positions.
+      // Replicates the routing logic from link-router.ts locally.
+      function rerouteLinkWithPathAdjustment(
+        routed: RoutedLink,
+        fromBar: PlacedBar,
+        toBar: PlacedBar,
+      ): string {
+        const activeTxn = pointer.activeTransaction.value;
+        // Only re-route if an endpoint is being dragged
+        if (!activeTxn) return routed.pathD;
+        if (
+          activeTxn.kind !== 'bar-drag' &&
+          activeTxn.kind !== 'bar-resize' &&
+          activeTxn.kind !== 'progress-handle'
+        ) {
+          return routed.pathD;
+        }
+        if (activeTxn.barId !== fromBar.barId && activeTxn.barId !== toBar.barId) {
+          return routed.pathD;
+        }
+
+        const liveFromBar = getLiveBar(fromBar);
+        const liveToBar = getLiveBar(toBar);
+
+        // Compute anchor points (from link-router.ts)
+        const fromAnchor = {
+          x: liveFromBar.x + liveFromBar.width,
+          y: liveFromBar.y + liveFromBar.height / 2,
+        };
+        const toAnchor = { x: liveToBar.x, y: liveToBar.y + liveToBar.height / 2 };
+
+        // Get the link spec to determine routing type
+        const spec = linkSpecById.get(routed.linkId);
+        if (!spec) return routed.pathD;
+
+        // Re-compute path based on routing type
+        if (spec.routing === 'square') {
+          const nub = 12; // Default elbowNubPx from link-router
+          const midX = fromAnchor.x + nub;
+          return `M ${fromAnchor.x} ${fromAnchor.y} L ${midX} ${fromAnchor.y} L ${midX} ${toAnchor.y} L ${toAnchor.x} ${toAnchor.y}`;
+        } else if (spec.routing === 'smooth') {
+          const smoothGap = 20; // Default smoothBeforeTargetGapPx
+          if (toAnchor.x < fromAnchor.x) {
+            // Backward smooth not supported - return original
+            return routed.pathD;
+          }
+          if (fromAnchor.y === toAnchor.y) {
+            return `M ${fromAnchor.x} ${fromAnchor.y} L ${toAnchor.x} ${toAnchor.y}`;
+          }
+          const midX = (fromAnchor.x + toAnchor.x) / 2;
+          const beforeTargetX = toAnchor.x - smoothGap;
+          return (
+            `M ${fromAnchor.x} ${fromAnchor.y}` +
+            ` C ${midX} ${fromAnchor.y} ${beforeTargetX - 10} ${toAnchor.y} ${beforeTargetX} ${toAnchor.y}` +
+            ` L ${toAnchor.x} ${toAnchor.y}`
+          );
+        }
+        return routed.pathD;
+      }
 
       interface ResolvedLinkRender {
         readonly routed: RoutedLink;
@@ -2624,6 +2743,7 @@ export const ChronixGantt = defineComponent({
         readonly toBar: PlacedBar;
         readonly color: string;
         readonly marker: LinkMarker | CustomLinkMarker;
+        readonly livePathD: string; // Path adjusted for drag
       }
       const resolvedLinks: ResolvedLinkRender[] = [];
       for (const routed of routedLinks.value) {
@@ -2632,6 +2752,9 @@ export const ChronixGantt = defineComponent({
         const fromBar = placedBarById.get(spec.fromBarId);
         const toBar = placedBarById.get(spec.toBarId);
         if (!fromBar || !toBar) continue; // Defensive bar-resolution gap.
+
+        // Recompute path with live positions if bars are being dragged
+        const livePathD = rerouteLinkWithPathAdjustment(routed, fromBar, toBar);
 
         let color: string;
         if (routed.color !== undefined) {
@@ -2661,7 +2784,7 @@ export const ChronixGantt = defineComponent({
           }
         }
 
-        resolvedLinks.push({ routed, spec, fromBar, toBar, color, marker });
+        resolvedLinks.push({ routed, spec, fromBar, toBar, color, marker, livePathD });
       }
 
       const linkPathNodes: VNode[] = [];
@@ -2699,7 +2822,7 @@ export const ChronixGantt = defineComponent({
               class: 'cx-gantt-link',
               attrs: {
                 'data-link-id': r.routed.linkId,
-                d: r.routed.pathD,
+                d: r.livePathD, // Use live (drag-adjusted) path
                 stroke: r.color,
                 'stroke-width': t.linkStrokeWidth,
                 fill: 'none',
