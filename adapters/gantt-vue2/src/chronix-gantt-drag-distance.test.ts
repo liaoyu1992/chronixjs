@@ -106,7 +106,7 @@ describe('<ChronixGantt> drag-distance gate — Phase 25 (vue2 SFC integration)'
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         return {
           left: 0,
@@ -120,7 +120,7 @@ describe('<ChronixGantt> drag-distance gate — Phase 25 (vue2 SFC integration)'
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });

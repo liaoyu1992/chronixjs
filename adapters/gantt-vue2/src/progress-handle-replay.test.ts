@@ -139,7 +139,7 @@ describe('<ChronixGantt> progress-handle drag — recording replay (vue2 SFC por
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         return {
           left: 0,
@@ -153,7 +153,7 @@ describe('<ChronixGantt> progress-handle drag — recording replay (vue2 SFC por
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });

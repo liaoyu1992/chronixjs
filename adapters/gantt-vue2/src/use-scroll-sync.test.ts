@@ -2,9 +2,9 @@ import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, ref, type Ref } from 'vue';
 
-import type Vue from 'vue';
-
 import { useScrollSync } from './use-scroll-sync.js';
+
+import type Vue from 'vue';
 
 /**
  * Mount a tiny host component that exposes two scrollable divs +

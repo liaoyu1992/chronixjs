@@ -307,7 +307,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction (Phase 31.2
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         return {
           left: 0,
@@ -321,7 +321,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction (Phase 31.2
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });
@@ -606,7 +606,7 @@ describe('<ChronixGantt> validation gates (Phase 19) — Phase 31.2.1', () => {
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         return {
           left: 0,
@@ -620,7 +620,7 @@ describe('<ChronixGantt> validation gates (Phase 19) — Phase 31.2.1', () => {
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });
@@ -2479,7 +2479,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Pha
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         return {
           left: 0,
@@ -2493,7 +2493,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Pha
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });
