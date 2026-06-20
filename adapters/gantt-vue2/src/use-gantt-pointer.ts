@@ -377,6 +377,15 @@ export interface UseGanttPointerOutput {
    * is `null`).
    */
   readonly dragDistanceSurpassed: ComputedRef<boolean>;
+  /**
+   * Synchronously check if a transaction is currently active.
+   * Returns `true` if `transaction.value` is non-null.
+   *
+   * Use this in event handlers that need to check the transaction state
+   * immediately after calling `begin()`, where the `activeTransaction`
+   * computed ref may not have updated yet due to Vue's reactivity timing.
+   */
+  hasActiveTransaction(): boolean;
 }
 
 const REQUIRE_HIT: PointerCaptureConfig = { requireInitialHit: true };
@@ -454,9 +463,10 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       if (progress === undefined) continue;
       const clamped = Math.max(0, Math.min(100, progress));
       const handleX = placed.x + (clamped / 100) * placed.width;
+      const handleY = placed.y + placed.height;
       rects.set(placed.barId, {
         x: handleX - size / 2,
-        y: placed.y + placed.height / 2 - size / 2,
+        y: handleY - size / 2,
         width: size,
         height: size,
       });
@@ -859,5 +869,6 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     projectedRowId,
     wasDragCommit: computed(() => dragCommittedFlag.value),
     dragDistanceSurpassed: computed(() => dragDistanceSurpassedFlag.value),
+    hasActiveTransaction: () => transaction.value !== null,
   };
 }

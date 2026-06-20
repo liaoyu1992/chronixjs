@@ -4,7 +4,14 @@ export type { BarPlacementPass } from './bar-placement-pass.js';
 export { defaultBarPlacementPass } from './bar-placement-pass.js';
 export type { BarStackHeightPass } from './bar-stack-height-pass.js';
 export { defaultBarStackHeightPass } from './bar-stack-height-pass.js';
-export { type LinkRouter, defaultLinkRouter } from './link-router.js';
+export {
+  type LinkRouter,
+  DependencyLineAlgorithm,
+  defaultLinkRouter,
+  predecessorAnchor,
+  successorAnchor,
+  type Anchor,
+} from './link-router.js';
 export type { RowSwimlaneLayout } from './row-swimlane-layout.js';
 export { defaultRowSwimlaneLayout } from './row-swimlane-layout.js';
 export type { VirtualizedPaneLayout } from './virtualized-pane-layout.js';

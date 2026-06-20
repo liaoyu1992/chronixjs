@@ -8,6 +8,7 @@ import {
   computeRowSpans,
   defaultChronixTheme,
   defaultLinkRouter,
+  DependencyLineAlgorithm,
   deriveEdgePaddedX,
   deriveViewportClipping,
   formatToolbarTitle,
@@ -18,9 +19,11 @@ import {
   LINK_SLOT_NAME,
   nextAnchor,
   parseToolbar,
+  predecessorAnchor,
   prevAnchor,
   resolveBarStyle,
   snapHorizontalGridLineY,
+  successorAnchor,
   todayAnchor,
   truncateBarText,
   xToTime,
@@ -1376,8 +1379,15 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
 
   function toContentXY(e: ReactPointerEvent): { x: number; y: number } | null {
     const svg = bodySvgRef.current;
-    if (!svg) return null;
+    if (!svg) {
+      console.warn('[ChronixGantt] toContentXY: bodySvgRef is null');
+      return null;
+    }
     const rect = svg.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      console.warn('[ChronixGantt] toContentXY: SVG has zero dimensions', rect);
+      return null;
+    }
     return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
@@ -1389,16 +1399,45 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     pointer.begin(pos.x, pos.y);
     // If a transaction actually started, capture the pointer so move /
     // up events keep flowing even if the cursor leaves the SVG.
-    if (pointer.activeTransaction && bodySvgRef.current) {
-      bodySvgRef.current.setPointerCapture(e.pointerId);
+    // Use `hasActiveTransaction()` for synchronous check for
+    // cross-framework consistency.
+    if (pointer.hasActiveTransaction() && bodySvgRef.current) {
+      try {
+        bodySvgRef.current.setPointerCapture(e.pointerId);
+      } catch (err) {
+        console.warn('[ChronixGantt] setPointerCapture failed:', err);
+      }
     }
   }
 
   function onPointerMove(e: ReactPointerEvent<SVGSVGElement>): void {
-    if (!pointer.activeTransaction) return;
+    if (pointer.activeTransaction) {
+      const pos = toContentXY(e);
+      if (!pos) return;
+      pointer.advance(pos.x, pos.y);
+      return;
+    }
+    // Detect if mouse is near progress handle position (proximity detection)
     const pos = toContentXY(e);
     if (!pos) return;
-    pointer.advance(pos.x, pos.y);
+    const PROXITY_THRESHOLD = 15; // px
+    const TRIANGLE_SIZE = 6;
+    const nearHandleIds = new Set<string>();
+    for (const bar of placedBars) {
+      const sourceProgress = barProgressById.get(bar.barId);
+      const overlayId = overlayIdByBarId.get(bar.barId);
+      if (sourceProgress === undefined || overlayId === undefined) continue;
+      const handleX = bar.x + (sourceProgress / 100) * bar.width;
+      const handleY = bar.y + bar.height;
+      // Check if mouse is near the progress position (within threshold)
+      // and within vertical range (bar y to bar bottom + triangle size)
+      const dx = Math.abs(pos.x - handleX);
+      const isInVerticalRange = pos.y >= bar.y && pos.y <= handleY + TRIANGLE_SIZE;
+      if (dx <= PROXITY_THRESHOLD && isInVerticalRange) {
+        nearHandleIds.add(bar.barId);
+      }
+    }
+    setHoveredProgressHandleIds(nearHandleIds);
   }
 
   function onPointerUp(e: ReactPointerEvent<SVGSVGElement>): void {
@@ -1437,7 +1476,14 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
         });
       }
     }
-    bodySvgRef.current?.releasePointerCapture(e.pointerId);
+    // Release pointer capture after transaction is resolved.
+    if (bodySvgRef.current) {
+      try {
+        bodySvgRef.current.releasePointerCapture(e.pointerId);
+      } catch (err) {
+        console.warn('[ChronixGantt] releasePointerCapture failed:', err);
+      }
+    }
   }
 
   function onPointerCancel(e: ReactPointerEvent<SVGSVGElement>): void {
@@ -1446,11 +1492,21 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     // OS gesture). Drop the in-flight transaction without firing a
     // commit callback.
     pointer.abort();
-    bodySvgRef.current?.releasePointerCapture(e.pointerId);
+    if (bodySvgRef.current) {
+      try {
+        bodySvgRef.current.releasePointerCapture(e.pointerId);
+      } catch (err) {
+        console.warn('[ChronixGantt] releasePointerCapture (cancel) failed:', err);
+      }
+    }
   }
 
   // Phase 54 — bar hover events (delegated). Same shape as vue3 + vue2.
   const lastHoveredBarIdRef = useRef<string | null>(null);
+  // Track hovered bar IDs for progress handle visibility
+  const [hoveredBarIds, setHoveredBarIds] = useState<Set<string>>(new Set());
+  // Track hovered progress handle IDs (separate from bar hover)
+  const [hoveredProgressHandleIds, setHoveredProgressHandleIds] = useState<Set<string>>(new Set());
   function onBarsPointerOver(e: ReactPointerEvent<SVGGElement>): void {
     if (pointer.activeTransaction) return;
     const target = e.target as Element | null;
@@ -1466,11 +1522,19 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           jsEvent: e,
         });
       }
+      // Remove from hovered set
+      setHoveredBarIds((prev) => {
+        const next = new Set(prev);
+        next.delete(lastHoveredBarIdRef.current!);
+        return next;
+      });
     }
     const sourceBar = bars.find((b) => b.id === barId);
     if (sourceBar) {
       lastHoveredBarIdRef.current = barId;
       emit('bar-mouseenter', { barId, sourceBar, jsEvent: e });
+      // Add to hovered set
+      setHoveredBarIds((prev) => new Set(prev).add(barId));
     }
   }
   function onBarsPointerOut(e: ReactPointerEvent<SVGGElement>): void {
@@ -1486,6 +1550,13 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
         jsEvent: e,
       });
     }
+    // Remove from hovered set
+    const leavingId = lastHoveredBarIdRef.current;
+    setHoveredBarIds((prev) => {
+      const next = new Set(prev);
+      next.delete(leavingId);
+      return next;
+    });
     lastHoveredBarIdRef.current = null;
   }
 
@@ -1623,7 +1694,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   }
 
   // Helper: recompute a link's path using live (drag-adjusted) bar positions.
-  // Replicates the routing logic from link-router.ts locally.
+  // Uses the exported DependencyLineAlgorithm class to ensure consistent
+  // routing behavior during drag operations, including support for
+  // extraVerticalOffset when bars overlap.
   function rerouteLinkWithPathAdjustment(
     routed: RoutedLink,
     fromBar: PlacedBar,
@@ -1647,40 +1720,21 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     const liveFromBar = getLiveBar(fromBar);
     const liveToBar = getLiveBar(toBar);
 
-    // Compute anchor points (from link-router.ts)
-    const fromAnchor = {
-      x: liveFromBar.x + liveFromBar.width,
-      y: liveFromBar.y + liveFromBar.height / 2,
-    };
-    const toAnchor = { x: liveToBar.x, y: liveToBar.y + liveToBar.height / 2 };
+    // Compute anchor points using the exported helper functions
+    const from = predecessorAnchor(liveFromBar);
+    const to = successorAnchor(liveToBar);
 
     // Get the link spec to determine routing type
     const spec = linkSpecMap.get(routed.linkId);
     if (!spec) return routed.pathD;
 
-    // Re-compute path based on routing type
-    if (spec.routing === 'square') {
-      const nub = 12; // Default elbowNubPx from link-router
-      const midX = fromAnchor.x + nub;
-      return `M ${fromAnchor.x} ${fromAnchor.y} L ${midX} ${fromAnchor.y} L ${midX} ${toAnchor.y} L ${toAnchor.x} ${toAnchor.y}`;
-    } else if (spec.routing === 'smooth') {
-      const smoothGap = 20; // Default smoothBeforeTargetGapPx
-      if (toAnchor.x < fromAnchor.x) {
-        // Backward smooth not supported - return original
-        return routed.pathD;
-      }
-      if (fromAnchor.y === toAnchor.y) {
-        return `M ${fromAnchor.x} ${fromAnchor.y} L ${toAnchor.x} ${toAnchor.y}`;
-      }
-      const midX = (fromAnchor.x + toAnchor.x) / 2;
-      const beforeTargetX = toAnchor.x - smoothGap;
-      return (
-        `M ${fromAnchor.x} ${fromAnchor.y}` +
-        ` C ${midX} ${fromAnchor.y} ${beforeTargetX - 10} ${toAnchor.y} ${beforeTargetX} ${toAnchor.y}` +
-        ` L ${toAnchor.x} ${toAnchor.y}`
-      );
-    }
-    return routed.pathD;
+    // Use DependencyLineAlgorithm to compute the path with proper routing logic
+    // including support for overlapping bars via extraVerticalOffset
+    const smoothGap = 20; // Default smoothBeforeTargetGapPx
+    const algorithm = new DependencyLineAlgorithm(spec.routing, smoothGap);
+    const line = algorithm.generateDependencyLine(from.x, from.y, to.x, to.y);
+
+    return algorithm.generateSVGPath(line);
   }
 
   interface ResolvedLinkRender {
@@ -2683,7 +2737,26 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 );
                 const availableWidth = Math.max(0, titleEndX - titleStartX);
                 if (availableWidth >= 10) {
-                  const truncated = truncateBarText(title, availableWidth, resolvedStyle.fontSize);
+                  // Get progress for title display
+                  const sourceProgressForTitle = barProgressById.get(bar.barId);
+                  const displayedProgressForTitle =
+                    activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
+                      ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
+                      : (sourceProgressForTitle ?? 0);
+                  const clampedProgressForTitle = Math.max(
+                    0,
+                    Math.min(100, displayedProgressForTitle),
+                  );
+                  const progressSuffix =
+                    sourceProgressForTitle !== undefined
+                      ? ` (${Math.round(clampedProgressForTitle)}%)`
+                      : '';
+                  const titleWithProgress = title + progressSuffix;
+                  const truncated = truncateBarText(
+                    titleWithProgress,
+                    availableWidth,
+                    resolvedStyle.fontSize,
+                  );
                   if (truncated.length > 0) {
                     titleNode = (
                       <text
@@ -2708,20 +2781,21 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 }
               }
 
-              // Phase 53 — progress-handle + progress-label (LATE-paint —
-              // after continuation triangles + title text so the white
-              // handle square + percent label remain on top of everything).
-              // Same gating as the early progress-fill above. Live-updates
-              // via `activeTxn.projectedProgress` during a progress-handle
-              // drag; otherwise reflects the persisted `bar.progress.value`.
-              // Suppression: when `progress.showText === false` the label
-              // is skipped but the handle still renders. Mirrors chronix-
-              // vue3 chronix-gantt.ts:2302-2376.
+              // Phase 53 — progress-handle (LATE-paint — after continuation
+              // triangles + title text so the handle remains on top).
+              // Changed to downward-pointing triangle below bar edge, only
+              // visible when the handle itself is hovered or during active drag.
               let progressHandleNode: ReactNode = null;
-              let progressLabelNode: ReactNode = null;
               const sourceProgress = barProgressById.get(bar.barId);
               const overlayId = overlayIdByBarId.get(bar.barId);
-              if (sourceProgress !== undefined && overlayId !== undefined) {
+              const isHandleHovered = hoveredProgressHandleIds.has(bar.barId);
+              const isDraggingProgress =
+                activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId;
+              if (
+                sourceProgress !== undefined &&
+                overlayId !== undefined &&
+                (isHandleHovered || isDraggingProgress)
+              ) {
                 const displayedProgress =
                   activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
                     ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
@@ -2729,45 +2803,21 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 const clamped = Math.max(0, Math.min(100, displayedProgress));
                 const fillWidth = (clamped / 100) * bar.width;
                 const handleX = bar.x + fillWidth;
-                const effectiveHandleSize = progressHandleSize ?? 12;
+                const handleY = bar.y + bar.height;
+                const TRIANGLE_SIZE = 6;
                 progressHandleNode = (
-                  <rect
+                  <polygon
                     key={`${bar.barId}-progress-handle`}
                     className="cx-gantt-progress-handle"
                     data-progress-bar-id={bar.barId}
                     data-overlay-id={overlayId}
-                    x={handleX - effectiveHandleSize / 2}
-                    y={bar.y + bar.height / 2 - effectiveHandleSize / 2}
-                    width={effectiveHandleSize}
-                    height={effectiveHandleSize}
+                    points={`${handleX - TRIANGLE_SIZE},${handleY + TRIANGLE_SIZE} ${handleX + TRIANGLE_SIZE},${handleY + TRIANGLE_SIZE} ${handleX},${handleY}`}
                     fill={t.progressHandleFill}
                     stroke={t.progressHandleStroke}
                     strokeWidth={t.progressHandleStrokeWidth}
-                    pointerEvents="none"
+                    style={{ cursor: 'ew-resize', pointerEvents: 'auto' }}
                   />
                 );
-                const progressMeta = sourceBar?.progress;
-                if (progressMeta?.showText !== false) {
-                  const rounded = Math.round(clamped);
-                  const template = progressMeta?.textFormat ?? '{value}%';
-                  const labelText = template.replace('{value}', String(rounded));
-                  progressLabelNode = (
-                    <text
-                      key={`${bar.barId}-progress-label`}
-                      className="cx-gantt-progress-label"
-                      data-progress-bar-id={bar.barId}
-                      x={bar.x + bar.width / 2}
-                      y={bar.y + bar.height / 2 + 4}
-                      textAnchor="middle"
-                      fill={t.progressLabel}
-                      fontSize={t.progressLabelFontSize}
-                      fontWeight={t.progressLabelFontWeight}
-                      pointerEvents="none"
-                    >
-                      {labelText}
-                    </text>
-                  );
-                }
               }
 
               return (
@@ -2778,7 +2828,6 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                   {rightTriangleNode}
                   {titleNode}
                   {progressHandleNode}
-                  {progressLabelNode}
                   {selectionHasAxisOverlap && isSelected && (
                     <rect
                       className="cx-gantt-bar-selection-border"

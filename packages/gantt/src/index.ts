@@ -149,6 +149,7 @@ export {
 } from './api/index.js';
 
 export type {
+  Anchor,
   AxisHeaderCell,
   AxisHeaderRow,
   AxisRangePlanInput,
@@ -187,5 +188,9 @@ export {
   defaultLinkRouter,
   defaultRowSwimlaneLayout,
   defaultVirtualizedPaneLayout,
+  predecessorAnchor,
+  successorAnchor,
   xToTime,
 } from './layout/index.js';
+
+export { DependencyLineAlgorithm } from './layout/link-router.js';

@@ -68,14 +68,15 @@ interface DependencyLineInternal {
   toX: number;
   toY: number;
   points: Point[];
-  extraVerticalOffset?: number;
-  forceVerticalDown?: boolean;
+  extraVerticalOffset?: number | undefined;
+  forceVerticalDown?: boolean | undefined;
 }
 
 /**
  * Dependency line algorithm class
+ * Exported for adapters to use live path computation during drag operations.
  */
-class DependencyLineAlgorithm {
+export class DependencyLineAlgorithm {
   private options: { type: 'square' | 'smooth'; smoothBeforeTargetGapPx: number };
 
   constructor(type: 'square' | 'smooth' = 'square', smoothBeforeTargetGapPx = 20) {
@@ -339,18 +340,47 @@ class DependencyLineAlgorithm {
     this.setPoints(line);
     return line;
   }
+
+  /**
+   * Generate dependency line with extra vertical offset for obstacle avoidance.
+   * Used during drag operations when bars may overlap with other bars.
+   */
+  generateDependencyLineWithOffset(
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    extraVerticalOffset: number,
+    forceVerticalDown?: boolean,
+  ): DependencyLineInternal {
+    const line: DependencyLineInternal = {
+      topOffset: 0,
+      leftOffset: 0,
+      points: [],
+      type: this.options.type,
+      fromX,
+      fromY,
+      toX,
+      toY,
+      extraVerticalOffset,
+      forceVerticalDown,
+    };
+
+    this.setPoints(line);
+    return line;
+  }
 }
 
-interface Anchor {
+export interface Anchor {
   readonly x: number;
   readonly y: number;
 }
 
-function predecessorAnchor(bar: PlacedBar): Anchor {
+export function predecessorAnchor(bar: PlacedBar): Anchor {
   return { x: bar.x + bar.width, y: bar.y + bar.height / 2 };
 }
 
-function successorAnchor(bar: PlacedBar): Anchor {
+export function successorAnchor(bar: PlacedBar): Anchor {
   return { x: bar.x, y: bar.y + bar.height / 2 };
 }
 
