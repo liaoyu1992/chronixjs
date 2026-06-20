@@ -146,7 +146,7 @@ describe('<ChronixGantt> progress-handle drag — recording replay', () => {
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         return {
           left: 0,
@@ -160,7 +160,7 @@ describe('<ChronixGantt> progress-handle drag — recording replay', () => {
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });

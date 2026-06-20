@@ -224,7 +224,7 @@ describe('<ChronixGantt> interactions', () => {
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         return {
           left: 0,
@@ -238,7 +238,7 @@ describe('<ChronixGantt> interactions', () => {
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });

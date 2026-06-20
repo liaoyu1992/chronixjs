@@ -1,17 +1,17 @@
+import {
+  LINK_SLOT_NAME,
+  createSlotRegistry,
+  type AxisRangePlanInput,
+  type BarSpec,
+  type LinkSlotArgs,
+  type LinkSpec,
+  type RowSpec,
+} from '@chronixjs/gantt';
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { h } from 'vue';
 
 import { ChronixGantt } from './chronix-gantt.js';
-
-import type {
-  AxisRangePlanInput,
-  BarSpec,
-  LinkSlotArgs,
-  LinkSpec,
-  RowSpec,
-} from '@chronixjs/gantt';
-import { LINK_SLOT_NAME, createSlotRegistry } from '@chronixjs/gantt';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 const anchor = new Date('2026-05-13T00:00:00');

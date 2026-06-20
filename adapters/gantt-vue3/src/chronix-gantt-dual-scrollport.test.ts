@@ -2,9 +2,8 @@ import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChronixGantt } from './chronix-gantt.js';
-import type { ColumnSpec } from '@chronixjs/gantt';
 
-import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
+import type { AxisRangePlanInput, BarSpec, ColumnSpec, RowSpec } from '@chronixjs/gantt';
 
 const anchor = new Date('2026-05-13T00:00:00');
 const rows: readonly RowSpec[] = [

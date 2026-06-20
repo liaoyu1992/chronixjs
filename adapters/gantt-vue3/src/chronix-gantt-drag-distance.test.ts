@@ -96,7 +96,7 @@ describe('<ChronixGantt> drag-distance gate — Phase 25', () => {
             toJSON() {
               return this;
             },
-          } as DOMRect;
+          };
         }
         return {
           left: 0,
@@ -110,7 +110,7 @@ describe('<ChronixGantt> drag-distance gate — Phase 25', () => {
           toJSON() {
             return this;
           },
-        } as DOMRect;
+        };
       },
     });
   });
