@@ -463,10 +463,9 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       if (progress === undefined) continue;
       const clamped = Math.max(0, Math.min(100, progress));
       const handleX = placed.x + (clamped / 100) * placed.width;
-      const handleY = placed.y + placed.height;
       rects.set(placed.barId, {
         x: handleX - size / 2,
-        y: handleY - size / 2,
+        y: placed.y + placed.height / 2 - size / 2,
         width: size,
         height: size,
       });

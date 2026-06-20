@@ -1,4 +1,4 @@
-import {
+﻿import {
   ALL_VIEW_IDS,
   applyIncrement,
   BAR_SLOT_NAME,
@@ -2786,16 +2786,10 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               // Changed to downward-pointing triangle below bar edge, only
               // visible when the handle itself is hovered or during active drag.
               let progressHandleNode: ReactNode = null;
+              let progressLabelNode: ReactNode = null;
               const sourceProgress = barProgressById.get(bar.barId);
               const overlayId = overlayIdByBarId.get(bar.barId);
-              const isHandleHovered = hoveredProgressHandleIds.has(bar.barId);
-              const isDraggingProgress =
-                activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId;
-              if (
-                sourceProgress !== undefined &&
-                overlayId !== undefined &&
-                (isHandleHovered || isDraggingProgress)
-              ) {
+              if (sourceProgress !== undefined && overlayId !== undefined) {
                 const displayedProgress =
                   activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
                     ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
@@ -2803,21 +2797,45 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 const clamped = Math.max(0, Math.min(100, displayedProgress));
                 const fillWidth = (clamped / 100) * bar.width;
                 const handleX = bar.x + fillWidth;
-                const handleY = bar.y + bar.height;
-                const TRIANGLE_SIZE = 6;
+                const effectiveHandleSize = progressHandleSize ?? 12;
                 progressHandleNode = (
-                  <polygon
+                  <rect
                     key={`${bar.barId}-progress-handle`}
                     className="cx-gantt-progress-handle"
                     data-progress-bar-id={bar.barId}
                     data-overlay-id={overlayId}
-                    points={`${handleX - TRIANGLE_SIZE},${handleY + TRIANGLE_SIZE} ${handleX + TRIANGLE_SIZE},${handleY + TRIANGLE_SIZE} ${handleX},${handleY}`}
+                    x={handleX - effectiveHandleSize / 2}
+                    y={bar.y + bar.height / 2 - effectiveHandleSize / 2}
+                    width={effectiveHandleSize}
+                    height={effectiveHandleSize}
                     fill={t.progressHandleFill}
                     stroke={t.progressHandleStroke}
                     strokeWidth={t.progressHandleStrokeWidth}
-                    style={{ cursor: 'ew-resize', pointerEvents: 'auto' }}
+                    pointerEvents="none"
                   />
                 );
+                const progressMeta = sourceBar?.progress;
+                if (progressMeta?.showText !== false) {
+                  const rounded = Math.round(clamped);
+                  const template = progressMeta?.textFormat ?? '{value}%';
+                  const labelText = template.replace('{value}', String(rounded));
+                  progressLabelNode = (
+                    <text
+                      key={`${bar.barId}-progress-label`}
+                      className="cx-gantt-progress-label"
+                      data-progress-bar-id={bar.barId}
+                      x={bar.x + bar.width / 2}
+                      y={bar.y + bar.height / 2 + 4}
+                      textAnchor="middle"
+                      fill={t.progressLabel}
+                      fontSize={t.progressLabelFontSize}
+                      fontWeight={t.progressLabelFontWeight}
+                      pointerEvents="none"
+                    >
+                      {labelText}
+                    </text>
+                  );
+                }
               }
 
               return (
@@ -2828,6 +2846,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                   {rightTriangleNode}
                   {titleNode}
                   {progressHandleNode}
+                  {progressLabelNode}
                   {selectionHasAxisOverlap && isSelected && (
                     <rect
                       className="cx-gantt-bar-selection-border"

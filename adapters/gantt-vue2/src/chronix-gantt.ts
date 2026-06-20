@@ -1,4 +1,4 @@
-import {
+﻿import {
   ALL_VIEW_IDS,
   BAR_SLOT_NAME,
   HEADER_CELL_SLOT_NAME,
@@ -2488,14 +2488,7 @@ export const ChronixGantt = defineComponent({
         // shown in the title as "title (progress%)".
         const sourceProgress = barProgressById.value.get(bar.barId);
         const overlayId = overlayIdByBarId.value.get(bar.barId);
-        const isHandleHovered = hoveredProgressHandleIds.value.has(bar.barId);
-        const isDraggingProgress =
-          activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId;
-        if (
-          sourceProgress !== undefined &&
-          overlayId !== undefined &&
-          (isHandleHovered || isDraggingProgress)
-        ) {
+        if (sourceProgress !== undefined && overlayId !== undefined) {
           const displayedProgress =
             activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
               ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
@@ -2503,23 +2496,50 @@ export const ChronixGantt = defineComponent({
           const clamped = Math.max(0, Math.min(100, displayedProgress));
           const fillWidth = (clamped / 100) * bar.width;
           const handleX = bar.x + fillWidth;
-          const handleY = bar.y + bar.height;
-          const TRIANGLE_SIZE = 6;
+          const effectiveHandleSize = progressHandleSize ?? 12;
           barChildren.push(
-            h('polygon', {
+            h('rect', {
               key: `${bar.barId}-progress-handle`,
               class: 'cx-gantt-progress-handle',
               attrs: {
                 'data-progress-bar-id': bar.barId,
                 'data-overlay-id': overlayId,
-                points: `${handleX - TRIANGLE_SIZE},${handleY + TRIANGLE_SIZE} ${handleX + TRIANGLE_SIZE},${handleY + TRIANGLE_SIZE} ${handleX},${handleY}`,
+                x: handleX - effectiveHandleSize / 2,
+                y: bar.y + bar.height / 2 - effectiveHandleSize / 2,
+                width: effectiveHandleSize,
+                height: effectiveHandleSize,
                 fill: t.progressHandleFill,
                 stroke: t.progressHandleStroke,
                 'stroke-width': t.progressHandleStrokeWidth,
-                style: 'cursor: ew-resize; pointer-events: auto;',
               },
             }),
           );
+          const progressMeta = sourceBar?.progress;
+          if (progressMeta?.showText !== false) {
+            const rounded = Math.round(clamped);
+            const template = progressMeta?.textFormat ?? '{value}%';
+            const labelText = template.replace('{value}', String(rounded));
+            barChildren.push(
+              h(
+                'text',
+                {
+                  key: `${bar.barId}-progress-label`,
+                  class: 'cx-gantt-progress-label',
+                  attrs: {
+                    'data-progress-bar-id': bar.barId,
+                    x: bar.x + bar.width / 2,
+                    y: bar.y + bar.height / 2 + 4,
+                    'text-anchor': 'middle',
+                    fill: t.progressLabel,
+                    'font-size': t.progressLabelFontSize,
+                    'font-weight': t.progressLabelFontWeight,
+                    'pointer-events': 'none',
+                  },
+                },
+                labelText,
+              ),
+            );
+          }
         }
 
         // Phase 28.1: selection-border + edge-resize zones + dot handles.
