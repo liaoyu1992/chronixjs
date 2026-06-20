@@ -2528,13 +2528,20 @@ export const ChronixGantt = defineComponent({
         }
 
         // Progress handle: only for bars that declared BOTH
-        // `progress` AND `pointerOverlayId`. Changed to downward-pointing
-        // triangle below bar edge, only visible when the handle itself is
-        // hovered or during active drag. Progress is shown in the title
-        // as "title (progress%)".
+        // `progress` AND `pointerOverlayId`. Upward-pointing triangle
+        // below bar edge (tip touching bar bottom), only visible when
+        // the handle itself is hovered or during active drag.
+        // Progress is shown in the title as "title (progress%)".
         const sourceProgress = barProgressById.value.get(bar.barId);
         const overlayId = overlayIdByBarId.value.get(bar.barId);
-        if (sourceProgress !== undefined && overlayId !== undefined) {
+        const isHandleHovered = hoveredProgressHandleIds.value.has(bar.barId);
+        const isDraggingProgress =
+          activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId;
+        if (
+          sourceProgress !== undefined &&
+          overlayId !== undefined &&
+          (isHandleHovered || isDraggingProgress)
+        ) {
           const displayedProgress =
             activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
               ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
@@ -2542,46 +2549,21 @@ export const ChronixGantt = defineComponent({
           const clamped = Math.max(0, Math.min(100, displayedProgress));
           const fillWidth = (clamped / 100) * renderWidth;
           const handleX = renderX + fillWidth;
-          const effectiveHandleSize = props.progressHandleSize ?? 12;
+          const handleY = renderY + bar.height;
+          const TRIANGLE_SIZE = 6;
           nodes.push(
-            h('rect', {
+            h('polygon', {
               key: `${bar.barId}-progress-handle`,
               'data-progress-bar-id': bar.barId,
               'data-overlay-id': overlayId,
               class: 'cx-gantt-progress-handle',
-              x: handleX - effectiveHandleSize / 2,
-              y: renderY + bar.height / 2 - effectiveHandleSize / 2,
-              width: effectiveHandleSize,
-              height: effectiveHandleSize,
+              points: `${handleX - TRIANGLE_SIZE},${handleY + TRIANGLE_SIZE} ${handleX + TRIANGLE_SIZE},${handleY + TRIANGLE_SIZE} ${handleX},${handleY}`,
               fill: t.progressHandleFill,
               stroke: t.progressHandleStroke,
               'stroke-width': t.progressHandleStrokeWidth,
+              style: { cursor: 'ew-resize', pointerEvents: 'auto' },
             }),
           );
-          const progressMeta = sourceBar?.progress;
-          if (progressMeta?.showText !== false) {
-            const rounded = Math.round(clamped);
-            const template = progressMeta?.textFormat ?? '{value}%';
-            const labelText = template.replace('{value}', String(rounded));
-            nodes.push(
-              h(
-                'text',
-                {
-                  key: `${bar.barId}-progress-label`,
-                  'data-progress-bar-id': bar.barId,
-                  class: 'cx-gantt-progress-label',
-                  x: renderX + renderWidth / 2,
-                  y: renderY + bar.height / 2 + 4,
-                  'text-anchor': 'middle',
-                  fill: t.progressLabel,
-                  'font-size': t.progressLabelFontSize,
-                  'font-weight': t.progressLabelFontWeight,
-                  'pointer-events': 'none',
-                },
-                labelText,
-              ),
-            );
-          }
         }
 
         // Phase 28.1: selection visual + resize-handle render. Three

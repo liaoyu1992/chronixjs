@@ -238,12 +238,12 @@ describe('<ChronixGantt> drag-distance gate — Phase 25', () => {
     });
     const svg = wrapper.find('svg.cx-gantt-body');
     // Bar at x=480..720; progress=50% → handle x = 480 + 0.5×240 = 600.
-    // Handle rect spans (594, 17)..(606, 29). Pointerdown at (600, 23)
-    // hits the handle. Wiggle 1 px and release; bar-progress should
-    // still emit (progress-handle is exempted from the threshold gate).
-    await svg.trigger('pointerdown', { clientX: 600, clientY: 23, button: 0, pointerId: 1 });
-    await svg.trigger('pointermove', { clientX: 601, clientY: 23, pointerId: 1 });
-    await svg.trigger('pointerup', { clientX: 601, clientY: 23, pointerId: 1 });
+    // Handle is now an upward-pointing triangle at bar bottom (y ≈ 34-38).
+    // Hover near handle first, then click and wiggle 1 px.
+    await svg.trigger('pointermove', { clientX: 600, clientY: 35, pointerId: 1 });
+    await svg.trigger('pointerdown', { clientX: 600, clientY: 35, button: 0, pointerId: 1 });
+    await svg.trigger('pointermove', { clientX: 601, clientY: 35, pointerId: 1 });
+    await svg.trigger('pointerup', { clientX: 601, clientY: 35, pointerId: 1 });
     expect(wrapper.emitted('bar-progress')).toBeTruthy();
   });
 });

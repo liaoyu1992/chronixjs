@@ -399,7 +399,7 @@ describe('useGanttPointer — progress handle', () => {
     );
 
     act(() => {
-      result.current.begin(600, 23);
+      result.current.begin(600, 38);
     });
     expect(result.current.lastHit?.kind).toBe('progress-handle');
     const txn = result.current.activeTransaction;
@@ -427,7 +427,7 @@ describe('useGanttPointer — progress handle', () => {
       }),
     );
     act(() => {
-      result.current.begin(600, 23);
+      result.current.begin(600, 38);
     });
     act(() => {
       result.current.advance(624, 23);
@@ -453,7 +453,7 @@ describe('useGanttPointer — progress handle', () => {
       }),
     );
     act(() => {
-      result.current.begin(600, 23);
+      result.current.begin(600, 38);
     });
     act(() => {
       result.current.advance(636, 23);
@@ -483,7 +483,7 @@ describe('useGanttPointer — progress handle', () => {
       }),
     );
     act(() => {
-      result.current.begin(600, 23);
+      result.current.begin(600, 38);
     });
     act(() => {
       result.current.advance(1100, 23);
@@ -509,7 +509,7 @@ describe('useGanttPointer — progress handle', () => {
       }),
     );
     act(() => {
-      result.current.begin(600, 23);
+      result.current.begin(600, 38);
     });
     act(() => {
       result.current.advance(100, 23);
@@ -534,7 +534,7 @@ describe('useGanttPointer — progress handle', () => {
       }),
     );
     act(() => {
-      result.current.begin(600, 23);
+      result.current.begin(600, 38);
     });
     expect(result.current.lastHit?.kind).toBe('bar-body');
     act(() => {
@@ -557,7 +557,7 @@ describe('useGanttPointer — progress handle', () => {
       }),
     );
     act(() => {
-      result.current.begin(600, 23);
+      result.current.begin(600, 38);
     });
     expect(result.current.lastHit?.kind).toBe('progress-handle');
     expect(result.current.activeTransaction).toBeNull();
@@ -582,14 +582,14 @@ describe('useGanttPointer — progress handle', () => {
       }),
     );
     act(() => {
-      result.current.begin(600, 23);
+      result.current.begin(600, 38);
     });
     expect(result.current.lastHit?.kind).toBe('bar-body');
     act(() => {
       result.current.commit();
     });
     act(() => {
-      result.current.begin(540, 23);
+      result.current.begin(540, 38);
     });
     expect(result.current.lastHit?.kind).toBe('progress-handle');
   });

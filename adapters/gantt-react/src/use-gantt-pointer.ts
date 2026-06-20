@@ -363,9 +363,9 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   }
 
   // Build the per-bar progress-handle rect map from bar progress + the
-  // placed-bar geometry. Rect is centered at the progress-x with a
-  // square footprint of `progressHandleSize` (default 12 px). Bars
-  // missing from `barProgressById` or `overlayIdByBarId` don't get a
+  // placed-bar geometry. Handle is an upward-pointing triangle at the bar's
+  // bottom edge (tip at bar.y + bar.height, base extends below by TRIANGLE_SIZE).
+  // Bars missing from `barProgressById` or `overlayIdByBarId` don't get a
   // handle entry — the rect map only contains opt-in bars.
   function buildProgressHandleRects(): ReadonlyMap<
     string,
@@ -375,18 +375,20 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     const overlayMap = input.overlayIdByBarId;
     const progressMap = input.barProgressById;
     if (!overlayMap || !progressMap) return rects;
-    const size = input.progressHandleSize ?? 12;
+    const TRIANGLE_SIZE = 6;
     for (const placed of input.placedBars) {
       if (!overlayMap.has(placed.barId)) continue;
       const progress = progressMap.get(placed.barId);
       if (progress === undefined) continue;
       const clamped = Math.max(0, Math.min(100, progress));
       const handleX = placed.x + (clamped / 100) * placed.width;
+      const handleY = placed.y + placed.height; // Triangle tip at bar bottom
+      // Hit rect covers the triangle shape with some padding for easier clicking
       rects.set(placed.barId, {
-        x: handleX - size / 2,
-        y: placed.y + placed.height / 2 - size / 2,
-        width: size,
-        height: size,
+        x: handleX - TRIANGLE_SIZE,
+        y: handleY,
+        width: TRIANGLE_SIZE * 2,
+        height: TRIANGLE_SIZE,
       });
     }
     return rects;

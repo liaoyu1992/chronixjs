@@ -323,8 +323,8 @@ describe('useGanttPointer — lifecycle invariants', () => {
 
 describe('useGanttPointer — progress handle', () => {
   // Bar 'b1' at content x=480..720 (width 240), y=8..38. 50% progress →
-  // handle x = 480 + 0.5 × 240 = 600. Default handle size 12 → rect
-  // x ∈ [594, 606], y ∈ [17, 29] (centered at bar y-mid = 23).
+  // handle x = 480 + 0.5 × 240 = 600. Handle is an upward-pointing triangle at
+  // bar bottom (y = 4 + 30 = 34), with tip at y ≈ 37 (center of hit region).
   const overlayIdByBarId = new Map([['b1', 'progress-handle']]);
   const barProgressById = new Map([['b1', 50]]);
 
@@ -341,7 +341,7 @@ describe('useGanttPointer — progress handle', () => {
       onBarProgress,
     });
 
-    ptr.begin(600, 23); // dead-center of handle rect
+    ptr.begin(600, 38); // dead-center of handle rect (at bar bottom)
     expect(ptr.lastHit.value?.kind).toBe('progress-handle');
     const txn = ptr.activeTransaction.value;
     expect(txn?.kind).toBe('progress-handle');
@@ -365,7 +365,7 @@ describe('useGanttPointer — progress handle', () => {
       editable: true,
       onBarProgress,
     });
-    ptr.begin(600, 23);
+    ptr.begin(600, 38);
     // Drag +24 px on a 240-px-wide bar → +10% progress.
     ptr.advance(624, 23);
     const txn = ptr.activeTransaction.value;
@@ -386,7 +386,7 @@ describe('useGanttPointer — progress handle', () => {
       editable: true,
       onBarProgress,
     });
-    ptr.begin(600, 23);
+    ptr.begin(600, 38);
     ptr.advance(636, 23); // +36 px → +15% → 65%
     ptr.commit();
     expect(onBarProgress).toHaveBeenCalledOnce();
@@ -408,7 +408,7 @@ describe('useGanttPointer — progress handle', () => {
       editable: true,
       onBarProgress,
     });
-    ptr.begin(600, 23);
+    ptr.begin(600, 38);
     // Drag +500 px — vastly past the bar's right edge. projectedProgress
     // mid-drag may exceed 100; commit must clamp.
     ptr.advance(1100, 23);
@@ -428,7 +428,7 @@ describe('useGanttPointer — progress handle', () => {
       editable: true,
       onBarProgress,
     });
-    ptr.begin(600, 23);
+    ptr.begin(600, 38);
     ptr.advance(100, 23); // far left of bar
     ptr.commit();
     expect(onBarProgress.mock.calls[0]![0].newProgress).toBe(0);
@@ -446,7 +446,7 @@ describe('useGanttPointer — progress handle', () => {
       editable: true,
       onBarProgress,
     });
-    ptr.begin(600, 23);
+    ptr.begin(600, 38);
     // Falls through to bar-body (since editable=true and there's a bar there).
     expect(ptr.lastHit.value?.kind).toBe('bar-body');
     ptr.commit();
@@ -465,7 +465,7 @@ describe('useGanttPointer — progress handle', () => {
       // editable: false (default)
       onBarProgress,
     });
-    ptr.begin(600, 23);
+    ptr.begin(600, 38);
     // Hit is still detected (for diagnostic) but no transaction starts.
     expect(ptr.lastHit.value?.kind).toBe('progress-handle');
     expect(ptr.activeTransaction.value).toBeNull();
@@ -475,6 +475,7 @@ describe('useGanttPointer — progress handle', () => {
 
   it('handle position tracks the current progress: 25% bar has handle at x=540', () => {
     // 25% progress → handle x = 480 + 0.25 × 240 = 540.
+    // Handle is now an upward-pointing triangle at bar bottom (y = 4 + 30 = 34).
     const onBarProgress = mockBarProgress();
     const ptr = useGanttPointer({
       placedBars: () => placedBars,
@@ -486,13 +487,13 @@ describe('useGanttPointer — progress handle', () => {
       editable: true,
       onBarProgress,
     });
-    // Clicking at the old handle center (600, 23) now lands on bar-body
-    // because the handle moved to 540.
-    ptr.begin(600, 23);
+    // Clicking at the old handle center (600, 38) now lands on bar-body
+    // because the handle moved to 540 and is at bar bottom.
+    ptr.begin(600, 38);
     expect(ptr.lastHit.value?.kind).toBe('bar-body');
     ptr.commit();
-    // Re-test by clicking on the new handle location.
-    ptr.begin(540, 23);
+    // Re-test by clicking on the new handle location (at bar bottom).
+    ptr.begin(540, 38);
     expect(ptr.lastHit.value?.kind).toBe('progress-handle');
   });
 });

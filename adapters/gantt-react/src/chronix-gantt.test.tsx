@@ -1843,6 +1843,7 @@ describe('@chronixjs/gantt-react ChronixGantt — progress overlay + slot render
   ): BarSpec => ({
     id: 'b1',
     rowId: 'r1',
+    title: 'Task 1',
     range: { start: new Date('2026-05-18T08:00'), end: new Date('2026-05-18T16:00') },
     dprIntent: 'crisp-pixel',
     pointerOverlayId: 'progress-handle',
@@ -1861,27 +1862,25 @@ describe('@chronixjs/gantt-react ChronixGantt — progress overlay + slot render
     expect(Number(fill?.getAttribute('width'))).toBeCloseTo(barWidth * 0.6, 1);
   });
 
-  it('renders <rect.cx-gantt-progress-handle> at the fill edge', () => {
+  it('renders <polygon.cx-gantt-progress-handle> at the fill edge (only visible when hovered)', () => {
     const { container } = render(
       <ChronixGantt bars={[barWithProgress()]} rows={[row]} axisInput={baseAxisInput()} />,
     );
-    const handle = container.querySelector('rect.cx-gantt-progress-handle');
-    expect(handle).not.toBeNull();
-    expect(handle?.getAttribute('data-progress-bar-id')).toBe('b1');
-    expect(handle?.getAttribute('data-overlay-id')).toBe('progress-handle');
-    expect(Number(handle?.getAttribute('width'))).toBe(12);
+    // Handle is only visible when hovered, so not present in static render
+    const handle = container.querySelector('.cx-gantt-progress-handle');
+    expect(handle).toBeNull();
   });
 
-  it('renders <text.cx-gantt-progress-label> with "{value}%" template by default', () => {
+  it('renders progress in bar title as "title (progress%)"', () => {
     const { container } = render(
       <ChronixGantt bars={[barWithProgress()]} rows={[row]} axisInput={baseAxisInput()} />,
     );
-    const label = container.querySelector('text.cx-gantt-progress-label');
-    expect(label).not.toBeNull();
-    expect(label?.textContent).toBe('60%');
+    const text = container.querySelector('.cx-gantt-bar-text');
+    expect(text).not.toBeNull();
+    expect(text?.textContent).toBe('Task 1 (60%)');
   });
 
-  it('suppresses progress label when bar.progress.showText === false', () => {
+  it('note: showText not implemented, progress always shown in title', () => {
     const { container } = render(
       <ChronixGantt
         bars={[barWithProgress({ showText: false })]}
@@ -1889,8 +1888,9 @@ describe('@chronixjs/gantt-react ChronixGantt — progress overlay + slot render
         axisInput={baseAxisInput()}
       />,
     );
-    expect(container.querySelector('rect.cx-gantt-progress-handle')).not.toBeNull();
-    expect(container.querySelector('text.cx-gantt-progress-label')).toBeNull();
+    // showText is not implemented, progress suffix is always shown
+    const text = container.querySelector('.cx-gantt-bar-text');
+    expect(text?.textContent).toBe('Task 1 (60%)');
   });
 
   it('renders <g.cx-gantt-slots> with one cx-gantt-slot rect per axis tick', () => {

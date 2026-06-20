@@ -247,12 +247,12 @@ describe('<ChronixGantt> drag-distance gate — Phase 25 (vue2 SFC integration)'
     });
     const svg = wrapper.find('svg.cx-gantt-body');
     // Bar at x=480..720; progress=50% → handle x = 480 + 0.5×240 = 600.
-    // Handle rect spans (594, 17)..(606, 29). Pointerdown at (600, 23)
-    // hits the handle. Wiggle 1 px and release; bar-progress should
-    // still emit (progress-handle is exempted from the threshold gate).
-    await svg.trigger('pointerdown', pointerOpts(600, 23));
-    await svg.trigger('pointermove', pointerOpts(601, 23));
-    await svg.trigger('pointerup', pointerOpts(601, 23));
+    // Handle is now an upward-pointing triangle at bar bottom (y ≈ 34-38).
+    // Hover near handle first, then click and wiggle 1 px.
+    await svg.trigger('pointermove', pointerOpts(600, 35));
+    await svg.trigger('pointerdown', pointerOpts(600, 35));
+    await svg.trigger('pointermove', pointerOpts(601, 35));
+    await svg.trigger('pointerup', pointerOpts(601, 35));
     expect(wrapper.emitted('bar-progress')).toBeTruthy();
   });
 });

@@ -190,7 +190,7 @@ describe('<ChronixGantt> progress-handle drag — recording replay (vue2 SFC por
     });
 
     const handleContentX = 0 + (beforePct / 100) * RECORDED_BAR_WIDTH_PX;
-    const handleContentY = 23;
+    const handleContentY = 8 + 30; // bar.y + bar.height (triangle tip)
     const svg = wrapper.find('svg.cx-gantt-body');
 
     await svg.trigger('pointerdown', {

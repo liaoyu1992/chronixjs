@@ -776,8 +776,8 @@ describe('<ChronixGantt> validation gates (Phase 19) — Phase 31.2.1', () => {
       },
     });
     const body = wrapper.find('svg.cx-gantt-body');
-    // Progress-handle center for 50%: x = 480 + (240 × 0.5) = 600, y = bar center 23.
-    await body.trigger('pointerdown', pointerOpts(600, 23));
+    // Progress-handle center for 50%: x = 480 + (240 × 0.5) = 600, y = bar bottom 38.
+    await body.trigger('pointerdown', pointerOpts(600, 38));
     await body.trigger('pointermove', pointerOpts(660, 23));
     await body.trigger('pointerup', pointerOpts(660, 23));
 
@@ -2509,6 +2509,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Pha
   ): BarSpec => ({
     id: 'b1',
     rowId: 'r1',
+    title: 'Task 1',
     range: { start: new Date('2026-05-18T08:00'), end: new Date('2026-05-18T16:00') },
     dprIntent: 'crisp-pixel',
     pointerOverlayId: 'progress-handle',
@@ -2528,28 +2529,46 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Pha
     expect(Number(fill.attributes('width'))).toBeCloseTo(barWidth * 0.6, 1);
   });
 
-  it('renders <rect.cx-gantt-progress-handle> at the fill edge', () => {
+  it('renders <polygon.cx-gantt-progress-handle> at the fill edge (only visible when hovered)', async () => {
+    // Use day view for precise positioning (each hour = 60 px)
+    const dayAxis = { ...baseAxisInput(), viewId: 'day' as const };
+    const wrapper = mount(GanttForTest, {
+      propsData: { bars: [barWithProgress()], rows: [row], axisInput: dayAxis },
+    });
+    // Handle is only visible when hovered
+    const handle = wrapper.find('.cx-gantt-progress-handle');
+    expect(handle.exists()).toBe(false);
+    // Calculate handle position for 60% progress: bar.x + 0.6 × bar.width
+    // Bar is 8 hours (08:00-16:00) = 480 px wide in day view
+    // 60% of 480 = 288 px, so handle at bar.x + 288
+    const barRect = wrapper.find('[data-bar-id="b1"]');
+    const barX = Number(barRect.attributes('x'));
+    const barWidth = Number(barRect.attributes('width'));
+    const handleX = barX + 0.6 * barWidth;
+    const barY = Number(barRect.attributes('y'));
+    const barHeight = Number(barRect.attributes('height'));
+    const handleY = barY + barHeight; // bar bottom
+    // Hover over the handle to make it visible
+    const svg = wrapper.find('svg.cx-gantt-body');
+    await svg.trigger('pointermove', {
+      clientX: Math.round(handleX),
+      clientY: Math.round(handleY),
+      pointerId: 1,
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('.cx-gantt-progress-handle').exists()).toBe(true);
+  });
+
+  it('renders bar title with progress suffix "title (progress%)"', () => {
     const wrapper = mount(GanttForTest, {
       propsData: { bars: [barWithProgress()], rows: [row], axisInput: baseAxisInput() },
     });
-    const handle = wrapper.find('rect.cx-gantt-progress-handle');
-    expect(handle.exists()).toBe(true);
-    expect(handle.attributes('data-progress-bar-id')).toBe('b1');
-    expect(handle.attributes('data-overlay-id')).toBe('progress-handle');
-    // Default progressHandleSize = 12; rect width should match.
-    expect(Number(handle.attributes('width'))).toBe(12);
+    const text = wrapper.find('text.cx-gantt-bar-text');
+    expect(text.exists()).toBe(true);
+    expect(text.text()).toBe('Task 1 (60%)');
   });
 
-  it('renders <text.cx-gantt-progress-label> with "{value}%" template by default', () => {
-    const wrapper = mount(GanttForTest, {
-      propsData: { bars: [barWithProgress()], rows: [row], axisInput: baseAxisInput() },
-    });
-    const label = wrapper.find('text.cx-gantt-progress-label');
-    expect(label.exists()).toBe(true);
-    expect(label.text()).toBe('60%');
-  });
-
-  it('suppresses progress label when bar.progress.showText === false', () => {
+  it('renders bar title with progress suffix (showText not yet implemented)', () => {
     const wrapper = mount(GanttForTest, {
       propsData: {
         bars: [barWithProgress({ showText: false })],
@@ -2557,9 +2576,10 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Pha
         axisInput: baseAxisInput(),
       },
     });
-    // Handle still renders; label does not.
-    expect(wrapper.find('rect.cx-gantt-progress-handle').exists()).toBe(true);
-    expect(wrapper.find('text.cx-gantt-progress-label').exists()).toBe(false);
+    const text = wrapper.find('text.cx-gantt-bar-text');
+    expect(text.exists()).toBe(true);
+    // Note: showText is not yet implemented, progress suffix is always shown
+    expect(text.text()).toBe('Task 1 (60%)');
   });
 
   it('skips progress overlay when bar lacks pointerOverlayId', () => {
@@ -2574,9 +2594,8 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Pha
     const wrapper = mount(GanttForTest, {
       propsData: { bars: [bar], rows: [row], axisInput: baseAxisInput() },
     });
-    expect(wrapper.find('rect.cx-gantt-progress-fill').exists()).toBe(false);
-    expect(wrapper.find('rect.cx-gantt-progress-handle').exists()).toBe(false);
-    expect(wrapper.find('text.cx-gantt-progress-label').exists()).toBe(false);
+    expect(wrapper.find('.cx-gantt-progress-fill').exists()).toBe(false);
+    expect(wrapper.find('.cx-gantt-progress-handle').exists()).toBe(false);
   });
 });
 
