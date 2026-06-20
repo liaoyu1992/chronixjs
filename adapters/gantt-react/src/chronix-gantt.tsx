@@ -1503,8 +1503,8 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
 
   // Phase 54 — bar hover events (delegated). Same shape as vue3 + vue2.
   const lastHoveredBarIdRef = useRef<string | null>(null);
-  // Track hovered bar IDs for progress handle visibility
-  const [hoveredBarIds, setHoveredBarIds] = useState<Set<string>>(new Set());
+  // Track hovered bar IDs for progress handle visibility (intentionally unused for now)
+  const [_hoveredBarIds, _setHoveredBarIds] = useState<Set<string>>(new Set());
   // Track hovered progress handle IDs (separate from bar hover)
   const [hoveredProgressHandleIds, setHoveredProgressHandleIds] = useState<Set<string>>(new Set());
   function onBarsPointerOver(e: ReactPointerEvent<SVGGElement>): void {
@@ -1523,7 +1523,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
         });
       }
       // Remove from hovered set
-      setHoveredBarIds((prev) => {
+      _setHoveredBarIds((prev) => {
         const next = new Set(prev);
         next.delete(lastHoveredBarIdRef.current!);
         return next;
@@ -1534,7 +1534,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       lastHoveredBarIdRef.current = barId;
       emit('bar-mouseenter', { barId, sourceBar, jsEvent: e });
       // Add to hovered set
-      setHoveredBarIds((prev) => new Set(prev).add(barId));
+      _setHoveredBarIds((prev) => new Set(prev).add(barId));
     }
   }
   function onBarsPointerOut(e: ReactPointerEvent<SVGGElement>): void {
@@ -1552,7 +1552,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     }
     // Remove from hovered set
     const leavingId = lastHoveredBarIdRef.current;
-    setHoveredBarIds((prev) => {
+    _setHoveredBarIds((prev) => {
       const next = new Set(prev);
       next.delete(leavingId);
       return next;
