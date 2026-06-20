@@ -2426,6 +2426,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           width={totalWidth}
           height={bodyHeight}
           xmlns={SVG_NS}
+          style={{ display: 'block', touchAction: 'none' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}

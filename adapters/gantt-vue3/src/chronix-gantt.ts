@@ -3096,6 +3096,9 @@ export const ChronixGantt = defineComponent({
             background: t.chartBackground,
             // Phase 14: explicit grid placement skips the divider track.
             ...(hasSidebar ? { gridColumn: '3', gridRow: '2' } : {}),
+            // Disable default browser touch actions (scroll/zoom) so
+            // pointer events fire consistently for drag/resize gestures.
+            touchAction: 'none',
           },
           onPointerdown,
           onPointermove,

@@ -3052,7 +3052,7 @@ export const ChronixGantt = defineComponent({
             height: bodyHeight,
             xmlns: SVG_NS,
           },
-          style: { display: 'block' },
+          style: { display: 'block', touchAction: 'none' },
           on: {
             pointerdown: onPointerdown,
             pointermove: onPointermove,
