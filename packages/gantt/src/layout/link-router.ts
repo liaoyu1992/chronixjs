@@ -342,6 +342,92 @@ export class DependencyLineAlgorithm {
   }
 
   /**
+   * Calculate the Y coordinate of the horizontal segment for overlap detection.
+   * For smooth routing with target on right, horizontal segment is at target Y.
+   * For square routing with target on right, horizontal segment is at target Y.
+   * For target on left, the routing is more complex and we skip auto-avoidance.
+   */
+  private getHorizontalSegmentY(
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+  ): number | null {
+    // Auto-avoidance only applies when target is on the right
+    if (toX <= fromX) {
+      return null;
+    }
+    return toY;
+  }
+
+  /**
+   * Detect bars that overlap with the horizontal segment of a dependency line.
+   * Returns an array of bars that the horizontal segment would pass through.
+   */
+  private findOverlappingBars(
+    horizontalY: number,
+    fromX: number,
+    toX: number,
+    placedBars: readonly PlacedBar[],
+    barHitHeight: number = 20,
+  ): PlacedBar[] {
+    const overlapping: PlacedBar[] = [];
+
+    for (const bar of placedBars) {
+      const barCenterY = bar.y + bar.height / 2;
+      const yOverlap = Math.abs(horizontalY - barCenterY) < barHitHeight / 2;
+      const xOverlap = Math.max(fromX, bar.x) < Math.min(toX, bar.x + bar.width);
+
+      if (yOverlap && xOverlap) {
+        overlapping.push(bar);
+      }
+    }
+
+    return overlapping;
+  }
+
+  /**
+   * Generate dependency line with automatic obstacle avoidance.
+   * Detects if the horizontal segment would overlap with any bars and adds
+   * vertical offset to avoid them.
+   */
+  generateDependencyLineWithAutoAvoidance(
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    placedBars: readonly PlacedBar[],
+  ): DependencyLineInternal {
+    const line: DependencyLineInternal = {
+      topOffset: 0,
+      leftOffset: 0,
+      points: [],
+      type: this.options.type,
+      fromX,
+      fromY,
+      toX,
+      toY,
+    };
+
+    // Check if horizontal segment would overlap with bars
+    const horizontalY = this.getHorizontalSegmentY(fromX, fromY, toX, toY);
+
+    if (horizontalY !== null) {
+      const overlappingBars = this.findOverlappingBars(horizontalY, fromX, toX, placedBars);
+
+      if (overlappingBars.length > 0) {
+        // Calculate required vertical offset to clear obstacles
+        const maxBarHeight = Math.max(...overlappingBars.map((b) => b.height));
+        line.extraVerticalOffset = maxBarHeight + 10; // 10px buffer
+        line.forceVerticalDown = true;
+      }
+    }
+
+    this.setPoints(line);
+    return line;
+  }
+
+  /**
    * Generate dependency line with extra vertical offset for obstacle avoidance.
    * Used during drag operations when bars may overlap with other bars.
    */
@@ -405,7 +491,14 @@ export const defaultLinkRouter: LinkRouter = {
 
       // Create algorithm instance with the link's routing type and smooth gap
       const algorithm = new DependencyLineAlgorithm(link.routing, smoothGap);
-      const line = algorithm.generateDependencyLine(from.x, from.y, to.x, to.y);
+      // Use auto-avoidance to detect and avoid overlapping bars
+      const line = algorithm.generateDependencyLineWithAutoAvoidance(
+        from.x,
+        from.y,
+        to.x,
+        to.y,
+        input.placedBars,
+      );
 
       // Marker enters the target horizontally on its left edge
       const marker: RoutedLinkMarker = { x: to.x, y: to.y, angleDeg: 0 };

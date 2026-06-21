@@ -79,10 +79,49 @@ export const sampleRows: readonly RowSpec[] = [
  * all (chronix v0's smooth routing is forward-only and limited).
  */
 export const sampleLinks: readonly LinkSpec[] = [
+  // Original links
   { id: 'l1', fromBarId: 'd1', toBarId: 'f1', routing: 'square', marker: 'arrow' },
   { id: 'l2', fromBarId: 'f1', toBarId: 'b1', routing: 'square', marker: 'arrow' },
   { id: 'l3', fromBarId: 'b2', toBarId: 'q1', routing: 'square', marker: 'arrow' },
   { id: 'l4', fromBarId: 'q1', toBarId: 'rel1', routing: 'square', marker: 'arrow' },
+
+  // Additional cross-row dependency links for auto-avoidance demonstration
+  { id: 'l5', fromBarId: 'd2', toBarId: 'f3', routing: 'smooth', marker: 'diamond' },
+  { id: 'l6', fromBarId: 'f2', toBarId: 'b3', routing: 'square', marker: 'circle-hollow' },
+  { id: 'l7', fromBarId: 'b1', toBarId: 'q2', routing: 'smooth', marker: 'plus' },
+  { id: 'l8', fromBarId: 'q1', toBarId: 'rel2', routing: 'square', marker: 'pointer' },
+  {
+    id: 'l9',
+    fromBarId: 'ops1',
+    toBarId: 'sec2',
+    routing: 'smooth',
+    marker: 'arrow',
+    colorOverride: '#7c3aed',
+  },
+  { id: 'l10', fromBarId: 'p1', toBarId: 'data2', routing: 'square', marker: 'diamond' },
+  { id: 'l11', fromBarId: 'f3', toBarId: 'sup3', routing: 'smooth', marker: 'circle-hollow' },
+  { id: 'l12', fromBarId: 'd3', toBarId: 'p3', routing: 'square', marker: 'plus' },
+  {
+    id: 'l13',
+    fromBarId: 'b4',
+    toBarId: 'rel3',
+    routing: 'smooth',
+    marker: 'pointer',
+    colorOverride: '#ea580c',
+  },
+  { id: 'l14', fromBarId: 'q2', toBarId: 'ops3', routing: 'square', marker: 'arrow' },
+  { id: 'l15', fromBarId: 'rel2', toBarId: 'mkt3', routing: 'smooth', marker: 'diamond' },
+  { id: 'l16', fromBarId: 'data1', toBarId: 'leg3', routing: 'square', marker: 'circle-hollow' },
+  { id: 'l17', fromBarId: 'sec1', toBarId: 'sup2', routing: 'smooth', marker: 'plus' },
+  { id: 'l18', fromBarId: 'f4', toBarId: 'b4', routing: 'square', marker: 'pointer' },
+  {
+    id: 'l19',
+    fromBarId: 'd4',
+    toBarId: 'q4',
+    routing: 'smooth',
+    marker: 'arrow',
+    colorOverride: '#16a34a',
+  },
 ];
 
 /**
@@ -100,36 +139,50 @@ export function initialSampleBars(): BarSpec[] {
     // fires on its left edge — visible immediately when the demo loads.
     bar('d1', 'r1', -36, 60, 'Kickoff & wireframes'),
     bar('d2', 'r1', 48, 96, 'High-fidelity mocks'),
+    bar('d3', 'r1', 108, 168, 'Design review'),
+    bar('d4', 'r1', 174, 216, 'Final signoff'),
     withPriority(bar('f1', 'r2', 12, 48, 'Routes & shell'), 'high'),
     bar('f2', 'r2', 36, 72, 'Component library'),
     bar('f3', 'r2', 96, 144, 'Forms & validation'),
+    bar('f4', 'r2', 150, 192, 'E2E tests'),
+    bar('f5', 'r2', 198, 240, 'Performance audit'),
     bar('b1', 'r3', 6, 60, 'DB schema'),
     withPriority(bar('b2', 'r3', 60, 108, 'REST endpoints'), 'medium'),
     // `b3` ends AFTER the week view so the right-continuation triangle
     // fires when viewing 'week'.
     bar('b3', 'r3', 120, 200, 'Auth & sessions'),
+    bar('b4', 'r3', 204, 252, 'API documentation'),
     bar('q1', 'r4', 72, 120, 'Smoke tests'),
     bar('q2', 'r4', 120, 144, 'Regression run'),
     bar('q3', 'r4', 156, 192, 'Load tests'),
+    bar('q4', 'r4', 198, 234, 'Security scan'),
     withPriority(bar('rel1', 'r5', 144, 156, 'Stage cut'), 'low'),
     bar('rel2', 'r5', 192, 204, 'Prod ship'),
+    bar('rel3', 'r5', 210, 258, 'Hotfix rollout'),
     // Phase 32.5 — 12-row expansion. Additional bars across rows 6-12
     // demonstrate the dual-scrollport vertical scrollbar when
     // `maxBodyHeight` constrains the chart pane.
     bar('ops1', 'r6', 0, 24, 'CI pipeline'),
     bar('ops2', 'r6', 96, 144, 'Monitoring setup'),
+    bar('ops3', 'r6', 150, 222, 'Incident response'),
     bar('p1', 'r7', 0, 60, 'Roadmap planning'),
     bar('p2', 'r7', 72, 168, 'Stakeholder sync'),
+    bar('p3', 'r7', 174, 240, 'Sprint planning'),
     bar('sec1', 'r8', 24, 72, 'Threat modeling'),
     bar('sec2', 'r8', 120, 168, 'Pen test'),
+    bar('sec3', 'r8', 174, 246, 'Compliance audit'),
     bar('data1', 'r9', 36, 96, 'Schema migration'),
     bar('data2', 'r9', 120, 192, 'ETL pipeline'),
+    bar('data3', 'r9', 198, 264, 'Data warehouse'),
     bar('sup1', 'r10', 48, 120, 'Docs portal'),
     bar('sup2', 'r10', 144, 192, 'Helpdesk setup'),
+    bar('sup3', 'r10', 198, 252, 'Knowledge base'),
     bar('mkt1', 'r11', 0, 96, 'Launch campaign'),
     bar('mkt2', 'r11', 120, 168, 'Press kit'),
+    bar('mkt3', 'r11', 174, 240, 'User research'),
     bar('leg1', 'r12', 24, 72, 'License review'),
     bar('leg2', 'r12', 144, 192, 'TOS update'),
+    bar('leg3', 'r12', 198, 270, 'Patent filing'),
     // Phase 47.3: 3 same-row time-overlapping bars on r13. Sorted-by-start
     // order is bar-stack-1, bar-stack-2, bar-stack-3; all three pair-wise
     // overlap (0-10 ∩ 5-15 ∩ 8-18 are non-empty), so greedy interval

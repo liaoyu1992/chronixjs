@@ -90,43 +90,59 @@ export function initialSampleBars(): BarSpec[] {
     extendedProps: { priority },
   });
   return [
-    // Design (row 0): 2 bars; d1 starts before the week-view anchor
+    // Design (row 0): 4 bars; d1 starts before the week-view anchor
     // (hour −24) so the Phase 31.4 left-continuation triangle fires
     // in the default week view.
     bar('d1', 'r1', -24, 36, 'Kickoff & wireframes'),
     bar('d2', 'r1', 48, 96, 'High-fidelity mocks'),
-    // Frontend (row 1): 3 bars; two overlap to exercise Phase 30 stacking
+    bar('d3', 'r1', 108, 156, 'Design review'),
+    bar('d4', 'r1', 162, 198, 'Final signoff'),
+    // Frontend (row 1): 5 bars; two overlap to exercise Phase 30 stacking
     withPriority(bar('f1', 'r2', 12, 48, 'Routes & shell'), 'high'),
     bar('f2', 'r2', 36, 72, 'Component library'),
     bar('f3', 'r2', 96, 144, 'Forms & validation'),
-    // Backend (row 2): 3 bars
+    bar('f4', 'r2', 150, 186, 'E2E tests'),
+    bar('f5', 'r2', 192, 216, 'Performance audit'),
+    // Backend (row 2): 5 bars
     bar('b1', 'r3', 6, 60, 'DB schema'),
     withPriority(bar('b2', 'r3', 60, 108, 'REST endpoints'), 'medium'),
     bar('b3', 'r3', 120, 180, 'Auth & sessions'),
-    // QA (row 3): 3 bars; q3 ends after the week-view axis (hour 192)
+    bar('b4', 'r3', 186, 210, 'API docs'),
+    bar('b5', 'r3', 216, 240, 'Service contracts'),
+    // QA (row 3): 4 bars; q3 ends after the week-view axis (hour 192)
     // so the Phase 31.4 right-continuation triangle fires.
     bar('q1', 'r4', 72, 120, 'Smoke tests'),
     bar('q2', 'r4', 120, 144, 'Regression run'),
     bar('q3', 'r4', 156, 192, 'Load tests'),
-    // Release (row 4): 2 bars; rel2 ends well past the week-view axis.
+    bar('q4', 'r4', 198, 228, 'Security scan'),
+    // Release (row 4): 4 bars; rel2 ends well past the week-view axis.
     withPriority(bar('rel1', 'r5', 144, 156, 'Stage cut'), 'low'),
     bar('rel2', 'r5', 192, 204, 'Prod ship'),
+    bar('rel3', 'r5', 210, 234, 'Hotfix rollout'),
+    bar('rel4', 'r5', 240, 264, 'Version tag'),
     // Phase 31.5.2: additional rows so the default 400px maxBodyHeight
     // cap triggers vertical scroll. Each row gets 1-2 modest bars so the
     // chart is visibly busy without overwhelming the demo.
     bar('ops1', 'r6', 30, 90, 'Pipeline setup'),
     bar('ops2', 'r6', 96, 168, 'Monitoring rollout'),
+    bar('ops3', 'r6', 174, 216, 'Incident response'),
     bar('pm1', 'r7', 0, 72, 'Roadmap alignment'),
     bar('pm2', 'r7', 96, 132, 'Stakeholder review'),
+    bar('pm3', 'r7', 138, 180, 'Sprint planning'),
     bar('data1', 'r8', 24, 108, 'ETL refactor'),
     bar('data2', 'r8', 132, 192, 'BI dashboards'),
+    bar('data3', 'r8', 198, 234, 'Data warehouse'),
     bar('sec1', 'r9', 48, 144, 'Threat model'),
+    bar('sec2', 'r9', 150, 222, 'Pen testing'),
     bar('mob1', 'r10', 12, 96, 'iOS prototype'),
     bar('mob2', 'r10', 108, 168, 'Android sync'),
+    bar('mob3', 'r10', 174, 234, 'Cross-platform POC'),
     bar('plat1', 'r11', 0, 84, 'Service mesh'),
     bar('plat2', 'r11', 96, 180, 'Cluster upgrade'),
+    bar('plat3', 'r11', 186, 252, 'CDN rollout'),
     bar('sup1', 'r12', 36, 120, 'Customer onboarding'),
     bar('sup2', 'r12', 132, 192, 'Office hours'),
+    bar('sup3', 'r12', 198, 240, 'Knowledge base'),
     // Phase 47.4: 3 same-row time-overlapping bars on r13. Sorted-by-start
     // order is bar-stack-1, bar-stack-2, bar-stack-3; all three pair-wise
     // overlap (0-10 ∩ 5-15 ∩ 8-18 are non-empty), so greedy interval
@@ -149,6 +165,7 @@ export function initialSampleBars(): BarSpec[] {
  * winning over `useLineEventColor` AND `theme.linkDefaultColor`.
  */
 export const sampleLinks: readonly LinkSpec[] = [
+  // Original links
   { id: 'design→frontend', fromBarId: 'd1', toBarId: 'f1', routing: 'square', marker: 'arrow' },
   // `b2` (60h-108h) starts AFTER `f1` ends (48h), making this a FORWARD
   // smooth link. Targeting `b1` (6h-60h) would make it backward, which
@@ -163,5 +180,49 @@ export const sampleLinks: readonly LinkSpec[] = [
     routing: 'square',
     marker: 'arrow',
     colorOverride: '#dc2626',
+  },
+
+  // Additional cross-row dependency links for auto-avoidance demonstration
+  { id: 'd2→b3', fromBarId: 'd2', toBarId: 'b3', routing: 'smooth', marker: 'circle-hollow' },
+  { id: 'f2→q2', fromBarId: 'f2', toBarId: 'q2', routing: 'square', marker: 'plus' },
+  { id: 'b1→mob1', fromBarId: 'b1', toBarId: 'mob1', routing: 'smooth', marker: 'arrow' },
+  { id: 'q1→plat2', fromBarId: 'q1', toBarId: 'plat2', routing: 'square', marker: 'diamond' },
+  {
+    id: 'ops1→sec2',
+    fromBarId: 'ops1',
+    toBarId: 'sec2',
+    routing: 'smooth',
+    marker: 'pointer',
+    colorOverride: '#7c3aed',
+  },
+  {
+    id: 'pm1→data2',
+    fromBarId: 'pm1',
+    toBarId: 'data2',
+    routing: 'square',
+    marker: 'circle-hollow',
+  },
+  { id: 'f3→sup3', fromBarId: 'f3', toBarId: 'sup3', routing: 'smooth', marker: 'plus' },
+  { id: 'd3→pm3', fromBarId: 'd3', toBarId: 'pm3', routing: 'square', marker: 'arrow' },
+  {
+    id: 'b4→rel3',
+    fromBarId: 'b4',
+    toBarId: 'rel3',
+    routing: 'smooth',
+    marker: 'diamond',
+    colorOverride: '#ea580c',
+  },
+  { id: 'q2→ops3', fromBarId: 'q2', toBarId: 'ops3', routing: 'square', marker: 'circle-hollow' },
+  { id: 'rel2→mob3', fromBarId: 'rel2', toBarId: 'mob3', routing: 'smooth', marker: 'plus' },
+  { id: 'data1→plat3', fromBarId: 'data1', toBarId: 'plat3', routing: 'square', marker: 'arrow' },
+  { id: 'sec1→sup2', fromBarId: 'sec1', toBarId: 'sup2', routing: 'smooth', marker: 'pointer' },
+  { id: 'f4→b5', fromBarId: 'f4', toBarId: 'b5', routing: 'square', marker: 'diamond' },
+  {
+    id: 'd4→q4',
+    fromBarId: 'd4',
+    toBarId: 'q4',
+    routing: 'smooth',
+    marker: 'circle-hollow',
+    colorOverride: '#16a34a',
   },
 ];

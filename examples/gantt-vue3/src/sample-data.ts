@@ -77,6 +77,8 @@ export const sampleRows: readonly RowSpec[] = [
   { id: 'workshop-b', columns: { region: '海口', base: '海口基地', name: '车间 B' } },
   { id: 'workshop-c', columns: { region: '海口', base: '空港基地', name: '车间 C' } },
   { id: 'workshop-d', columns: { region: '三亚', base: '三亚基地', name: '车间 D' } },
+  { id: 'workshop-e', columns: { region: '三亚', base: '三亚基地', name: '车间 E' } },
+  { id: 'workshop-f', columns: { region: '三亚', base: '三亚基地', name: '车间 F' } },
   // Phase 30: dedicated row exercising same-row time-overlap stacking.
   // Before Phase 30 chronix collapsed all overlapping bars to identical
   // Y (one rendered, others hidden). After: each gets its own stack level
@@ -110,6 +112,17 @@ export const sampleBars: readonly BarSpec[] = [
   barAt('bar-7', 'workshop-c', 16, 20, '验证测试'),
   withPriority(barAt('bar-8', 'workshop-d', 4, 11, '综合检修', 80), LOW_PRIORITY),
 
+  // Additional bars for auto-avoidance demonstration
+  // These create scenarios where dependency lines pass through other bars
+  barAt('bar-17', 'workshop-a', 12, 16, 'A-中期任务'),
+  barAt('bar-18', 'workshop-b', 18, 23, 'B-晚间任务'),
+  barAt('bar-19', 'workshop-c', 0, 3, 'C-清晨任务'),
+  barAt('bar-20', 'workshop-d', 12, 17, 'D-下午巡检'),
+  barAt('bar-21', 'workshop-e', 3, 9, 'E-上午任务'),
+  barAt('bar-22', 'workshop-e', 13, 19, 'E-下午任务'),
+  barAt('bar-23', 'workshop-f', 5, 11, 'F-上午检修'),
+  barAt('bar-24', 'workshop-f', 14, 21, 'F-下午维护'),
+
   // Multi-day bars — fill week / month / season / halfYear / year views.
   // Offsets chosen to land each bar in a distinct stretch of the wider
   // axes so each view shows visible content across its full width.
@@ -121,6 +134,8 @@ export const sampleBars: readonly BarSpec[] = [
   multiDayBar('bar-14', 'workshop-b', 120, 60, '下半年项目 - 工艺改造'),
   multiDayBar('bar-15', 'workshop-c', 210, 45, '年末交付 - 客户验收'),
   multiDayBar('bar-16', 'workshop-d', 300, 30, '次年初规划', 5),
+  multiDayBar('bar-25', 'workshop-e', 5, 12, 'E-多日任务 A', 40),
+  multiDayBar('bar-26', 'workshop-f', 8, 15, 'F-多日任务 B', 60),
 
   // Phase 30: 3 same-row time-overlapping bars on the dedicated stacking
   // row. Sorted-by-start order is bar-stack-1, bar-stack-2, bar-stack-3;
@@ -163,6 +178,7 @@ const heartMarker: CustomLinkMarker = {
  * multi-day bar is automatically forward across all 6 views.
  */
 export const sampleLinks: readonly LinkSpec[] = [
+  // Original links
   // bar-1 (a, 1–5h) → bar-2 (a, 8–12h): same row, forward (5 < 8).
   { id: 'link-1', fromBarId: 'bar-1', toBarId: 'bar-2', routing: 'square', marker: 'arrow' },
   // bar-4 (b, 2–7h) → bar-5 (b, 10–18h): same row, forward (7 < 10).
@@ -193,4 +209,51 @@ export const sampleLinks: readonly LinkSpec[] = [
     marker: heartMarker,
     colorOverride: '#10b981',
   },
+
+  // Additional links for auto-avoidance demonstration
+  // Cross-row links that may trigger auto-avoidance
+  { id: 'link-7', fromBarId: 'bar-1', toBarId: 'bar-22', routing: 'smooth', marker: 'arrow' }, // a→e, passes through b,c,d
+  { id: 'link-8', fromBarId: 'bar-4', toBarId: 'bar-24', routing: 'smooth', marker: 'diamond' }, // b→f
+  { id: 'link-9', fromBarId: 'bar-19', toBarId: 'bar-18', routing: 'square', marker: 'arrow' }, // c→b
+  {
+    id: 'link-10',
+    fromBarId: 'bar-21',
+    toBarId: 'bar-20',
+    routing: 'smooth',
+    marker: 'circle-hollow',
+  }, // e→d
+  { id: 'link-11', fromBarId: 'bar-17', toBarId: 'bar-23', routing: 'smooth', marker: 'plus' }, // a→f
+  { id: 'link-12', fromBarId: 'bar-2', toBarId: 'bar-7', routing: 'square', marker: 'arrow' }, // a→c
+  {
+    id: 'link-13',
+    fromBarId: 'bar-5',
+    toBarId: 'bar-24',
+    routing: 'smooth',
+    marker: 'diamond',
+    colorOverride: '#8b5cf6',
+  }, // b→f with purple
+  { id: 'link-14', fromBarId: 'bar-6', toBarId: 'bar-18', routing: 'square', marker: 'arrow' }, // c→b
+  {
+    id: 'link-15',
+    fromBarId: 'bar-8',
+    toBarId: 'bar-22',
+    routing: 'smooth',
+    marker: 'circle-hollow',
+    colorOverride: '#f59e0b',
+  }, // d→e with orange
+
+  // Links to multi-day bars
+  { id: 'link-16', fromBarId: 'bar-17', toBarId: 'bar-25', routing: 'smooth', marker: 'arrow' }, // a→e multi-day
+  { id: 'link-17', fromBarId: 'bar-20', toBarId: 'bar-26', routing: 'smooth', marker: 'diamond' }, // d→f multi-day
+
+  // Complex cross-row scenarios
+  { id: 'link-18', fromBarId: 'bar-23', toBarId: 'bar-17', routing: 'smooth', marker: 'plus' }, // f→a
+  { id: 'link-19', fromBarId: 'bar-19', toBarId: 'bar-21', routing: 'square', marker: 'arrow' }, // c→e
+  {
+    id: 'link-20',
+    fromBarId: 'bar-22',
+    toBarId: 'bar-18',
+    routing: 'smooth',
+    marker: 'circle-hollow',
+  }, // e→b
 ];

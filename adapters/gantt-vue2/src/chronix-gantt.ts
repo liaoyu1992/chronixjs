@@ -3119,6 +3119,7 @@ export const ChronixGantt = defineComponent({
           ),
           ...(gridGroupNode ? [gridGroupNode] : []),
           ...(todayLineBodyNode ? [todayLineBodyNode] : []),
+          h('g', { class: 'cx-gantt-links', attrs: { 'pointer-events': 'none' } }, linkPathNodes),
           h(
             'g',
             {
@@ -3128,7 +3129,6 @@ export const ChronixGantt = defineComponent({
             },
             barChildren,
           ),
-          h('g', { class: 'cx-gantt-links', attrs: { 'pointer-events': 'none' } }, linkPathNodes),
         ],
       );
 

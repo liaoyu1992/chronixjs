@@ -2502,6 +2502,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           {bodySlotsGroupNode}
           {gridGroupNode}
           {todayLineBodyNode}
+          <g className="cx-gantt-links" pointerEvents="none">
+            {linkPathNodes}
+          </g>
           <g
             className="cx-gantt-bars"
             onPointerOver={onBarsPointerOver}
@@ -2918,9 +2921,6 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 </Fragment>
               );
             })}
-          </g>
-          <g className="cx-gantt-links" pointerEvents="none">
-            {linkPathNodes}
           </g>
         </svg>
       </div>
