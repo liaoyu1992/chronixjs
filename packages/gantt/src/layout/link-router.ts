@@ -369,7 +369,7 @@ export class DependencyLineAlgorithm {
     fromX: number,
     toX: number,
     placedBars: readonly PlacedBar[],
-    barHitHeight: number = 20,
+    barHitHeight = 20,
   ): PlacedBar[] {
     const overlapping: PlacedBar[] = [];
 
