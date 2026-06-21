@@ -172,7 +172,7 @@ describe('<ChronixGantt> link rendering — Commit 1: paths', () => {
     const barsIdx = directGroups.findIndex((g) => g.classList.contains('cx-gantt-bars'));
     const linksIdx = directGroups.findIndex((g) => g.classList.contains('cx-gantt-links'));
     expect(barsIdx).toBeGreaterThanOrEqual(0);
-    expect(linksIdx).toBeGreaterThan(barsIdx);
+    expect(barsIdx).toBeGreaterThan(linksIdx);
 
     const linksGroup = directGroups[linksIdx]!;
     expect(linksGroup.getAttribute('pointer-events')).toBe('none');
