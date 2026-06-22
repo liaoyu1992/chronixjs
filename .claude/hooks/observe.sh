@@ -26,6 +26,15 @@ fi
 
 OBSERVE_PY="$CLAUDE_DIR/bin/observe.py"
 
+# Find python3 - on Windows, python3 from PATH may redirect to Windows Store.
+if command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; then
+  PYTHON3="python3"
+elif command -v python >/dev/null 2>&1 && python --version >/dev/null 2>&1; then
+  PYTHON3="python"
+else
+  PYTHON3="/c/Users/liaoyu/AppData/Local/Python/bin/python3.exe"
+fi
+
 # Read all stdin into a variable
 INPUT=$(cat)
 
@@ -35,9 +44,9 @@ if [ -z "$INPUT" ]; then
 fi
 
 # Delegate to Python script, passing phase and input
-echo "$INPUT" | python3 "$OBSERVE_PY" "$PHASE" "$CLAUDE_DIR" 2>/dev/null || true
+echo "$INPUT" | "$PYTHON3" "$OBSERVE_PY" "$PHASE" "$CLAUDE_DIR" 2>/dev/null || true
 
 # Also run rotation check (silently)
-python3 "$CLAUDE_DIR/bin/observations_rotate.py" "$CLAUDE_DIR" 2>/dev/null || true
+"$PYTHON3" "$CLAUDE_DIR/bin/observations_rotate.py" "$CLAUDE_DIR" 2>/dev/null || true
 
 exit 0

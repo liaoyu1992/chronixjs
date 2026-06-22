@@ -16,6 +16,15 @@ else
   CLAUDE_DIR="$PROJECT_ROOT/.claude"
 fi
 
-python3 "$CLAUDE_DIR/memory/inject_memory_context.py" "$CLAUDE_DIR" 2>/dev/null || true
+# Find python3 - on Windows, python3 from PATH may redirect to Windows Store.
+if command -v python3 >/dev/null 2>&1 && python3 --version >/dev/null 2>&1; then
+  PYTHON3="python3"
+elif command -v python >/dev/null 2>&1 && python --version >/dev/null 2>&1; then
+  PYTHON3="python"
+else
+  PYTHON3="/c/Users/liaoyu/AppData/Local/Python/bin/python3.exe"
+fi
+
+"$PYTHON3" "$CLAUDE_DIR/memory/inject_memory_context.py" "$CLAUDE_DIR" 2>/dev/null || true
 
 exit 0

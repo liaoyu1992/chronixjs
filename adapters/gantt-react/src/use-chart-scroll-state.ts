@@ -82,11 +82,9 @@ export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): Cha
       resizeObserver.observe(pane);
     }
 
-    // Initial read (use flushSync for consistency)
-    flushSync(() => {
-      stateRef.current = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
-      setTick(0);
-    });
+    // Initial read (no flushSync needed - useEffect runs after paint)
+    stateRef.current = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
+    setTick(0);
 
     return () => {
       pane.removeEventListener('scroll', handleScrollThrottled);
