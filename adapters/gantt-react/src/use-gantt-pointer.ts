@@ -23,6 +23,7 @@ import {
   type SwimlaneStrip,
   type TimeRange,
 } from '@chronixjs/gantt';
+import { flushSync } from 'react-dom';
 import { useReducer, useRef } from 'react';
 
 /**
@@ -530,7 +531,15 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
         input.onBarResizeStart?.({ barId: updated.barId, edge: updated.edge });
       }
     }
-    forceRender();
+
+    // CRITICAL: Use flushSync to force synchronous rendering during
+    // drag/resize operations. This matches Vue's synchronous ref updates
+    // and prevents the bar from lagging behind the pointer.
+    // Without flushSync, React's async batching causes the bar position
+    // to update with a delay, creating a disconnect between pointer and bar.
+    flushSync(() => {
+      forceRender();
+    });
   }
 
   /**

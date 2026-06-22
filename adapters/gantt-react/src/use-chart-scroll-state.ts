@@ -1,96 +1,118 @@
-import { useEffect, useState, useRef, useLayoutEffect, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 'react';
+import { flushSync } from 'react-dom';
 
 /**
- * Phase 32.5 (Phase 23 in chronix-vue3 / Phase 31.5.2 in chronix-vue2):
- * tracks the chart-pane's `scrollLeft` + `clientWidth` so downstream
- * render code can react to user scroll and container resize. Returned
- * values are plain numbers that trigger re-renders when they change.
+ * Phase 32.5.2 FIX (2026-06-22):
  *
- * IMPORTANT: Returns real-time current scroll values on each render,
- * not just cached state. This ensures viewport clipping calculations
- * always use the latest scroll position, even during drag operations
- * where scroll events may not have fired recently.
+ * PROBLEM: Vue doesn't flicker because ref.value = x is synchronous update.
+ * React setState is async (React 18 concurrent rendering), causing flicker.
  *
- * Designed as a consumer-facing hook for follow-up phases that need
- * the chart-pane viewport state:
+ * SOLUTION: Use flushSync to force synchronous rendering during scroll events.
  *
- *   - **Phase 32.5.1** — viewport-clipping math for triangles,
- *     bar text positioning, and dot positioning; reads scrollLeft +
- *     clientWidth to decide whether a bar's start/end extends past
- *     the visible viewport.
+ * The core issue:
+ * - Scroll event fires → setState schedules async re-render
+ * - Before re-render commits, DOM continues scrolling
+ * - Component renders with stale scroll values → flicker
  *
- * Listens on the pane's `scroll` event for scrollLeft updates +
- * uses `ResizeObserver` for clientWidth updates (so container
- * resizes also trigger reads). Both default to `0` before mount or
- * when the ref doesn't resolve; consumers can guard on
- * `clientWidth > 0` to skip the first-paint pre-mount frame.
+ * With flushSync:
+ * - Scroll event fires → flushSync forces immediate re-render
+ * - DOM updates synchronously → no time for DOM to drift
+ * - Component renders with fresh scroll values → no flicker
  *
- * Decision A.1 — plain `useState` with shallow-equal short-circuit
- * is the right tool here: scroll state isn't read-mutate-in-same-
- * handler so Phase 32.2's `useRef + useReducer + getter` machinery
- * is unnecessary overhead. Standard React re-render flow on state
- * change.
- *
- * Decision C.1 — `typeof ResizeObserver !== 'undefined'` gate covers
- * both jsdom (test env, no ResizeObserver) AND SSR with one
- * mechanism. In jsdom the observer simply never fires; tests use
- * direct `fireEvent.scroll` to dispatch scroll events for assertions.
+ * Also adds requestAnimationFrame throttling to avoid excessive re-renders
+ * during rapid scroll events (browser fires many scroll events per second).
  */
+
 export interface ChartScrollState {
   readonly scrollLeft: number;
   readonly clientWidth: number;
 }
 
 export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): ChartScrollState {
-  const [state, setState] = useState<ChartScrollState>({ scrollLeft: 0, clientWidth: 0 });
-  // Use a ref to track the current DOM values - this is always in sync
-  const currentRef = useRef<ChartScrollState>({ scrollLeft: 0, clientWidth: 0 });
+  const stateRef = useRef<ChartScrollState>({ scrollLeft: 0, clientWidth: 0 });
+  const paneElRef = useRef<HTMLElement | null>(null);
+  const rafIdRef = useRef<number | null>(null);
+  const [, setTick] = useState(0);
 
   useEffect(() => {
     const pane = paneRef.current;
     if (!pane) return;
 
-    function readState(): void {
-      // pane is captured in closure — safe to read .scrollLeft / .clientWidth
-      // without re-checking paneRef.current (which React may have nullified
-      // by the time cleanup fires).
-      if (!pane) return;
-      const next = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
-      currentRef.current = next;
-      setState((prev) =>
-        prev.scrollLeft === next.scrollLeft && prev.clientWidth === next.clientWidth ? prev : next,
-      );
-    }
+    paneElRef.current = pane;
 
-    pane.addEventListener('scroll', readState, { passive: true });
+    const handleScroll = () => {
+      // Cancel any pending RAF to avoid stacking updates
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+
+      // Read fresh DOM values
+      stateRef.current = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
+
+      // CRITICAL: Use flushSync to force synchronous rendering
+      // This ensures the component re-renders immediately with the fresh values,
+      // preventing the flicker caused by React's async batching.
+      flushSync(() => {
+        setTick((t) => t + 1);
+      });
+    };
+
+    // Throttle with RAF to avoid excessive re-renders during rapid scroll
+    const handleScrollThrottled = () => {
+      if (rafIdRef.current !== null) {
+        return; // Already scheduled
+      }
+
+      rafIdRef.current = requestAnimationFrame(() => {
+        rafIdRef.current = null;
+        handleScroll();
+      });
+    };
+
+    // Setup listeners
+    pane.addEventListener('scroll', handleScrollThrottled, { passive: true });
 
     let resizeObserver: ResizeObserver | null = null;
     if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(readState);
+      resizeObserver = new ResizeObserver(() => {
+        // For resize, we don't need RAF throttling since it fires less frequently
+        handleScroll();
+      });
       resizeObserver.observe(pane);
     }
 
-    // Initial read so pre-scroll consumers see the mounted clientWidth
-    // immediately (matches vue2's `readState()` call at end of onMounted).
-    readState();
+    // Initial read (use flushSync for consistency)
+    flushSync(() => {
+      stateRef.current = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
+      setTick(0);
+    });
 
     return () => {
-      pane.removeEventListener('scroll', readState);
+      pane.removeEventListener('scroll', handleScrollThrottled);
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
       resizeObserver?.disconnect();
+      paneElRef.current = null;
     };
   }, [paneRef]);
 
-  // useLayoutEffect runs after DOM mutations but before browser paint.
-  // This updates currentRef with latest DOM values before render completes.
+  // Fallback: ensure we have the latest values before paint
+  // This is a safety net in case something bypassed the scroll handler
   useLayoutEffect(() => {
-    const pane = paneRef.current;
+    const pane = paneElRef.current;
     if (pane) {
-      const current = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
-      currentRef.current = current;
+      const freshState = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
+      // Only update if values changed to avoid re-renders
+      if (
+        freshState.scrollLeft !== stateRef.current.scrollLeft ||
+        freshState.clientWidth !== stateRef.current.clientWidth
+      ) {
+        stateRef.current = freshState;
+      }
     }
   });
 
-  // Return currentRef values for real-time access during render.
-  // This ensures viewport clipping always uses the latest scroll position.
-  return currentRef.current;
+  return stateRef.current;
 }
