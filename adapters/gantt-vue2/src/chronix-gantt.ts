@@ -2079,6 +2079,9 @@ export const ChronixGantt = defineComponent({
       const activeTxn = pointer.activeTransaction.value;
       const barChildren: VNode[] = [];
 
+      // Strips keyed by rowId for O(1) lookup in cross-row snap logic during bar rendering.
+      const stripByRowId = new Map(strips.value.map((s) => [s.rowId, s]));
+
       // Phase 31.4.1: per-render-pass map from barId → resolved background
       // color. Populated inside the bar-render loop (single line below the
       // `resolvedStyle` resolution) and read by the link-render block when
@@ -2089,6 +2092,52 @@ export const ChronixGantt = defineComponent({
       const barColorByBarId = new Map<string, string>();
 
       for (const bar of placedBars.value) {
+        // Live geometry: when a `bar-drag` or `bar-resize` transaction
+        // is active on THIS bar, shift the rendered rect by the
+        // transaction's `deltaX` / `deltaY`. The progress fill + handle
+        // below read from the same render geometry so the overlay stays
+        // anchored to the bar's visible body during the drag.
+        let renderX = bar.x;
+        let renderY = bar.y;
+        let renderWidth = bar.width;
+        if (activeTxn && 'barId' in activeTxn && activeTxn.barId === bar.barId) {
+          if (activeTxn.kind === 'bar-drag') {
+            renderX = bar.x + activeTxn.deltaX;
+            // Cross-row snap: when the pointer is over a strip that
+            // differs from the source row, position the bar at the
+            // target strip's Y plus the same intra-strip offset the
+            // bar had at drag-start. When projection is null (gap or
+            // out-of-content) or matches the source row, free-fall
+            // by deltaY so the bar follows the pointer smoothly.
+            const projectedRowId = pointer.projectedRowId.value;
+            const sourceBar = props.bars.find((b) => b.id === bar.barId);
+            const sourceRowId = sourceBar?.rowId;
+            if (
+              projectedRowId !== null &&
+              sourceRowId !== undefined &&
+              projectedRowId !== sourceRowId
+            ) {
+              const sourceStrip = stripByRowId.get(sourceRowId);
+              const targetStrip = stripByRowId.get(projectedRowId);
+              if (sourceStrip && targetStrip) {
+                const intraStripOffset = bar.y - sourceStrip.y;
+                renderY = targetStrip.y + intraStripOffset;
+              } else {
+                renderY = bar.y + activeTxn.deltaY;
+              }
+            } else {
+              renderY = bar.y + activeTxn.deltaY;
+            }
+          } else if (activeTxn.kind === 'bar-resize') {
+            if (activeTxn.edge === 'start') {
+              renderX = bar.x + activeTxn.deltaX;
+              renderWidth = Math.max(0, bar.width - activeTxn.deltaX);
+            } else {
+              renderWidth = Math.max(0, bar.width + activeTxn.deltaX);
+            }
+          }
+        }
+
         const isSelected = selectedBarSet.value.has(bar.barId);
         const sourceBar = props.bars.find((b) => b.id === bar.barId);
         // Phase 31.4: Phase 20 cascade resolution. When `sourceBar` exists,
@@ -2162,9 +2211,9 @@ export const ChronixGantt = defineComponent({
           const slotArgs: BarSlotArgs = {
             placedBar: bar,
             sourceBar,
-            renderX: bar.x,
-            renderY: bar.y,
-            renderWidth: bar.width,
+            renderX: renderX,
+            renderY: renderY,
+            renderWidth: renderWidth,
             renderHeight: bar.height,
             theme: t,
             activeTransaction: activeTxn,
@@ -2220,9 +2269,9 @@ export const ChronixGantt = defineComponent({
               class: barClass,
               attrs: {
                 'data-bar-id': bar.barId,
-                x: bar.x,
-                y: bar.y,
-                width: bar.width,
+                x: renderX,
+                y: renderY,
+                width: renderWidth,
                 height: bar.height,
                 // Phase 31.4: fill / stroke flow from the Phase 20 cascade
                 // (was raw theme tokens at Phase 31.3). When no overrides
@@ -2252,15 +2301,15 @@ export const ChronixGantt = defineComponent({
               ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
               : sourceProgressEarly;
           const clampedEarly = Math.max(0, Math.min(100, displayedProgressEarly));
-          const fillWidthEarly = (clampedEarly / 100) * bar.width;
+          const fillWidthEarly = (clampedEarly / 100) * renderWidth;
           barChildren.push(
             h('rect', {
               key: `${bar.barId}-progress-fill`,
               class: 'cx-gantt-progress-fill',
               attrs: {
                 'data-progress-bar-id': bar.barId,
-                x: bar.x,
-                y: bar.y,
+                x: renderX,
+                y: renderY,
                 width: fillWidthEarly,
                 height: bar.height,
                 fill: t.progressFill,
@@ -2278,8 +2327,8 @@ export const ChronixGantt = defineComponent({
         // boundary semantics (strict `<` / `>`, Phase 28.2.2 overlap
         // guard, `clientWidth === 0` pre-mount short-circuit).
         const viewportClip = deriveViewportClipping(
-          bar.x,
-          bar.width,
+          renderX,
+          renderWidth,
           chartScroll.scrollLeft.value,
           chartScroll.clientWidth.value,
           TRIANGLE_MARGIN,
@@ -2315,9 +2364,9 @@ export const ChronixGantt = defineComponent({
         if (fireLeftTriangle) {
           const apexX = viewportClip.isViewportClippedStart
             ? viewportClip.viewportLockedLeftApexX
-            : bar.x + TRIANGLE_MARGIN;
+            : renderX + TRIANGLE_MARGIN;
           const baseX = apexX + TRIANGLE_SIZE;
-          const centerY = bar.y + bar.height / 2;
+          const centerY = renderY + bar.height / 2;
           barChildren.push(
             h('polygon', {
               key: `${bar.barId}-continuation-left`,
@@ -2338,9 +2387,9 @@ export const ChronixGantt = defineComponent({
         if (fireRightTriangle) {
           const apexX = viewportClip.isViewportClippedEnd
             ? viewportClip.viewportLockedRightApexX
-            : bar.x + bar.width - TRIANGLE_MARGIN;
+            : renderX + renderWidth - TRIANGLE_MARGIN;
           const baseX = apexX - TRIANGLE_SIZE;
-          const centerY = bar.y + bar.height / 2;
+          const centerY = renderY + bar.height / 2;
           barChildren.push(
             h('polygon', {
               key: `${bar.barId}-continuation-right`,
@@ -2409,12 +2458,12 @@ export const ChronixGantt = defineComponent({
         // is far offscreen, silently suppressing the title.
         const titleViewportSpan =
           viewportClip.isViewportClippedStart && viewportClip.isViewportClippedEnd;
-        const titleHasAxisOverlap = bar.x < a.totalWidth && bar.x + bar.width > 0;
+        const titleHasAxisOverlap = renderX < a.totalWidth && renderX + renderWidth > 0;
         const title = sourceBar?.title;
-        if (titleHasAxisOverlap && title && title.length > 0 && bar.width > 30) {
+        if (titleHasAxisOverlap && title && title.length > 0 && renderWidth > 30) {
           const titleStartX = deriveEdgePaddedX(
             'start',
-            bar.x,
+            renderX,
             viewportClip.viewportLockedLeftApexX,
             !bar.isStart,
             titleViewportSpan,
@@ -2425,7 +2474,7 @@ export const ChronixGantt = defineComponent({
           );
           const titleEndX = deriveEdgePaddedX(
             'end',
-            bar.x + bar.width,
+            renderX + renderWidth,
             viewportClip.viewportLockedRightApexX,
             !bar.isEnd,
             titleViewportSpan,
@@ -2463,7 +2512,7 @@ export const ChronixGantt = defineComponent({
                     attrs: {
                       'data-bar-id': bar.barId,
                       x: titleStartX,
-                      y: bar.y + bar.height / 2,
+                      y: renderY + bar.height / 2,
                       fill: resolvedStyle.textColor,
                       'font-size': resolvedStyle.fontSize,
                       'font-weight': resolvedStyle.fontWeight,
@@ -2501,9 +2550,9 @@ export const ChronixGantt = defineComponent({
               ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
               : sourceProgress;
           const clamped = Math.max(0, Math.min(100, displayedProgress));
-          const fillWidth = (clamped / 100) * bar.width;
-          const handleX = bar.x + fillWidth;
-          const handleY = bar.y + bar.height;
+          const fillWidth = (clamped / 100) * renderWidth;
+          const handleX = renderX + fillWidth;
+          const handleY = renderY + bar.height;
           const TRIANGLE_SIZE = 6;
           barChildren.push(
             h('polygon', {
@@ -2531,7 +2580,7 @@ export const ChronixGantt = defineComponent({
         // edge so resize gestures operate on the bar's real boundary.
         // The axis-overlap gate keeps off-axis bars from painting chrome
         // they'd visually trail off into nothing.
-        const selectionHasAxisOverlap = bar.x < a.totalWidth && bar.x + bar.width > 0;
+        const selectionHasAxisOverlap = renderX < a.totalWidth && renderX + renderWidth > 0;
         if (selectionHasAxisOverlap) {
           if (isSelected) {
             barChildren.push(
@@ -2540,9 +2589,9 @@ export const ChronixGantt = defineComponent({
                 class: 'cx-gantt-bar-selection-border',
                 attrs: {
                   'data-bar-id': bar.barId,
-                  x: bar.x,
-                  y: bar.y,
-                  width: bar.width,
+                  x: renderX,
+                  y: renderY,
+                  width: renderWidth,
                   height: bar.height,
                   fill: 'none',
                   stroke: t.barSelectedBorderColor,
@@ -2567,8 +2616,8 @@ export const ChronixGantt = defineComponent({
                 class: 'cx-gantt-bar-resizer-start',
                 attrs: {
                   'data-bar-id': bar.barId,
-                  x: bar.x,
-                  y: bar.y,
+                  x: renderX,
+                  y: renderY,
                   width: resizerThickness,
                   height: bar.height,
                   fill: 'transparent',
@@ -2581,8 +2630,8 @@ export const ChronixGantt = defineComponent({
                 class: 'cx-gantt-bar-resizer-end',
                 attrs: {
                   'data-bar-id': bar.barId,
-                  x: bar.x + bar.width - resizerThickness,
-                  y: bar.y,
+                  x: renderX + renderWidth - resizerThickness,
+                  y: renderY,
                   width: resizerThickness,
                   height: bar.height,
                   fill: 'transparent',
@@ -2594,10 +2643,10 @@ export const ChronixGantt = defineComponent({
           }
           if (isSelected && props.editable && props.eventDurationEditable) {
             const dotSize = t.barResizerDotSize;
-            const dotY = bar.y + (bar.height - dotSize) / 2;
+            const dotY = renderY + (bar.height - dotSize) / 2;
             const leftDotX = deriveEdgePaddedX(
               'start',
-              bar.x,
+              renderX,
               viewportClip.viewportLockedLeftApexX,
               !bar.isStart,
               viewportClip.isViewportClippedStart,
@@ -2609,7 +2658,7 @@ export const ChronixGantt = defineComponent({
             const rightDotX =
               deriveEdgePaddedX(
                 'end',
-                bar.x + bar.width,
+                renderX + renderWidth,
                 viewportClip.viewportLockedRightApexX,
                 !bar.isEnd,
                 viewportClip.isViewportClippedEnd,
@@ -2671,8 +2720,6 @@ export const ChronixGantt = defineComponent({
       const linkSpecById = new Map<string, LinkSpec>(props.links.map((l) => [l.id, l]));
       const placedBarById = new Map<string, PlacedBar>(placedBars.value.map((p) => [p.barId, p]));
       const linkSlotTemplate = props.slotRegistry?.get(LINK_SLOT_NAME);
-      // Strips keyed by rowId for O(1) lookup in cross-row snap logic.
-      const stripByRowId = new Map(strips.value.map((s) => [s.rowId, s]));
 
       // Helper: compute the "live" (drag-adjusted) position of a bar.
       // Returns a PlacedBar with x/y/width adjusted by the active transaction

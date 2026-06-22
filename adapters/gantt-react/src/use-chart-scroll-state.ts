@@ -1,4 +1,4 @@
-import { useEffect, useState, type RefObject } from 'react';
+import { useEffect, useState, useRef, useLayoutEffect, type RefObject } from 'react';
 
 /**
  * Phase 32.5 (Phase 23 in chronix-vue3 / Phase 31.5.2 in chronix-vue2):
@@ -6,14 +6,18 @@ import { useEffect, useState, type RefObject } from 'react';
  * render code can react to user scroll and container resize. Returned
  * values are plain numbers that trigger re-renders when they change.
  *
+ * IMPORTANT: Returns real-time current scroll values on each render,
+ * not just cached state. This ensures viewport clipping calculations
+ * always use the latest scroll position, even during drag operations
+ * where scroll events may not have fired recently.
+ *
  * Designed as a consumer-facing hook for follow-up phases that need
  * the chart-pane viewport state:
  *
- *   - **Phase 32.5.1 (next)** — viewport-clipping math for triangles,
+ *   - **Phase 32.5.1** — viewport-clipping math for triangles,
  *     bar text positioning, and dot positioning; reads scrollLeft +
  *     clientWidth to decide whether a bar's start/end extends past
- *     the visible viewport. chronix-react currently emits
- *     `data-viewport-clipped="false"` placeholder pending this port.
+ *     the visible viewport.
  *
  * Listens on the pane's `scroll` event for scrollLeft updates +
  * uses `ResizeObserver` for clientWidth updates (so container
@@ -39,6 +43,8 @@ export interface ChartScrollState {
 
 export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): ChartScrollState {
   const [state, setState] = useState<ChartScrollState>({ scrollLeft: 0, clientWidth: 0 });
+  // Use a ref to track the current DOM values - this is always in sync
+  const currentRef = useRef<ChartScrollState>({ scrollLeft: 0, clientWidth: 0 });
 
   useEffect(() => {
     const pane = paneRef.current;
@@ -50,6 +56,7 @@ export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): Cha
       // by the time cleanup fires).
       if (!pane) return;
       const next = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
+      currentRef.current = next;
       setState((prev) =>
         prev.scrollLeft === next.scrollLeft && prev.clientWidth === next.clientWidth ? prev : next,
       );
@@ -73,5 +80,17 @@ export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): Cha
     };
   }, [paneRef]);
 
-  return state;
+  // useLayoutEffect runs after DOM mutations but before browser paint.
+  // This updates currentRef with latest DOM values before render completes.
+  useLayoutEffect(() => {
+    const pane = paneRef.current;
+    if (pane) {
+      const current = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
+      currentRef.current = current;
+    }
+  });
+
+  // Return currentRef values for real-time access during render.
+  // This ensures viewport clipping always uses the latest scroll position.
+  return currentRef.current;
 }
