@@ -249,7 +249,7 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
       const sidebarHeaderInner = container.querySelector<HTMLDivElement>(
         'div.cx-gantt-sidebar-header-inner',
       )!;
-      Object.defineProperty(sidebarPane, 'scrollLeft', { value: 30, configurable: true });
+      sidebarPane.scrollLeft = 30;
       act(() => {
         fireEvent.scroll(sidebarPane);
       });

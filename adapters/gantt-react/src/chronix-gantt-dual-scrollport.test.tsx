@@ -88,7 +88,7 @@ describe('@chronixjs/gantt-react ChronixGantt — dual-scrollport (Phase 32.5)',
     );
     const pane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-pane')!;
     const inner = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-header-inner')!;
-    Object.defineProperty(pane, 'scrollLeft', { value: 80, configurable: true });
+    pane.scrollLeft = 80;
     act(() => {
       fireEvent.scroll(pane);
     });

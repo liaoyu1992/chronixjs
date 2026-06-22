@@ -2511,10 +2511,58 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
             onPointerOut={onBarsPointerOut}
           >
             {barRenderInputs.map(({ bar, isSelected, sourceBar, resolvedStyle }) => {
-              const selectionHasAxisOverlap = bar.x < axis.totalWidth && bar.x + bar.width > 0;
+              // Live geometry: when a `bar-drag` or `bar-resize` transaction
+              // is active on THIS bar, shift the rendered rect by the
+              // transaction's `deltaX` / `deltaY`. The progress fill + handle
+              // below read from the same render geometry so the overlay stays
+              // anchored to the bar's visible body during the drag.
+              // Mirrors chronix-vue3 lines 2057-2102.
+              let renderX = bar.x;
+              let renderY = bar.y;
+              let renderWidth = bar.width;
+              if (activeTxn && 'barId' in activeTxn && activeTxn.barId === bar.barId) {
+                if (activeTxn.kind === 'bar-drag') {
+                  renderX = bar.x + activeTxn.deltaX;
+                  // Cross-row snap: when the pointer is over a strip that
+                  // differs from the source row, position the bar at the
+                  // target strip's Y plus the same intra-strip offset the
+                  // bar had at drag-start. When projection is null (gap or
+                  // out-of-content) or matches the source row, free-fall
+                  // by deltaY so the bar follows the pointer smoothly.
+                  const projectedRowId = pointer.projectedRowId;
+                  const sourceBarLocal = bars.find((b) => b.id === bar.barId);
+                  const sourceRowId = sourceBarLocal?.rowId;
+                  if (
+                    projectedRowId !== null &&
+                    sourceRowId !== undefined &&
+                    projectedRowId !== sourceRowId
+                  ) {
+                    const sourceStrip = stripByRowId.get(sourceRowId);
+                    const targetStrip = stripByRowId.get(projectedRowId);
+                    if (sourceStrip && targetStrip) {
+                      const intraStripOffset = bar.y - sourceStrip.y;
+                      renderY = targetStrip.y + intraStripOffset;
+                    } else {
+                      renderY = bar.y + activeTxn.deltaY;
+                    }
+                  } else {
+                    renderY = bar.y + activeTxn.deltaY;
+                  }
+                } else if (activeTxn.kind === 'bar-resize') {
+                  if (activeTxn.edge === 'start') {
+                    renderX = bar.x + activeTxn.deltaX;
+                    renderWidth = Math.max(0, bar.width - activeTxn.deltaX);
+                  } else {
+                    renderWidth = Math.max(0, bar.width + activeTxn.deltaX);
+                  }
+                }
+              }
+
+              const selectionHasAxisOverlap =
+                renderX < axis.totalWidth && renderX + renderWidth > 0;
               const resizerThickness = t.barResizerThickness;
               const dotSize = t.barResizerDotSize;
-              const dotY = bar.y + (bar.height - dotSize) / 2;
+              const dotY = renderY + (bar.height - dotSize) / 2;
 
               // Phase 32.4 + Phase 44 D.6 — base classes + state-modifier
               // classes + callback-supplied class names. Order matters:
@@ -2564,9 +2612,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 const slotArgs: BarSlotArgs = {
                   placedBar: bar,
                   sourceBar,
-                  renderX: bar.x,
-                  renderY: bar.y,
-                  renderWidth: bar.width,
+                  renderX,
+                  renderY,
+                  renderWidth,
                   renderHeight: bar.height,
                   theme: t,
                   activeTransaction: activeTxn,
@@ -2584,9 +2632,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                   <rect
                     className={barClass}
                     data-bar-id={bar.barId}
-                    x={bar.x}
-                    y={bar.y}
-                    width={bar.width}
+                    x={renderX}
+                    y={renderY}
+                    width={renderWidth}
                     height={bar.height}
                     fill={resolvedStyle.backgroundColor}
                     stroke={resolvedStyle.borderColor}
@@ -2614,14 +2662,14 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                     ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
                     : sourceProgressEarly;
                 const clampedEarly = Math.max(0, Math.min(100, displayedProgressEarly));
-                const fillWidthEarly = (clampedEarly / 100) * bar.width;
+                const fillWidthEarly = (clampedEarly / 100) * renderWidth;
                 progressFillNode = (
                   <rect
                     key={`${bar.barId}-progress-fill`}
                     className="cx-gantt-progress-fill"
                     data-progress-bar-id={bar.barId}
-                    x={bar.x}
-                    y={bar.y}
+                    x={renderX}
+                    y={renderY}
                     width={fillWidthEarly}
                     height={bar.height}
                     fill={t.progressFill}
@@ -2637,8 +2685,8 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               // when `clientWidth === 0` (pre-mount frame) so existing
               // SFC tests stay pixel-identical to Phase 32.4 output.
               const viewportClip = deriveViewportClipping(
-                bar.x,
-                bar.width,
+                renderX,
+                renderWidth,
                 chartScroll.scrollLeft,
                 chartScroll.clientWidth,
                 TRIANGLE_MARGIN,
@@ -2652,15 +2700,15 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               // fired so cross-demo parity assertions can distinguish.
               // Fire-gate is OR: viewport-clipped fires even when the
               // bar's axis edge is in-bounds (`bar.isStart === true`).
-              const centerY = bar.y + bar.height / 2;
+              const centerY = renderY + bar.height / 2;
               const fireLeftTriangle = !bar.isStart || viewportClip.isViewportClippedStart;
               const fireRightTriangle = !bar.isEnd || viewportClip.isViewportClippedEnd;
               const leftTriangleApexX = viewportClip.isViewportClippedStart
                 ? viewportClip.viewportLockedLeftApexX
-                : bar.x + TRIANGLE_MARGIN;
+                : renderX + TRIANGLE_MARGIN;
               const rightTriangleApexX = viewportClip.isViewportClippedEnd
                 ? viewportClip.viewportLockedRightApexX
-                : bar.x + bar.width - TRIANGLE_MARGIN;
+                : renderX + renderWidth - TRIANGLE_MARGIN;
               const leftTriangleNode = fireLeftTriangle ? (
                 <polygon
                   key={`${bar.barId}-continuation-left`}
@@ -2712,13 +2760,13 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               // silently suppressing the title.
               const titleViewportSpan =
                 viewportClip.isViewportClippedStart && viewportClip.isViewportClippedEnd;
-              const titleHasAxisOverlap = bar.x < axis.totalWidth && bar.x + bar.width > 0;
+              const titleHasAxisOverlap = renderX < axis.totalWidth && renderX + renderWidth > 0;
               const title = sourceBar?.title;
               let titleNode: ReactNode = null;
-              if (titleHasAxisOverlap && title && title.length > 0 && bar.width > 30) {
+              if (titleHasAxisOverlap && title && title.length > 0 && renderWidth > 30) {
                 const titleStartX = deriveEdgePaddedX(
                   'start',
-                  bar.x,
+                  renderX,
                   viewportClip.viewportLockedLeftApexX,
                   !bar.isStart,
                   titleViewportSpan,
@@ -2729,7 +2777,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 );
                 const titleEndX = deriveEdgePaddedX(
                   'end',
-                  bar.x + bar.width,
+                  renderX + renderWidth,
                   viewportClip.viewportLockedRightApexX,
                   !bar.isEnd,
                   titleViewportSpan,
@@ -2767,7 +2815,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                         className="cx-gantt-bar-text"
                         data-bar-id={bar.barId}
                         x={titleStartX}
-                        y={bar.y + bar.height / 2}
+                        y={renderY + bar.height / 2}
                         fill={resolvedStyle.textColor}
                         fontSize={resolvedStyle.fontSize}
                         fontWeight={resolvedStyle.fontWeight}
@@ -2804,9 +2852,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                     ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
                     : sourceProgress;
                 const clamped = Math.max(0, Math.min(100, displayedProgress));
-                const fillWidth = (clamped / 100) * bar.width;
-                const handleX = bar.x + fillWidth;
-                const handleY = bar.y + bar.height;
+                const fillWidth = (clamped / 100) * renderWidth;
+                const handleX = renderX + fillWidth;
+                const handleY = renderY + bar.height;
                 const TRIANGLE_SIZE = 6;
                 progressHandleNode = (
                   <polygon
@@ -2835,9 +2883,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                     <rect
                       className="cx-gantt-bar-selection-border"
                       data-bar-id={bar.barId}
-                      x={bar.x - 1}
-                      y={bar.y - 1}
-                      width={bar.width + 2}
+                      x={renderX - 1}
+                      y={renderY - 1}
+                      width={renderWidth + 2}
                       height={bar.height + 2}
                       fill="none"
                       stroke={t.barSelectedBorderColor}
@@ -2851,8 +2899,8 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                       <rect
                         className="cx-gantt-bar-resizer-start"
                         data-bar-id={bar.barId}
-                        x={bar.x}
-                        y={bar.y}
+                        x={renderX}
+                        y={renderY}
                         width={resizerThickness}
                         height={bar.height}
                         fill="transparent"
@@ -2861,8 +2909,8 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                       <rect
                         className="cx-gantt-bar-resizer-end"
                         data-bar-id={bar.barId}
-                        x={bar.x + bar.width - resizerThickness}
-                        y={bar.y}
+                        x={renderX + renderWidth - resizerThickness}
+                        y={renderY}
                         width={resizerThickness}
                         height={bar.height}
                         fill="transparent"
@@ -2877,7 +2925,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                         data-bar-id={bar.barId}
                         x={deriveEdgePaddedX(
                           'start',
-                          bar.x,
+                          renderX,
                           viewportClip.viewportLockedLeftApexX,
                           !bar.isStart,
                           viewportClip.isViewportClippedStart,
@@ -2899,7 +2947,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                         x={
                           deriveEdgePaddedX(
                             'end',
-                            bar.x + bar.width,
+                            renderX + renderWidth,
                             viewportClip.viewportLockedRightApexX,
                             !bar.isEnd,
                             viewportClip.isViewportClippedEnd,

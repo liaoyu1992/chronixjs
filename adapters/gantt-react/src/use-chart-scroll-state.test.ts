@@ -49,7 +49,7 @@ describe('useChartScrollState (Phase 32.5)', () => {
 
   it('scroll event updates scrollLeft state', () => {
     const { result, pane } = renderWithPane();
-    Object.defineProperty(pane, 'scrollLeft', { value: 120, configurable: true });
+    pane.scrollLeft = 120;
     act(() => {
       fireEvent.scroll(pane);
     });
@@ -69,7 +69,7 @@ describe('useChartScrollState (Phase 32.5)', () => {
 
   it('unmount: scroll events after unmount do not throw and do not update state', () => {
     const { result, pane, unmount } = renderWithPane();
-    Object.defineProperty(pane, 'scrollLeft', { value: 50, configurable: true });
+    pane.scrollLeft = 50;
     act(() => {
       fireEvent.scroll(pane);
     });
@@ -78,7 +78,7 @@ describe('useChartScrollState (Phase 32.5)', () => {
     unmount();
     // Update the property + fire scroll AFTER unmount; cleanup should have
     // removed the listener so state stays frozen.
-    Object.defineProperty(pane, 'scrollLeft', { value: 999, configurable: true });
+    pane.scrollLeft = 999;
     expect(() => fireEvent.scroll(pane)).not.toThrow();
     // result.current reflects the last commit state — unchanged.
     expect(result.current).toBe(lastState);

@@ -2,25 +2,31 @@ import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 're
 import { flushSync } from 'react-dom';
 
 /**
- * Phase 32.5.2 FIX (2026-06-22):
+ * Phase 23: tracks the chart-pane's `scrollLeft` + `clientWidth` so
+ * downstream render code can react to user scroll and container
+ * resize. Returned values are reactive values that update on scroll.
  *
- * PROBLEM: Vue doesn't flicker because ref.value = x is synchronous update.
- * React setState is async (React 18 concurrent rendering), causing flicker.
+ * Designed as a consumer-facing hook for follow-up phases that need
+ * the chart-pane viewport state:
  *
- * SOLUTION: Use flushSync to force synchronous rendering during scroll events.
+ *   - **Phase 27.1** — `PlacedBar.isClippedStart` / `isClippedEnd`
+ *     viewport-clipping flags (vs Phase 27's axis-range flags) need
+ *     scrollLeft + clientWidth to decide whether a bar's start/end
+ *     extends past the visible viewport.
+ *   - **Phase 28.2.1** — bar title truncation can shrink the
+ *     available text width to the visible viewport intersection,
+ *     not the full bar width, when the bar extends past either
+ *     viewport edge.
  *
- * The core issue:
- * - Scroll event fires → setState schedules async re-render
- * - Before re-render commits, DOM continues scrolling
- * - Component renders with stale scroll values → flicker
+ * Listens on the pane's `scroll` event for scrollLeft updates +
+ * uses `ResizeObserver` for clientWidth updates (so container
+ * resizes also trigger reads). Both default to `0` before mount or
+ * when the ref doesn't resolve; consumers can guard on
+ * `clientWidth > 0` to skip the first-paint pre-mount frame.
  *
- * With flushSync:
- * - Scroll event fires → flushSync forces immediate re-render
- * - DOM updates synchronously → no time for DOM to drift
- * - Component renders with fresh scroll values → no flicker
- *
- * Also adds requestAnimationFrame throttling to avoid excessive re-renders
- * during rapid scroll events (browser fires many scroll events per second).
+ * Uses flushSync to force synchronous rendering during scroll events,
+ * preventing the flicker caused by React's async batching. Mirrors
+ * the Vue3 implementation's synchronous ref updates.
  */
 
 export interface ChartScrollState {
@@ -31,7 +37,6 @@ export interface ChartScrollState {
 export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): ChartScrollState {
   const stateRef = useRef<ChartScrollState>({ scrollLeft: 0, clientWidth: 0 });
   const paneElRef = useRef<HTMLElement | null>(null);
-  const rafIdRef = useRef<number | null>(null);
   const [, setTick] = useState(0);
 
   useEffect(() => {
@@ -41,12 +46,6 @@ export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): Cha
     paneElRef.current = pane;
 
     const handleScroll = () => {
-      // Cancel any pending RAF to avoid stacking updates
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
-
       // Read fresh DOM values
       stateRef.current = { scrollLeft: pane.scrollLeft, clientWidth: pane.clientWidth };
 
@@ -58,27 +57,12 @@ export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): Cha
       });
     };
 
-    // Throttle with RAF to avoid excessive re-renders during rapid scroll
-    const handleScrollThrottled = () => {
-      if (rafIdRef.current !== null) {
-        return; // Already scheduled
-      }
-
-      rafIdRef.current = requestAnimationFrame(() => {
-        rafIdRef.current = null;
-        handleScroll();
-      });
-    };
-
     // Setup listeners
-    pane.addEventListener('scroll', handleScrollThrottled, { passive: true });
+    pane.addEventListener('scroll', handleScroll, { passive: true });
 
     let resizeObserver: ResizeObserver | null = null;
     if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(() => {
-        // For resize, we don't need RAF throttling since it fires less frequently
-        handleScroll();
-      });
+      resizeObserver = new ResizeObserver(handleScroll);
       resizeObserver.observe(pane);
     }
 
@@ -87,10 +71,7 @@ export function useChartScrollState(paneRef: RefObject<HTMLElement | null>): Cha
     setTick(0);
 
     return () => {
-      pane.removeEventListener('scroll', handleScrollThrottled);
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-      }
+      pane.removeEventListener('scroll', handleScroll);
       resizeObserver?.disconnect();
       paneElRef.current = null;
     };
