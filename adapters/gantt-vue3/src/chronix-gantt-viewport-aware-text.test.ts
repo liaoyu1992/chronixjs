@@ -133,16 +133,13 @@ describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning —
     // Bar at hours 1..16 (axis-inside). renderX = 60, renderWidth = 900.
     // Scroll to scrollLeft=0, clientWidth=200 → viewport [0, 200). Bar
     // overlaps viewport on left only (60 < 200; 960 > 200). Only
-    // `isViewportClippedEnd` fires — `titleViewportSpan` is FALSE so
-    // BOTH titleStartX + titleEndX use default math. Without the
-    // Phase 28.2.2 fix, titleEndX would lock to viewportRight - 11 = 189
-    // and titleStartX would stay at renderX + 8 = 68 → availableWidth =
-    // 189 - 68 = 121, BUT `truncateBarText` would still produce a tiny
-    // truncated string. The regression manifested when the visible
-    // portion (140 px) was narrow enough that the truncate gate's
-    // `maxChars <= 3` short-circuit returned '' → no text. With the
-    // fix, titleEndX = renderX + renderWidth - 4 = 956 → availableWidth
-    // = 956 - 68 = 888 → full title fits.
+    // `isViewportClippedEnd` fires. Phase 47.3 simplified the logic:
+    // titleStartX uses viewport-clip for left side only (FALSE here,
+    // so defaults to renderX + 8 = 68); titleEndX NEVER uses viewport-
+    // clip (always defaults to renderX + renderWidth - 4 = 956).
+    // availableWidth = 956 - 68 = 888 → full title fits. This avoids
+    // the negative-width regression from Phase 47.2's bilateral span
+    // check while keeping titles readable at the bar's left edge.
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [bar('partial-right', 1, 16, 'long enough title for truncation tests')],

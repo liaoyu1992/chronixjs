@@ -2742,24 +2742,16 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               // `deriveEdgePaddedX` 3-branch (viewport-clipped wins over
               // axis-clipped wins over default).
               //
-              // Phase 47.2 — title-side viewport-locking fires ONLY when
-              // the bar SPANS the entire viewport (both edges past their
-              // respective viewport boundaries). Partial-overlap cases
-              // (e.g. bar's left in viewport, right offscreen-right) keep
-              // default positioning so the title naturally appears at the
-              // bar's edge — matches the original scroll-invariant
-              // title behavior + restores cross-demo bar-text count parity.
-              // Triangles + progress-dots keep their per-side viewport-lock
-              // semantics (those are continuation indicators that should
-              // appear at the viewport edge whenever the bar extends past
-              // it). Reconciles to chronix-gantt-vue3's Phase 28.2.2
-              // canonical logic; previously this site used per-side
-              // viewport-clip flags which produced negative `availableWidth`
-              // (titleEndX < titleStartX) for bars whose left edge is
-              // inside the viewport but whose right edge is far offscreen,
-              // silently suppressing the title.
-              const titleViewportSpan =
-                viewportClip.isViewportClippedStart && viewportClip.isViewportClippedEnd;
+              // Phase 47.3 — title-side viewport-locking fires ONLY on the
+              // left side (when the bar's left edge is past the viewport's
+              // left boundary). The right side keeps default positioning
+              // so the title naturally appears at the bar's left edge,
+              // improving readability while triangles + progress-dots keep
+              // their per-side viewport-lock semantics (those are continuation
+              // indicators that should appear at the viewport edge whenever
+              // the bar extends past it). This simplified behavior avoids
+              // the negative `availableWidth` (titleEndX < titleStartX) issue
+              // from Phase 47.2's bilateral span check.
               const titleHasAxisOverlap = renderX < axis.totalWidth && renderX + renderWidth > 0;
               const title = sourceBar?.title;
               let titleNode: ReactNode = null;
@@ -2769,7 +2761,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                   renderX,
                   viewportClip.viewportLockedLeftApexX,
                   !bar.isStart,
-                  titleViewportSpan,
+                  viewportClip.isViewportClippedStart,
                   TITLE_LEFT_PADDING,
                   TRIANGLE_MARGIN,
                   TRIANGLE_SIZE,
@@ -2780,7 +2772,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                   renderX + renderWidth,
                   viewportClip.viewportLockedRightApexX,
                   !bar.isEnd,
-                  titleViewportSpan,
+                  false,
                   TITLE_RIGHT_PADDING,
                   TRIANGLE_MARGIN,
                   TRIANGLE_SIZE,
@@ -2875,9 +2867,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 <Fragment key={bar.barId}>
                   {barNode}
                   {progressFillNode}
+                  {titleNode}
                   {leftTriangleNode}
                   {rightTriangleNode}
-                  {titleNode}
                   {progressHandleNode}
                   {selectionHasAxisOverlap && isSelected && (
                     <rect

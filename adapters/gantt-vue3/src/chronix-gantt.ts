@@ -2310,6 +2310,132 @@ export const ChronixGantt = defineComponent({
           }
         }
 
+        // Phase 28.2: bar title auto-render. Emits a `<text class=
+        // "cx-gantt-bar-text">` per bar with a non-empty `title`,
+        // positioned inside the bar body. Inserted BEFORE continuation
+        // triangles (Phase 27) so the title paints below triangles —
+        // triangles remain visible on top when they overlap.
+        //
+        // Gates: outer (`renderWidth > 30`) skips title rendering for
+        // very narrow bars (a 30-px minimum so a single character isn't
+        // squeezed into an unreadable strip); inner (`availableWidth
+        // >= 10`) skips when continuation triangles eat most of the
+        // title's space.
+        //
+        // Title position adapts to continuation triangles via the
+        // pure helper `deriveEdgePaddedX` (Phase 28.2.1). Three-way
+        // branch per side:
+        //   - viewport-clipped (Phase 27.1 sub-case): title-start
+        //     locks past the viewport-locked triangle's base at
+        //     `viewportLockedApex + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP`.
+        //   - axis-clipped (Phase 27 sub-case): title-start at
+        //     `renderX + TRIANGLE_MARGIN + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP
+        //     = renderX + 11 px`.
+        //   - default: title-start at `renderX + TITLE_LEFT_PADDING
+        //     = renderX + 8 px`.
+        // Symmetric on the right. Precedence (viewport-clipped wins
+        // when both fire on same side) matches Phase 27.1's apex
+        // precedence — title stays user-visible at the viewport edge.
+        //
+        // Phase 47.3: title-side viewport-locking fires ONLY on the
+        // left side (when the bar's left edge is past the viewport's
+        // left boundary). The right side keeps default positioning
+        // so the title naturally appears at the bar's left edge,
+        // improving readability while triangles + progress-dots keep
+        // their per-side viewport-lock semantics (those are continuation
+        // indicators that should appear at the viewport edge whenever
+        // the bar extends past it). This simplified behavior avoids
+        // the negative `availableWidth` (titleEndX < titleStartX) issue
+        // from Phase 47.2's bilateral span check.
+        //
+        // Truncation via `truncateBarText` (char-count + ellipsis,
+        // ported verbatim from the original spec). `<text>` uses
+        // `text-anchor="start"` + `dominant-baseline="middle"` so
+        // the title anchors at `(titleStartX, bar mid-line)`.
+        // `pointer-events: none` + `user-select: none` so the title
+        // never intercepts clicks on the bar body.
+        // Phase 28.2: also gate on axis-overlap. The original spec's
+        // `TimelineEvent` doesn't mount for bars whose calendar range
+        // falls outside the visible axis, so its text count is bars-
+        // overlapping-axis only. Chronix's `BarPlacementPass` produces
+        // a `PlacedBar` for every bar (off-axis bars get x < 0 or
+        // x > totalWidth) so the title-gate has to do the same check
+        // the placement pass did. Equivalent to `hasAxisOverlap`:
+        // `bar.x < a.totalWidth && bar.x + bar.width > 0`.
+        // (Same pattern as Phase 27's axis-overlap gate on continuation
+        // flags. Bar rects still mount off-screen — only text is
+        // suppressed — keeping the off-axis bar geometry intact while
+        // suppressing the per-bar text decoration.)
+        const titleHasAxisOverlap = bar.x < a.totalWidth && bar.x + bar.width > 0;
+        const title = sourceBar?.title;
+        if (titleHasAxisOverlap && title && title.length > 0 && renderWidth > 30) {
+          const titleStartX = deriveEdgePaddedX(
+            'start',
+            renderX,
+            viewportClip.viewportLockedLeftApexX,
+            !bar.isStart,
+            viewportClip.isViewportClippedStart,
+            TITLE_LEFT_PADDING,
+            TRIANGLE_MARGIN,
+            TRIANGLE_SIZE,
+            TITLE_TRIANGLE_GAP,
+          );
+          const titleEndX = deriveEdgePaddedX(
+            'end',
+            renderX + renderWidth,
+            viewportClip.viewportLockedRightApexX,
+            !bar.isEnd,
+            false,
+            TITLE_RIGHT_PADDING,
+            TRIANGLE_MARGIN,
+            TRIANGLE_SIZE,
+            TITLE_TRIANGLE_GAP,
+          );
+          const availableWidth = Math.max(0, titleEndX - titleStartX);
+          if (availableWidth >= 10) {
+            // Get progress for title display
+            const sourceProgressForTitle = barProgressById.value.get(bar.barId);
+            const displayedProgressForTitle =
+              activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
+                ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
+                : (sourceProgressForTitle ?? 0);
+            const clampedProgressForTitle = Math.max(0, Math.min(100, displayedProgressForTitle));
+            const progressSuffix =
+              sourceProgressForTitle !== undefined
+                ? ` (${Math.round(clampedProgressForTitle)}%)`
+                : '';
+            const titleWithProgress = title + progressSuffix;
+            const truncated = truncateBarText(
+              titleWithProgress,
+              availableWidth,
+              resolvedStyle.fontSize,
+            );
+            if (truncated.length > 0) {
+              nodes.push(
+                h(
+                  'text',
+                  {
+                    key: `${bar.barId}-title`,
+                    'data-bar-id': bar.barId,
+                    class: 'cx-gantt-bar-text',
+                    x: titleStartX,
+                    y: renderY + bar.height / 2,
+                    fill: resolvedStyle.textColor,
+                    'font-size': resolvedStyle.fontSize,
+                    'font-weight': resolvedStyle.fontWeight,
+                    'font-family': 'inherit',
+                    'text-anchor': 'start',
+                    'dominant-baseline': 'middle',
+                    'pointer-events': 'none',
+                    style: { userSelect: 'none' },
+                  },
+                  truncated,
+                ),
+              );
+            }
+          }
+        }
+
         // Phase 27 + 27.1: continuation indicators. A left-pointing
         // triangle fires on EITHER axis-clipped (`!bar.isStart` —
         // bar's `range.start` falls before the axis range; Phase 27)
@@ -2395,136 +2521,6 @@ export const ChronixGantt = defineComponent({
               'pointer-events': 'none',
             }),
           );
-        }
-
-        // Phase 28.2: bar title auto-render. Emits a `<text class=
-        // "cx-gantt-bar-text">` per bar with a non-empty `title`,
-        // positioned inside the bar body. Inserted AFTER continuation
-        // triangles (Phase 27) and BEFORE the progress fill so the
-        // title paints below the translucent progress overlay —
-        // matches the original paint order (rect →
-        // triangles → title → progress → label → handle).
-        //
-        // Gates: outer (`renderWidth > 30`) skips title rendering for
-        // very narrow bars (a 30-px minimum so a single character isn't
-        // squeezed into an unreadable strip); inner (`availableWidth
-        // >= 10`) skips when continuation triangles eat most of the
-        // title's space.
-        //
-        // Title position adapts to continuation triangles via the
-        // pure helper `deriveEdgePaddedX` (Phase 28.2.1). Three-way
-        // branch per side:
-        //   - viewport-clipped (Phase 27.1 sub-case): title-start
-        //     locks past the viewport-locked triangle's base at
-        //     `viewportLockedApex + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP`.
-        //   - axis-clipped (Phase 27 sub-case): title-start at
-        //     `renderX + TRIANGLE_MARGIN + TRIANGLE_SIZE + TITLE_TRIANGLE_GAP
-        //     = renderX + 11 px`.
-        //   - default: title-start at `renderX + TITLE_LEFT_PADDING
-        //     = renderX + 8 px`.
-        // Symmetric on the right. Precedence (viewport-clipped wins
-        // when both fire on same side) matches Phase 27.1's apex
-        // precedence — title stays user-visible at the viewport edge.
-        //
-        // Phase 28.2.2: title-side viewport-locking fires ONLY when
-        // the bar SPANS the entire viewport (both edges past their
-        // respective viewport boundaries). Partial-overlap cases
-        // (e.g. bar's left in viewport, right offscreen-right) keep
-        // default positioning so the title naturally appears at the
-        // bar's edge — matches the original scroll-invariant
-        // title behavior + restores cross-demo bar-text count parity.
-        // Triangles + progress-dots keep their per-side viewport-lock
-        // semantics (those are continuation indicators that should
-        // appear at the viewport edge whenever the bar extends past it).
-        const titleViewportSpan =
-          viewportClip.isViewportClippedStart && viewportClip.isViewportClippedEnd;
-        //
-        // Truncation via `truncateBarText` (char-count + ellipsis,
-        // ported verbatim from the original spec). `<text>` uses
-        // `text-anchor="start"` + `dominant-baseline="middle"` so
-        // the title anchors at `(titleStartX, bar mid-line)`.
-        // `pointer-events: none` + `user-select: none` so the title
-        // never intercepts clicks on the bar body.
-        // Phase 28.2: also gate on axis-overlap. The original spec's
-        // `TimelineEvent` doesn't mount for bars whose calendar range
-        // falls outside the visible axis, so its text count is bars-
-        // overlapping-axis only. Chronix's `BarPlacementPass` produces
-        // a `PlacedBar` for every bar (off-axis bars get x < 0 or
-        // x > totalWidth) so the title-gate has to do the same check
-        // the placement pass did. Equivalent to `hasAxisOverlap`:
-        // `bar.x < a.totalWidth && bar.x + bar.width > 0`.
-        // (Same pattern as Phase 27's axis-overlap gate on continuation
-        // flags. Bar rects still mount off-screen — only text is
-        // suppressed — keeping the off-axis bar geometry intact while
-        // suppressing the per-bar text decoration.)
-        const titleHasAxisOverlap = bar.x < a.totalWidth && bar.x + bar.width > 0;
-        const title = sourceBar?.title;
-        if (titleHasAxisOverlap && title && title.length > 0 && renderWidth > 30) {
-          const titleStartX = deriveEdgePaddedX(
-            'start',
-            renderX,
-            viewportClip.viewportLockedLeftApexX,
-            !bar.isStart,
-            titleViewportSpan,
-            TITLE_LEFT_PADDING,
-            TRIANGLE_MARGIN,
-            TRIANGLE_SIZE,
-            TITLE_TRIANGLE_GAP,
-          );
-          const titleEndX = deriveEdgePaddedX(
-            'end',
-            renderX + renderWidth,
-            viewportClip.viewportLockedRightApexX,
-            !bar.isEnd,
-            titleViewportSpan,
-            TITLE_RIGHT_PADDING,
-            TRIANGLE_MARGIN,
-            TRIANGLE_SIZE,
-            TITLE_TRIANGLE_GAP,
-          );
-          const availableWidth = Math.max(0, titleEndX - titleStartX);
-          if (availableWidth >= 10) {
-            // Get progress for title display
-            const sourceProgressForTitle = barProgressById.value.get(bar.barId);
-            const displayedProgressForTitle =
-              activeTxn?.kind === 'progress-handle' && activeTxn.barId === bar.barId
-                ? Math.max(0, Math.min(100, activeTxn.projectedProgress))
-                : (sourceProgressForTitle ?? 0);
-            const clampedProgressForTitle = Math.max(0, Math.min(100, displayedProgressForTitle));
-            const progressSuffix =
-              sourceProgressForTitle !== undefined
-                ? ` (${Math.round(clampedProgressForTitle)}%)`
-                : '';
-            const titleWithProgress = title + progressSuffix;
-            const truncated = truncateBarText(
-              titleWithProgress,
-              availableWidth,
-              resolvedStyle.fontSize,
-            );
-            if (truncated.length > 0) {
-              nodes.push(
-                h(
-                  'text',
-                  {
-                    key: `${bar.barId}-title`,
-                    'data-bar-id': bar.barId,
-                    class: 'cx-gantt-bar-text',
-                    x: titleStartX,
-                    y: renderY + bar.height / 2,
-                    fill: resolvedStyle.textColor,
-                    'font-size': resolvedStyle.fontSize,
-                    'font-weight': resolvedStyle.fontWeight,
-                    'font-family': 'inherit',
-                    'text-anchor': 'start',
-                    'dominant-baseline': 'middle',
-                    'pointer-events': 'none',
-                    style: { userSelect: 'none' },
-                  },
-                  truncated,
-                ),
-              );
-            }
-          }
         }
 
         // Progress handle: only for bars that declared BOTH
