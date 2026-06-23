@@ -17,7 +17,7 @@
   "dependencies": {
     "@chronixjs/ui": "workspace:*",
     "@chronixjs/ui-vue2": "workspace:*",
-    "qrcode-generator": "^1.4.4",
+    "qrcode-generator": "^2.0.4",
     "vue": "^2.7.16"
   },
   "devDependencies": {
