@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { RowSpec, RowValidator, RowValidationViolation } from '../ir/index.js';
 import { runRowValidators } from './run-row-validators.js';
+
+import type { RowSpec, RowValidator, RowValidationViolation } from '../ir/index.js';
 
 const baseRow: RowSpec = {
   id: 'r1',

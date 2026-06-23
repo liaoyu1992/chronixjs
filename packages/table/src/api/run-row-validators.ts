@@ -1,5 +1,4 @@
 import type { RowSpec } from '../ir/row-spec.js';
-
 import type { RowValidator, RowValidationViolation } from '../ir/row-validator.js';
 
 /**

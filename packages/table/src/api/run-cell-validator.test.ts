@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import type { ColumnSpec, EditValidationError, RowSpec } from '../ir/index.js';
 import { runCellValidator } from './run-cell-validator.js';
+
+import type { ColumnSpec, EditValidationError, RowSpec } from '../ir/index.js';
 
 const baseRow: RowSpec = { id: 'r1', data: { price: 10 } };
 
