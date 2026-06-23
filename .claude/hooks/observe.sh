@@ -9,7 +9,7 @@
 # Windows form (C:\Users\...) via cygpath, because Python's pathlib mis-resolves
 # /c/... to C:\c\... on Windows and would otherwise write data to the wrong place.
 
-set -euo pipefail
+set -eo pipefail
 
 PHASE="${1:-post}"
 
@@ -44,9 +44,10 @@ if [ -z "$INPUT" ]; then
 fi
 
 # Delegate to Python script, passing phase and input
-echo "$INPUT" | "$PYTHON3" "$OBSERVE_PY" "$PHASE" "$CLAUDE_DIR" 2>/dev/null || true
+# Use subshell to ensure || true works correctly in pipefail mode
+(echo "$INPUT" | "$PYTHON3" "$OBSERVE_PY" "$PHASE" "$CLAUDE_DIR" 2>/dev/null || true) || true
 
 # Also run rotation check (silently)
-"$PYTHON3" "$CLAUDE_DIR/bin/observations_rotate.py" "$CLAUDE_DIR" 2>/dev/null || true
+("$PYTHON3" "$CLAUDE_DIR/bin/observations_rotate.py" "$CLAUDE_DIR" 2>/dev/null || true) || true
 
 exit 0
