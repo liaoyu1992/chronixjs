@@ -1,13 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { runAsyncCellValidator } from './run-async-cell-validator.js';
+
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 const baseColumn: ColumnSpec = { id: 'name', field: 'name' };
 const baseRow: RowSpec = { id: 'r1', data: { name: 'alice' } };
 
 describe('runAsyncCellValidator', () => {
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn<any, any>>;
 
   beforeEach(() => {
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
