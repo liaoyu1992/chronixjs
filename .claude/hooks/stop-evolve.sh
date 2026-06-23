@@ -12,7 +12,7 @@
 #
 # CHRONIX-LOCAL NOTE: This file includes cygpath handling for Windows MSYS,
 # which is NOT present in upstream claude-smart's stop.sh.
-set -uo pipefail
+set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"

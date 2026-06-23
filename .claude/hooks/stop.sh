@@ -10,7 +10,7 @@
 # Usage: bash stop.sh
 # (settings.local.json Stop hook: "command": "bash .claude/hooks/stop.sh")
 
-set -uo pipefail
+set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"

@@ -5,7 +5,7 @@
 #   - TTL-cleans expired memories
 #   - syncs embeddings (Ollama nomic-embed-text) with Qdrant/NumPy fallback
 #   - recalls Top-5 (vector, or BM25 fallback) and writes rules/injected-memory.md
-set -uo pipefail
+set -o pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
