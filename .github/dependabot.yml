@@ -38,11 +38,9 @@ updates:
       # Re-evaluate once both ship; remove this ignore then.
       - dependency-name: 'typescript'
         versions: ['>=6']
-      # Vitest 4 needs vite 6 (./module-runner export). Our transitive
-      # vite is locked at 5 via happy-dom. Re-evaluate when we plan a
-      # coordinated vite 5→6 + vitest 2→4 upgrade.
-      - dependency-name: 'vitest'
-        versions: ['>=3']
+      # Vitest 4 is now supported. Vite 8 for Vue3/React, Vite 7 for Vue2.
+      # - dependency-name: 'vitest'
+      #   versions: ['>=5']
 
   - package-ecosystem: github-actions
     directory: /
