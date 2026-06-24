@@ -17,21 +17,33 @@ Usage: python3 extract_memory.py <claude_dir>
 import json
 import os
 import re
-import shutil
-import subprocess
 import sys
 import hashlib
+import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
 
+# _gateway lives alongside this script in bin/. When run as
+# `python3 .claude/bin/extract_memory.py`, sys.path[0] is bin/, so this resolves.
+from _gateway import (
+    FALLBACK_MODEL,
+    call_messages_api,
+    log_ai_failure,
+    parse_json_array,
+    resolve_analysis_model,
+)
+
 # ---------- Configuration ----------
 
-# Resolve the full path: on Windows `claude` is a .CMD shim that a bare
-# subprocess.run(["claude", ...]) cannot launch (FileNotFoundError). shutil.which
-# returns the absolute path (e.g. C:\...\claude.CMD) which subprocess CAN run.
-CLAUDE_CLI = shutil.which("claude") or "claude"
-EXTRACT_MODEL = "claude-haiku-4-5-20251001"
 MAX_OBS_FOR_EXTRACT = 200  # Limit observations sent to AI for cost control
+
+# On a retry, append a firmer JSON-only nudge — the gateway-mapped model
+# sometimes wraps output in prose/fences that parse to nothing.
+JSON_ONLY_SUFFIX = (
+    "\n\nIMPORTANT: respond with ONLY a raw JSON array (no markdown code fences, "
+    "no explanation). If you identified any knowledge worth remembering, the "
+    "array MUST be non-empty."
+)
 
 # ---------- Path Helpers ----------
 
@@ -124,17 +136,24 @@ def build_extraction_prompt(obs_text: str) -> str:
     """Build the prompt for Claude to extract knowledge memories."""
     return f"""You are analyzing a developer's Claude Code session to extract **knowledge memories** — factual information worth remembering for future sessions.
 
-Focus on extracting:
+Focus on extracting these types of knowledge:
 1. **Bug solutions**: errors encountered and how they were fixed
 2. **Technical decisions**: architecture choices, library selections, design patterns applied
 3. **Project context**: directory structure, config files, tech stack details
 4. **Workflow knowledge**: useful commands, build steps, test procedures discovered
+5. **Pitfalls / Anti-patterns**: approaches that FAILED and why — look for "tried X → failed → did Y" sequences
 
 For each memory found, output a JSON object with:
 - "name": short-kebab-case slug (unique identifier)
 - "description": one-line summary of this knowledge
-- "type": one of ["project", "reference"] (NOT "user" or "feedback" — those are manually curated)
+- "type": one of ["project", "reference", "pitfall"] (NOT "user" or "feedback" — those are manually curated)
 - "body": the knowledge content in Markdown, 2-5 sentences
+
+For "pitfall" type memories, structure the body as:
+- **触发条件**: what scenario triggers this pitfall
+- **错误现象**: what goes wrong (error message, symptom)
+- **为什么**: root cause explanation
+- **正确做法**: what to do instead
 
 If the session has no extractable knowledge, return [].
 
@@ -142,6 +161,7 @@ IMPORTANT:
 - Only extract genuinely new/valuable knowledge, not trivial operations
 - Do NOT duplicate information that would already be in CLAUDE.md or project docs
 - Each memory should be atomic and self-contained
+- For pitfalls: focus on patterns that would bite someone again (not one-off typos)
 
 Observation Log:
 {obs_text}
@@ -150,7 +170,14 @@ Output ONLY the JSON array, no other text."""
 
 
 def run_extraction(session_obs: list[dict]) -> list[dict]:
-    """Run AI extraction via Claude CLI to get knowledge memories."""
+    """Run AI extraction via the shared gateway (no nested claude CLI).
+
+    The old implementation shelled out to `claude --print`, which deadlocks
+    inside a Stop hook — a live session holds Claude Code's shared state
+    (~/.claude.json, session files) and the nested CLI never returns. POSTing
+    /v1/messages directly via _gateway sidesteps that. Mirrors the retry +
+    model-fallback behaviour of auto-analyze-instincts.py.
+    """
     if not session_obs:
         return []
 
@@ -158,44 +185,32 @@ def run_extraction(session_obs: list[dict]) -> list[dict]:
     if not obs_text.strip():
         return []
 
-    prompt = build_extraction_prompt(obs_text)
+    base_prompt = build_extraction_prompt(obs_text)
+    model = resolve_analysis_model()
+    last_error = None
 
-    try:
-        result = subprocess.run(
-            [CLAUDE_CLI, "--print", "--model", EXTRACT_MODEL, "-p", prompt],
-            capture_output=True, timeout=60,
-            # claude emits UTF-8; on Windows text=True would decode as the locale
-            # codec (GBK) and crash on non-ASCII output. Decode as UTF-8 explicitly.
-            encoding="utf-8", errors="replace",
-            # EOF on stdin so claude doesn't block ~3s waiting for hook JSON
-            stdin=subprocess.DEVNULL,
-        )
-        output = result.stdout.strip()
-
-        # Strip markdown code fences
-        cleaned = re.sub(r'```(?:json)?\s*', '', output)
-        cleaned = re.sub(r'```\s*', '', cleaned).strip()
-
-        # Try direct JSON parse
+    for attempt in range(2):
+        prompt = base_prompt if attempt == 0 else base_prompt + JSON_ONLY_SUFFIX
         try:
-            memories = json.loads(cleaned)
-            if isinstance(memories, list):
-                return [m for m in memories if isinstance(m, dict) and m.get("name")]
-        except json.JSONDecodeError:
-            pass
+            output = call_messages_api(prompt, model)
+            memories = [
+                m for m in parse_json_array(output)
+                if isinstance(m, dict) and m.get("name")
+            ]
+            if memories:
+                return memories
+            # Parsed empty -> retry (attempt 1 uses the firmer prompt).
+        except urllib.error.HTTPError as e:
+            last_error = e
+            # Hard rejection of the model id -> retry against the reliable fallback.
+            if e.code in (400, 404) and model != FALLBACK_MODEL:
+                model = FALLBACK_MODEL
+            # 5xx / overload / other transient -> retry the same model.
+        except Exception as e:
+            last_error = e
 
-        # Fallback: find the last top-level JSON array
-        last_bracket = cleaned.rfind('[')
-        if last_bracket >= 0:
-            try:
-                memories = json.loads(cleaned[last_bracket:])
-                if isinstance(memories, list):
-                    return [m for m in memories if isinstance(m, dict) and m.get("name")]
-            except json.JSONDecodeError:
-                pass
-    except (subprocess.TimeoutExpired, Exception):
-        pass
-
+    if last_error is not None:
+        log_ai_failure(last_error)
     return []
 
 
@@ -203,36 +218,34 @@ def run_extraction(session_obs: list[dict]) -> list[dict]:
 
 
 def extract_project_context(observations: list[dict]) -> list[dict]:
-    """Extract project context knowledge from frequent file access patterns."""
-    # Count file accesses by directory
-    dir_counts = {}
-    for obs in observations:
-        tool_input = obs.get("input", {})
-        if not isinstance(tool_input, dict):
-            continue
-        fp = tool_input.get("file_path", "")
-        if not fp:
-            continue
-        # Extract directory component
-        parts = fp.replace("\\", "/").split("/")
-        if len(parts) >= 2:
-            # Get first 2-3 levels of path as context
-            key = "/".join(parts[:3]) if len(parts) > 3 else "/".join(parts[:-1])
-            dir_counts[key] = dir_counts.get(key, 0) + 1
+    """Emit a single project-context memory for the current working directory.
 
-    memories = []
-    # Only extract if there's a clearly dominant project context
-    sorted_dirs = sorted(dir_counts.items(), key=lambda x: -x[1])
-    for dir_path, count in sorted_dirs[:3]:
-        if count >= 5:
-            memories.append({
-                "name": f"project-context-{hashlib.md5(dir_path.encode()).hexdigest()[:8]}",
-                "description": f"频繁访问的项目路径: {dir_path}",
-                "type": "project",
-                "body": f"项目路径 `{dir_path}` 在当前会话中被访问了 {count} 次，这是核心工作目录。主要操作包括文件编辑、搜索和阅读。",
-            })
+    Previously this emitted one memory per frequently-accessed directory, keyed
+    by an md5 hash of the path. Nested paths (.claude/memory vs .claude/memory/raw
+    vs the home root) spawned near-duplicate, semantically empty files that
+    crowded out real memories during injection. Now we emit exactly one entry for
+    the cwd under a stable name, so each session overwrites it instead of
+    accumulating a pile of path-counting stubs.
+    """
+    cwd = os.environ.get("PWD") or os.getcwd()
+    cwd_name = Path(cwd).name or cwd
 
-    return memories
+    file_accesses = sum(
+        1 for obs in observations
+        if isinstance(obs.get("input"), dict) and obs["input"].get("file_path")
+    )
+    if file_accesses < 5:
+        return []
+
+    return [{
+        "name": "project-context-current",
+        "description": f"当前工作目录: {cwd_name}",
+        "type": "project",
+        "body": (
+            f"当前主要工作在 `{cwd}` 目录（项目 `{cwd_name}`）。"
+            f"这是本会话的核心工作目录，操作集中在文件编辑、搜索与阅读。"
+        ),
+    }]
 
 
 # ---------- Memory File Management ----------

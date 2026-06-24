@@ -6,7 +6,26 @@
       "Bash(gh pr *)",
       "Bash(git fetch *)",
       "Bash(git branch *)",
-      "Bash(git ls-remote *)"
+      "Bash(git ls-remote *)",
+      "Bash(bash \"C:/Users/liaoyu/work/chronixjs/.claude/hooks/observe.sh\" *)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(python3 .claude/bin/observe.py *)",
+      "Bash(python3 *)",
+      "Bash(bash -c \"echo '{\\\\\"tool_name\\\\\":\\\\\"Bash\\\\\"}' | bash .claude/hooks/observe.sh pre\")",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(bash -x *)",
+      "Bash(bash .claude/hooks/observe.sh pre)",
+      "Bash(echo \"Exit with empty stdin: $?\")",
+      "Bash(bash .claude/hooks/observe.sh *)",
+      "Bash(bash .claude/hooks/stop.sh)",
+      "Bash(bash .claude/hooks/session-inject.sh)",
+      "Bash(cp \"C:/Users/liaoyu/work/cluade-smart/.claude/memory/embed.py\" \"C:/Users/liaoyu/work/chronixjs/.claude/memory/embed.py\")",
+      "Bash(cp \"C:/Users/liaoyu/work/cluade-smart/.claude/memory/vector_store.py\" \"C:/Users/liaoyu/work/chronixjs/.claude/memory/vector_store.py\")",
+      "Bash(cp \"C:/Users/liaoyu/work/cluade-smart/.claude/bin/promote-to-team.py\" \"C:/Users/liaoyu/work/chronixjs/.claude/bin/promote-to-team.py\")",
+      "Bash(cp \"C:/Users/liaoyu/work/cluade-smart/.claude/bin/observations_rotate.py\" \"C:/Users/liaoyu/work/chronixjs/.claude/bin/observations_rotate.py\")",
+      "Bash(cp \"C:/Users/liaoyu/work/cluade-smart/.claude/bin/consolidate_instincts.py\" \"C:/Users/liaoyu/work/chronixjs/.claude/bin/consolidate_instincts.py\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   },
   "hooks": {
