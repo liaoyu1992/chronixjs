@@ -247,27 +247,6 @@ body {
   stroke-width: 3;
 }
 
-/* Phase 14 sidebar resize divider. The grid track is 8px wide so
-   the hit zone is forgiving; a 1px line painted via ::after sits in
-   the visual center. Hover thickens to 2px so the affordance is
-   discoverable. The adapter applies `cursor: col-resize` inline. */
-.cx-gantt-sidebar-divider::after {
-  background: #d1d5db;
-  content: '';
-  height: 100%;
-  left: 50%;
-  pointer-events: none;
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  width: 1px;
-}
-
-.cx-gantt-sidebar-divider:hover::after {
-  background: #9ca3af;
-  width: 2px;
-}
-
 .cx-demo-side h2 {
   font-size: 14px;
   font-weight: 600;
