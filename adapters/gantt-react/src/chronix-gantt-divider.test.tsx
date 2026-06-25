@@ -177,20 +177,27 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
     expect(wrapperEl.style.gridTemplateColumns).toBe('240px 8px auto');
   });
 
-  it('sidebar <col> widths scale proportionally during drag (column ratios preserved)', () => {
+  it('sidebar <col> widths stay fixed during drag (columns do not scale)', () => {
     const { container } = render(
       <ChronixGantt bars={[]} rows={rows} axisInput={baseAxisInput()} columns={columns} />,
     );
     stubWrapperWidth(container, 800);
     const divider = container.querySelector<HTMLDivElement>('div.cx-gantt-sidebar-divider')!;
-    // Drag from base 240 to 480 → scale = 2 → each col doubles.
+    const wrapperEl = container.querySelector<HTMLElement>('div.cx-gantt-wrapper')!;
+    // Drag from base 240 to 480 (wider). Columns keep their declared
+    // widths (60/100/80); the table stays at the column sum (240px).
     act(() => {
       fireEvent.pointerDown(divider, { clientX: 240, button: 0, pointerId: 1 });
       fireEvent.pointerMove(divider, { clientX: 480, button: 0, pointerId: 1 });
     });
     const cols = container.querySelectorAll<HTMLTableColElement>('div.cx-gantt-sidebar-body col');
-    expect(cols[0]!.style.width).toBe('120px'); // 60 × 2
-    expect(cols[1]!.style.width).toBe('200px'); // 100 × 2
-    expect(cols[2]!.style.width).toBe('160px'); // 80 × 2
+    expect(cols[0]!.style.width).toBe('60px');
+    expect(cols[1]!.style.width).toBe('100px');
+    expect(cols[2]!.style.width).toBe('80px');
+    // Table keeps the natural column-sum width (240px), not the dragged 480px.
+    const bodyTable = container.querySelector<HTMLElement>('div.cx-gantt-sidebar-body table')!;
+    expect(bodyTable.style.width).toBe('240px');
+    // The grid track (pane width) follows the drag → wider pane.
+    expect(wrapperEl.style.gridTemplateColumns).toBe('480px 8px auto');
   });
 });

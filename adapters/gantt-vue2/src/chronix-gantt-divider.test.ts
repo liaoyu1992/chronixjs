@@ -218,7 +218,7 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
     wrapper.destroy();
   });
 
-  it('sidebar <col> widths scale proportionally during drag (column ratios preserved)', async () => {
+  it('sidebar <col> widths stay fixed during drag (columns do not scale)', async () => {
     const wrapper = mount(GanttForTest, {
       propsData: { bars: [] as readonly BarSpec[], rows, axisInput: baseAxisInput(), columns },
       attachTo: document.body,
@@ -229,14 +229,21 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
       value: () => ({ width: 800, height: 400, top: 0, left: 0, right: 800, bottom: 400 }),
     });
     const divider = wrapper.find('div.cx-gantt-sidebar-divider').element as HTMLElement;
-    // Drag from base 240 to 480 → scale = 480/240 = 2 → each col doubles.
+    // Drag from base 240 to 480 (wider). Columns keep their declared
+    // widths (60/100/80); the table stays at the column sum (240px) and
+    // the extra pane width shows as empty sidebar background.
     divider.dispatchEvent(pointerEvent('pointerdown', { clientX: 240 }));
     divider.dispatchEvent(pointerEvent('pointermove', { clientX: 480 }));
     await wrapper.vm.$nextTick();
     const cols = wrapper.findAll('div.cx-gantt-sidebar-body col');
-    expect((cols.at(0).element as HTMLTableColElement).style.width).toBe('120px'); // 60 × 2
-    expect((cols.at(1).element as HTMLTableColElement).style.width).toBe('200px'); // 100 × 2
-    expect((cols.at(2).element as HTMLTableColElement).style.width).toBe('160px'); // 80 × 2
+    expect((cols.at(0).element as HTMLTableColElement).style.width).toBe('60px');
+    expect((cols.at(1).element as HTMLTableColElement).style.width).toBe('100px');
+    expect((cols.at(2).element as HTMLTableColElement).style.width).toBe('80px');
+    // Table keeps the natural column-sum width (240px), not the dragged 480px.
+    const bodyTable = wrapper.find('div.cx-gantt-sidebar-body table').element as HTMLElement;
+    expect(bodyTable.style.width).toBe('240px');
+    // The grid track (pane width) does follow the drag → wider pane.
+    expect(wrapperEl.style.gridTemplateColumns).toBe('480px 8px auto');
     wrapper.destroy();
   });
 });

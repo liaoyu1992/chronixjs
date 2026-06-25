@@ -2059,17 +2059,17 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
 
   // Phase 48 + Phase 50 — sidebar geometry (active when `columns`
   // prop is non-empty). `sidebarBaseWidth` is the natural sum of
-  // per-column widths; `effectiveSidebarWidth` swaps in the user-
-  // dragged override if set. `scale` (effective / base) multiplies
-  // each `<col>` rendered width so column ratios survive the drag.
-  // `spansMatrix` resolves the per-cell rowspan number per column
-  // up-front so the JSX builder can read it without recomputing
+  // per-column widths and sizes the sidebar *table*; `effectiveSidebarWidth`
+  // swaps in the user-dragged override if set and drives the grid track
+  // (sidebar pane width). Dragging narrower than the columns overflows
+  // the pane and reveals a horizontal scrollbar instead of compressing
+  // the columns. `spansMatrix` resolves the per-cell rowspan number per
+  // column up-front so the JSX builder can read it without recomputing
   // per cell.
   const hasSidebar = (columns?.length ?? 0) > 0;
   const sidebarColumns: readonly ColumnSpec[] = columns ?? [];
   const sidebarBaseWidth = sidebarColumns.reduce((acc, c) => acc + c.width, 0);
   const effectiveSidebarWidth = sidebarWidthOverride ?? sidebarBaseWidth;
-  const sidebarScale = sidebarBaseWidth === 0 ? 1 : effectiveSidebarWidth / sidebarBaseWidth;
   const sidebarWidth = effectiveSidebarWidth;
   const rowsById = new Map(rows.map((r) => [r.id, r]));
   const rowsForSpans = strips
@@ -2087,7 +2087,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       style={{
         borderCollapse: 'collapse',
         tableLayout: 'fixed',
-        width: `${sidebarWidth}px`,
+        width: `${sidebarBaseWidth}px`,
         height: `${totalHeaderBandHeight}px`,
       }}
       cellPadding={0}
@@ -2095,7 +2095,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     >
       <colgroup>
         {sidebarColumns.map((c) => (
-          <col key={c.key} style={{ width: `${c.width * sidebarScale}px` }} />
+          <col key={c.key} style={{ width: `${c.width}px` }} />
         ))}
       </colgroup>
       <thead>
@@ -2136,14 +2136,14 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       style={{
         borderCollapse: 'collapse',
         tableLayout: 'fixed',
-        width: `${sidebarWidth}px`,
+        width: `${sidebarBaseWidth}px`,
       }}
       cellPadding={0}
       cellSpacing={0}
     >
       <colgroup>
         {sidebarColumns.map((c) => (
-          <col key={c.key} style={{ width: `${c.width * sidebarScale}px` }} />
+          <col key={c.key} style={{ width: `${c.width}px` }} />
         ))}
       </colgroup>
       <tbody>
@@ -2216,7 +2216,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       {hasSidebar ? (
         <div
           className="cx-gantt-sidebar-header-pane"
-          style={{ overflow: 'hidden', gridColumn: 1, gridRow: 1 }}
+          style={{ overflow: 'hidden', minWidth: 0, gridColumn: 1, gridRow: 1 }}
         >
           <div
             ref={sidebarHeaderInnerRef}
@@ -2454,6 +2454,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           className="cx-gantt-sidebar-pane"
           style={{
             overflow: 'auto',
+            minWidth: 0,
             gridColumn: 1,
             gridRow: 2,
             ...(maxBodyHeight !== undefined ? { maxHeight: maxBodyHeight } : {}),

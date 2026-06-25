@@ -1192,15 +1192,6 @@ export const ChronixGantt = defineComponent({
     const effectiveSidebarWidth = computed<number>(
       () => sidebarWidthOverride.value ?? sidebarBaseWidth.value,
     );
-    // Per-column scale factor: each col's render width = colSpec.width *
-    // sidebarScale so the user-supplied column ratios are preserved
-    // across drags. Falls back to 1 when there are no columns (the
-    // no-sidebar branch never reads this, but keep the computed safe).
-    const sidebarScale = computed<number>(() => {
-      const base = sidebarBaseWidth.value;
-      if (base === 0) return 1;
-      return effectiveSidebarWidth.value / base;
-    });
 
     function onDividerPointerdown(e: PointerEvent): void {
       if (e.button !== 0) return;
@@ -3181,11 +3172,14 @@ export const ChronixGantt = defineComponent({
       let sidebarWidth = 0;
       if (hasSidebar) {
         // Effective area width = user override (if drag has happened)
-        // or the natural sum of `ColumnSpec.width`. The col-width
-        // scale factor (effective / base) is applied uniformly to
-        // every <col> so border alignment stays exact at any width.
+        // or the natural sum of `ColumnSpec.width` — this drives the
+        // grid track (how much horizontal space the sidebar pane gets).
+        // The sidebar *table* is always sized to the natural column sum
+        // (`sidebarTableWidth`), independent of the drag: dragging the
+        // divider narrower than the columns makes the pane overflow and
+        // reveal a horizontal scrollbar rather than compressing the cols.
         sidebarWidth = effectiveSidebarWidth.value;
-        const scale = sidebarScale.value;
+        const sidebarTableWidth = sidebarBaseWidth.value;
 
         // Build two distinct `<colgroup>` vnodes — one per sidebar
         // table. Reusing a single vnode in two tree positions triggers
@@ -3197,12 +3191,12 @@ export const ChronixGantt = defineComponent({
           h(
             'colgroup',
             null,
-            cols.map((c) => h('col', { key: c.key, style: { width: `${c.width * scale}px` } })),
+            cols.map((c) => h('col', { key: c.key, style: { width: `${c.width}px` } })),
           );
         const tableStyle = {
           borderCollapse: 'collapse',
           tableLayout: 'fixed',
-          width: `${sidebarWidth}px`,
+          width: `${sidebarTableWidth}px`,
         } as const;
 
         // sidebar-header pins to both top and left so the top-left
@@ -3463,6 +3457,7 @@ export const ChronixGantt = defineComponent({
             class: 'cx-gantt-sidebar-header-pane',
             style: {
               overflow: 'hidden',
+              minWidth: '0',
               gridColumn: '1',
               gridRow: '1',
             },
@@ -3486,6 +3481,7 @@ export const ChronixGantt = defineComponent({
             class: 'cx-gantt-sidebar-pane',
             style: {
               overflow: 'auto',
+              minWidth: '0',
               gridColumn: '1',
               gridRow: '2',
             },

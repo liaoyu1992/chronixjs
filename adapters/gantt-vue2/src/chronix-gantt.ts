@@ -1421,14 +1421,6 @@ export const ChronixGantt = defineComponent({
     const effectiveSidebarWidth = computed<number>(
       () => sidebarWidthOverride.value ?? sidebarBaseWidth.value,
     );
-    // Per-column scale factor: each col's render width = colSpec.width
-    // * sidebarScale so the user-supplied column ratios are preserved
-    // across drags. Falls back to 1 when there are no columns.
-    const sidebarScale = computed<number>(() => {
-      const base = sidebarBaseWidth.value;
-      if (base === 0) return 1;
-      return effectiveSidebarWidth.value / base;
-    });
 
     function onDividerPointerdown(e: PointerEvent): void {
       if (e.button !== 0) return;
@@ -3204,11 +3196,13 @@ export const ChronixGantt = defineComponent({
       const sidebarColumns: readonly ColumnSpec[] = props.columns;
       // Phase 50: `effectiveSidebarWidth` returns the user-dragged
       // override (if any) or falls back to the natural sum of per-
-      // column widths. `scale` (effective / base) multiplies each
-      // `<col>` rendered width so the user-supplied column ratios
-      // survive the drag.
+      // column widths — it drives the grid track (sidebar pane width).
+      // The sidebar *table* is sized to the natural column sum
+      // (`sidebarTableWidth`) so dragging narrower than the columns
+      // overflows the pane and reveals a horizontal scrollbar instead
+      // of compressing the columns.
       const sidebarWidth = effectiveSidebarWidth.value;
-      const scale = sidebarScale.value;
+      const sidebarTableWidth = sidebarBaseWidth.value;
       const rowsById = new Map(props.rows.map((r) => [r.id, r]));
       const rowsForSpans = strips.value
         .map((strip) => rowsById.get(strip.rowId))
@@ -3226,7 +3220,7 @@ export const ChronixGantt = defineComponent({
               style: {
                 borderCollapse: 'collapse',
                 tableLayout: 'fixed',
-                width: `${sidebarWidth}px`,
+                width: `${sidebarTableWidth}px`,
                 height: `${totalHeaderBandHeight}px`,
               },
               attrs: { cellpadding: 0, cellspacing: 0 },
@@ -3236,7 +3230,7 @@ export const ChronixGantt = defineComponent({
                 'colgroup',
                 {},
                 sidebarColumns.map((c) =>
-                  h('col', { key: c.key, style: { width: `${c.width * scale}px` } }),
+                  h('col', { key: c.key, style: { width: `${c.width}px` } }),
                 ),
               ),
               h('thead', {}, [
@@ -3281,7 +3275,7 @@ export const ChronixGantt = defineComponent({
               style: {
                 borderCollapse: 'collapse',
                 tableLayout: 'fixed',
-                width: `${sidebarWidth}px`,
+                width: `${sidebarTableWidth}px`,
               },
               attrs: { cellpadding: 0, cellspacing: 0 },
             },
@@ -3290,7 +3284,7 @@ export const ChronixGantt = defineComponent({
                 'colgroup',
                 {},
                 sidebarColumns.map((c) =>
-                  h('col', { key: c.key, style: { width: `${c.width * scale}px` } }),
+                  h('col', { key: c.key, style: { width: `${c.width}px` } }),
                 ),
               ),
               h(
@@ -3356,7 +3350,7 @@ export const ChronixGantt = defineComponent({
             'div',
             {
               class: 'cx-gantt-sidebar-header-pane',
-              style: { overflow: 'hidden', gridColumn: '1', gridRow: '1' },
+              style: { overflow: 'hidden', minWidth: '0', gridColumn: '1', gridRow: '1' },
             },
             [
               h(
@@ -3397,6 +3391,7 @@ export const ChronixGantt = defineComponent({
               class: 'cx-gantt-sidebar-pane',
               style: {
                 overflow: 'auto',
+                minWidth: '0',
                 gridColumn: '1',
                 gridRow: '2',
               },
