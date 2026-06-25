@@ -1,6 +1,7 @@
-import type { BarSpec, LinkSpec, RowSpec } from '@chronixjs/gantt';
+import type { BarSpec, CustomLinkMarker, LinkSpec, RowSpec } from '@chronixjs/gantt';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
+const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 /**
  * Phase 46: today's local midnight, matching `examples/gantt-vue3/src/sample-data.ts`.
@@ -16,15 +17,22 @@ export function todayLocalMidnight(): Date {
   return d;
 }
 
+/**
+ * Bar with optional progress field. When progressValue is provided,
+ * the bar gets a `progress` property with the value and a
+ * `pointerOverlayId: 'progress-handle'` so users can drag the
+ * progress handle to update completion percentage.
+ */
 function bar(
   id: string,
   rowId: string,
   startHourFromAnchor: number,
   endHourFromAnchor: number,
   title?: string,
+  progressValue?: number,
 ): BarSpec {
   const anchorMs = todayLocalMidnight().getTime();
-  return {
+  const base: BarSpec = {
     id,
     rowId,
     range: {
@@ -34,6 +42,37 @@ function bar(
     dprIntent: 'crisp-pixel',
     ...(title !== undefined ? { title } : {}),
   };
+  return progressValue === undefined
+    ? base
+    : { ...base, progress: { value: progressValue }, pointerOverlayId: 'progress-handle' };
+}
+
+/**
+ * Multi-day bar — for week/month/season/halfYear/year views.
+ * Accepts optional progressValue for progress tracking.
+ */
+function multiDayBar(
+  id: string,
+  rowId: string,
+  startDayOffset: number,
+  durationDays: number,
+  title: string,
+  progressValue?: number,
+): BarSpec {
+  const todayMs = todayLocalMidnight().getTime();
+  const base: BarSpec = {
+    id,
+    rowId,
+    range: {
+      start: new Date(todayMs + startDayOffset * MS_PER_DAY),
+      end: new Date(todayMs + (startDayOffset + durationDays) * MS_PER_DAY),
+    },
+    title,
+    dprIntent: 'crisp-pixel',
+  };
+  return progressValue === undefined
+    ? base
+    : { ...base, progress: { value: progressValue }, pointerOverlayId: 'progress-handle' };
 }
 
 /**
@@ -78,6 +117,22 @@ export const sampleRows: readonly RowSpec[] = [
  * compose with link rendering in the demo. `routing: 'square'` for
  * all (chronix v0's smooth routing is forward-only and limited).
  */
+
+/**
+ * A user-supplied marker shape: a stylized heart for one link in the
+ * sample set. Proves the `CustomLinkMarker` codepath at both the IR
+ * layer (`LinkSpec.marker` accepts an object) and the render layer.
+ */
+const heartMarker: CustomLinkMarker = {
+  id: 'heart',
+  viewBox: '0 0 10 10',
+  paths: [
+    {
+      d: 'M 5 8.5 C 1 6 1 1.5 3 1.5 C 4 1.5 4.5 2.5 5 3.5 C 5.5 2.5 6 1.5 7 1.5 C 9 1.5 9 6 5 8.5 Z',
+    },
+  ],
+};
+
 export const sampleLinks: readonly LinkSpec[] = [
   // Original links
   { id: 'l1', fromBarId: 'd1', toBarId: 'f1', routing: 'square', marker: 'arrow' },
@@ -122,6 +177,15 @@ export const sampleLinks: readonly LinkSpec[] = [
     marker: 'arrow',
     colorOverride: '#16a34a',
   },
+  // Custom heart marker link
+  {
+    id: 'l20-heart',
+    fromBarId: 'd3',
+    toBarId: 'multi-d3',
+    routing: 'smooth',
+    marker: heartMarker,
+    colorOverride: '#10b981',
+  },
 ];
 
 /**
@@ -141,13 +205,13 @@ export function initialSampleBars(): BarSpec[] {
     bar('d2', 'r1', 48, 96, 'High-fidelity mocks'),
     bar('d3', 'r1', 108, 168, 'Design review'),
     bar('d4', 'r1', 174, 216, 'Final signoff'),
-    withPriority(bar('f1', 'r2', 12, 48, 'Routes & shell'), 'high'),
+    withPriority(bar('f1', 'r2', 12, 48, 'Routes & shell', 50), 'high'),
     bar('f2', 'r2', 36, 72, 'Component library'),
     bar('f3', 'r2', 96, 144, 'Forms & validation'),
     bar('f4', 'r2', 150, 192, 'E2E tests'),
     bar('f5', 'r2', 198, 240, 'Performance audit'),
     bar('b1', 'r3', 6, 60, 'DB schema'),
-    withPriority(bar('b2', 'r3', 60, 108, 'REST endpoints'), 'medium'),
+    withPriority(bar('b2', 'r3', 60, 108, 'REST endpoints', 25), 'medium'),
     // `b3` ends AFTER the week view so the right-continuation triangle
     // fires when viewing 'week'.
     bar('b3', 'r3', 120, 200, 'Auth & sessions'),
@@ -155,8 +219,8 @@ export function initialSampleBars(): BarSpec[] {
     bar('q1', 'r4', 72, 120, 'Smoke tests'),
     bar('q2', 'r4', 120, 144, 'Regression run'),
     bar('q3', 'r4', 156, 192, 'Load tests'),
-    bar('q4', 'r4', 198, 234, 'Security scan'),
-    withPriority(bar('rel1', 'r5', 144, 156, 'Stage cut'), 'low'),
+    withPriority(bar('q4', 'r4', 198, 234, 'Security scan', 80), 'low'),
+    bar('rel1', 'r5', 144, 156, 'Stage cut'),
     bar('rel2', 'r5', 192, 204, 'Prod ship'),
     bar('rel3', 'r5', 210, 258, 'Hotfix rollout'),
     // Phase 32.5 — 12-row expansion. Additional bars across rows 6-12
@@ -194,5 +258,12 @@ export function initialSampleBars(): BarSpec[] {
     bar('bar-stack-1', 'r13', 0, 10, '待排任务 A'),
     bar('bar-stack-2', 'r13', 5, 15, '待排任务 B'),
     bar('bar-stack-3', 'r13', 8, 18, '待排任务 C'),
+
+    // Multi-day bars with progress for week/month/season views
+    multiDayBar('multi-d1', 'r1', -10, 5, '已完成任务 (上周)', 100),
+    multiDayBar('multi-d2', 'r2', 2, 8, '下周项目 - 主体施工', 30),
+    multiDayBar('multi-d3', 'r3', 14, 18, '月内中期 - 设备升级'),
+    multiDayBar('multi-d4', 'r4', 25, 35, '跨月任务 - 系统迁移', 15),
+    multiDayBar('multi-d5', 'r5', 60, 30, '下季度规划 - 年度大修'),
   ];
 }
