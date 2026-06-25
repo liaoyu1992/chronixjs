@@ -25,7 +25,16 @@
       "Bash(cp \"C:/Users/liaoyu/work/cluade-smart/.claude/bin/observations_rotate.py\" \"C:/Users/liaoyu/work/chronixjs/.claude/bin/observations_rotate.py\")",
       "Bash(cp \"C:/Users/liaoyu/work/cluade-smart/.claude/bin/consolidate_instincts.py\" \"C:/Users/liaoyu/work/chronixjs/.claude/bin/consolidate_instincts.py\")",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm dev *)",
+      "Bash(pnpm tsc *)",
+      "Bash(curl -s http://localhost:8702)",
+      "Bash(npx playwright *)",
+      "Bash(npx tsx *)",
+      "Read(//c/tmp/**)",
+      "Bash(git commit *)"
     ]
   },
   "hooks": {
