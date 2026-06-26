@@ -35,6 +35,7 @@ MAX_INJECTED_LINES = 160  # Prune injected-memory.md beyond this
 # dumping every memory in the store.
 INJECT_BUDGET = 10
 PROJECT_REFERENCE_SLOTS = 6
+INSTINCT_SLOTS = 3  # team/global behavior rules surfaced alongside memories
 
 # --- Memory TTL by type (days) ---
 # Article Image 8 spec: user/feedback 永久, project 60天, reference 90天
@@ -43,6 +44,7 @@ MEMORY_TTL = {
     "user": None,       # 永久
     "feedback": None,   # 永久
     "pitfall": None,    # 永久 (pitfalls are long-term knowledge)
+    "instinct": None,   # 永久 (team/global instincts are curated, never expire)
     "project": 60,
     "reference": 90,
 }
@@ -131,6 +133,58 @@ def load_memory_files(memory_dir: Path) -> list[dict]:
             continue
 
     return memories
+
+
+def load_team_instincts(team_dir: Path) -> list[dict]:
+    """Load shared team/global instincts as injectable items (type "instinct").
+
+    These are the article's "全局 Instinct" — curated, cross-project behavior
+    rules that Memory injection surfaces alongside project memories. Unlike
+    memory files they have trigger/confidence/domain frontmatter and no TTL.
+    We synthesize the `name` the vector store keys on as "instinct::<id>" (it
+    must be stable across sessions). Files without an `id` (e.g. TEAM.md docs)
+    and deprecated entries are skipped.
+    """
+    if not team_dir.exists():
+        return []
+
+    instincts = []
+    for md_file in team_dir.glob("*.md"):
+        try:
+            content = md_file.read_text(encoding="utf-8")
+            if not content.startswith("---"):
+                continue
+            parts = content.split("---", 2)
+            if len(parts) < 3:
+                continue
+
+            frontmatter_text = parts[1].strip()
+            body = parts[2].strip()
+
+            meta = {}
+            for line in frontmatter_text.split("\n"):
+                if ":" in line:
+                    key, val = line.split(":", 1)
+                    key = key.strip()
+                    val = val.strip().strip('"').strip("'")
+                    meta[key] = val
+
+            cid = meta.get("id", "")
+            if not cid:  # skip docs like TEAM.md that have no id
+                continue
+            if str(meta.get("deprecated", "")).lower() == "true":
+                continue
+
+            meta["name"] = f"instinct::{cid}"
+            meta["description"] = meta.get("trigger", "")  # trigger is the discriminative text
+            meta["body"] = body
+            meta["file_path"] = str(md_file)
+            meta["_type"] = "instinct"
+            instincts.append(meta)
+        except Exception:
+            continue
+
+    return instincts
 
 
 def bm25_recall(memories: list[dict], query: str, top_k: int = 5) -> list[dict]:
@@ -304,7 +358,7 @@ def select_top_k(memories: list[dict]) -> list[dict]:
     by type priority then score, so format_injected_memory renders the most
     relevant memories first.
     """
-    type_order = ["user", "feedback", "pitfall", "project", "reference"]
+    type_order = ["user", "feedback", "pitfall", "instinct", "project", "reference"]
     buckets: dict[str, list[dict]] = {t: [] for t in type_order}
     for mem in memories:
         mem_type = mem.get("_type") or mem.get("type", "project")
@@ -317,6 +371,7 @@ def select_top_k(memories: list[dict]) -> list[dict]:
     kept.extend(buckets["user"])
     kept.extend(buckets["feedback"])
     kept.extend(buckets["pitfall"][:3])  # Keep up to 3 pitfalls (high-value, limited)
+    kept.extend(buckets["instinct"][:INSTINCT_SLOTS])  # global behavior rules
     kept.extend(buckets["project"][:PROJECT_REFERENCE_SLOTS])
     kept.extend(buckets["reference"][:PROJECT_REFERENCE_SLOTS])
 
@@ -343,11 +398,12 @@ def format_injected_memory(memories: list[dict]) -> str:
     ]
 
     # Group by type (priority order)
-    type_order = ["user", "feedback", "pitfall", "project", "reference"]
+    type_order = ["user", "feedback", "pitfall", "instinct", "project", "reference"]
     type_labels = {
         "user": "👤 用户偏好",
         "feedback": "💡 行为反馈",
         "pitfall": "⚠️ 业务防坑",
+        "instinct": "🧭 全局 Instinct",
         "project": "📂 项目知识",
         "reference": "🔗 参考资源",
     }
@@ -389,16 +445,18 @@ def prune_to_lines(content: str, max_lines: int = MAX_INJECTED_LINES) -> str:
     if len(lines) <= max_lines:
         return content
 
-    # Remove sections starting from lowest priority
-    priority_order = ["reference", "project", "pitfall", "feedback", "user"]
+    # Remove sections starting from lowest priority (instinct outlasts
+    # project/reference, yields before pitfall/feedback/user)
+    priority_order = ["reference", "project", "instinct", "pitfall", "feedback", "user"]
 
     for remove_type in priority_order:
         if len(lines) <= max_lines:
             break
         header = f"## "
-        type_labels = {"reference": "参考资源", "project": "项目知识", "pitfall": "业务防坑", "feedback": "行为反馈", "user": "用户偏好"}
+        type_labels = {"reference": "参考资源", "project": "项目知识", "instinct": "全局 Instinct", "pitfall": "业务防坑", "feedback": "行为反馈", "user": "用户偏好"}
         target_header = f"## 🔗 {type_labels[remove_type]}" if remove_type == "reference" else \
                         f"## 📂 {type_labels[remove_type]}" if remove_type == "project" else \
+                        f"## 🧭 {type_labels[remove_type]}" if remove_type == "instinct" else \
                         f"## ⚠️ {type_labels[remove_type]}" if remove_type == "pitfall" else \
                         f"## 💡 {type_labels[remove_type]}" if remove_type == "feedback" else \
                         f"## 👤 {type_labels[remove_type]}"
@@ -491,12 +549,18 @@ def main():
     all_memories = load_memory_files(memory_dir)
     all_memories.extend(load_memory_files(raw_dir))
 
+    # Load team/global instincts (article: Memory 含全局 Instinct). Added before
+    # the empty-check so a project with only team rules still injects; their
+    # MEMORY_TTL["instinct"]=None keeps ttl_cleanup from ever deleting them.
+    team_dir = base / "homunculus" / "instincts" / "team"
+    all_memories.extend(load_team_instincts(team_dir))
+
     if not all_memories:
         if rules_file.exists():
             rules_file.unlink()
         return
 
-    # Step 2: TTL cleanup (remove expired memories)
+    # Step 2: TTL cleanup (remove expired memories) — instinct type is permanent
     all_memories = ttl_cleanup(memory_dir, all_memories)
 
     if not all_memories:

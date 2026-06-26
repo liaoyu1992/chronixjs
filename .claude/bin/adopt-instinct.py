@@ -14,14 +14,20 @@ Adopted rules drop personal-only fields (observed_count, observed_at,
 deprecated) and the per-session Evidence block; source becomes team-consensus
 and confidence is normalized to the team level.
 
+Reads personal/<id>.md from <claude_dir> but WRITES the team rule to the
+canonical store (cluade-smart by default) so it fans out to all projects via
+sync-team.py. Use --canonical to redirect the write target.
+
 Usage:
   python3 adopt-instinct.py <claude_dir> <id>
-  python3 adopt-instinct.py <claude_dir> bash-check-before-use --author yu
+  python3 adopt-instinct.py <chronixjs_claude> bash-check-before-use --author yu
   python3 adopt-instinct.py <claude_dir> <id> --confidence 0.85 --force
+  python3 adopt-instinct.py <claude_dir> <id> --canonical <cluade_smart_claude>
 """
 
 import argparse
 import importlib.util
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,6 +39,23 @@ for _stream in (sys.stdout, sys.stderr):
 
 
 TEAM_CONFIDENCE = 0.80   # default confidence for a promoted team rule
+
+# Canonical team store = cluade-smart (authoritative shared layer). Adopted
+# rules land here regardless of which project you adopt from, so one adoption
+# fans out to all projects via sync-team.py. Override: --canonical / $TEAM_CANONICAL_DIR.
+DEFAULT_CANONICAL_TEAM = Path(
+    "C:/Users/liaoyu/work/cluade-smart/.claude/homunculus/instincts/team"
+)
+
+
+def resolve_canonical_team(cli_canonical):
+    """Resolve the team store to write into (default cluade-smart)."""
+    if cli_canonical:
+        return Path(cli_canonical)
+    env = os.environ.get("TEAM_CANONICAL_DIR")
+    if env:
+        return Path(env)
+    return DEFAULT_CANONICAL_TEAM
 
 
 # ---------- Reuse auto-evolve.py primitives ----------
@@ -132,9 +155,12 @@ def main():
     parser.add_argument("--author", default=None, help="optional author tag")
     parser.add_argument("--force", action="store_true",
                         help="overwrite if team/<id>.md already exists")
+    parser.add_argument("--canonical", default=None,
+                        help="canonical team dir to write (default: cluade-smart; $TEAM_CANONICAL_DIR)")
     args = parser.parse_args()
 
     paths = get_paths(args.claude_dir)
+    team_dir = resolve_canonical_team(args.canonical)
 
     inst = find_instinct(paths["personal_dir"], args.id)
     if not inst:
@@ -142,7 +168,7 @@ def main():
         print("[adopt] 检查 id 拼写，或运行 promote-to-team.py 查看候选清单。", file=sys.stderr)
         sys.exit(2)
 
-    out = paths["team_dir"] / f"{inst.get('id', args.id)}.md"
+    out = team_dir / f"{inst.get('id', args.id)}.md"
     if out.exists() and not args.force:
         print(f"[adopt] target exists: {out}", file=sys.stderr)
         print("[adopt] 用 --force 覆盖，或先手动处理已存在的规则。", file=sys.stderr)
@@ -152,10 +178,11 @@ def main():
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(content, encoding="utf-8")
 
-    print(f"[adopt] wrote {out}")
+    print(f"[adopt] wrote {out} (canonical team store)")
     print(f"[adopt] 下一步: 编辑 {out.name} 补充 Why / Example，")
     print("[adopt]        然后 git add .claude/homunculus/instincts/team/ 并提交 PR。")
     print("[adopt] 提示: 采纳后重新运行 promote-to-team.py，该规则会从候选清单消失。")
+    print("[adopt]        运行 sync-team.py 把新规则蔓延到其他项目（或下次 cluade-smart 会话自动同步）。")
 
 
 if __name__ == "__main__":
