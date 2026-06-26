@@ -1,10 +1,13 @@
+import {
+  snapVerticalGridLineX,
+  type AxisRangePlanInput,
+  type BarSpec,
+  type RowSpec,
+} from '@chronixjs/gantt';
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChronixGantt } from './chronix-gantt.js';
-
-import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
-import { snapVerticalGridLineX } from '@chronixjs/gantt';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 

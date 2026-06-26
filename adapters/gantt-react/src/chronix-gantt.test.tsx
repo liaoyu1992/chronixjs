@@ -8,7 +8,6 @@ import {
   defaultRowSwimlaneLayout,
   HEADER_CELL_SLOT_NAME,
   LINK_SLOT_NAME,
-  snapVerticalGridLineX,
   type AxisRangePlanInput,
   type BarSlotArgs,
   type BarSpec,
