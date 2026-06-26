@@ -82,6 +82,7 @@ export {
   getDayClassNames,
   getSlotClassNames,
   snapHorizontalGridLineY,
+  snapVerticalGridLineX,
   truncateBarText,
 } from './render/index.js';
 

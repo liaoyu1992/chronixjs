@@ -1,9 +1,13 @@
+import {
+  snapVerticalGridLineX,
+  type AxisRangePlanInput,
+  type BarSpec,
+  type RowSpec,
+} from '@chronixjs/gantt';
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ChronixGantt } from './chronix-gantt.js';
-
-import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 
@@ -78,15 +82,15 @@ describe('<ChronixGantt> body grid lines — Phase 26', () => {
     expect(wrapper.findAll('.cx-gantt-grid-hline')).toHaveLength(0);
   });
 
-  it('emits one solid `.cx-gantt-grid-vline` rect per axis tick + 1 right-edge close (day view → 24 + 1 = 25)', () => {
+  it('emits one solid `.cx-gantt-grid-vline` line per axis tick + 1 right-edge close (day view → 24 + 1 = 25)', () => {
     // Day view: 24 hourly ticks. Every tick is a cell-boundary
     // (chronix's `axis.ticks` IS the innermost cell row — no sub-tick
-    // subdivisions). Each tick → one solid rect. Plus the right-edge
-    // closing vline at totalWidth - 1.
+    // subdivisions). Each tick → one solid <line>. Plus the right-edge
+    // closing vline at the snapped right edge.
     const wrapper = mount(ChronixGantt, {
       props: { bars, rows, axisInput: makeAxisInput('day') },
     });
-    const solidBoundaries = wrapper.findAll('rect.cx-gantt-grid-vline');
+    const solidBoundaries = wrapper.findAll('line.cx-gantt-grid-vline');
     expect(solidBoundaries).toHaveLength(25);
   });
 
@@ -119,10 +123,10 @@ describe('<ChronixGantt> body grid lines — Phase 26', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars, rows, axisInput: makeAxisInput('season') },
     });
-    const weekStarts = wrapper.findAll('rect.cx-gantt-grid-vline-week');
+    const weekStarts = wrapper.findAll('line.cx-gantt-grid-vline-week');
     expect(weekStarts).toHaveLength(13);
-    // Week-emphasis fill matches the theme default.
-    expect(weekStarts[0]!.attributes('fill')).toBe('#bbb');
+    // Week-emphasis stroke matches the theme default.
+    expect(weekStarts[0]!.attributes('stroke')).toBe('#bbb');
   });
 
   it('emits one `.cx-gantt-grid-hline` per row strip', () => {
@@ -155,20 +159,25 @@ describe('<ChronixGantt> body grid lines — Phase 26', () => {
     }
   });
 
-  it('emits a right-edge closing `cx-gantt-grid-vline` at `axis.totalWidth - 1`', () => {
-    // Among the solid vlines, the rightmost x position should be
-    // `axis.totalWidth - 1`. For day view at viewportWidth=1440 with
-    // 24 hourly slots, slotWidth = 1440/24 = 60, totalWidth = 1440 →
-    // rightmost vline at x=1439.
+  it('emits a right-edge closing `cx-gantt-grid-vline` at the snapped right edge (totalWidth)', () => {
+    // vlines are <line> elements whose X is snapped to the device pixel
+    // grid via `snapVerticalGridLineX` (vertical twin of the horizontal
+    // grid-line snap), so the header tick separator and the body vline
+    // overlay pixel-for-pixel. Day view at viewportWidth=1440 →
+    // totalWidth=1440 → rightmost vline at snapVerticalGridLineX(1440,1440).
     const wrapper = mount(ChronixGantt, {
       props: { bars, rows, axisInput: makeAxisInput('day') },
     });
-    const solidRects = wrapper.findAll('rect.cx-gantt-grid-vline');
-    const xValues = solidRects.map((r) => Number(r.attributes('x')));
-    const maxX = Math.max(...xValues);
-    // Day view at viewportWidth=1440 → totalWidth=1440 (stretched) →
-    // right edge at x=1439.
-    expect(maxX).toBe(1439);
+    const vlines = wrapper.findAll('line.cx-gantt-grid-vline');
+    const x1Values = vlines.map((l) => Number(l.attributes('x1')));
+    const maxX1 = Math.max(...x1Values);
+    // jsdom defaults to dpr=1 → snap(1440,1440) = 1439.5.
+    expect(maxX1).toBe(snapVerticalGridLineX(1440, 1440));
+    // Snapped X is a half-integer at dpr=1 (proves the vertical snap fires,
+    // mirroring the horizontal hline snap test).
+    expect(Number.isInteger(maxX1 - 0.5)).toBe(true);
+    // non-scaling-stroke keeps the 1-px weight stable under SVG zoom.
+    expect(vlines[0]!.attributes('vector-effect')).toBe('non-scaling-stroke');
   });
 
   it('the `.cx-gantt-grid` group is `pointer-events: none` (no hit-test interference)', () => {

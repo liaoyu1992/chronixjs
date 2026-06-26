@@ -23,6 +23,7 @@
   prevAnchor,
   resolveBarStyle,
   snapHorizontalGridLineY,
+  snapVerticalGridLineX,
   successorAnchor,
   todayAnchor,
   truncateBarText,
@@ -1885,31 +1886,40 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   const gridChildren: ReactElement[] = [];
   for (const tick of axis.ticks) {
     const isWeekStart = tick.time.getDay() === 1 && tick.time.getHours() === 0;
+    // X shared with the header tick line via `snapVerticalGridLineX` so the
+    // body vline overlays the header separator pixel-for-pixel at any DPR
+    // (vertical twin of the snapped horizontal grid lines).
+    const xCrisp = snapVerticalGridLineX(tick.x, axis.totalWidth);
     gridChildren.push(
-      <rect
+      <line
         key={`grid-vline-${tick.x}`}
         className={
           isWeekStart ? 'cx-gantt-grid-vline cx-gantt-grid-vline-week' : 'cx-gantt-grid-vline'
         }
-        x={tick.x - 1}
-        y={0}
-        width={1}
-        height={bodyHeight}
-        fill={isWeekStart ? t.gridLineWeekStartColor : t.gridLineColor}
+        x1={xCrisp}
+        y1={0}
+        x2={xCrisp}
+        y2={bodyHeight}
+        stroke={isWeekStart ? t.gridLineWeekStartColor : t.gridLineColor}
+        strokeWidth={1}
+        vectorEffect="non-scaling-stroke"
         pointerEvents="none"
       />,
     );
   }
   if (axis.totalWidth > 0) {
+    const xCrisp = snapVerticalGridLineX(axis.totalWidth, axis.totalWidth);
     gridChildren.push(
-      <rect
+      <line
         key="grid-vline-right-edge"
         className="cx-gantt-grid-vline"
-        x={axis.totalWidth - 1}
-        y={0}
-        width={1}
-        height={bodyHeight}
-        fill={t.gridLineColor}
+        x1={xCrisp}
+        y1={0}
+        x2={xCrisp}
+        y2={bodyHeight}
+        stroke={t.gridLineColor}
+        strokeWidth={1}
+        vectorEffect="non-scaling-stroke"
         pointerEvents="none"
       />,
     );
@@ -2435,11 +2445,13 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                   <g key={`tick-${tick.x}`}>
                     <line
                       className="cx-gantt-tick-line"
-                      x1={tick.x}
+                      x1={snapVerticalGridLineX(tick.x, axis.totalWidth)}
                       y1={0}
-                      x2={tick.x}
+                      x2={snapVerticalGridLineX(tick.x, axis.totalWidth)}
                       y2={hh}
                       stroke={t.headerTickStroke}
+                      strokeWidth={1}
+                      vectorEffect="non-scaling-stroke"
                     />
                     <text
                       className={tickLabelClassName}
