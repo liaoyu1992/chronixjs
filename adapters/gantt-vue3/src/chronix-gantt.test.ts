@@ -3,6 +3,7 @@ import {
   computeRowSpans,
   createSlotRegistry,
   defaultChronixTheme,
+  snapVerticalGridLineX,
 } from '@chronixjs/gantt';
 import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -866,8 +867,15 @@ describe('<ChronixGantt> header rows', () => {
     const cells = wrapper.findAll('.cx-gantt-header-cell');
     expect(cells).toHaveLength(1);
     const cell = cells[0]!;
-    expect(Number(cell.attributes('x'))).toBe(0);
-    expect(Number(cell.attributes('width'))).toBe(1440);
+    // Cell edges are device-pixel snapped (vertical-twin of the body grid
+    // vline snap) so the band border overlays the tick line; at dpr=1 the
+    // left edge lands on 0.5 and the right edge clamps to totalWidth-0.5.
+    const totalWidth = 1440;
+    const expectedX = snapVerticalGridLineX(0, totalWidth);
+    expect(Number(cell.attributes('x'))).toBe(expectedX);
+    expect(Number(cell.attributes('width'))).toBe(
+      snapVerticalGridLineX(totalWidth, totalWidth) - expectedX,
+    );
     expect(Number(cell.attributes('y'))).toBe(0);
     expect(Number(cell.attributes('height'))).toBe(20);
     // Day-view header label is zh-CN long-date ("2026年5月13日"); just
@@ -893,8 +901,10 @@ describe('<ChronixGantt> header rows', () => {
     const widths = cells.map((c) => Number(c.attributes('width')));
     const min = Math.min(...widths);
     const max = Math.max(...widths);
-    expect(max - min).toBe(0);
-    expect(min).toBe(52 * 24);
+    // Widths are uniform modulo a ≤1px device-pixel snap: the rightmost
+    // cell's right edge clamps to totalWidth-0.5, so it renders 1px narrower.
+    expect(max - min).toBeLessThanOrEqual(1);
+    expect(max).toBe(52 * 24);
   });
 
   it('month view: renders one month header cell + per-day tick labels in zh-CN', () => {

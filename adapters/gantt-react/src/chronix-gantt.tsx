@@ -2352,20 +2352,27 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                   const cellClassName = ['cx-gantt-header-cell', ...dayClasses, ...extraClasses]
                     .filter(Boolean)
                     .join(' ');
+                  // Snap both vertical edges to the device pixel grid so the
+                  // band cell border overlays the tick line at the same
+                  // boundary (same helper as the tick + body grid vlines).
+                  const cellXLeft = snapVerticalGridLineX(cell.x, axis.totalWidth);
+                  const cellXRight = snapVerticalGridLineX(cell.x + cell.width, axis.totalWidth);
+                  const cellW = cellXRight - cellXLeft;
                   return (
                     <g key={`band-${rowIdx}-${cellIdx}`}>
                       <rect
                         className={cellClassName}
-                        x={cell.x}
+                        x={cellXLeft}
                         y={rowY}
-                        width={cell.width}
+                        width={cellW}
                         height={hrh}
                         fill={t.headerCellFill}
                         stroke={t.headerCellStroke}
+                        vectorEffect="non-scaling-stroke"
                       />
                       <text
                         className="cx-gantt-header-cell-label"
-                        x={cell.x + cell.width / 2}
+                        x={cellXLeft + cellW / 2}
                         y={rowY + hrh / 2 + 4}
                         textAnchor="middle"
                         fill={t.headerCellLabel}

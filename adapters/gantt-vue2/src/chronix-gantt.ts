@@ -1790,17 +1790,24 @@ export const ChronixGantt = defineComponent({
             } else {
               const dayClasses = dayMeta ? getDayClassNames(dayMeta) : [];
               const classAttr = ['cx-gantt-header-cell', ...dayClasses, ...extraClasses].join(' ');
+              // Snap both vertical edges to the device pixel grid so the band
+              // cell border overlays the tick line at the same boundary (same
+              // helper as the tick + body grid vlines).
+              const cellXLeft = snapVerticalGridLineX(cell.x, a.totalWidth);
+              const cellXRight = snapVerticalGridLineX(cell.x + cell.width, a.totalWidth);
+              const cellW = cellXRight - cellXLeft;
               headerRowChildren.push(
                 h('rect', {
                   key: `header-cell-${rowIdx}-${cellIdx}`,
                   class: classAttr,
                   attrs: {
-                    x: cell.x,
+                    x: cellXLeft,
                     y: rowY,
-                    width: cell.width,
+                    width: cellW,
                     height: hrh,
                     fill: t.headerCellFill,
                     stroke: t.headerCellStroke,
+                    'vector-effect': 'non-scaling-stroke',
                   },
                 }),
                 h(
@@ -1809,7 +1816,7 @@ export const ChronixGantt = defineComponent({
                     key: `header-cell-label-${rowIdx}-${cellIdx}`,
                     class: 'cx-gantt-header-cell-label',
                     attrs: {
-                      x: cell.x + cell.width / 2,
+                      x: cellXLeft + cellW / 2,
                       y: rowY + hrh / 2 + 4,
                       'text-anchor': 'middle',
                       fill: t.headerCellLabel,
