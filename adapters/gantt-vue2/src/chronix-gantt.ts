@@ -3350,7 +3350,21 @@ export const ChronixGantt = defineComponent({
             'div',
             {
               class: 'cx-gantt-sidebar-header-pane',
-              style: { overflow: 'hidden', minWidth: '0', gridColumn: '1', gridRow: '1' },
+              // Divider lives on the pane (grid item, height = header-band
+              // row) rather than the inner header element: the inner header
+              // is sized by its table content, so a border on it is clipped
+              // by this pane's `overflow: hidden` when the chart header is
+              // shorter and floats mid-band when taller. On the pane the
+              // line always sits at the band's bottom edge, aligned with the
+              // chart header.
+              style: {
+                overflow: 'hidden',
+                minWidth: '0',
+                gridColumn: '1',
+                gridRow: '1',
+                borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
+                boxSizing: 'border-box',
+              },
             },
             [
               h(
@@ -3369,7 +3383,6 @@ export const ChronixGantt = defineComponent({
                       class: 'cx-gantt-sidebar-header',
                       style: {
                         background: t.sidebarBackground,
-                        borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
                         boxSizing: 'border-box',
                       },
                     },
