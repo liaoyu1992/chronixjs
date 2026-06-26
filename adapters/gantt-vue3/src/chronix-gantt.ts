@@ -3207,15 +3207,15 @@ export const ChronixGantt = defineComponent({
         // Phase 23: sticky-top + sticky-left positioning removed —
         // sidebar-header now lives inside `cx-gantt-sidebar-header-
         // pane` (overflow: hidden) in the grid row above the
-        // sidebar-pane. Background + border-bottom stay so the
-        // visual chrome is preserved.
+        // sidebar-pane. Background stays on the header; the divider
+        // moved to the pane so it always aligns with the chart
+        // header's bottom edge (see sidebarHeaderPane style).
         sidebarHeader = h(
           'div',
           {
             class: 'cx-gantt-sidebar-header',
             style: {
               background: t.sidebarBackground,
-              borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
               boxSizing: 'border-box',
             },
           },
@@ -3460,6 +3460,15 @@ export const ChronixGantt = defineComponent({
               minWidth: '0',
               gridColumn: '1',
               gridRow: '1',
+              // Divider lives on the pane (grid item, height = header-band
+              // row) rather than the inner header element: the inner header
+              // is sized by its table content, so a border on it is clipped
+              // by this pane's `overflow: hidden` when the chart header is
+              // shorter and floats mid-band when taller. On the pane the
+              // line always sits at the band's bottom edge, aligned with the
+              // chart header.
+              borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
+              boxSizing: 'border-box',
             },
           },
           [

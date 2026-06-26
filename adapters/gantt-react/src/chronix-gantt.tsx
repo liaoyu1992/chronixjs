@@ -2203,20 +2203,40 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   // sidebar-divider drag handle at fixed SIDEBAR_DIVIDER_WIDTH,
   // column 3 = chart at `auto` so horizontal overflow scrolls inside
   // the chart pane). Phase 50 adds the divider column.
+  // Pin row 1 to the canonical header-band height so the sidebar header's
+  // 1px bottom-divider border (and any table-content slack) is absorbed
+  // inside the fixed track instead of leaking into an `auto` row — matches
+  // gantt-vue3 / gantt-vue2 (`gridTemplateRows: `${totalHeaderBandHeight}px ...``),
+  // which previously made the React header band render ~1px taller (45 vs 44).
+  const headerBandRow = `${totalHeaderBandHeight}px ${maxBodyHeight ?? 'auto'}`;
   const wrapperGridStyle: CSSProperties = hasSidebar
     ? {
         display: 'grid',
         gridTemplateColumns: `${sidebarWidth}px ${SIDEBAR_DIVIDER_WIDTH}px auto`,
-        gridTemplateRows: 'auto auto',
+        gridTemplateRows: headerBandRow,
       }
-    : { display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: 'auto auto' };
+    : { display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: headerBandRow };
 
   const chartWrapperNode: ReactElement = (
     <div ref={wrapperRef} className="cx-gantt-wrapper" style={wrapperGridStyle}>
       {hasSidebar ? (
         <div
           className="cx-gantt-sidebar-header-pane"
-          style={{ overflow: 'hidden', minWidth: 0, gridColumn: 1, gridRow: 1 }}
+          style={{
+            overflow: 'hidden',
+            minWidth: 0,
+            gridColumn: 1,
+            gridRow: 1,
+            // Divider lives on the pane (a grid item whose height = the
+            // header-band row), not on the inner header element: the inner
+            // header's own height is driven by its table content, so a
+            // border on it is clipped by this pane's `overflow: hidden`
+            // whenever the chart header is shorter, and floats mid-band
+            // whenever it is taller. On the pane the line always sits at
+            // the band's bottom edge, aligned with the chart header.
+            borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
+            boxSizing: 'border-box',
+          }}
         >
           <div
             ref={sidebarHeaderInnerRef}
@@ -2227,7 +2247,6 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               className="cx-gantt-sidebar-header"
               style={{
                 background: t.sidebarBackground,
-                borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
                 boxSizing: 'border-box',
               }}
             >
@@ -2274,6 +2293,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
             width={totalWidth}
             height={totalHeaderBandHeight}
             xmlns={SVG_NS}
+            style={{ display: 'block', background: t.headerBackground }}
           >
             <g className="cx-gantt-header-rows">
               {axis.headerRows.map((row, rowIdx) => {
