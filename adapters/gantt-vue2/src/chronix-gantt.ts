@@ -23,6 +23,7 @@
   prevAnchor,
   resolveBarStyle,
   snapHorizontalGridLineY,
+  snapVerticalGridLineX,
   successorAnchor,
   todayAnchor,
   truncateBarText,
@@ -1843,16 +1844,22 @@ export const ChronixGantt = defineComponent({
           dayMeta: tickDayMeta,
           viewId: props.axisInput.viewId,
         });
+        // X snapped to the device pixel grid + non-scaling-stroke so the
+        // separator stays a crisp single pixel at any DPR and overlays the
+        // body `cx-gantt-grid-vline` exactly (same snapped X, same `<line>`).
+        const tickXCrisp = snapVerticalGridLineX(tick.x, a.totalWidth);
         tickChildren.push(
           h('line', {
             key: `tick-line-${tick.x}`,
             class: 'cx-gantt-tick-line',
             attrs: {
-              x1: tick.x,
+              x1: tickXCrisp,
               y1: 0,
-              x2: tick.x,
+              x2: tickXCrisp,
               y2: hh,
               stroke: t.headerTickStroke,
+              'stroke-width': 1,
+              'vector-effect': 'non-scaling-stroke',
             },
           }),
         );
@@ -2965,34 +2972,43 @@ export const ChronixGantt = defineComponent({
       const gridChildren: VNode[] = [];
       for (const tick of a.ticks) {
         const isWeekStart = tick.time.getDay() === 1 && tick.time.getHours() === 0;
+        // X shared with the header tick line via `snapVerticalGridLineX`
+        // so the body vline overlays the header separator pixel-for-pixel
+        // at any DPR (vertical twin of the snapped horizontal grid lines).
+        const xCrisp = snapVerticalGridLineX(tick.x, a.totalWidth);
         gridChildren.push(
-          h('rect', {
+          h('line', {
             key: `grid-vline-${tick.x}`,
             class: isWeekStart
               ? 'cx-gantt-grid-vline cx-gantt-grid-vline-week'
               : 'cx-gantt-grid-vline',
             attrs: {
-              x: tick.x - 1,
-              y: 0,
-              width: 1,
-              height: bodyHeight,
-              fill: isWeekStart ? t.gridLineWeekStartColor : t.gridLineColor,
+              x1: xCrisp,
+              y1: 0,
+              x2: xCrisp,
+              y2: bodyHeight,
+              stroke: isWeekStart ? t.gridLineWeekStartColor : t.gridLineColor,
+              'stroke-width': 1,
+              'vector-effect': 'non-scaling-stroke',
               'pointer-events': 'none',
             },
           }),
         );
       }
       if (a.totalWidth > 0) {
+        const xCrisp = snapVerticalGridLineX(a.totalWidth, a.totalWidth);
         gridChildren.push(
-          h('rect', {
+          h('line', {
             key: 'grid-vline-right-edge',
             class: 'cx-gantt-grid-vline',
             attrs: {
-              x: a.totalWidth - 1,
-              y: 0,
-              width: 1,
-              height: bodyHeight,
-              fill: t.gridLineColor,
+              x1: xCrisp,
+              y1: 0,
+              x2: xCrisp,
+              y2: bodyHeight,
+              stroke: t.gridLineColor,
+              'stroke-width': 1,
+              'vector-effect': 'non-scaling-stroke',
               'pointer-events': 'none',
             },
           }),

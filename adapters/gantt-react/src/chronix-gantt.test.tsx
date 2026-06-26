@@ -8,6 +8,7 @@ import {
   defaultRowSwimlaneLayout,
   HEADER_CELL_SLOT_NAME,
   LINK_SLOT_NAME,
+  snapVerticalGridLineX,
   type AxisRangePlanInput,
   type BarSlotArgs,
   type BarSpec,
@@ -1690,7 +1691,7 @@ describe('@chronixjs/gantt-react ChronixGantt — today line + grid lines (Phase
 
   // (2) Grid lines — 2 cases
 
-  it('default grid: per-tick <rect.cx-gantt-grid-vline> + right-edge closer + per-strip <line.cx-gantt-grid-hline>', () => {
+  it('default grid: per-tick <line.cx-gantt-grid-vline> + right-edge closer + per-strip <line.cx-gantt-grid-hline>', () => {
     const axisInput = baseAxisInput();
     const planned = defaultAxisRangePlanner.plan(axisInput);
     const { container } = render(
@@ -1698,8 +1699,8 @@ describe('@chronixjs/gantt-react ChronixGantt — today line + grid lines (Phase
     );
     const gridGroup = container.querySelector('g.cx-gantt-grid');
     expect(gridGroup).not.toBeNull();
-    // One vline rect per axis tick + one right-edge closer.
-    const vlines = container.querySelectorAll('rect.cx-gantt-grid-vline');
+    // One vline line per axis tick + one right-edge closer.
+    const vlines = container.querySelectorAll('line.cx-gantt-grid-vline');
     expect(vlines.length).toBe(planned.ticks.length + 1);
     // Horizontal grid lines: one per strip. With 2 rows the planner
     // produces 2 strips → 2 hlines.
@@ -1711,7 +1712,7 @@ describe('@chronixjs/gantt-react ChronixGantt — today line + grid lines (Phase
     expect(gridGroup?.getAttribute('pointer-events')).toBe('none');
   });
 
-  it('week-start tick: <rect.cx-gantt-grid-vline-week> with theme.gridLineWeekStartColor fill', () => {
+  it('week-start tick: <line.cx-gantt-grid-vline-week> with theme.gridLineWeekStartColor stroke', () => {
     // Day view starting on a Monday at 00:00 — each day's tick is a week-start
     // candidate; in week view the anchor of Monday produces a tick at x=0 with
     // weekStart predicate true. Use day view at a Monday anchor.
@@ -1730,9 +1731,9 @@ describe('@chronixjs/gantt-react ChronixGantt — today line + grid lines (Phase
         // explicit todayLine off so today rendering doesn't affect grid count
       />,
     );
-    const weekStartVlines = container.querySelectorAll('rect.cx-gantt-grid-vline-week');
+    const weekStartVlines = container.querySelectorAll('line.cx-gantt-grid-vline-week');
     expect(weekStartVlines.length).toBeGreaterThanOrEqual(1);
-    expect(weekStartVlines[0]?.getAttribute('fill')).toBe(
+    expect(weekStartVlines[0]?.getAttribute('stroke')).toBe(
       defaultChronixTheme.gridLineWeekStartColor,
     );
   });

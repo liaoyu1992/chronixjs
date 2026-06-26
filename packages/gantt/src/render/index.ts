@@ -20,4 +20,5 @@ export { LINK_SLOT_NAME } from './link-slot.js';
 export type { PointerOverlayGroup } from './pointer-overlay-group.js';
 export type { SlotContext, SlotRegistry, SlotRenderer, SlotTemplate } from './slot.js';
 export { snapHorizontalGridLineY } from './snap-horizontal-grid-line-y.js';
+export { snapVerticalGridLineX } from './snap-vertical-grid-line-x.js';
 export { truncateBarText } from './truncate-bar-text.js';

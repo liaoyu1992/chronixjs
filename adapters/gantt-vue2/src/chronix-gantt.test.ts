@@ -3,6 +3,7 @@ import {
   defaultBarPlacementPass,
   defaultBarStackHeightPass,
   defaultRowSwimlaneLayout,
+  snapVerticalGridLineX,
   type AxisRangePlanInput,
   type BarSpec,
   type RowSpec,
@@ -1719,7 +1720,7 @@ describe('<ChronixGantt> today line + grid lines (Phase 31.4.2)', () => {
     // Compute expected counts from the core pipeline directly.
     const axis = defaultAxisRangePlanner.plan(baseAxisInput());
     const expectedVlines = axis.ticks.length + 1; // +1 right-edge closing
-    expect(wrapper.findAll('rect.cx-gantt-grid-vline').length).toBe(expectedVlines);
+    expect(wrapper.findAll('line.cx-gantt-grid-vline').length).toBe(expectedVlines);
     // Strips = rows after swimlane layout — 2 rows → 2 hlines.
     expect(wrapper.findAll('line.cx-gantt-grid-hline').length).toBe(2);
   });
@@ -1740,30 +1741,29 @@ describe('<ChronixGantt> today line + grid lines (Phase 31.4.2)', () => {
         },
       },
     });
-    const weekVlines = wrapper.findAll('rect.cx-gantt-grid-vline-week');
+    const weekVlines = wrapper.findAll('line.cx-gantt-grid-vline-week');
     expect(weekVlines.length).toBeGreaterThan(0);
     // defaultChronixTheme.gridLineWeekStartColor === '#bbb'.
-    expect(weekVlines.at(0)?.attributes('fill')).toBe('#bbb');
+    expect(weekVlines.at(0)?.attributes('stroke')).toBe('#bbb');
     // Non-week-start vlines (the regular ones) use gridLineColor === '#ddd'.
-    const allVlines = wrapper.findAll('rect.cx-gantt-grid-vline');
+    const allVlines = wrapper.findAll('line.cx-gantt-grid-vline');
     const regularVline = allVlines.wrappers.find(
       (w) => !w.classes().includes('cx-gantt-grid-vline-week'),
     );
-    expect(regularVline?.attributes('fill')).toBe('#ddd');
+    expect(regularVline?.attributes('stroke')).toBe('#ddd');
   });
 
-  it('case 7: right-edge closing vline rendered at x === totalWidth - 1', () => {
+  it('case 7: right-edge closing vline rendered at snapped X === snapVerticalGridLineX(totalWidth)', () => {
     const wrapper = mount(GanttForTest, {
       propsData: { bars: chromeBars, rows: chromeRows, axisInput: baseAxisInput() },
     });
     const axis = defaultAxisRangePlanner.plan(baseAxisInput());
-    const allVlines = wrapper.findAll('rect.cx-gantt-grid-vline');
-    const rightEdge = allVlines.wrappers.find(
-      (w) => Number(w.attributes('x')) === axis.totalWidth - 1,
-    );
+    const allVlines = wrapper.findAll('line.cx-gantt-grid-vline');
+    const expectedX = snapVerticalGridLineX(axis.totalWidth, axis.totalWidth);
+    const rightEdge = allVlines.wrappers.find((w) => Number(w.attributes('x1')) === expectedX);
     expect(rightEdge).toBeDefined();
-    expect(Number(rightEdge?.attributes('width'))).toBe(1);
-    expect(rightEdge?.attributes('fill')).toBe('#ddd');
+    expect(rightEdge?.attributes('stroke')).toBe('#ddd');
+    expect(rightEdge?.attributes('vector-effect')).toBe('non-scaling-stroke');
   });
 
   it('case 8: hlines have vector-effect=non-scaling-stroke + DPR-snapped y matching snapHorizontalGridLineY formula', () => {
