@@ -18,7 +18,7 @@
     "@chronixjs/gantt": "workspace:*",
     "@chronixjs/gantt-vue3": "workspace:*",
     "@chronixjs/golden-runner": "workspace:*",
-    "vue": "^3.5.0"
+    "vue": "^3.5.39"
   },
   "devDependencies": {
     "@chronixjs/eslint-config": "workspace:*",

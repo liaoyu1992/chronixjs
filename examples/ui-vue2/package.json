@@ -18,7 +18,7 @@
     "@chronixjs/ui": "workspace:*",
     "@chronixjs/ui-vue2": "workspace:*",
     "qrcode-generator": "^2.0.4",
-    "vue": "^2.7.16"
+    "vue": "^3.5.39"
   },
   "devDependencies": {
     "@chronixjs/eslint-config": "workspace:*",
