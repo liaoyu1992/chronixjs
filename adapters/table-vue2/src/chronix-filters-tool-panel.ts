@@ -1,5 +1,5 @@
 /**
- * Phase 82 (2026-05-30 — vue2 port): pre-built filters tool panel
+ * (2026-05-30 — vue2 port): pre-built filters tool panel
  * SFC. Vue 2.7 verbatim mirror of the vue3 adapter using
  * vnode-data `attrs:` + `on:` + `domProps:` deltas.
  *
@@ -7,9 +7,9 @@
  * `TableHandle.clearFilter` + `TableHandle.setAdvancedFilter` +
  * `TableHandle.parseAndSetAdvancedFilter`.
  *
- * Phase 100.2 (2026-05-31 — vue2 port): wires the cx-kit Phase 100
+ * (2026-05-31 — vue2 port): wires the cx-kit
  * autocomplete helpers into the advanced-filter textarea as a column-
- * name typeahead popover. Verbatim mirror of vue3 Phase 100.2.
+ * name typeahead popover. Verbatim mirror of vue3 .
  */
 import {
   computed,
@@ -48,32 +48,32 @@ export interface ChronixFiltersToolPanelProps {
   readonly columns: readonly ColumnSpec[];
   readonly filterSpec: readonly FilterSpec[];
   /**
-   * Phase 100.2.2 (2026-06-01 — vue2 port): row population for value
+   * (2026-06-01 — vue2 port): row population for value
    * typeahead. Verbatim mirror of vue3.
    */
   readonly advancedFilterValueSourceRows?: readonly RowSpec[];
   /**
-   * Phase 100.2.2.3 (2026-06-01 — vue2 port): consumer-supplied date
+   * (2026-06-01 — vue2 port): consumer-supplied date
    * formatter for value typeahead. Verbatim mirror of vue3.
    */
   readonly formatTypeaheadDateValue?: (iso: string) => string;
   /**
-   * Phase 100.2.3.1 (2026-06-01 — vue2 port): consumer operator
+   * (2026-06-01 — vue2 port): consumer operator
    * override dictionary. Verbatim mirror of vue3.
    */
   readonly operatorsByCustomColumnType?: Readonly<Record<string, readonly string[]>>;
   /**
-   * Phase 100.2.3.2 (2026-06-01 — vue2 port): consumer-supplied
+   * (2026-06-01 — vue2 port): consumer-supplied
    * localized operator label dictionary. Verbatim mirror of vue3.
    */
   readonly operatorLabels?: Readonly<Record<string, string>>;
   /**
-   * Phase 100.2.5 (2026-06-01 — vue2 port): per-slot-kind recent ring
+   * (2026-06-01 — vue2 port): per-slot-kind recent ring
    * cap. Verbatim mirror of vue3.
    */
   readonly typeaheadRecentLimit?: number;
   /**
-   * Phase 100.2.2.1 (2026-06-01 — vue2 port) + Phase 118 (2026-06-02):
+   * (2026-06-01 — vue2 port) +
    * consumer-supplied async value getter. 3rd optional `signal?:
    * AbortSignal` arg for fetch-cancellation on supersession.
    */
@@ -83,13 +83,13 @@ export interface ChronixFiltersToolPanelProps {
     signal?: AbortSignal,
   ) => Promise<readonly ColumnUniqueValue[]>;
   /**
-   * Phase 112 (2026-06-01 — vue2 port): persistence backend selector
+   * (2026-06-01 — vue2 port): persistence backend selector
    * for typeahead recent rings. Verbatim mirror of vue3.
    */
   readonly typeaheadRecentStorage?: 'memory' | 'localStorage';
   /**
-   * Phase 118 (2026-06-02 — vue2 port): typeahead recent scope.
-   * Verbatim mirror of vue3 Phase 118.
+   * (2026-06-02 — vue2 port): typeahead recent scope.
+   * Verbatim mirror of vue3 .
    */
   readonly typeaheadRecentScope?: 'global' | 'per-column-value';
 }
@@ -150,7 +150,7 @@ export function formatFilterChipLabel(spec: FilterSpec, columns: readonly Column
 }
 
 /**
- * Phase 100.2 (2026-05-31 — vue2 port): word-at-cursor extraction
+ * (2026-05-31 — vue2 port): word-at-cursor extraction
  * for the advanced filter typeahead. Verbatim mirror of vue3.
  */
 export function extractWordAtCursor(
@@ -180,7 +180,7 @@ export function extractWordAtCursor(
 }
 
 /**
- * Phase 100.2.1 (2026-06-01 — vue2 port): 12 advanced-filter
+ * (2026-06-01 — vue2 port): 12 advanced-filter
  * operators. Verbatim mirror of vue3.
  */
 export const ADVANCED_FILTER_OPERATORS: readonly string[] = [
@@ -199,13 +199,13 @@ export const ADVANCED_FILTER_OPERATORS: readonly string[] = [
 ];
 
 /**
- * Phase 100.2.1 (2026-06-01 — vue2 port): 3 conjunction / negation
+ * (2026-06-01 — vue2 port): 3 conjunction / negation
  * keywords. Verbatim mirror of vue3.
  */
 export const ADVANCED_FILTER_KEYWORDS: readonly string[] = ['AND', 'OR', 'NOT'];
 
 /**
- * Phase 100.2.3 (2026-06-01 — vue2 port): per-column-type allowed
+ * (2026-06-01 — vue2 port): per-column-type allowed
  * operator subset. Verbatim mirror of vue3.
  */
 export const OPERATORS_BY_COLUMN_TYPE: Readonly<Record<string, readonly string[]>> = {
@@ -220,11 +220,11 @@ const ADVANCED_FILTER_KEYWORD_SET = new Set(['AND', 'OR', 'NOT']);
 
 export type TypeaheadSlot = 'column' | 'operator' | 'value' | 'conjunction';
 
-/** Phase 118 (2026-06-02 — vue2 port): frozen empty ring sentinel. */
+/** (2026-06-02 — vue2 port): frozen empty ring sentinel. */
 const EMPTY_RECENT_RING_VUE2: readonly string[] = Object.freeze([]);
 
 /**
- * Phase 100.2.1 (2026-06-01 — vue2 port): token-back slot detection.
+ * (2026-06-01 — vue2 port): token-back slot detection.
  * Verbatim mirror of vue3 `detectTypeaheadSlot`.
  */
 export function detectTypeaheadSlot(
@@ -247,7 +247,7 @@ export function detectTypeaheadSlot(
   const ch = text[i - 1];
   if (ch === '(' || ch === ',') return { slot: 'column', prevToken: ch };
   if (ch === '"') {
-    // Phase 100.2.2.4 (2026-06-01 — vue2 port): disambiguate opening
+    // (2026-06-01 — vue2 port): disambiguate opening
     // vs closing quote by counting unescaped `"` chars before this
     // position. Verbatim mirror of vue3.
     let quoteCountBefore = 0;
@@ -315,7 +315,7 @@ export function detectTypeaheadSlot(
       opStart--;
     }
     const opText = text.slice(opStart, opEnd);
-    // Phase 100.2.2: also read prior identifier as prevColumn.
+    // also read prior identifier as prevColumn.
     let j = opStart;
     while (j > 0 && (text[j - 1] === ' ' || text[j - 1] === '\t' || text[j - 1] === '\n')) j--;
     const colEnd = j;
@@ -344,7 +344,7 @@ export function detectTypeaheadSlot(
     if (tokenText === 'isNull' || tokenText === 'isNotNull') {
       return { slot: 'conjunction', prevToken: tokenText };
     }
-    // Phase 100.2.2: also read prior identifier as prevColumn for
+    // also read prior identifier as prevColumn for
     // word-shaped operators (`contains`, `startsWith`, etc.).
     let j = start;
     while (j > 0 && (text[j - 1] === ' ' || text[j - 1] === '\t' || text[j - 1] === '\n')) j--;
@@ -370,7 +370,7 @@ export function detectTypeaheadSlot(
 }
 
 /**
- * Phase 100.2.1 (2026-06-01 — vue2 port): discriminated-union
+ * (2026-06-01 — vue2 port): discriminated-union
  * typeahead item shape. Verbatim mirror of vue3.
  */
 export type TypeaheadItem =
@@ -397,7 +397,7 @@ export type TypeaheadItem =
     };
 
 /**
- * Phase 100.2.2 (2026-06-01 — vue2 port): format a column value as
+ * (2026-06-01 — vue2 port): format a column value as
  * its DSL representation. Verbatim mirror of vue3.
  */
 export function formatValueAsDsl(value: string | number | boolean | null): {
@@ -486,7 +486,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       })),
     );
 
-    // Phase 100.2.1 + Phase 100.2.2 + Phase 100.2.3 (2026-06-01 — vue2
+    // + + (2026-06-01 — vue2
     // port): typeahead slot detection state. Verbatim mirror of vue3.
     const typeaheadSlotDetected = ref<{
       readonly slot: TypeaheadSlot;
@@ -494,7 +494,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       readonly prevColumn?: string;
     }>({ slot: 'column' });
 
-    // Phase 100.2.2 (2026-06-01 — vue2 port): per-colId value source
+    // (2026-06-01 — vue2 port): per-colId value source
     // cache; invalidated on prop reference change. Verbatim mirror of
     // vue3.
     const valueSourceCacheByColId = ref<Map<string, CollectUniqueColumnValuesResult>>(new Map());
@@ -505,17 +505,17 @@ export const ChronixFiltersToolPanel = defineComponent({
       },
     );
 
-    // Phase 100.2.2.4 (2026-06-01 — vue2 port): open-string-literal
+    // (2026-06-01 — vue2 port): open-string-literal
     // value-slot context flag. Verbatim mirror of vue3.
     const typeaheadInsideStringLiteral = ref<boolean>(false);
 
-    // Phase 100.2.5 (2026-06-01 — vue2 port): per-slot-kind recent LRU
+    // (2026-06-01 — vue2 port): per-slot-kind recent LRU
     // rings. Verbatim mirror of vue3.
     //
-    // Phase 112 (2026-06-01 — vue2 port): opt-in localStorage
+    // (2026-06-01 — vue2 port): opt-in localStorage
     // persistence selected by `typeaheadRecentStorage` prop. Verbatim
     // mirror of vue3.
-    // Phase 118 (2026-06-02 — vue2 port): map key widened to string
+    // (2026-06-02 — vue2 port): map key widened to string
     // so per-column scope can use `${slot}:${colId}` keys.
     const recentTypeaheadByKind = ref<Map<string, readonly string[]>>(new Map());
     const effectiveTypeaheadRecentLimit = computed(() =>
@@ -536,7 +536,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       }
       if (hydrated.size > 0) recentTypeaheadByKind.value = hydrated;
     });
-    // Phase 118 (2026-06-02 — vue2 port): per-column recent-key helper.
+    // (2026-06-02 — vue2 port): per-column recent-key helper.
     function recentKey(slot: TypeaheadSlot, colId?: string | null): string {
       if (
         props.typeaheadRecentScope === 'per-column-value' &&
@@ -572,14 +572,14 @@ export const ChronixFiltersToolPanel = defineComponent({
       return ring;
     }
 
-    // Phase 100.2.2.1 (2026-06-01 — vue2 port): SSR async value getter
+    // (2026-06-01 — vue2 port): SSR async value getter
     // cache + race-token. Verbatim mirror of vue3.
     const asyncValueResultsByKey = ref<
       Map<string, readonly ColumnUniqueValue[] | 'loading' | 'error'>
     >(new Map());
     const asyncRequestIdByKey = ref<Map<string, number>>(new Map());
     let nextAsyncRequestId = 1;
-    // Phase 118 (2026-06-02 — vue2 port): per-key AbortController for
+    // (2026-06-02 — vue2 port): per-key AbortController for
     // fetch supersession. Verbatim mirror of vue3.
     const asyncAbortControllerByKey = new Map<string, AbortController>();
     function abortAllAsyncControllers(): void {
@@ -652,9 +652,9 @@ export const ChronixFiltersToolPanel = defineComponent({
           label: c.headerName ?? c.id,
         }));
       } else if (detected.slot === 'operator') {
-        // Phase 100.2.3 (2026-06-01 — vue2 port): operator subset by
+        // (2026-06-01 — vue2 port): operator subset by
         // column type. Verbatim mirror of vue3.
-        // Phase 100.2.3.1 + 100.2.3.2 (2026-06-01 — vue2 port): consumer
+        // + 100.2.3.2 (2026-06-01 — vue2 port): consumer
         // override dict + localized labels. Verbatim mirror of vue3.
         const colId = detected.prevToken;
         const column = colId != null ? props.columns.find((c) => c.id === colId) : undefined;
@@ -678,7 +678,7 @@ export const ChronixFiltersToolPanel = defineComponent({
           text: kw,
         }));
       } else {
-        // Phase 100.2.2 + 100.2.2.1 + 100.2.2.4 (2026-06-01 — vue2
+        // + 100.2.2.1 + 100.2.2.4 (2026-06-01 — vue2
         // port): value slot pipeline; async getter wins over rows
         // (Decision R.1); inside-open-literal context filters to
         // string-kind values only. Verbatim mirror of vue3.
@@ -713,7 +713,7 @@ export const ChronixFiltersToolPanel = defineComponent({
           : valueSourceList;
         items = filteredValueList.map((v) => {
           const formatted = formatValueAsDsl(v.value);
-          // Phase 100.2.2.3 (2026-06-01 — vue2 port): date formatter
+          // (2026-06-01 — vue2 port): date formatter
           // displayText (verbatim mirror of vue3).
           let displayText: string | undefined;
           if (
@@ -724,7 +724,7 @@ export const ChronixFiltersToolPanel = defineComponent({
             const isoBare = formatted.text.slice(1, -1);
             displayText = `"${props.formatTypeaheadDateValue(isoBare)}"`;
           }
-          // Phase 100.2.2.2 (2026-06-01 — vue2 port): histogram count
+          // (2026-06-01 — vue2 port): histogram count
           // pass-through (verbatim mirror of vue3).
           return displayText != null
             ? {
@@ -742,8 +742,8 @@ export const ChronixFiltersToolPanel = defineComponent({
               };
         });
       }
-      // Phase 100.2.5 (2026-06-01 — vue2 port): recent overlay
-      // (Decision O.1). Phase 118 (2026-06-02 — vue2 port): scope by
+      // (2026-06-01 — vue2 port): recent overlay
+      // (Decision O.1). (2026-06-02 — vue2 port): scope by
       // colId for value slots when `typeaheadRecentScope === 'per-
       // column-value'`.
       const recentColId =
@@ -772,7 +772,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       });
     });
 
-    // Phase 100.2.2.1 (2026-06-01 — vue2 port): async placeholder
+    // (2026-06-01 — vue2 port): async placeholder
     // computed. Verbatim mirror of vue3.
     const asyncPlaceholderState = computed<'loading' | 'error' | null>(() => {
       if (!typeaheadOpen.value) return null;
@@ -827,14 +827,14 @@ export const ChronixFiltersToolPanel = defineComponent({
       typeaheadInsideStringLiteral.value = false;
     }
 
-    // Phase 100.2.4 (2026-06-01 — vue2 port): extracted typeahead
+    // (2026-06-01 — vue2 port): extracted typeahead
     // trigger helper. Verbatim mirror of vue3 (allowEmptyWord opt-in
     // for post-commit path).
     function triggerTypeaheadAt(value: string, cursorPos: number, allowEmptyWord = false): void {
       advancedFilterText.value = value;
       const extracted = extractWordAtCursor(value, cursorPos);
       const detected = detectTypeaheadSlot(value, cursorPos);
-      // Phase 100.2.2.4 (2026-06-01 — vue2 port): allow value-slot
+      // (2026-06-01 — vue2 port): allow value-slot
       // typeahead inside open string literal. Verbatim mirror of vue3.
       if (extracted.isInsideStringLiteral) {
         if (detected.slot !== 'value' || detected.prevColumn == null) {
@@ -851,7 +851,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       typeaheadWordRange.value = { start: extracted.start, end: extracted.end };
       typeaheadOpen.value = true;
       refreshTypeaheadAnchor();
-      // Phase 100.2.2.1 (2026-06-01 — vue2 port): fire async getter.
+      // (2026-06-01 — vue2 port): fire async getter.
       if (
         detected.slot === 'value' &&
         detected.prevColumn != null &&
@@ -876,7 +876,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       const active = matches[idx];
       if (active == null) return;
       const text = advancedFilterText.value;
-      // Phase 100.2.2.4 (2026-06-01 — vue2 port): inside open string
+      // (2026-06-01 — vue2 port): inside open string
       // literal context, insert bare-value + closing `"`. Verbatim
       // mirror of vue3.
       let insertText: string;
@@ -891,15 +891,15 @@ export const ChronixFiltersToolPanel = defineComponent({
       }
       const nextText = text.slice(0, wordRange.start) + insertText + text.slice(wordRange.end);
       const newCursorPos = wordRange.start + insertText.length;
-      // Phase 100.2.4 (2026-06-01 — vue2 port): auto-trigger on non-
+      // (2026-06-01 — vue2 port): auto-trigger on non-
       // value commits. Verbatim mirror of vue3.
       const shouldAutoTrigger = active.item.kind !== 'value';
       const finalText = shouldAutoTrigger
         ? nextText.slice(0, newCursorPos) + ' ' + nextText.slice(newCursorPos)
         : nextText;
       const finalCursorPos = shouldAutoTrigger ? newCursorPos + 1 : newCursorPos;
-      // Phase 100.2.5 (2026-06-01 — vue2 port): push to recent ring.
-      // Phase 118 (2026-06-02 — vue2 port): per-column scope for
+      // (2026-06-01 — vue2 port): push to recent ring.
+      // (2026-06-02 — vue2 port): per-column scope for
       // value commits when `typeaheadRecentScope === 'per-column-value'`.
       const slot = typeaheadSlotDetected.value.slot;
       const pushText = active.item.kind === 'column' ? active.item.colId : active.item.text;
@@ -964,7 +964,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       document.removeEventListener('pointerdown', onDocumentPointerDown);
     });
 
-    // Phase 100.2.6 (2026-06-01 — vue2 port): scroll-into-view watcher
+    // (2026-06-01 — vue2 port): scroll-into-view watcher
     // on typeaheadActiveIdx. Verbatim mirror of vue3.
     watch(
       typeaheadActiveIdx,
@@ -1164,7 +1164,7 @@ export const ChronixFiltersToolPanel = defineComponent({
                   ]
                 : typeaheadMatches.value.map((match, idx) => {
                     const isActive = idx === typeaheadActiveIdx.value;
-                    // Phase 100.2.2.3 + 100.2.3.2 (2026-06-01 — vue2 port):
+                    // + 100.2.3.2 (2026-06-01 — vue2 port):
                     // displayText override for value / operator items.
                     // Verbatim mirror of vue3.
                     const displayLabel =
@@ -1207,7 +1207,7 @@ export const ChronixFiltersToolPanel = defineComponent({
                       },
                       [
                         h('span', {}, renderMatchLabel(displayLabel, typeaheadQuery.value)),
-                        // Phase 100.2.5 (2026-06-01 — vue2 port): recent
+                        // (2026-06-01 — vue2 port): recent
                         // badge. Verbatim mirror of vue3.
                         match.item.recent === true
                           ? h(
@@ -1230,7 +1230,7 @@ export const ChronixFiltersToolPanel = defineComponent({
                               'recent',
                             )
                           : null,
-                        // Phase 100.2.2.2 (2026-06-01 — vue2 port): count
+                        // (2026-06-01 — vue2 port): count
                         // badge for value items. Verbatim mirror of vue3.
                         match.item.kind === 'value' && match.item.count != null
                           ? h(

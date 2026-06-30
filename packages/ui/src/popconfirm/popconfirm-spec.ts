@@ -1,5 +1,5 @@
 /**
- * Popconfirm component IR — Phase 26 (2026-06-03). Tier B confirm-
+ * Popconfirm component IR — . Tier B confirm-
  * before-action popup surface. Wraps `<ChronixPopover>` at adapter
  * scope with a chronix-rendered title + positive/negative button row.
  *

@@ -39,7 +39,7 @@ function bar(id: string, startHourOffset: number, endHourOffset: number, title?:
 }
 
 /**
- * Mirror Phase 31.5.2.1 / Phase 27.1's pattern: stub ResizeObserver so
+ * Mirror pattern: stub ResizeObserver so
  * the SFC test can deterministically fire viewport-state updates. Drive
  * `chartScroll.scrollLeft.value` + `clientWidth.value` by mutating
  * `paneEl.scrollLeft` + `Object.defineProperty(clientWidth)` and
@@ -58,7 +58,7 @@ function driveChartScroll(
   resizeObserverCallback?.([], {} as ResizeObserver);
 }
 
-describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning — Phase 31.5.2.1', () => {
+describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
   let originalResizeObserver: typeof globalThis.ResizeObserver | undefined;
   let roCallbackHolder: { cb: ResizeObserverCallback | undefined };
@@ -136,16 +136,16 @@ describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning —
     expect(Number(dotEl.attributes('x'))).toBe(309);
   });
 
-  it('Phase 28.2.2: partial-overlap bar (right edge offscreen-right, left edge inside viewport) keeps default title-start at bar edge', async () => {
+  it('partial-overlap bar (right edge offscreen-right, left edge inside viewport) keeps default title-start at bar edge', async () => {
     // Bar at hours 1..16 (axis-inside). renderX = 60, renderWidth = 900.
     // Scroll to scrollLeft=0, clientWidth=200 → viewport [0, 200). Bar
     // overlaps viewport on left only (60 < 200; 960 > 200). Only
-    // `isViewportClippedEnd` fires. Phase 47.3 simplified the logic:
+    // `isViewportClippedEnd` fires. simplified the logic:
     // titleStartX uses viewport-clip for left side only (FALSE here,
     // so defaults to renderX + 8 = 68); titleEndX NEVER uses viewport-
     // clip (always defaults to renderX + renderWidth - 4 = 956).
     // availableWidth = 956 - 68 = 888 → full title fits. This avoids
-    // the negative-width regression from Phase 47.2's bilateral span
+    // the negative-width regression 's bilateral span
     // check while keeping titles readable at the bar's left edge.
     const wrapper = mount(GanttForTest, {
       propsData: {
@@ -164,7 +164,7 @@ describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning —
   });
 
   it('underlying resize edge-zone hit-test rect stays at bar geometric edge under viewport-clip (visual + hit-test diverge by design)', async () => {
-    // Phase 31.5.2.1 deliberately keeps the resize edge-zone rect
+    // deliberately keeps the resize edge-zone rect
     // (cx-gantt-bar-resizer-start) at renderX regardless of viewport
     // state. Only the visible dot shifts to viewport edge. The hit-test
     // geometry must stay at the bar's real edge so resize gestures

@@ -9,7 +9,7 @@ import {
 import { computed, defineComponent, h, type PropType } from 'vue';
 
 /**
- * `<ChronixGrid>` — Vue 2.7 port of the Phase 17 Grid.
+ * `<ChronixGrid>` — Vue 2.7 port of the Grid.
  */
 export const ChronixGrid = defineComponent({
   name: 'ChronixGrid',

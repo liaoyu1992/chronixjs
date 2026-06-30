@@ -10,7 +10,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch, type ComputedRef, type
 import { useUIContext } from './use-ui-context.js';
 
 /**
- * Vue 2 modal/drawer lifecycle composable — Phase 27 (2026-06-03).
+ * Vue 2 modal/drawer lifecycle composable — .
  *
  * Differs from `@chronixjs/ui-vue3`'s version in one v0.1.0-alpha
  * tradeoff: the Vue 2 modal/drawer is rendered INLINE (no
@@ -19,8 +19,8 @@ import { useUIContext } from './use-ui-context.js';
  * `position: fixed; inset: 0` provides viewport coverage that works
  * in the vast majority of layouts; layouts whose ancestor has
  * `transform` / `will-change` / `contain: paint` properties may
- * clip the mask — documented as a known Phase 27 / 27-vue2-fr1
- * tradeoff matching Phase 26's Vue 2 popover handling.
+ * clip the mask — documented as a known -vue2-fr1
+ * tradeoff matching Vue 2 popover handling.
  *
  * The composable surface is otherwise identical to vue3's — Modal +
  * Drawer SFCs consume the same shape across adapters.

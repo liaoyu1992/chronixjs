@@ -13,7 +13,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch, type ComputedRef, type
 import { useUIContext } from './use-ui-context.js';
 
 /**
- * Vue 2 popup lifecycle composable. Phase 26 (2026-06-03).
+ * Vue 2 popup lifecycle composable. .
  *
  * Differs from `@chronixjs/ui-vue3`'s version in one v0.1.0-alpha
  * tradeoff: the Vue 2 popup is rendered INLINE (no `<Teleport>` —

@@ -7,27 +7,27 @@ import type { ChronixUITheme, ChronixUIThemeOverrides } from '../theme/chronix-u
  * dependencies; adapters wrap this with their native context primitive
  * (Vue 3 `provide`/`inject`, React `Context`, Vue 2 `provide`/`inject`).
  *
- * Phase 2 (2026-06-01) per Phase 0.3 Decision A.1 / B.1 / C.1.
+ * per Decision A.1 / B.1 / C.1.
  *
  * Field semantics:
  *
  * - **`theme`** — current `ChronixUITheme`. Adapters convert via
  *   `cssVarsForUITheme` and inline as `style="--cx-ui-*: ..."` on the
  *   provider root element.
- * - **`locale`** — current `ChronixLocale`. Phase 2 ships a minimal
- *   `{ name }` stub; Phase 3 extends with per-component message bundles.
+ * - **`locale`** — current `ChronixLocale`. ships a minimal
+ *   `{ name }` stub; extends with per-component message bundles.
  * - **`size`** — global default component size. Individual components
  *   may override via their own `size` prop; the context value is the
  *   fallback.
  * - **`clsPrefix`** — CSS class prefix. **DECLARED BUT NOT ACTIVE IN
- *   v0.1.0** per Phase 0.3 Decision C.1: chronix-ui's static CSS uses
+ *   v0.1.0** per Decision C.1: chronix-ui's static CSS uses
  *   hardcoded `cx-ui-*` classes; runtime rewriting is deferred to a
  *   future major. The field is carried for API stability — consumers
  *   can pass it; it just has no current effect on rendered class names.
  * - **`disabled`** — global disabled-state propagation. When the
  *   nearest provider's `disabled` is `true`, every descendant component
  *   that supports a `disabled` prop behaves as if disabled, unless it
- *   explicitly sets its own `disabled={false}` (per Phase 0.3 Decision
+ *   explicitly sets its own `disabled={false}` (per Decision
  *   A.1 default-merge precedence: own-prop wins; falls back to context;
  *   falls back to interface default).
  * - **`portalContainer`** — where adapters mount popovers / dialogs /
@@ -45,7 +45,7 @@ import type { ChronixUITheme, ChronixUIThemeOverrides } from '../theme/chronix-u
  *   key matches a component name (e.g. `'button'`, `'tree'`); the value
  *   is a partial of that component's prop type. Components consult their
  *   own slice via `ctx.componentOverrides[componentName]` at render time
- *   and apply each key as the default for the matching prop. Phase 2
+ *   and apply each key as the default for the matching prop.
  *   declares the field; per-component reads are wired in each
  *   component's phase.
  */
@@ -66,7 +66,7 @@ export interface ChronixUIContext {
  * that component's prop type, treated as the default before the consumer's
  * own per-instance props.
  *
- * Typed as `Record<string, Record<string, unknown>>` in Phase 2 for
+ * Typed as `Record<string, Record<string, unknown>>` for
  * minimal coupling. A future enhancement could link each key to the
  * matching component's prop type via mapped types; that's tracked
  * out-of-scope in [`audit/UI_PHASE_0_3_CONFIG_CONTEXT_DESIGN.md`](../../../../audit/UI_PHASE_0_3_CONFIG_CONTEXT_DESIGN.md).

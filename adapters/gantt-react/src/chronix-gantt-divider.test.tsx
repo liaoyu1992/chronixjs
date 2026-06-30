@@ -36,7 +36,7 @@ function stubWrapperWidth(container: HTMLElement, width: number): void {
   });
 }
 
-describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
+describe('<ChronixGantt> sidebar-divider drag ', () => {
   it('renders cx-gantt-sidebar-divider when sidebar is enabled', () => {
     const { container } = render(
       <ChronixGantt bars={[]} rows={rows} axisInput={baseAxisInput()} columns={columns} />,

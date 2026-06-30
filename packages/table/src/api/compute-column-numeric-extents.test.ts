@@ -6,7 +6,7 @@ import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 const PRICE_COL: ColumnSpec = { id: 'price', field: 'price' };
 
-describe('computeColumnNumericExtents (Phase 98.2)', () => {
+describe('computeColumnNumericExtents ', () => {
   it('returns null for empty row population', () => {
     const result = computeColumnNumericExtents({ rows: [], column: PRICE_COL });
     expect(result).toBeNull();

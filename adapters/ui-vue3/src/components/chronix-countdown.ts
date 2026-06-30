@@ -20,7 +20,7 @@ import {
 
 /**
  * `<ChronixCountdown>` — Vue 3 SFC wrapping the core `CountdownProps`
- * IR. Phase 18 (2026-06-02). Tier A "live" display with a per-frame
+ * IR. . Tier A "live" display with a per-frame
  * ticker.
  *
  * Lifecycle:

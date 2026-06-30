@@ -1,6 +1,6 @@
-/* Phase 41 (2026-05-25): minimal CSS for the chronix-table-vue2 demo.
- * Mirrors the chronix-table-vue3 Phase 2 stylesheet — sticky header,
- * zebra-striped rows, ellipsis-overflow cells. Phase 41.x will port
+/* minimal CSS for the chronix-table-vue2 demo.
+ * Mirrors the chronix-table-vue3 stylesheet — sticky header,
+ * zebra-striped rows, ellipsis-overflow cells. will port
  * vue3's later CSS additions (sort indicator hover / filter row /
  * selection highlight / resize affordance / etc) progressively. */
 
@@ -47,7 +47,7 @@ html,
   min-height: 0;
   border: 1px solid #d9dde2;
   border-radius: 4px;
-  /* Phase 61 (2026-05-26 — vue2 port of vue3 Phase 17): cap the
+  /* (2026-05-26 — vue2 port of vue3): cap the
    * demo's table width so combined column widths overflow horizontally
    * + the body's new `overflowX: auto` exposes a horizontal scrollbar —
    * exercising pinned-column sticky behavior. With column minWidth
@@ -67,7 +67,7 @@ html,
   background: #fff;
 }
 
-/* Phase 41.5: theme tokens via CSS custom properties on the wrapper.
+/* theme tokens via CSS custom properties on the wrapper.
  * Fallbacks preserve the existing vue2 demo palette so visual is
  * unchanged when no `theme` prop is passed. Consumers can override
  * via the `theme` prop, which the SFC threads through cssVarsForTheme. */
@@ -85,16 +85,16 @@ html,
 
 .cx-table-body {
   flex: 1;
-  /* Phase 41.2: SFC sets `overflow-y: auto` inline; the wider `overflow: auto`
-   * here is a fallback for older consumers that still use Phase 41.1 wiring. */
+  /* SFC sets `overflow-y: auto` inline; the wider `overflow: auto`
+   * here is a fallback for older consumers that still use wiring. */
   overflow: auto;
 }
 
-/* Phase 41.2: rows live one level deeper now (inside `.cx-table-body-content`).
+/* rows live one level deeper now (inside `.cx-table-body-content`).
  * Bumping selector specificity keeps the zebra-stripe correct under any
  * viewport. The 10-row demo dataset fits in viewport (virtualRowsPass returns
  * all rows when bodyClientHeight ≥ totalBodyHeight) so DOM order = data order.
- * Phase 41.5: zebra colors now come from theme tokens (even / odd). */
+ * zebra colors now come from theme tokens (even / odd). */
 .cx-table-body-content .cx-table-row:nth-child(odd) {
   background: var(--cx-table-odd-row-bg, #ffffff);
 }
@@ -108,11 +108,11 @@ html,
   flex-direction: row;
 }
 
-/* Phase 41.1: body rows are absolute-positioned; use box-shadow inset
+/* body rows are absolute-positioned; use box-shadow inset
  * for the inter-row separator (border-bottom doesn't work between
  * absolute children — they'd render over the next row's content).
- * Phase 41.2: rows nest under .cx-table-body-content.
- * Phase 41.5: divider color from theme token. */
+ * rows nest under .cx-table-body-content.
+ * divider color from theme token. */
 .cx-table-body-content .cx-table-row {
   box-shadow: inset 0 -1px 0 var(--cx-table-row-divider-color, #eceff2);
 }
@@ -138,7 +138,7 @@ html,
   color: #3b3e45;
 }
 
-/* Phase 42: header cell label + sort indicator flex layout so the
+/* header cell label + sort indicator flex layout so the
  * indicator sits to the right of the label (with margin) and label
  * truncates via ellipsis when needed. */
 .cx-table-header-cell-label {
@@ -160,7 +160,7 @@ html,
   color: #345d9d;
 }
 
-/* Phase 42.1: multi-column priority superscript next to the arrow.
+/* multi-column priority superscript next to the arrow.
  * Only renders when sort array length > 1; matches vue3 demo's
  * small monospace orange style. */
 .cx-table-sort-indicator-position {
@@ -170,7 +170,7 @@ html,
   color: #b3711d;
 }
 
-/* Phase 42: sortable header hover affordance + sorted column highlight. */
+/* sortable header hover affordance + sorted column highlight. */
 .cx-table-header-cell--sortable:hover {
   background: rgba(52, 93, 157, 0.06);
 }
@@ -179,7 +179,7 @@ html,
   color: #345d9d;
 }
 
-/* Phase 42: sort-change demo pill. */
+/* sort-change demo pill. */
 .demo-page__sort-pill {
   margin: 0;
   padding: 4px 10px;
@@ -190,7 +190,7 @@ html,
   align-self: flex-start;
 }
 
-/* Phase 43 (2026-05-25): filter-change demo pill — mirrors sort-pill
+/* filter-change demo pill — mirrors sort-pill
  * styling but in olive/orange to distinguish at a glance. */
 .demo-page__filter-pill {
   margin: 0;
@@ -202,7 +202,7 @@ html,
   align-self: flex-start;
 }
 
-/* Phase 41 (2026-05-29 — vue2 port): quick-find input. */
+/* (2026-05-29 — vue2 port): quick-find input. */
 .demo-page__quick-find-input {
   width: 240px;
   padding: 4px 8px;
@@ -212,14 +212,14 @@ html,
   margin-left: 4px;
 }
 
-/* Phase 41.1 (2026-05-29 — vue2 port): cell-level highlight wrapper. */
+/* (2026-05-29 — vue2 port): cell-level highlight wrapper. */
 .cx-table-cell__find-match {
   background: #fff3a3;
   padding: 0 1px;
   border-radius: 2px;
 }
 
-/* Phase 44 (2026-05-25): selection-change demo pill — distinct
+/* selection-change demo pill — distinct
  * gray-blue from sort (blue) / filter (olive) pills. */
 .demo-page__selection-pill {
   margin: 0;
@@ -231,7 +231,7 @@ html,
   align-self: flex-start;
 }
 
-/* Phase 44 (2026-05-25): selected row highlight — blue tint background
+/* selected row highlight — blue tint background
  * over zebra base + inset box-shadow as left-edge accent. !important
  * needed because zebra-stripe selectors target the same row. Verbatim
  * port of vue3 demo's row-selected styling (commit 02b1225). */
@@ -240,7 +240,7 @@ html,
   box-shadow: inset 3px 0 0 #345d9d;
 }
 
-/* Phase 59 (2026-05-26 — vue2 port of vue3 Phase 16): cell-range
+/* (2026-05-26 — vue2 port of vue3): cell-range
  * modifier — pale blue tint + thin outline overlay. Excel-like
  * selection-rectangle visual idiom. Coexists with
  * .cx-table-row--selected (both modifiers compose visually). */
@@ -250,7 +250,7 @@ html,
   outline-offset: -1px;
 }
 
-/* Phase 67 (2026-05-27 — vue2 port of vue3 Phase 21): drag-fill
+/* (2026-05-27 — vue2 port of vue3): drag-fill
  * preview class painted on cells in `fillEnvelope \ source` during
  * an active drag-fill gesture. Dashed outline + faint tint
  * distinguish the preview from the committed cell-range above. */
@@ -260,7 +260,7 @@ html,
   outline-offset: -1px;
 }
 
-/* Phase 67: drag-fill handle hover affordance. Position / size /
+/* drag-fill handle hover affordance. Position / size /
  * cursor are inlined by the SFC render; this rule adds the optional
  * hover-scale. */
 .cx-table-drag-fill-handle:hover {
@@ -268,7 +268,7 @@ html,
   transition: transform 80ms ease-out;
 }
 
-/* Phase 61 (2026-05-26 — vue2 port of vue3 Phase 17): pinned-column
+/* (2026-05-26 — vue2 port of vue3): pinned-column
  * zone visuals. The SFC sets `position: sticky` + left/right
  * cumulative offsets on pinned cells via inline style; this CSS
  * paints the boundary shadow + zone background so center cells
@@ -309,7 +309,7 @@ html,
   background: var(--cx-table-pinned-zone-bg, #fafbfc);
 }
 
-/* Phase 44.1 (2026-05-25): selection column rail. The checkbox column
+/* selection column rail. The checkbox column
  * is part of each row's flex layout (not a separate rail) — width is
  * `theme.selectionColumnWidth` (default 36px) and it sits on the
  * `selectionColumn.side` configured side (default 'left'). Header
@@ -349,7 +349,7 @@ html,
   accent-color: #345d9d;
 }
 
-/* Phase 45 (2026-05-25): page-change demo pill — green to distinguish
+/* page-change demo pill — green to distinguish
  * from sort (blue) / filter (olive) / selection (gray-blue) pills. */
 .demo-page__page-pill {
   margin: 0;
@@ -361,7 +361,7 @@ html,
   align-self: flex-start;
 }
 
-/* Phase 46 (2026-05-25): cell-value-change demo pill — purple tint to
+/* cell-value-change demo pill — purple tint to
  * distinguish from the other status pills above. */
 .demo-page__edit-pill {
   margin: 0;
@@ -373,7 +373,7 @@ html,
   align-self: flex-start;
 }
 
-/* Phase 47 (2026-05-25): column-width-change demo pill — orange tint
+/* column-width-change demo pill — orange tint
  * to distinguish from sort (blue) / filter (olive) / selection
  * (gray-blue) / page (green) / edit (purple) pills. */
 .demo-page__resize-pill {
@@ -386,14 +386,14 @@ html,
   align-self: flex-start;
 }
 
-/* Phase 47 (2026-05-25): header cell needs `position: relative` so
+/* header cell needs `position: relative` so
  * the absolute-positioned resizer (4px wide, anchored to right edge)
  * has it as the containing block. Verbatim port of vue3 demo styles. */
 .cx-table-header-cell {
   position: relative;
 }
 
-/* Phase 47 (2026-05-25): column-resize affordance. The resizer is a
+/* column-resize affordance. The resizer is a
  * 4px-wide strip absolute-positioned at the right edge of each
  * `resizable !== false` header cell. Decision C.1: 4px desktop hit
  * area (matches MUI DataGrid / Notion). Opacity: 0 by default so the
@@ -433,7 +433,7 @@ html,
   background: rgba(52, 93, 157, 0.05);
 }
 
-/* Phase 46 (2026-05-25): in-cell text editor styles.
+/* in-cell text editor styles.
  * `.cx-table-cell--editing` overrides the default cell padding to 0
  * so the `<input>` fully fills the cell. `.cx-table-cell-editor` is
  * the input itself — border-color matches the sort-indicator accent
@@ -461,7 +461,7 @@ html,
   box-shadow: 0 0 0 2px rgba(52, 93, 157, 0.2);
 }
 
-/* Phase 45 (2026-05-25): pagination footer. Two-row flex layout —
+/* pagination footer. Two-row flex layout —
  * left side hosts prev/next + page info; right side hosts total rows
  * + page-size dropdown. Sticky-bottom inside the wrapper so the footer
  * stays visible while the body scrolls. Verbatim port of vue3 demo's
@@ -514,8 +514,8 @@ html,
   text-align: center;
 }
 
-/* Phase 45.1 (2026-05-25): page-number bar — ellipsis-aware list of
- * clickable page buttons. Replaces the Phase 45 .cx-table-pagination-
+/* page-number bar — ellipsis-aware list of
+ * clickable page buttons. Replaces the .cx-table-pagination-
  * info span. Sits between « and » inside .cx-table-pagination-nav.
  * Verbatim port of vue3 demo's page-number-bar styles (commit
  * 18f403b). */
@@ -583,7 +583,7 @@ html,
   outline: none;
 }
 
-/* Phase 43: filter row beneath the column headers. Sticky background
+/* filter row beneath the column headers. Sticky background
  * + bottom border so the input row reads as a continuation of the
  * header zone. Verbatim port of vue3 demo's filter-row CSS (commit
  * `89b1a3e`). */
@@ -595,7 +595,7 @@ html,
   z-index: 1;
 }
 
-/* Phase 61 (2026-05-26 — vue2 port of vue3 Phase 17): filter cells
+/* (2026-05-26 — vue2 port of vue3): filter cells
  * live inside an inner content row so the outer `.cx-table-filter-row`
  * can act as a horizontally-clipped scrollport whose `scrollLeft` is
  * mirrored from the body's scrollLeft. Matches the header's
@@ -641,7 +641,7 @@ html,
   font-variant-numeric: tabular-nums;
 }
 
-/* Phase 41.3: status column color-coding via cellClass function.
+/* status column color-coding via cellClass function.
  * Verbatim port of examples/table-vue3/src/styles.css:436-458. */
 .cx-table-cell.cx-status--done {
   color: #1b7a3e;
@@ -662,8 +662,8 @@ html,
   color: #345d9d;
 }
 
-/* Phase 55 (2026-05-26 — vue2 port of vue3 Phase 14): column-move drag
- * affordances. Verbatim copy of vue3 Phase 14 CSS additions.
+/* (2026-05-26 — vue2 port of vue3): column-move drag
+ * affordances. Verbatim copy of vue3 CSS additions.
  */
 .cx-table-header-cell--reorderable:hover {
   cursor: grab;
@@ -692,7 +692,7 @@ html,
   font-style: italic;
 }
 
-/* Phase 30.2 (vue2 port, 2026-05-28): tree-data chevron + leaf spacer. */
+/* (vue2 port, 2026-05-28): tree-data chevron + leaf spacer. */
 .cx-table-tree-chevron,
 .cx-table-tree-chevron-spacer {
   align-items: center;
@@ -720,7 +720,7 @@ html,
   transform: rotate(90deg);
 }
 
-/* Phase 34 (2026-05-28 — vue2 port): lazy spinner + error icon. */
+/* (2026-05-28 — vue2 port): lazy spinner + error icon. */
 @keyframes cx-table-tree-spinner-rotate {
   from {
     transform: rotate(0deg);
@@ -787,7 +787,7 @@ html,
   margin: 0 0 12px;
 }
 
-/* Phase 40 (2026-05-29 — vue2 port): off-screen screen-reader live region. */
+/* (2026-05-29 — vue2 port): off-screen screen-reader live region. */
 .cx-table-sr-announce {
   position: absolute;
   width: 1px;
@@ -800,7 +800,7 @@ html,
   border: 0;
 }
 
-/* Phase 40 (2026-05-29 — vue2 port): pinned row hover + shadow accent. */
+/* (2026-05-29 — vue2 port): pinned row hover + shadow accent. */
 .cx-table-row--pinned-top:hover,
 .cx-table-row--pinned-bottom:hover {
   background-color: var(--cx-table-row-hover-bg, rgba(15, 23, 42, 0.04));
@@ -814,7 +814,7 @@ html,
   box-shadow: 0 -2px 4px var(--cx-table-pinned-shadow-color, rgba(15, 23, 42, 0.12));
 }
 
-/* Phase 42 (2026-05-29): advanced-filter DSL input + error pill. */
+/* advanced-filter DSL input + error pill. */
 .demo-page__advanced-filter {
   display: inline-flex;
   flex-wrap: wrap;
@@ -842,7 +842,7 @@ html,
   margin: 4px 0 0;
 }
 
-/* Phase 43 (2026-05-29): set-filter dropdown. Native <details> open
+/* set-filter dropdown. Native <details> open
  * state opens in-flow (pushes filter row content down). */
 .cx-table-set-filter {
   display: inline-block;
@@ -911,7 +911,7 @@ html,
   margin-top: 4px;
 }
 
-/* Phase 45 (2026-05-29 — vue2 port): server-side row model skeleton. */
+/* (2026-05-29 — vue2 port): server-side row model skeleton. */
 .cx-table-row--skeleton {
   background: #fcfcfd;
 }
@@ -937,7 +937,7 @@ html,
   }
 }
 
-/* Phase 46 (2026-05-30 — vue2 port): Tier 3 finale styles. */
+/* (2026-05-30 — vue2 port): Tier 3 finale styles. */
 .cx-table-cell--row-number {
   justify-content: center;
   color: #94a3b8;
@@ -981,7 +981,7 @@ html,
   font-size: 13px;
 }
 
-/* Phase 80 (2026-05-30 — vue2 port): tool-panel container styles. */
+/* (2026-05-30 — vue2 port): tool-panel container styles. */
 .cx-table-with-tool-panel {
   display: flex;
   flex-direction: row;
@@ -1068,7 +1068,7 @@ html,
   padding-left: 18px;
 }
 
-/* Phase 81 (2026-05-30): pre-built ChronixColumnsToolPanel styles. */
+/* pre-built ChronixColumnsToolPanel styles. */
 .cx-table-columns-tool-panel {
   display: flex;
   flex-direction: column;
@@ -1141,7 +1141,7 @@ html,
   background: #f8fafc;
 }
 
-/* Phase 82 (2026-05-30): pre-built ChronixFiltersToolPanel styles. */
+/* pre-built ChronixFiltersToolPanel styles. */
 .cx-table-filters-tool-panel {
   display: flex;
   flex-direction: column;
@@ -1261,7 +1261,7 @@ html,
   font-size: 11px;
 }
 
-/* Phase 83-A (2026-05-30): column header menu styles. */
+/* -A (2026-05-30): column header menu styles. */
 .cx-table-column-header-menu-button {
   display: inline-flex;
   align-items: center;
@@ -1318,7 +1318,7 @@ html,
   color: #94a3b8;
 }
 
-/* Phase 83-B (2026-05-30): cell context menu styles. */
+/* -B (2026-05-30): cell context menu styles. */
 .cx-table-cell-context-menu {
   min-width: 180px;
   padding: 4px 0;

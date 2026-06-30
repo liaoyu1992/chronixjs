@@ -1,5 +1,5 @@
 /**
- * Slider CSS — Phase 33 (2026-06-05).
+ * Slider CSS — .
  *
  * BEM styles for cx-ui-slider + all sub-elements.
  * CSS var tokens with fallbacks for theme customization.

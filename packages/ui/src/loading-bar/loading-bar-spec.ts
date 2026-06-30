@@ -1,5 +1,5 @@
 /**
- * LoadingBar IR — Phase 36 (2026-06-05). Imperative loading bar API.
+ * LoadingBar IR — . Imperative loading bar API.
  *
  * A thin bar fixed at the top of the viewport that indicates loading
  * progress. The bar transitions through 4 states: idle, loading,

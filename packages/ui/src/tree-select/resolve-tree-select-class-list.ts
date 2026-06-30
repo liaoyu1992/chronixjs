@@ -1,5 +1,5 @@
 /**
- * TreeSelect class-list resolver — Phase 31 (2026-06-04).
+ * TreeSelect class-list resolver — .
  */
 
 export interface ResolveTreeSelectRootClassListInput {

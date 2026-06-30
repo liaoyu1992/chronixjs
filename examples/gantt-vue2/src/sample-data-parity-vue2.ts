@@ -28,11 +28,11 @@ import type { BarSpec, LinkSpec, RowSpec } from '@chronixjs/gantt';
  *   (see `sample-data-parity.ts:22-28` for the vue3 precedent).
  * - Event styling (`backgroundColor` / `extendedProps.priority` /
  *   `extendedProps.status`). Parity v0 compares observable geometry
- *   only; style cascade parity is a Phase 31.6.1+ extension.
+ *   only; style cascade parity is a + extension.
  * - Progress-bar overlay rendering. The `progressValue` IS mirrored
  *   on the 4 events that carry one (#6/7/8/9 from the parity
  *   reference's `event-generator.js`); render-level progress parity
- *   defers to Phase 31.6.1+.
+ *   defers +.
  *
  * What this DOES replicate:
  *
@@ -56,7 +56,7 @@ function parityEventToBar(event: ParityEventVue2): BarSpec {
     },
     title: event.title,
     dprIntent: 'crisp-pixel',
-    // Per-event bar background (Phase 28.3.1 mirror for vue2): populates
+    // Per-event bar background (mirror for vue2): populates
     // only for events touched by `PARITY_LINKS_VUE2` so chronix-vue2
     // source-bar fill matches reference-vue2's resolved color via Layer 3
     // (BarSpec.style.backgroundColor wins over Layer 2 prop default).
@@ -91,7 +91,7 @@ export function initialSampleBarsParityVue2(): BarSpec[] {
 }
 
 /**
- * Phase 37: ParityLinkVue2 → LinkSpec mapping for chronix-vue2's link
+ * ParityLinkVue2 → LinkSpec mapping for chronix-vue2's link
  * render path. Identical shape to vue3's `parityLinkToSpec`
  * (`sample-data-parity.ts:83-91`); routing='square' + marker='arrow'.
  */
@@ -106,7 +106,7 @@ function parityLinkToSpec(link: ParityLinkVue2): LinkSpec {
 }
 
 /**
- * Phase 37: parity-mode link set for chronix-vue2. Mirrors the 8-edge
+ * parity-mode link set for chronix-vue2. Mirrors the 8-edge
  * `PARITY_LINKS` curated subset declared in
  * `@chronixjs/golden-runner/parity-events` (original spec vue3
  * event ids), translated to the 6 edges whose endpoints exist in

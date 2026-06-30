@@ -13,7 +13,7 @@ export interface ChronixScrollbarProps extends Omit<HTMLAttributes<HTMLDivElemen
 }
 
 /**
- * `<ChronixScrollbar>` — React 18 port of the Phase 35 Scrollbar.
+ * `<ChronixScrollbar>` — React 18 port of the Scrollbar.
  * Wraps children in a custom-styled overflow container.
  */
 export function ChronixScrollbar(props: ChronixScrollbarProps): JSX.Element {

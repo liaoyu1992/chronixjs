@@ -1,8 +1,8 @@
 import type { CellValueArgs } from './cell-args.js';
 
 /**
- * Default value stringifier. Phase 5 (2026-05-23) — ports the
- * adapter-local `formatCellPrimitive` helper from Phase 2 into the
+ * Default value stringifier. — ports the
+ * adapter-local `formatCellPrimitive` helper into the
  * core so all chronix-table consumers share the same fallback
  * formatting.
  *
@@ -29,7 +29,7 @@ export function defaultFormatCellValue(value: unknown): string {
 
 /**
  * Extract a cell's raw value from its row, applying `valueGetter` if
- * the column declares one. Phase 5 (2026-05-23).
+ * the column declares one. .
  *
  * **Pipeline**:
  *
@@ -52,7 +52,7 @@ export function getCellValue(args: CellValueArgs): unknown {
 }
 
 /**
- * Resolve a cell's display string. Phase 5 (2026-05-23).
+ * Resolve a cell's display string. .
  *
  * **Pipeline**:
  *

@@ -1,5 +1,5 @@
 /**
- * chronix-ui result module — Phase 18 (2026-06-02).
+ * chronix-ui result module — .
  */
 
 export type { ResultProps, ResultStatus } from './result-spec.js';

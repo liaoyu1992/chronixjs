@@ -21,7 +21,7 @@
           <button type="button" @click="resetBars">reset</button>
         </div>
         <div class="cx-demo-validation-toggles" role="group" aria-label="validation gates">
-          <span class="cx-demo-validation-label">validation (Phase 19):</span>
+          <span class="cx-demo-validation-label">validation </span>
           <label title="Reject cross-row time-intersecting drops">
             <input v-model="cfg.eventOverlap.value" type="checkbox" />
             eventOverlap: false
@@ -40,7 +40,7 @@
           </label>
         </div>
         <div class="cx-demo-validation-toggles" role="group" aria-label="bar styling">
-          <span class="cx-demo-validation-label">bar styling (Phase 20):</span>
+          <span class="cx-demo-validation-label">bar styling </span>
           <label title="barBackgroundColor + barBorderColor at component level">
             <input v-model="cfg.themedBars.value" type="checkbox" />
             themed bars
@@ -97,12 +97,12 @@
         />
       </div>
       <!--
-        Phase 24/37: imperative-handle test-button bar. Positioned offscreen
+        imperative-handle test-button bar. Positioned offscreen
         so Playwright can click via data-test-handle-method selector without
         the bar leaking into any captured VRT snapshot. Buttons drive the
         chart via the adapter's exposed GanttHandle.
       -->
-      <div class="cx-demo-handle-test-bar" role="group" aria-label="Phase 24 handle tests">
+      <div class="cx-demo-handle-test-bar" role="group" aria-label="handle tests">
         <button data-test-handle-method="next" @click="chartRef && chartRef.next()">
           handle.next()
         </button>
@@ -212,7 +212,7 @@ import type {
 type ViewId = AxisRangePlanInput['viewId'];
 
 /**
- * **Phase 46: demo config schema** mirroring vue3's 12-toggle schema.
+ * **demo config schema** mirroring vue3's 12-toggle schema.
  *
  * Every toggle in the demo is one entry here. Adding a new
  * Phase-21+ toggle = 1 line (`newToggle: bool(false, '...')`)
@@ -238,34 +238,34 @@ const DEMO_SCHEMA = {
   weekendsVisible: bool(true, 'Render Saturday + Sunday cells'),
   // Sidebar/chart divider gap (px). 0 removes the gap (and the resize handle).
   dividerWidth: num(4, 'Sidebar↔timeline divider width in px (0 = no gap)'),
-  // Phase 19 validators
+  // validators
   eventOverlap: bool(false, 'Reject cross-row time-intersecting drops'),
   eventConstraint: bool(false, 'Constrain drag/resize destination to today 08:00–20:00'),
   eventAllow: bool(false, 'Reject drops/resizes whose start is before 08:00'),
   selectAllow: bool(false, 'Reject range-selects wider than 4 hours'),
-  // Phase 20 bar styling
+  // bar styling
   themedBars: bool(false, 'Override bar bg + border via component props'),
   umbrellaColor: bool(false, 'Use barColor umbrella prop (sets both fill + stroke)'),
   priorityCallback: bool(false, 'Per-priority bar background callback (high/medium/low)'),
-  // Phase 21 today line (default ON to match original spec visible default)
+  // today line (default ON to match original spec visible default)
   todayLine: bool(
     true,
     'Show vertical today-line with original spec defaults (red #ff6b6b, 2 px, dashed, 今日 tooltip)',
   ),
-  // Phase 22.2 today cell bg
+  // today cell bg
   todayCellBg: bool(true, 'Show today-column background tint (rgba(255, 220, 40, .15))'),
-  // Phase 28.3 link rendering
-  useLineEventColor: bool(false, 'Color dependency lines by source bar (Phase 28.3)'),
+  // link rendering
+  useLineEventColor: bool(false, 'Color dependency lines by source bar '),
 } as const;
 
-// Phase 22 / 31.5.1: declarative headerToolbar DSL.
+// declarative headerToolbar DSL.
 const HEADER_TOOLBAR: ToolbarInput = {
   left: 'prev,next today',
   center: 'title',
   right: 'day,week,month,season,halfYear,year',
 };
 
-// Phase 49: resource-panel columns mirroring `examples/gantt-vue3/src/
+// resource-panel columns mirroring `examples/gantt-vue3/src/
 // App.vue:105-109` + the react example. The first two columns are
 // grouped (vGrouping) so consecutive rows that share the same region /
 // base collapse into a single rowspan cell. `name` is the leaf column
@@ -310,7 +310,7 @@ export default defineComponent({
     const bars = ref<BarSpec[]>(initialBarsList.map((b) => ({ ...b })));
     const rows = rowsList;
 
-    // Phase 46: parity mode auto-enables priorityCallback when its
+    // parity mode auto-enables priorityCallback when its
     // own URL flag is set so the cross-demo `useLineEventColor` /
     // `phase28.3` parity tests see matching colors. Independent from
     // the toggle UI (which is for default-mode users to flip live).
@@ -321,13 +321,13 @@ export default defineComponent({
 
     const sel = useGanttSelection();
 
-    // Phase 22: anchorDate is a writable ref now (was hardcoded literal).
+    // anchorDate is a writable ref now (was hardcoded literal).
     // Handle methods like `prev()` / `next()` / `today()` emit `update:axisInput`
     // which our handler below extracts and writes back here, completing the
     // v-model:axis-input round-trip.
     const anchorDate = ref<Date>(todayLocalMidnight());
 
-    // Phase 31.5: chartRef onto <chronix-gantt> for the exposed handle methods.
+    // chartRef onto <chronix-gantt> for the exposed handle methods.
     const chartRef = ref<{
       prev: () => void;
       next: () => void;
@@ -400,7 +400,7 @@ export default defineComponent({
       }
     }
 
-    // Phase 24: fixed scroll target one day after the anchor — gives the
+    // fixed scroll target one day after the anchor — gives the
     // cross-demo parity assertion a deterministic destination that exists in
     // every view's axis window without depending on the live "today" date.
     function onTestScrollToDate(): void {
@@ -473,7 +473,7 @@ export default defineComponent({
     function onEmptyAreaClick(p: {
       rowId: string | null;
       jsEvent: PointerEvent;
-      // Phase 54 — `time` field added; demo passes the payload through
+      // `time` field added; demo passes the payload through
       // verbatim so `time` propagates to `useGanttSelection`.
       time: Date;
     }): void {

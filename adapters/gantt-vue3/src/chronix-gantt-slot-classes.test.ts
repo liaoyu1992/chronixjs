@@ -36,7 +36,7 @@ const monthAxis: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> body slot rect emission — Phase 29', () => {
+describe('<ChronixGantt> body slot rect emission', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -117,12 +117,12 @@ describe('<ChronixGantt> body slot rect emission — Phase 29', () => {
     const rects = wrapper.findAll('g.cx-gantt-slots rect.cx-gantt-slot');
     // Day view's `axis.slotWidth` = max(viewportWidth/24, floor)
     // = max(60, 52) = 60. Body content height = 1 strip × 34 default
-    // row height (Phase 43: barHeight 30 + firstBarTopPadding 4 = 34),
+    // row height (barHeight 30 + firstBarTopPadding 4 = 34),
     // plus 0 row spacing.
     expect(rects[0]!.attributes('width')).toBe('60');
     // y=0 (anchored at body top), height covers all strips.
     expect(rects[0]!.attributes('y')).toBe('0');
-    // height = single row height (34, Phase 43 default) since rows has 1 entry.
+    // height = single row height (34, default) since rows has 1 entry.
     expect(rects[0]!.attributes('height')).toBe('34');
   });
 

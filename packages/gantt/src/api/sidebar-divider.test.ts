@@ -16,7 +16,7 @@ describe('sidebar-divider constants', () => {
   });
 });
 
-describe('clampSidebarWidth (Phase 50 pure helper)', () => {
+describe('clampSidebarWidth (pure helper)', () => {
   it('returns the proposed width when inside [min, max]', () => {
     // wrapperWidth=800 → max=800-40=760; proposed=300 → 300.
     expect(clampSidebarWidth(300, 800)).toBe(300);

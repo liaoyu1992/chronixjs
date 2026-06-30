@@ -4,8 +4,8 @@ import type { AxisHeaderCell, AxisTick } from '../layout/types.js';
 
 /**
  * Args bag passed as `SlotContext.args` when the `'header-cell'` slot
- * fires (Phase 29 — chronix-additive parallel to Phase 11's `'bar'`
- * slot and Phase 28.3's `'link'` slot). Each rendered header cell
+ * fires (chronix-additive parallel 's `'bar'`
+ * slot and `'link'` slot). Each rendered header cell
  * gets one invocation per render pass; the template's return is the
  * framework's VNode shape for the cell's entire output. The default
  * `<rect>+<text>` pair is replaced entirely when a template is
@@ -55,7 +55,7 @@ export interface HeaderCellSlotArgs {
  * Slot name chronix's adapter consults for per-header-cell rendering.
  * Exposed as a constant so consumers don't have to remember the
  * literal string and the adapter can rename it in a future phase
- * without breaking caller code. Parallel to `BAR_SLOT_NAME` (Phase 11)
- * and `LINK_SLOT_NAME` (Phase 28.3).
+ * without breaking caller code. Parallel to `BAR_SLOT_NAME`
+ * and `LINK_SLOT_NAME` .
  */
 export const HEADER_CELL_SLOT_NAME = 'header-cell';

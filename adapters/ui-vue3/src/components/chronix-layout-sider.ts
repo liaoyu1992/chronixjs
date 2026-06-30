@@ -11,7 +11,7 @@ import {
 import { defineComponent, h, onBeforeUnmount, onMounted, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixLayoutSider>` — Vue 3. Phase 28 (2026-06-04). Collapsible
+ * `<ChronixLayoutSider>` — Vue 3. . Collapsible
  * sidebar with optional chevron trigger button + optional breakpoint
  * auto-collapse via `window.matchMedia`.
  */

@@ -1,5 +1,5 @@
 /**
- * Rate component IR — Phase 25 (2026-06-03). Tier B star-rating
+ * Rate component IR — . Tier B star-rating
  * surface. Supports half-star precision via `allowHalf` prop (~10
  * LOC CSS cost; common ergonomic ask).
  *

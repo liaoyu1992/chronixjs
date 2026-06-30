@@ -1,12 +1,12 @@
 /**
- * PopSelect component IR — Phase 26 (2026-06-03). Tier B option-list
+ * PopSelect component IR — . Tier B option-list
  * popup surface. Wraps `<ChronixPopover>` at adapter scope with a
  * chronix-rendered list of options (per `options` prop, array-only
- * authoring per Phase 19 / Phase 24 / Phase 25 precedent).
+ * authoring per precedent).
  *
- * NO filter / search input (use `<ChronixAutoComplete>` from Phase 25
- * for filterable selection; Phase 31 Select for full multi+filter+async).
- * NO multi-select. NO virtual scrolling. Eventual Phase 31 `OptionSpec`
+ * NO filter / search input (use `<ChronixAutoComplete>`
+ * for filterable selection; Select for full multi+filter+async).
+ * NO multi-select. NO virtual scrolling. Eventual `OptionSpec`
  * will unify these shapes.
  */
 

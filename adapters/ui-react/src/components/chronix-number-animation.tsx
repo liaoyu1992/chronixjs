@@ -21,7 +21,7 @@ export interface ChronixNumberAnimationProps extends Omit<
 }
 
 /**
- * `<ChronixNumberAnimation>` — React 18 port of the Phase 35 NumberAnimation.
+ * `<ChronixNumberAnimation>` — React 18 port of the NumberAnimation.
  * Animates a number from `from` to `to` over `duration` milliseconds using
  * requestAnimationFrame and the core IR tween/format helpers.
  */

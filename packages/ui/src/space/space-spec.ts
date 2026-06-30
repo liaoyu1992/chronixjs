@@ -1,5 +1,5 @@
 /**
- * Space IR — Phase 17 (2026-06-02). Tier A 1D layout primitive.
+ * Space IR — . Tier A 1D layout primitive.
  *
  * Convenience flexbox wrapper that stacks children with a consistent
  * gap. Same DOM shape as Flex (single `<div>`) but with a slimmer

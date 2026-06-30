@@ -2,7 +2,7 @@ import type { CellRenderArgs } from './cell-args.js';
 
 /**
  * Resolve a cell's CSS class additions from `ColumnSpec.cellClass`.
- * Phase 5 (2026-05-23).
+ * .
  *
  * `cellClass` can take three shapes:
  *
@@ -21,7 +21,7 @@ import type { CellRenderArgs } from './cell-args.js';
  * class only.
  *
  * `cellClassRules` (condition-keyed object) is deliberately omitted
- * (per Phase 5 Decision C.1) — the function form covers the same
+ * (per Decision C.1) — the function form covers the same
  * expressive power with one fewer concept.
  */
 export function resolveCellClassNames(args: CellRenderArgs): readonly string[] {

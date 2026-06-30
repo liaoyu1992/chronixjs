@@ -1,5 +1,5 @@
 /**
- * Slider marks computation — Phase 33 (2026-06-05).
+ * Slider marks computation — .
  *
  * Normalizes mark input into a sorted array for rendering.
  */

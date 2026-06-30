@@ -5,62 +5,62 @@
  * helpers in this core package; framework adapters in
  * `@chronixjs/ui-{vue3,vue2,react}` wrap the IR with DOM rendering.
  *
- * Phase 0 (2026-06-01): package skeleton + Phase 0.1/0.2/0.3 foundation
+ * package skeleton + foundation
  *   design decisions ratified (see audit/UI_PHASE_0_*_DESIGN.md).
- * Phase 1 (2026-06-01): theme token system — ChronixUITheme interface +
+ * theme token system — ChronixUITheme interface +
  *   nested per-component slices + light/dark presets + cssVarsForUITheme
  *   pure converter + mergeChronixUITheme deep-merge helper. See `./theme/`.
- * Phase 2 (2026-06-02): ConfigProvider context — ChronixUIContext
+ * ConfigProvider context — ChronixUIContext
  *   pure-data interface (theme / locale / size / clsPrefix / disabled /
  *   portalContainer / rtl / componentOverrides) + createDefaultUIContext
  *   factory + mergeUIContext deep-merge helper. See `./context/`.
- * Phase 3 (2026-06-02): locale system — extends the Phase 2 ChronixLocale
+ * locale system — extends the ChronixLocale
  *   stub with a nested common slice + 3 preset locales (en-US / zh-CN /
  *   ja-JP) + mergeLocales deep-merge + localeRegistry runtime registry.
  *   Per-component locale slices (DatePicker, Form, …) land in their
  *   respective component phases. See `./locale/`.
- * Phase 4 (2026-06-02): popup spec — framework-agnostic popup positioning
+ * popup spec — framework-agnostic popup positioning
  *   for all floating-element components (Popover, Tooltip, Select,
  *   DatePicker, Cascader, AutoComplete, Mention, ColorPicker, Dropdown,
  *   Popconfirm, Popselect, FloatButton). Ships PopupSpec types + 12-way
  *   placement enum + resolvePopupPlacement orchestrator + 3 pure helpers
  *   (computePopupBaseCoords / flipPopupOnOverflow / clampPopupToViewport).
  *   See `./popup/`.
- * Phase 5 (2026-06-02): tree-traversal helpers — TreeNodeSpec<T> +
+ * tree-traversal helpers — TreeNodeSpec<T> +
  *   TreeKeyPath types + 6 pure helpers (traverseTreePreOrder /
  *   traverseTreePostOrder / flattenTree / filterTree / mapTree /
  *   collectDescendantKeys / findTreeNode). Used by Tree, Cascader,
  *   TreeSelect, Menu, Dropdown. See `./tree/`.
- * Phase 6 (2026-06-02): form validation IR — wraps `async-validator`
+ * form validation IR — wraps `async-validator`
  *   (optional peer dep) behind chronix-NEW pure-async helpers.
  *   Ships FieldSpec / FormSpec / FieldError / FormValidationResult
  *   types, FieldState reactive state + 6 transactions, validateField
  *   single-field validator, validateForm full-form validator. See
  *   `./form/`. Required by Form, Input, Select, DatePicker, and any
  *   component consuming user input with constraints.
- * Phase 7 (2026-06-02): input coercion helpers — number input
+ * input coercion helpers — number input
  *   (parseNumberInput / clampNumberInput / formatNumberInput),
  *   keyboard list-navigation (composeKeyboardSelection), IME
  *   composition state-machine (ImeCompositionState + 4 transactions).
  *   See `./input/`. Used by Input, InputNumber, Select, Cascader,
  *   Dropdown, Menu, AutoComplete, Mention.
- * Phase 8 (2026-06-02): transition IR — declarative spec
+ * transition IR — declarative spec
  *   (TransitionSpec / defaultTransitionSpec) + 6-phase style builders
  *   (buildFadeTransitionStyles / buildZoomTransitionStyles /
  *   buildSlideTransitionStyles with 4 directions) +
  *   formatCssTransitionShorthand helper. See `./transition/`. Used by
  *   Modal, Drawer, Popover, Tooltip, Popconfirm, Tabs, Carousel.
- * Phase 9 (2026-06-02): icon registry — pure-data SVG IconSpec +
+ * icon registry — pure-data SVG IconSpec +
  *   IconPathSpec types + process-global registry (registerIcon /
  *   getIcon / hasIcon / listIconNames) pre-registered with 12
  *   chronix-NEW default icons (4 chevrons + close + check + minus +
  *   search + info + warning + error + success). See `./icon/`. Used by
  *   Tree, Select, Cascader, Checkbox, Modal, Drawer, Alert, Input.
- * Phase 11 (2026-06-02): Button IR — first Tier A component through
+ * Button IR — first Tier A component through
  *   the full pipeline. ButtonProps + defaultButtonProps +
  *   resolveButtonClassList pure helper consumed by adapter ChronixButton
- *   SFCs. See `./button/`. Theme tokens were pre-shipped in Phase 1's
- *   `button` slice; Phase 11 ships only Vue 3 adapter (Phase 12 ports
+ *   SFCs. See `./button/`. Theme tokens were pre-shipped 's
+ *   `button` slice; ships only Vue 3 adapter (ports
  *   Vue 2 + React).
  */
 
@@ -631,10 +631,10 @@ export {
 } from './heatmap/index.js';
 
 /*
- * Phase 25 (2026-06-03) — Tier B form inputs (8 components).
+ * — Tier B form inputs (8 components).
  * Input (variant=text|textarea) + InputOtp + Checkbox + Radio + Switch
  * + Rate + InputNumber + AutoComplete. See `audit/UI_PHASE_25_TIER_B_FORM_INPUTS_DESIGN.md`.
- * Input lives inside `./input/` (co-located with Phase 7 input helpers);
+ * Input lives inside `./input/` (co-located with input helpers);
  * remaining 7 each have their own directory.
  */
 
@@ -721,7 +721,7 @@ export {
 } from './input/index.js';
 
 /*
- * Phase 26 (2026-06-03) — Popover infrastructure (4 components).
+ * — Popover infrastructure (4 components).
  * Popover + Tooltip + Popconfirm + PopSelect. See
  * `audit/UI_PHASE_26_POPOVER_INFRA_DESIGN.md`. Shared popup helpers
  * (PopupTrigger + nextPopupZIndex) exported from `./popup/` above.
@@ -765,7 +765,7 @@ export {
 } from './pop-select/index.js';
 
 /*
- * Phase 27 (2026-06-03) — Popover-consuming Tier B (6 components).
+ * — Popover-consuming Tier B (6 components).
  * Modal + Drawer + Dropdown + Menu + Affix + BackTop. See
  * `audit/UI_PHASE_27_POPOVER_CONSUMING_TIER_B_DESIGN.md`. Shared
  * popup helpers `getFocusableElements` / `getFirstFocusable` /
@@ -858,14 +858,14 @@ export {
 } from './back-top/index.js';
 
 /*
- * Phase 28 (2026-06-04) — Layout family (8 components).
+ * — Layout family (8 components).
  * Layout (+ Header / Sider / Content / Footer) + Tabs + Collapse +
  * CollapseTransition + Split + Image + FloatButton + FloatButtonGroup.
- * See `audit/UI_PHASE_28_LAYOUT_FAMILY_DESIGN.md`. Phase 28 is the
- * FIRST real component-level consumer of Phase 8 `TransitionSpec`
+ * See `audit/UI_PHASE_28_LAYOUT_FAMILY_DESIGN.md`. is the
+ * FIRST real component-level consumer `TransitionSpec`
  * (Collapse + CollapseTransition height transition via new core helper
  * `buildHeightCollapseTransitionStyles`, exported via the transition
- * module re-exports above) and the SECOND consumer of Phase 26
+ * module re-exports above) and the SECOND consumer
  * Popover infra (FloatButton hover tooltip + FloatButtonGroup
  * click/hover inline expand).
  */
@@ -993,15 +993,15 @@ export {
 } from './float-button-group/index.js';
 
 /*
- * Phase 29 (2026-06-04) — Tier B remainder (3 components).
+ * — Tier B remainder (3 components).
  * Carousel + Wave + FocusDetector. See
  * `audit/UI_PHASE_29_TIER_B_REMAINDER_DESIGN.md`. Carousel is the
- * FIRST real component-level consumer of Phase 8
- * `buildSlideTransitionStyles` (Phase 28 shipped Collapse height
- * transition; Phase 29 ships slide transition to a real consumer).
+ * FIRST real component-level consumer
+ * `buildSlideTransitionStyles` (shipped Collapse height
+ * transition; ships slide transition to a real consumer).
  * Wave + FocusDetector are pure CSS-effect + event-observer
  * primitives with no IR algorithm. **All Tier B for v0.1.0-alpha
- * DONE after Phase 29.**
+ * DONE after .**
  */
 
 export type {
@@ -1051,7 +1051,7 @@ export {
 } from './focus-detector/index.js';
 
 /*
- * Phase 30 (2026-06-04) — Tier C Tree 专场 (1 component).
+ * — Tier C Tree 专场 (1 component).
  * ChronixTree single-select + intra-tree DnD reorder + virtual
  * scrolling + async load + keyboard navigation + filter.
  * **First Tier C component**. See `audit/UI_PHASE_30_TREE_DESIGN.md`.
@@ -1097,12 +1097,12 @@ export {
 } from './tree/index.js';
 
 /*
- * Phase 31 (2026-06-04) — Tier C Select family (4 components).
+ * — Tier C Select family (4 components).
  * Select + TreeSelect + Cascader + Mention. See
  * `audit/UI_PHASE_31_SELECT_FAMILY_DESIGN.md`. Shared `OptionSpec`
- * IR unifies all 4 components' option format; Select upgrades Phase 26
+ * IR unifies all 4 components' option format; Select upgrades
  * PopSelect with multiple/filterable/virtual scrolling. TreeSelect
- * composes Select trigger + Phase 30 Tree IR helpers. Cascader is a
+ * composes Select trigger + Tree IR helpers. Cascader is a
  * multi-level Select variant. Mention is a textarea @trigger + Select
  * dropdown. **First Tier C Select component**.
  */
@@ -1191,7 +1191,7 @@ export {
 export type { ResolveMentionRootClassListInput } from './mention/index.js';
 
 /*
- * Phase 32 (2026-06-05) — Tier C DatePicker / TimePicker / Calendar (3 components).
+ * — Tier C DatePicker / TimePicker / Calendar (3 components).
  * DatePicker (single-date with calendar popup) + TimePicker (hour/minute/second
  * columns) + Calendar (standalone month view). Uses `date-fns` peer-dep for
  * all date math. See `audit/UI_PHASE_32_DATE_TIME_DESIGN.md`.
@@ -1260,7 +1260,7 @@ export {
 } from './calendar/index.js';
 
 /*
- * Phase 33 (2026-06-05) — Tier C ColorPicker / Transfer / Slider / Pagination
+ * — Tier C ColorPicker / Transfer / Slider / Pagination
  * (4 components). ColorPicker reuses cx-kit color-picker math. Transfer reuses
  * cx-kit autocomplete filter. Slider reuses cx-kit slider + input-range math.
  * Pagination ships its own ellipsis page computation.
@@ -1352,7 +1352,7 @@ export {
 } from './pagination/index.js';
 
 /*
- * Phase 35 (2026-06-05) — Tier C DynamicInput + DynamicTags + NumberAnimation
+ * — Tier C DynamicInput + DynamicTags + NumberAnimation
  * (3 components). DynamicInput: dynamic value list with add/remove rows.
  * DynamicTags: inline tag editor with closable chips + text input.
  * NumberAnimation: animated number with tween + locale-aware formatting.
@@ -1423,7 +1423,7 @@ export {
 } from './upload/index.js';
 
 /*
- * Phase 36 (2026-06-05) — Imperative APIs (4 components).
+ * — Imperative APIs (4 components).
  * Message + Notification + DiscreteDialog + LoadingBar.
  * All are imperative/programmatic APIs rendered outside the component
  * tree via fixed-position portals. See `audit/UI_PHASE_36_IMPERATIVE_APIS_DESIGN.md`.

@@ -12,7 +12,7 @@ import { defineComponent, h, type PropType, type VNode } from 'vue';
 import { ChronixTooltip } from './chronix-tooltip.js';
 
 /**
- * `<ChronixFloatButton>` — Vue 3. Phase 28 (2026-06-04). Fixed-position
+ * `<ChronixFloatButton>` — Vue 3. . Fixed-position
  * floating action button. Wraps in `<ChronixTooltip>` when `tooltip`
  * prop is set.
  */

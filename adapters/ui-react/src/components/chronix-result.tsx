@@ -19,7 +19,7 @@ export interface ChronixResultProps extends Omit<
 }
 
 /**
- * `<ChronixResult>` — React port of the Phase 18 Result.
+ * `<ChronixResult>` — React port of the Result.
  */
 export function ChronixResult(props: ChronixResultProps): JSX.Element {
   const {

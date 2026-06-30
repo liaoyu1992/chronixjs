@@ -13,7 +13,7 @@ import { createContext, useContext, useMemo, type CSSProperties, type ReactNode 
  * so consumers wanting to use `React.useContext(UIContext)` directly
  * (e.g. inside a `useSyncExternalStore` setup) can.
  *
- * Phase 12 (2026-06-02) per Phase 0.3 Decision A.1 + B.1. React's
+ * per Decision A.1 + B.1. React's
  * `Context` already handles reactivity, so the value is the plain
  * `ChronixUIContext` (not a ref/state wrapper) — Decision B.1 says
  * the return shape is adapter-native.
@@ -42,7 +42,7 @@ export interface ChronixUIProviderProps extends ChronixUIContextOverrides {
  * inline-style CSS vars) so cross-adapter Playwright parity is
  * structural-by-construction.
  *
- * Phase 12 (2026-06-02).
+ * .
  */
 export function ChronixUIProvider(props: ChronixUIProviderProps): JSX.Element {
   const parent = useContext(UIContext);

@@ -25,7 +25,7 @@ const baseAxisInput = (): AxisRangePlanInput => ({
   weekendsVisible: true,
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — dual-scrollport (Phase 32.5)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — dual-scrollport ', () => {
   const sampleBars = (): readonly BarSpec[] => [
     makeBar('b1', 'r1', '2026-05-19T00:00', '2026-05-20T00:00'),
   ];

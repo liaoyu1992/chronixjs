@@ -36,8 +36,8 @@ import type { CellRenderArgs, CellValueArgs } from '../render/cell-args.js';
  * layout + render but its `id` remains addressable (filter / sort
  * state for hidden columns is preserved).
  *
- * Phase 1 (2026-05-23) ships the minimum field set needed for
- * `columnLayoutPass` + downstream Phase 2 rendering. Additional
+ * ships the minimum field set needed for
+ * `columnLayoutPass` + downstream rendering. Additional
  * fields (`valueFormatter`, `cellRenderer` slot, `tooltipField`,
  * `cellClassRules`, etc.) land per-feature in their owning phases.
  */
@@ -96,7 +96,7 @@ export interface ColumnSpec {
   /**
    * Column-type hint (e.g., `'text'`, `'number'`, `'date'`). Used by
    * filter and edit phases to pick default editors/filters. No
-   * built-in behavior at Phase 1 — purely informational until
+   * built-in behavior at purely informational until
    * downstream phases consume it.
    */
   readonly type?: string;
@@ -108,8 +108,8 @@ export interface ColumnSpec {
   readonly filterable?: boolean;
 
   /**
-   * Phase 43 (2026-05-29): opt-in column filter UI shape — `'text'`
-   * (default) renders the Phase 9 / 9.1 `<input>` filter row cell
+   * opt-in column filter UI shape — `'text'`
+   * (default) renders the `<input>` filter row cell
    * (text contains / number prefix syntax dispatched by
    * `ColumnSpec.type`); `'set'` renders an Excel-style checkbox-list
    * dropdown of the column's unique values. Set the column's
@@ -119,19 +119,19 @@ export interface ColumnSpec {
    * value toggle fires.
    *
    * Default: `'text'`. Backward-compatible — pre-Phase-43 columns
-   * keep their Phase 9 / 9.1 behavior.
+   * keep their behavior.
    */
   readonly filterUi?: 'text' | 'set' | 'multi';
 
   /**
-   * Phase 102 (2026-06-01) + Phase 116 (2026-06-02): per-slot widget
+   * + per-slot widget
    * type for the multi-filter container. Only honored when
    * `filterUi: 'multi'`. The array length determines the stacked-
    * widget slot count; each entry's literal picks the widget type
    * for that slot. Defaults to `['text', 'text']` when
    * `filterUi: 'multi'` is set without this field.
    *
-   * Phase 116 lifted the `'set'` variant — set-slot renders as a
+   * lifted the `'set'` variant — set-slot renders as a
    * nested `<details>` inside the multi-filter panel body (native
    * disclosure widget nesting; no JS height management). Reuses
    * `collectUniqueColumnValues` over `props.rows` for the value
@@ -152,7 +152,7 @@ export interface ColumnSpec {
   readonly resizable?: boolean;
 
   /**
-   * Phase 14 (2026-05-26): allow the user to drag this column's header
+   * allow the user to drag this column's header
    * cell horizontally to change column order. Defaults to `true`. When
    * `false`, the SFC skips wiring pointer-capture handlers on the
    * column's header cell so a regular header click (sort cycle) is
@@ -167,10 +167,10 @@ export interface ColumnSpec {
   readonly reorderable?: boolean;
 
   /**
-   * Phase 44.1 (2026-05-31): mark this column's body cells as a
+   * mark this column's body cells as a
    * row-drag grip surface. When `true`, pointer-down on any body
    * cell in this column initiates a row-drag-to-reorder session per
-   * the Phase 44 row-drag pipeline. The cell also gets `cursor: grab`
+   * the row-drag pipeline. The cell also gets `cursor: grab`
    * styling for affordance discovery. Defaults to `undefined`
    * (false — no grip).
    *
@@ -183,15 +183,15 @@ export interface ColumnSpec {
    * flag is ignored with a one-time `console.warn`. Two grip surfaces
    * in the same render would confuse UX.
    *
-   * Promoted from Phase 44's rejected Decision B.3 — consumers who
+   * Promoted 's rejected Decision B.3 — consumers who
    * already have a primary identifier column ("task name") can mark
    * it as the grip surface instead of opting into the sticky rail.
    */
   readonly rowDragHandle?: boolean;
 
   /**
-   * Phase 15 (2026-05-26): allow the user to double-click the column's
-   * resizer (Phase 13) to autosize the column to its content; also
+   * allow the user to double-click the column's
+   * resizer to autosize the column to its content; also
    * gates the imperative `autosizeColumn(colId)` /
    * `autosizeAllColumns()` TableHandle methods. Defaults to `true`.
    * When `false`, dbl-click on the resizer is a silent no-op and the
@@ -211,7 +211,7 @@ export interface ColumnSpec {
 
   /**
    * Pin the column to the left or right edge. `null` (or omitted)
-   * leaves the column in the center scrollable zone. Phase 1's
+   * leaves the column in the center scrollable zone.
    * `columnLayoutPass` ignores pinning for width resolution — a
    * later phase's `pinnedColsPass` splits the layout result into
    * left / center / right zones.
@@ -219,20 +219,20 @@ export interface ColumnSpec {
   readonly pinned?: 'left' | 'right' | null;
 
   /**
-   * Phase 5 (2026-05-23): override the default field-based value
+   * override the default field-based value
    * extraction. When set, runs INSTEAD of `row.data[field ?? id]`.
    *
    * Use cases: derived values (`{row} => row.data.first + ' ' +
    * row.data.last`); cross-column composition; conditional source
    * fields.
    *
-   * Synchronous only at Phase 5; async value resolution lands with
+   * Synchronous only at; async value resolution lands with
    * the Phase ~82 server-side row model.
    */
   readonly valueGetter?: (args: CellValueArgs) => unknown;
 
   /**
-   * Phase 5: format the resolved value into a display string.
+   * format the resolved value into a display string.
    * Receives `{value, row, column}` (value is the original
    * `valueGetter` output, or default field-based extraction when
    * `valueGetter` is omitted).
@@ -244,7 +244,7 @@ export interface ColumnSpec {
   readonly valueFormatter?: (args: CellRenderArgs) => string;
 
   /**
-   * Phase 5: additional CSS class names for this column's body
+   * additional CSS class names for this column's body
    * cells. Three shapes accepted:
    *
    * - `string` → static single class.
@@ -258,7 +258,7 @@ export interface ColumnSpec {
    * spreads them into the cell's class list.
    *
    * `cellClassRules` (condition-keyed object) is deliberately
-   * omitted per Phase 5 Decision C.1 — the function form covers
+   * omitted per Decision C.1 — the function form covers
    * the same expressive power with one fewer concept.
    */
   readonly cellClass?:
@@ -267,7 +267,7 @@ export interface ColumnSpec {
     | ((args: CellRenderArgs) => string | readonly string[]);
 
   /**
-   * Phase 8 (2026-05-24): per-column override for the sort comparator.
+   * per-column override for the sort comparator.
    * When set, runs INSTEAD of `sortPass`'s built-in generic comparator
    * (the one that auto-detects null / Date / number / bigint / boolean
    * / string).
@@ -294,7 +294,7 @@ export interface ColumnSpec {
   readonly comparator?: (a: unknown, b: unknown, args: CellComparatorArgs) => number;
 
   /**
-   * Phase 23 (2026-05-27) / Phase 23.1 (2026-05-27): opt-in column
+   * / opt-in column
    * grouping for the multi-row header. Sibling columns sharing the same
    * `headerGroup` (or a common prefix path, for nested groups) render
    * as a single labelled cell in a header row above the existing leaf
@@ -303,7 +303,7 @@ export interface ColumnSpec {
    * **Two shorthand forms:**
    *
    * - `'X'` (string) — single-level group; equivalent to `['X']`.
-   *   Preserved verbatim from the Phase 23 baseline so existing column
+   *   Preserved verbatim from the baseline so existing column
    *   shapes keep working.
    * - `['X', 'Y']` (readonly string[]) — explicit path from root group
    *   to immediate-parent group. Length N renders N group rows above
@@ -328,7 +328,7 @@ export interface ColumnSpec {
    * Two columns sharing level-1 name but different level-0 parents
    * ALSO render as separate spans (path-prefix discriminator).
    *
-   * **Zone-aware**: Phase 17's left / center / right pinned zones each
+   * **Zone-aware**: left / center / right pinned zones each
    * compute their own spans independently — a group never spans across
    * a zone boundary, at any level. Two zone-flanking columns sharing
    * the same path also render as two separate spans (one per zone).
@@ -340,7 +340,7 @@ export interface ColumnSpec {
   readonly headerGroup?: string | readonly string[];
 
   /**
-   * Phase 24 (2026-05-27): per-column aggregator for the optional
+   * per-column aggregator for the optional
    * sticky footer row. Receives the post-filter rows (NOT post-page —
    * the footer aggregates ALL filtered rows per Decision A.1) and
    * returns any value (number / string / formatted text — consumer's
@@ -352,7 +352,7 @@ export interface ColumnSpec {
    *
    * Synchronous + pure. Throws are swallowed by `computeFooterValues`;
    * a throwing aggregator renders its footer cell as `null` (the other
-   * cells are unaffected) — matches Phase 5 `valueFormatter`'s
+   * cells are unaffected) — matches `valueFormatter`'s
    * defensive posture.
    *
    * When this column has no `aggregator`, the adapter renders an empty
@@ -366,7 +366,7 @@ export interface ColumnSpec {
   readonly aggregator?: (rows: readonly RowSpec[]) => unknown;
 
   /**
-   * Phase 32 (2026-05-28): plain-text tooltip source field. When set,
+   * plain-text tooltip source field. When set,
    * hovering over a body cell in this column for `theme.tooltipDelayMs`
    * milliseconds (default 400ms) shows a popover with the value of
    * `row.data[tooltipField]` rendered as text via the default formatter.
@@ -386,7 +386,7 @@ export interface ColumnSpec {
   readonly tooltipField?: string;
 
   /**
-   * Phase 32 (2026-05-28): override the field-based tooltip resolution
+   * override the field-based tooltip resolution
    * with a computed string. When set, takes precedence over
    * `tooltipField` per `resolveCellTooltip`'s cascade. Returns `null` /
    * `undefined` / empty string to suppress the popover for this cell.
@@ -403,9 +403,9 @@ export interface ColumnSpec {
   readonly tooltipValueGetter?: (args: CellValueArgs) => string | null | undefined;
 
   /**
-   * Phase 30 (2026-05-28): mark this column as the tree column. Exactly
+   * mark this column as the tree column. Exactly
    * one visible column should be flagged when the consumer's row data
-   * carries `children` (Phase 30 tree data). The flagged column renders
+   * carries `children` (tree data). The flagged column renders
    * the expand/collapse chevron + depth-driven indent in its body cells;
    * other columns render content unchanged.
    *
@@ -421,8 +421,8 @@ export interface ColumnSpec {
   readonly treeColumn?: boolean;
 
   /**
-   * Phase 39.4 (2026-05-29): per-column body-cell style applied to the
-   * xlsx export. Header row preserves the Phase 39 Decision C.1 bold-
+   * per-column body-cell style applied to the
+   * xlsx export. Header row preserves the Decision C.1 bold-
    * row default; this field affects only body cells. Column-uniform
    * scope (every body cell in the column gets the same style); per-
    * row × per-column callback is deferred to a future sub-phase.
@@ -438,7 +438,7 @@ export interface ColumnSpec {
   readonly exportStyle?: ExportStyle;
 
   /**
-   * Phase 46-A (2026-05-30): opt-in row-number column. When `true`,
+   * -A (2026-05-30): opt-in row-number column. When `true`,
    * the body cell renders the row's displayed-position index (1-based,
    * post-filter / post-sort / post-page) as its text content + skips
    * the `valueGetter` / `valueFormatter` / `cellRenderer` pipeline.
@@ -460,7 +460,7 @@ export interface ColumnSpec {
   readonly rowNumber?: boolean;
 
   /**
-   * Phase 46-B (2026-05-30): opt-in per-row action buttons. When set
+   * -B (2026-05-30): opt-in per-row action buttons. When set
    * with a non-empty array, the body cell renders one `<button>` per
    * `RowAction` descriptor in a horizontal flex strip. Each button's
    * content is the action's `icon` (when set) + `label` (suppressed
@@ -480,7 +480,7 @@ export interface ColumnSpec {
   readonly actions?: readonly RowAction[];
 
   /**
-   * Phase 46-C (2026-05-30): opt-in wrap-text for multi-line cell
+   * -C (2026-05-30): opt-in wrap-text for multi-line cell
    * content. When `true`, the body cell's text container gets `white-
    * space: pre-wrap; word-break: break-word` so multi-line strings +
    * long unwrapped strings wrap inside the cell width. Composes with
@@ -493,7 +493,7 @@ export interface ColumnSpec {
   readonly wrapText?: boolean;
 
   /**
-   * Phase 101 (2026-06-01): per-column edit-commit validator. Called
+   * per-column edit-commit validator. Called
    * by `applyEditCommit` AFTER `coerceEditDraftValue` produces a
    * typed value but BEFORE the `cell-value-change` emit. Receives
    * the post-coerce value + the row being edited.
@@ -520,7 +520,7 @@ export interface ColumnSpec {
    * imperatively if they need to mark the cell invalid.
    *
    * **Throwing is NOT caught.** A throwing validator surfaces to the
-   * consumer's error boundary — matching the Phase 24 `aggregator`
+   * consumer's error boundary — matching the `aggregator`
    * defensive posture is intentionally NOT applied here (validators
    * are a business-logic surface, not a defensive one; a thrown
    * exception during commit should fail loudly).
@@ -538,14 +538,14 @@ export interface ColumnSpec {
   readonly validator?: (value: unknown, row: RowSpec) => string | EditValidationError | null;
 
   /**
-   * Phase 111 (2026-06-01): per-column async edit-commit validator.
+   * per-column async edit-commit validator.
    * Runs AFTER the sync `validator` (when present) has accepted the
    * value, and ONLY when both original gates (`coerceEditDraftValue`
    * + sync `validator`) pass. Receives the post-coerce typed value +
    * the row being edited; resolves to the same three shapes as the
    * sync `validator`.
    *
-   * Locked execution order (Phase 111 Decision B.1):
+   * Locked execution order (Decision B.1):
    * `coerceEditDraftValue` → `validator` (sync) → `validatorAsync`
    * (async) → outcome dispatch. Any earlier rejection
    * short-circuits — async never runs against guaranteed-invalid
@@ -561,10 +561,10 @@ export interface ColumnSpec {
    *   ARIA attr.
    * - A `cell-edit-validation-pending` SFC emit fires when async
    *   starts; the existing `cell-edit-stop` emit fires on final
-   *   resolve (success or rejection), matching Phase 101's
+   *   resolve (success or rejection), matching
    *   "stop = stable outcome" contract.
    *
-   * **Promise rejection** (per Phase 111 Decision E.1): synthesized
+   * **Promise rejection** (per Decision E.1): synthesized
    * as `EditValidationError { reason: error.message ?? String(error),
    * code: 'async-error' }`. Original error chain is preserved via
    * `console.error` so consumer devtools / error-reporters still
@@ -580,7 +580,7 @@ export interface ColumnSpec {
 }
 
 /**
- * Phase 46-B (2026-05-30): descriptor for a single per-row action
+ * -B (2026-05-30): descriptor for a single per-row action
  * button rendered inside an actions column (`ColumnSpec.actions`
  * non-empty array). The chronix-table SFC renders one `<button
  * class="cx-table-cell-action" data-action-id="${id}">` per

@@ -33,7 +33,7 @@ function bar(id: string, rowId: string): BarSpec {
   };
 }
 
-describe('<ChronixGantt> dual-scrollport architecture — Phase 23', () => {
+describe('<ChronixGantt> dual-scrollport architecture', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

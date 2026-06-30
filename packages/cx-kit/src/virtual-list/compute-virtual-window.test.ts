@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_VIRTUAL_WINDOW_OVERSCAN, computeVirtualWindow } from './compute-virtual-window.js';
 
-describe('computeVirtualWindow — Phase 96 uniform-height fast path', () => {
+describe('computeVirtualWindow — uniform-height fast path', () => {
   it('totalItemCount = 0 returns empty window with zero totalHeightPx', () => {
     const result = computeVirtualWindow({
       totalItemCount: 0,

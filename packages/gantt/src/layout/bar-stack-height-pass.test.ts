@@ -32,7 +32,7 @@ describe('defaultBarStackHeightPass — no-bar rows', () => {
       axis: dayAxis,
     });
 
-    // Default (Phase 43): barHeight 30 + firstBarTopPadding 4 = 34
+    // Default barHeight 30 + firstBarTopPadding 4 = 34
     expect(heightsPerRow).toEqual([34]);
     expect(heightByRowId.get('r1')).toBe(34);
   });
@@ -50,7 +50,7 @@ describe('defaultBarStackHeightPass — no-bar rows', () => {
 });
 
 describe('defaultBarStackHeightPass — single-bar rows', () => {
-  it('one in-range bar gives `topPad + barHeight + bottomPad` (Phase 43 defaults: 4+30+4 = 38)', () => {
+  it('one in-range bar gives `topPad + barHeight + bottomPad` (defaults: 4+30+4 = 38)', () => {
     const { heightsPerRow } = defaultBarStackHeightPass.compute({
       bars: [bar('b1', 'r1', '2026-05-13T08:00:00', '2026-05-13T10:00:00')],
       rows: [row('r1')],
@@ -85,7 +85,7 @@ describe('defaultBarStackHeightPass — stacked rows', () => {
       axis: dayAxis,
     });
 
-    // Phase 43 defaults: maxLevel=1, stackedHeight = 1×(30+5)+30 = 65, computed = 4+65+4 = 73
+    // defaults: maxLevel=1, stackedHeight = 1×(30+5)+30 = 65, computed = 4+65+4 = 73
     expect(heightsPerRow).toEqual([73]);
   });
 
@@ -114,7 +114,7 @@ describe('defaultBarStackHeightPass — stacked rows', () => {
       axis: dayAxis,
     });
 
-    // Phase 43 defaults: maxLevel=2, stackedHeight = 2×35 + 30 = 100, computed = 4+100+4 = 108
+    // defaults: maxLevel=2, stackedHeight = 2×35 + 30 = 100, computed = 4+100+4 = 108
     expect(heightsPerRow).toEqual([108]);
   });
 
@@ -141,7 +141,7 @@ describe('defaultBarStackHeightPass — axis-range filter', () => {
       axis: dayAxis,
     });
 
-    expect(heightsPerRow).toEqual([34]); // Phase 43 minRowHeight = 30 + 4
+    expect(heightsPerRow).toEqual([34]); // minRowHeight = 30 + 4
   });
 
   it('bars entirely after axis end are ignored', () => {
@@ -193,7 +193,7 @@ describe('defaultBarStackHeightPass — multi-row + orphan inputs', () => {
       axis: dayAxis,
     });
 
-    // Phase 43 defaults: r1: one bar → 38; r2: two stacked → 73; r3: empty → 34.
+    // defaults: r1: one bar → 38; r2: two stacked → 73; r3: empty → 34.
     expect(heightsPerRow).toEqual([38, 73, 34]);
   });
 
@@ -211,7 +211,7 @@ describe('defaultBarStackHeightPass — multi-row + orphan inputs', () => {
   });
 });
 
-describe('defaultBarStackHeightPass — levelByBarId (Phase 30)', () => {
+describe('defaultBarStackHeightPass — levelByBarId ', () => {
   it('assigns level 0 to a single bar on a row', () => {
     const { levelByBarId } = defaultBarStackHeightPass.compute({
       bars: [bar('b1', 'r1', '2026-05-13T00:00:00', '2026-05-13T02:00:00')],

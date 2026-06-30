@@ -8,7 +8,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixPageHeader>` — Vue 3 SFC wrapping the core `PageHeaderProps`
- * IR. Phase 19 (2026-06-02). Tier A page-chrome primitive.
+ * IR. . Tier A page-chrome primitive.
  *
  * Slots (all optional):
  *

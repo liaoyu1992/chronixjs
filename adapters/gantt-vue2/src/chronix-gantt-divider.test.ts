@@ -46,7 +46,7 @@ function pointerEvent(
 
 const GanttForTest = ChronixGantt as unknown as typeof Vue;
 
-describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
+describe('<ChronixGantt> sidebar-divider drag ', () => {
   it('renders cx-gantt-sidebar-divider when sidebar is enabled', () => {
     const wrapper = mount(GanttForTest, {
       propsData: { bars: [] as readonly BarSpec[], rows, axisInput: baseAxisInput(), columns },

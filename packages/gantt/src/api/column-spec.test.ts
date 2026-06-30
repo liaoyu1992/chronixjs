@@ -22,7 +22,7 @@ const groupedColumns: readonly ColumnSpec[] = [
   { key: 'name', label: '车间', width: 80 },
 ];
 
-describe('computeRowSpans (Phase 49 core helper)', () => {
+describe('computeRowSpans (core helper)', () => {
   it('returns an empty matrix for an empty columns array', () => {
     const matrix = computeRowSpans(groupedRows, []);
     expect(matrix).toEqual([]);

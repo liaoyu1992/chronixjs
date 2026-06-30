@@ -18,19 +18,19 @@ import {
 import { useMemo } from 'react';
 
 /**
- * Phase 48 + 48.1 (2026-05-25): React hook that wraps the chronix-
- * table core's `columnLayoutPass` (Phase 48 / vue3 Phase 2) +
- * `rowLayoutPass` (Phase 48.1 / vue3 Phase 3) + `virtualRowsPass`
- * (Phase 48.1 / vue3 Phase 4) + materializes the flat-header
+ * + 48.1 (2026-05-25): React hook that wraps the chronix-
+ * table core's `columnLayoutPass` (/ vue3) +
+ * `rowLayoutPass` (/ vue3) + `virtualRowsPass`
+ * (/ vue3) + materializes the flat-header
  * `HeaderCell[]` the SFC binds to the header row.
  *
  * Hooks own no DOM and no pointer state — they output the same
  * shapes the core's pass methods would, returned as plain values
  * (NOT `ComputedRef` wrappers). Interactions wire separately in
  * later phases (per-phase hook additions mirror vue3's progression
- * from Phase 8 onward — sort / filter / pagination join this hook).
+ * onward — sort / filter / pagination join this hook).
  *
- * Phase 48 + 48.1 ships flat headers only (`depth = 0` / `span = 1`);
+ * + 48.1 ships flat headers only (`depth = 0` / `span = 1`);
  * the nested column groups dimension lands later if/when
  * `ColumnGroupSpec` extends the IR (parked at the vue3 level too).
  *
@@ -56,78 +56,78 @@ export interface UseTableLayoutInput {
    */
   readonly defaultMinColumnWidth: number;
   /**
-   * Phase 48.1 (vue3 Phase 3): rows in display order. Drives
+   * (vue3): rows in display order. Drives
    * `rowLayoutPass` for per-row Y positions + heights. Optional
-   * for backward compat with Phase 48 callers; empty array is the
+   * for backward compat with callers; empty array is the
    * neutral default.
    */
   readonly rows?: readonly RowSpec[];
   /**
-   * Phase 48.1 (vue3 Phase 3): uniform per-row height in pixels.
+   * (vue3): uniform per-row height in pixels.
    * Sourced from the merged theme's `rowHeight`. Per-row overrides
    * come from each `RowSpec.heightHint`. Defaults to 28 internally
    * to match `defaultChronixTableTheme.rowHeight`.
    */
   readonly defaultRowHeight?: number;
   /**
-   * Phase 48.1 (vue3 Phase 4): body scrollport's `scrollTop` in
+   * (vue3): body scrollport's `scrollTop` in
    * pixels. Optional; when omitted (or 0), `virtualRowsPass` may
    * still return the window starting at row 0 depending on
    * `viewportHeight`.
    */
   readonly viewportScrollTop?: number;
   /**
-   * Phase 48.1 (vue3 Phase 4): body scrollport's `clientHeight` in
+   * (vue3): body scrollport's `clientHeight` in
    * pixels. Optional; when omitted (or 0, the pre-mount frame),
    * `virtualRowsPass` returns the empty result + the SFC falls
    * back to rendering all rows.
    */
   readonly viewportHeight?: number;
   /**
-   * Phase 48.1 (vue3 Phase 4): overscan rows above + below the
+   * (vue3): overscan rows above + below the
    * visible window so scroll-driven row mounts don't pop in.
    * Defaults to 3 inside `virtualRowsPass`; pass 0 to disable.
    */
   readonly overscan?: number;
   /**
-   * Phase 49 (vue3 Phase 8): sort spec array. Empty / omitted = no
+   * (vue3): sort spec array. Empty / omitted = no
    * sort. Single-column sort = one-entry array. Multi-column sort =
    * N-entry array in lex-order priority. `sortPass` runs BEFORE
    * `rowLayoutPass` so per-row Y coordinates align with the
    * currently-displayed sort order.
    *
-   * Phase 49.1 (vue3 Phase 8.1) widened this from `SortSpec | null`
+   * (vue3) widened this from `SortSpec | null`
    * to `readonly SortSpec[]` to support multi-column sort. Breaking
    * API change accepted because chronix-table-react is unpublished.
    */
   readonly sortSpec?: readonly SortSpec[];
   /**
-   * Phase 50 (vue3 Phase 9): filter spec array. Empty / omitted = no
+   * (vue3): filter spec array. Empty / omitted = no
    * filter. Multi-column filter = N-entry array with AND semantics.
    * `filterPass` runs BEFORE `sortPass` in the pipeline so sort
-   * scope shrinks to the filtered subset. Phase 50.1 (vue3 Phase
+   * scope shrinks to the filtered subset. (vue3 Phase
    * 9.1) added the `NumberFilterSpec` variant to the FilterSpec
    * discriminated union — no signature change.
    */
   readonly filterSpec?: readonly FilterSpec[];
   /**
-   * Phase 41 (2026-05-29 — react port): quick-find substring needle.
+   * (2026-05-29 — react port): quick-find substring needle.
    * Runs AFTER `filterPass` (column filters narrow first), BEFORE
    * `sortPass` (sort runs against the intersection). Empty / null /
    * undefined / whitespace-only text → identity (no extra filtering).
    * The SFC unions `quickFindForceExpandedRowIds` with the user's
    * expand state + `filterForceExpandedRowIds` before feeding back
-   * into `expandedRowIds`. Verbatim port of vue3 Phase 41.
+   * into `expandedRowIds`. Verbatim port of vue3 .
    */
   readonly quickFindText?: string | null | undefined;
   /**
-   * Phase 52 (vue3 Phase 11): 0-based page index for `pagePass`.
+   * (vue3): 0-based page index for `pagePass`.
    * Omitted (or `< 0`) is the "first page" default; bounds-clamped
    * by `pagePass` (negative → 0; oversize → last valid page).
    */
   readonly page?: number;
   /**
-   * Phase 52 (vue3 Phase 11): rows per page for `pagePass`. Omitted
+   * (vue3): rows per page for `pagePass`. Omitted
    * (or `<= 0`) is the "no pagination" passthrough — pagePass returns
    * the input rows by reference and reports `totalPages = 1`. The SFC
    * passes `0` when `paginationEnabled` is false even though internal
@@ -137,19 +137,19 @@ export interface UseTableLayoutInput {
    */
   readonly pageSize?: number;
   /**
-   * Phase 30.2 (react port, 2026-05-28): set of row IDs whose tree-data
+   * (react port, 2026-05-28): set of row IDs whose tree-data
    * children are currently expanded. When omitted (or empty),
    * `treeFlattenPass` runs over a flat input and is a no-op (returns
    * the input rows by reference); the layout-pipeline shape is
    * unchanged for non-tree datasets. The set should be the union of
    * the user's manual expand state AND `filterForceExpandedRowIds`
-   * (auto-expanded ancestors of filter matches, per Phase 30 Decision
+   * (auto-expanded ancestors of filter matches, per Decision
    * F.1) — the SFC owns that union and feeds the result here.
    */
   readonly expandedRowIds?: ReadonlySet<string>;
 
   /**
-   * Phase 34 (2026-05-28 — react port): adapter-cached lazy children
+   * (2026-05-28 — react port): adapter-cached lazy children
    * Map. Keys are row IDs whose children loaded via `childrenLoader`;
    * values are the cached children arrays. Empty Map (default) is the
    * no-lazy fast-path.
@@ -157,8 +157,8 @@ export interface UseTableLayoutInput {
   readonly loadedChildrenByRowId?: ReadonlyMap<string, readonly RowSpec[]>;
 
   /**
-   * Phase 46-C (2026-05-30 — react port): per-row external height
-   * override map. Verbatim mirror of vue3 Phase 46-C input.
+   * -C (2026-05-30 — react port): per-row external height
+   * override map. Verbatim mirror of vue3 -C input.
    */
   readonly rowHeightOverridesByRowId?: Readonly<Record<string, number>>;
 }
@@ -183,74 +183,74 @@ export interface UseTableLayoutOutput {
    */
   readonly headerCells: readonly HeaderCell[];
   /**
-   * Phase 48.1 (vue3 Phase 3): per-row top-edge Y coordinate inside
+   * (vue3): per-row top-edge Y coordinate inside
    * the body's coordinate space. Adapter binds to `style.top` on the
    * row element.
    */
   readonly rowYByRowId: Readonly<Record<string, number>>;
   /**
-   * Phase 48.1 (vue3 Phase 3): per-row resolved height in pixels.
+   * (vue3): per-row resolved height in pixels.
    * Adapter binds to `style.height` on the row element.
    */
   readonly rowHeightByRowId: Readonly<Record<string, number>>;
   /**
-   * Phase 48.1 (vue3 Phase 3): explicit pixel height the body
+   * (vue3): explicit pixel height the body
    * content layer must carry so absolute-positioned rows have a
    * containing block tall enough for the last row's bottom edge.
    */
   readonly totalBodyHeight: number;
   /**
-   * Phase 48.1 (vue3 Phase 4): subset of `rows` whose `[y, y+h)`
+   * (vue3): subset of `rows` whose `[y, y+h)`
    * intersects the viewport plus overscan. Adapter iterates this
    * directly. Empty when `viewportHeight === 0` (pre-mount); SFC
    * falls back to rendering all rows in that case.
    */
   readonly visibleRows: readonly RowSpec[];
   /**
-   * Phase 48.1 (vue3 Phase 4): inclusive index of the first
+   * (vue3): inclusive index of the first
    * rendered row into the full `rows` array (post-overscan). `-1`
    * when empty.
    */
   readonly firstRenderedIndex: number;
   /**
-   * Phase 48.1 (vue3 Phase 4): inclusive index of the last
+   * (vue3): inclusive index of the last
    * rendered row into the full `rows` array (post-overscan). `-1`
    * when empty.
    */
   readonly lastRenderedIndex: number;
   /**
-   * Phase 49 (vue3 Phase 8): rows after `sortPass` runs. Identity-
+   * (vue3): rows after `sortPass` runs. Identity-
    * equal to input rows when `sortSpec` is null (no sort) so the
    * downstream layout + virtualization passes don't re-run.
    */
   readonly sortedRows: readonly RowSpec[];
   /**
-   * Phase 49: `true` when the active `sortSpec` references a
+   * `true` when the active `sortSpec` references a
    * non-sortable or unknown column. SFC uses this to suppress sort-
    * indicator render + revert any internal click-cycle state.
    */
   readonly sortRejected: boolean;
   /**
-   * Phase 50 (vue3 Phase 9): rows after `filterPass` runs (before
+   * (vue3): rows after `filterPass` runs (before
    * `sortPass`). Identity-equal to input rows when `filterSpec` is
    * empty / null (no filter). Consumers can read for "X of Y rows
    * visible" pills.
    */
   readonly filteredRows: readonly RowSpec[];
   /**
-   * Phase 50 (vue3 Phase 9): `true` when the active `filterSpec`
+   * (vue3): `true` when the active `filterSpec`
    * references a non-filterable or unknown column. SFC can surface
    * this to consumers.
    */
   readonly filterRejected: boolean;
   /**
-   * Phase 41 (2026-05-29 — react port): rows after `quickFindPass`
+   * (2026-05-29 — react port): rows after `quickFindPass`
    * runs (between filterPass and sortPass). Identity-equal to
    * `filteredRows` when `quickFindText` is empty / null / blank.
    */
   readonly quickFindFilteredRows: readonly RowSpec[];
   /**
-   * Phase 41 (2026-05-29 — react port): row IDs of ancestors whose
+   * (2026-05-29 — react port): row IDs of ancestors whose
    * descendants matched the quick-find needle while the ancestor
    * itself did NOT match. The SFC unions this with
    * `filterForceExpandedRowIds` + user expand state before feeding
@@ -258,37 +258,37 @@ export interface UseTableLayoutOutput {
    */
   readonly quickFindForceExpandedRowIds: readonly string[];
   /**
-   * Phase 41 (2026-05-29 — react port): top-level retained row count
+   * (2026-05-29 — react port): top-level retained row count
    * after `quickFindPass`. Surfaced by the SFC handle method
    * `getQuickFindMatchCount` for the demo's "X of Y matches" pill.
    */
   readonly quickFindMatchCount: number;
   /**
-   * Phase 52 (vue3 Phase 11): rows after `pagePass` runs (after sort,
+   * (vue3): rows after `pagePass` runs (after sort,
    * before rowLayoutPass). Identity-equal to `sortedRows` when
    * `pageSize <= 0` so the downstream layout + virtualization passes
    * don't re-run for the passthrough case.
    */
   readonly pagedRows: readonly RowSpec[];
   /**
-   * Phase 52: 0-based page index after `pagePass`'s clamp. Equals the
+   * 0-based page index after `pagePass`'s clamp. Equals the
    * input `page` when the input is in range; clamped to the last
    * valid page when oversize; `0` when input is negative or empty.
    */
   readonly currentPage: number;
   /**
-   * Phase 52: total page count. `1` for the passthrough case
+   * total page count. `1` for the passthrough case
    * (`pageSize <= 0`); `Math.ceil(totalRows / pageSize)` otherwise.
    * `0` when `pageSize > 0` AND `totalRows === 0` (empty page set).
    */
   readonly totalPages: number;
   /**
-   * Phase 52: input row count (`sortedRows.length`) so consumers can
+   * input row count (`sortedRows.length`) so consumers can
    * render "X 行" footer labels without redoing the math.
    */
   readonly totalRowsAcrossPages: number;
   /**
-   * Phase 30.2 (react port, 2026-05-28): rows after `treeFlattenPass`
+   * (react port, 2026-05-28): rows after `treeFlattenPass`
    * runs (between sortPass and pagePass). When no row has children,
    * identity-equal to `sortedRows`. When tree data is active, each
    * row carries a chronix-populated `depth` + `groupKey`; collapsed-
@@ -296,24 +296,24 @@ export interface UseTableLayoutOutput {
    */
   readonly flatTreeRows: readonly RowSpec[];
   /**
-   * Phase 30.2 (react port): deepest `depth` value seen in `flatTreeRows`.
+   * (react port): deepest `depth` value seen in `flatTreeRows`.
    * `0` for flat datasets.
    */
   readonly maxTreeDepth: number;
   /**
-   * Phase 30.2 (Decision F.1, react port): row IDs whose children
+   * (Decision F.1, react port): row IDs whose children
    * matched the filter while the parent itself did NOT match.
    */
   readonly filterForceExpandedRowIds: readonly string[];
   /**
-   * Phase 31 (2026-05-28 — react port): rows declaring
+   * (2026-05-28 — react port): rows declaring
    * `RowSpec.pinned === 'top'`, extracted from input before any
    * filter / sort / page pass. Always rendered sticky-top; never
    * sort/paginate. Identity-equal to a shared frozen empty array
    * when no row is pinned.
    */
   readonly topPinnedRows: readonly RowSpec[];
-  /** Phase 31: mirror of `topPinnedRows` for bottom-pinned rows. */
+  /** mirror of `topPinnedRows` for bottom-pinned rows. */
   readonly bottomPinnedRows: readonly RowSpec[];
 }
 
@@ -366,11 +366,11 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [columnLayoutResult.visibleColumns],
   );
 
-  // Phase 31 (2026-05-28 — react port): pinnedRowsPass runs FIRST.
+  // (2026-05-28 — react port): pinnedRowsPass runs FIRST.
   // Top + bottom pinned rows are extracted before filter / sort /
   // page / tree-flatten. Identity-equal to input rows when no row is
   // pinned (downstream useMemos don't re-run). Verbatim port of vue3
-  // Phase 31 wiring.
+  // wiring.
   const pinnedRowsResult = useMemo(
     () =>
       pinnedRowsPass({
@@ -379,7 +379,7 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [rows],
   );
 
-  // Phase 50 (vue3 Phase 9): filterPass runs over the post-pin-extract
+  // (vue3): filterPass runs over the post-pin-extract
   // regular row set. Empty / null filterSpec → identity (sortPass +
   // rowLayoutPass + virtualRowsPass get the same row reference,
   // useMemo memoization survives).
@@ -393,11 +393,11 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [pinnedRowsResult.regularRows, filterSpec, columns],
   );
 
-  // Phase 41 (2026-05-29 — react port): quickFindPass runs over the
+  // (2026-05-29 — react port): quickFindPass runs over the
   // post-filter subset (cross-column OR substring match), BEFORE
   // sortPass so sort operates on the find-narrowed set. Empty / null /
   // blank needle → identity (returns filteredRows by reference;
-  // downstream useMemos don't re-run). Verbatim port of vue3 Phase 41.
+  // downstream useMemos don't re-run). Verbatim port of vue3 .
   const quickFindPassResult = useMemo(
     () =>
       quickFindPass({
@@ -408,8 +408,8 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [filterPassResult.filteredRows, quickFindText, columns],
   );
 
-  // Phase 49 + 49.1 (vue3 Phase 8 + 8.1): sortPass runs AFTER
-  // filterPass + Phase 41 quickFindPass so the sort scope is the
+  // + 49.1 (vue3 + 8.1): sortPass runs AFTER
+  // filterPass + quickFindPass so the sort scope is the
   // filter + find intersection. Accepts a `readonly SortSpec[]`;
   // empty array = identity (downstream useMemos don't re-run).
   const sortPassResult = useMemo(
@@ -422,7 +422,7 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [quickFindPassResult.filteredRows, sortSpec, columns],
   );
 
-  // Phase 34 (2026-05-28 — react port): synthesizeLazyChildren runs
+  // (2026-05-28 — react port): synthesizeLazyChildren runs
   // AFTER sortPass and BEFORE treeFlattenPass. Substitutes adapter-
   // cached lazy children into the tree. Identity-equal when the loaded
   // map is empty (fast-path).
@@ -435,11 +435,11 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [sortPassResult.sortedRows, loadedChildrenByRowId],
   );
 
-  // Phase 30.2 (react port, 2026-05-28): treeFlattenPass runs AFTER
-  // sortPass + Phase 34 lazy synthesis and BEFORE pagePass. When no
+  // (react port, 2026-05-28): treeFlattenPass runs AFTER
+  // sortPass + lazy synthesis and BEFORE pagePass. When no
   // row has children, the pass is a no-op (returns input by reference);
   // identity propagates through pagePass so the rest of the pipeline
-  // is unchanged for flat data. Verbatim port of vue3 Phase 30.1.
+  // is unchanged for flat data. Verbatim port of vue3 .
   const treeFlattenPassResult = useMemo(
     () =>
       treeFlattenPass({
@@ -449,7 +449,7 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [lazyChildrenSynthesisResult.rows, expandedRowIds],
   );
 
-  // Phase 52 (vue3 Phase 11): pagePass runs AFTER sortPass + Phase 30.2
+  // (vue3): pagePass runs AFTER sortPass +
   // treeFlattenPass and BEFORE rowLayoutPass. Passthrough case
   // (pageSize <= 0) returns flatTreeRows by reference so downstream
   // useMemos don't re-run.
@@ -463,14 +463,14 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [treeFlattenPassResult.flatRows, page, pageSize],
   );
 
-  // Phase 48.1 (vue3 Phase 3): rowLayoutPass resolves per-row Y +
+  // (vue3): rowLayoutPass resolves per-row Y +
   // height. Identity-equal output between renders when rows +
   // defaultRowHeight are unchanged (the pass itself short-circuits
   // when its inputs are stable references; the useMemo here keeps
   // the React commit phase quiet).
-  // Phase 52: rowLayoutPass + virtualRowsPass now consume `pagedRows`
+  // rowLayoutPass + virtualRowsPass now consume `pagedRows`
   // (after pagePass). When pageSize <= 0, pagedRows === sortedRows by
-  // reference and Phase 48-51 behavior is preserved.
+  // reference and -51 behavior is preserved.
   const rowLayoutResult = useMemo(
     () =>
       rowLayoutPass({
@@ -481,7 +481,7 @@ export function useTableLayout(input: UseTableLayoutInput): UseTableLayoutOutput
     [pagePassResult.pagedRows, defaultRowHeight, rowHeightOverridesByRowId],
   );
 
-  // Phase 48.1 (vue3 Phase 4): virtualRowsPass picks the windowed
+  // (vue3): virtualRowsPass picks the windowed
   // subset of rows whose layout coordinates intersect the viewport
   // (plus overscan). Returns the empty result when viewportHeight ===
   // 0; SFC falls back to rendering all rows for the pre-mount frame.

@@ -5,7 +5,7 @@
  * passes + chronix-native public API. Adapter packages (vue3 / vue2 /
  * react) wrap the IR with DOM rendering.
  *
- * Phase 1 (2026-05-23) ships:
+ * ships:
  * - IR primitives: `ColumnSpec`, `RowSpec`, `HeaderCell`
  * - Data sources: `ColumnTable`, `RowDataSource` + `createClientSideRowSource`
  * - First layout pass: `columnLayoutPass`

@@ -59,7 +59,7 @@ const pointerOpts = (clientX: number, clientY: number, pointerId = 1) => ({
 
 const GanttForTest = ChronixGantt as unknown as typeof Vue;
 
-describe('<ChronixGantt> drag-distance gate — Phase 25 (vue2 SFC integration)', () => {
+describe('<ChronixGantt> drag-distance gate — (vue2 SFC integration)', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -205,7 +205,7 @@ describe('<ChronixGantt> drag-distance gate — Phase 25 (vue2 SFC integration)'
     // Pointerdown at (716, 20) lands on the end-edge; wiggle 2 px < 5-px
     // threshold; release. No bar-resize commit fires (the gate
     // suppresses sub-threshold gestures across all 4 transaction kinds
-    // — that's the load-bearing Phase 25 invariant). The adapter's
+    // — that's the load-bearing invariant). The adapter's
     // click path only fires bar-click for `bar-body` hits, not
     // bar-edge hits — sub-threshold edge gestures are simply dropped
     // silently (consistent with pre-Phase-25's 0-delta abort path).

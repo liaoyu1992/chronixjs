@@ -1,11 +1,11 @@
 /**
- * Modal component IR — Phase 27 (2026-06-03). Tier B portal-mounted
+ * Modal component IR — . Tier B portal-mounted
  * centered surface with half-translucent mask + focus trap + body
  * scroll lock + Escape close.
  *
- * Shared core helpers consumed by adapters: `nextPopupZIndex` (Phase 26
- * z-index counter); `getFirstFocusable` / `getLastFocusable` (Phase 27
- * focus-trap); `lockBodyScroll` / `unlockBodyScroll` (Phase 27).
+ * Shared core helpers consumed by adapters: `nextPopupZIndex` (
+ * z-index counter); `getFirstFocusable` / `getLastFocusable` (
+ * focus-trap); `lockBodyScroll` / `unlockBodyScroll` .
  *
  * This file ships only the prop IR + close-reason union; the
  * `useModalLifecycle` composable / hook lives in each adapter.

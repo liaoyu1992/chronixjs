@@ -48,7 +48,7 @@ const groupedColumns: readonly ColumnSpec[] = [
   { key: 'name', label: '车间', width: 80 },
 ];
 
-describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — sidebar pane ', () => {
   describe('with `columns` prop (3-pane mode)', () => {
     it('renders cx-gantt-sidebar-pane + cx-gantt-sidebar-header-pane DOM', () => {
       const { container } = render(
@@ -95,7 +95,7 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
       );
       const wrapper = container.querySelector<HTMLDivElement>('div.cx-gantt-wrapper')!;
       // 60 + 100 + 80 = 240 px sidebar.
-      // Phase 50: sidebar(240) + divider(8) + chart(auto) = 3-column grid.
+      // sidebar(240) + divider(8) + chart(auto) = 3-column grid.
       expect(wrapper.style.gridTemplateColumns).toBe('240px 4px auto');
     });
 
@@ -109,7 +109,7 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
         />,
       );
       const chartPane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-pane')!;
-      // Phase 50: chart-pane shifts to column 3 (sidebar=1, divider=2, chart=3).
+      // chart-pane shifts to column 3 (sidebar=1, divider=2, chart=3).
       expect(chartPane.style.gridColumn).toBe('3');
     });
 
@@ -313,7 +313,7 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
     });
   });
 
-  // Phase 49: the `computeRowSpans` pure-function tests previously
+  // the `computeRowSpans` pure-function tests previously
   // lived here have been migrated to `packages/gantt/src/api/
   // column-spec.test.ts` alongside the helper itself (Decision B.2).
   // Adapter-level sidebar tests above exercise the helper through the

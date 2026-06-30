@@ -3,7 +3,7 @@ import { EMPTY_CELL_RANGE_ENVELOPE } from './compute-cell-range-envelope.js';
 import type { CellRangeEnvelope, CellRef } from './compute-cell-range-envelope.js';
 
 /**
- * Phase 21 (2026-05-27): extend a source cell-range envelope along ONE
+ * extend a source cell-range envelope along ONE
  * axis (axis-locked per Decision A.1) to include the cell under the
  * drag-fill pointer.
  *

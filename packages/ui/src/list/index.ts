@@ -1,5 +1,5 @@
 /**
- * chronix-ui list module — Phase 21 (2026-06-03).
+ * chronix-ui list module — .
  */
 
 export type { ListItem, ListProps, ListSize } from './list-spec.js';

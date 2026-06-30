@@ -11,7 +11,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 import { useUIContext } from '../composables/use-ui-context.js';
 
 /**
- * `<ChronixTag>` — Vue 2.7 port of the Phase 13 Tag pilot. Verbatim
+ * `<ChronixTag>` — Vue 2.7 port of the Tag pilot. Verbatim
  * surface mirror of `adapters/ui-vue3`'s `ChronixTag`; runtime
  * differences are Vue 2's nested data-object render syntax (`attrs:`
  * + `on:`) and the `defineComponent`-backs-`Vue.extend` shim.

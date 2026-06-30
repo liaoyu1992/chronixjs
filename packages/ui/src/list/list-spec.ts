@@ -1,5 +1,5 @@
 /**
- * List IR — Phase 21 (2026-06-03). Tier A vertical settings /
+ * List IR — . Tier A vertical settings /
  * contact / file-row list display.
  *
  * Renders an iterated sequence of `(prefix + main + suffix)`
@@ -7,9 +7,9 @@
  * description; the leading prefix + trailing suffix are
  * string-typed icon / glyph / metadata fields.
  *
- * Per Phase 21 Decision D.1, items come EXCLUSIVELY from the
- * `items: readonly ListItem[]` array prop (parallel to Phase 19
- * Breadcrumb C.1 + Phase 20 Steps/Timeline D.1). No
+ * Per Decision D.1, items come EXCLUSIVELY from the
+ * `items: readonly ListItem[]` array prop (parallel
+ * Breadcrumb C.1 + Steps/Timeline D.1). No
  * `<ChronixListItem>` sub-component.
  *
  * Public surface:

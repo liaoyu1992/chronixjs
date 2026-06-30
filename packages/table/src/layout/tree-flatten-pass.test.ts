@@ -8,7 +8,7 @@ function row(id: string, children?: readonly RowSpec[]): RowSpec {
   return children == null ? { id, data: {} } : { id, data: {}, children };
 }
 
-describe('treeFlattenPass (Phase 30)', () => {
+describe('treeFlattenPass ', () => {
   it('returns input by reference when rows are empty', () => {
     const rows: readonly RowSpec[] = [];
     const result = treeFlattenPass({ rows, expandedRowIds: new Set() });

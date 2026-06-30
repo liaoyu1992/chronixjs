@@ -212,17 +212,17 @@ describe('sortPass', () => {
   });
 
   // ============================================================
-  // Phase 8.1 (2026-05-24): multi-column lex-order sort
+  // multi-column lex-order sort
   // ============================================================
 
-  it('Phase 8.1: empty SortSpec[] → identity (returns input rows by reference)', () => {
+  it('empty SortSpec[] → identity (returns input rows by reference)', () => {
     const rows: readonly RowSpec[] = [row('r1', { name: 'b' }), row('r2', { name: 'a' })];
     const out = sortPass({ rows, sortSpec: [], columns });
     expect(out.rejected).toBe(false);
     expect(out.sortedRows).toBe(rows);
   });
 
-  it('Phase 8.1: 2-key ASC+ASC — first key orders, ties broken by second key', () => {
+  it('2-key ASC+ASC — first key orders, ties broken by second key', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'region', field: 'region' },
       { id: 'qty', field: 'qty' },
@@ -248,7 +248,7 @@ describe('sortPass', () => {
     expect(out.sortedRows.map((r) => r.id)).toEqual(['r5', 'r2', 'r4', 'r3', 'r1']);
   });
 
-  it('Phase 8.1: 2-key ASC+DESC — mixed-direction tie-break', () => {
+  it('2-key ASC+DESC — mixed-direction tie-break', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'region', field: 'region' },
       { id: 'qty', field: 'qty' },
@@ -273,7 +273,7 @@ describe('sortPass', () => {
     expect(out.sortedRows.map((r) => r.id)).toEqual(['r4', 'r2', 'r5', 'r1', 'r3']);
   });
 
-  it('Phase 8.1: first key uniquely orders → second key never consulted (regression)', () => {
+  it('first key uniquely orders → second key never consulted (regression)', () => {
     // If we accidentally cross-compared, a custom 2nd-key comparator
     // that always throws would still be hit. By making it throw, we
     // verify the lex-order short-circuit.
@@ -307,7 +307,7 @@ describe('sortPass', () => {
     expect(secondKeyCallCount).toBe(0);
   });
 
-  it('Phase 8.1: all keys equal → tie-break by original index (stable)', () => {
+  it('all keys equal → tie-break by original index (stable)', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'region', field: 'region' },
       { id: 'qty', field: 'qty' },
@@ -328,7 +328,7 @@ describe('sortPass', () => {
     expect(out.sortedRows.map((r) => r.id)).toEqual(['r1', 'r2', 'r3']);
   });
 
-  it('Phase 8.1: rejection cascade — invalid colId anywhere in the array rejects the whole sort', () => {
+  it('rejection cascade — invalid colId anywhere in the array rejects the whole sort', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { name: 'b', qty: 30 }),
       row('r2', { name: 'a', qty: 20 }),
@@ -357,9 +357,9 @@ describe('sortPass', () => {
     expect(out2.sortedRows).toBe(rows);
   });
 
-  // Phase 30.1.2 (2026-05-28): tree-aware sort recurses into `children`.
+  // tree-aware sort recurses into `children`.
 
-  it('Phase 30.1.2: sorts siblings within each parent (recursive descent)', () => {
+  it('sorts siblings within each parent (recursive descent)', () => {
     const rows: readonly RowSpec[] = [
       {
         id: 'p',
@@ -379,7 +379,7 @@ describe('sortPass', () => {
     expect(parent.children?.map((r) => r.id)).toEqual(['p-a', 'p-b', 'p-c']);
   });
 
-  it('Phase 30.1.2: sorts top-level AND nested levels with the same spec', () => {
+  it('sorts top-level AND nested levels with the same spec', () => {
     const rows: readonly RowSpec[] = [
       {
         id: 'p-b',
@@ -399,7 +399,7 @@ describe('sortPass', () => {
     expect(out.sortedRows[1]!.children?.map((r) => r.id)).toEqual(['p-b-1', 'p-b-2']);
   });
 
-  it('Phase 30.1.2: descending direction propagates to children', () => {
+  it('descending direction propagates to children', () => {
     const rows: readonly RowSpec[] = [
       {
         id: 'p',
@@ -412,7 +412,7 @@ describe('sortPass', () => {
     expect(out.sortedRows[0]!.children?.map((r) => r.id)).toEqual(['c-b', 'c-a']);
   });
 
-  it('Phase 30.1.2: identity-preserves when children already in sorted order', () => {
+  it('identity-preserves when children already in sorted order', () => {
     const sortedChild1 = row('c-a', { name: 'alpha' });
     const sortedChild2 = row('c-b', { name: 'beta' });
     const parent: RowSpec = {
@@ -429,7 +429,7 @@ describe('sortPass', () => {
     expect(out.sortedRows[0]!.children).toBe(parent.children);
   });
 
-  it('Phase 30.1.2: flat input keeps existing fast-path (no children anywhere)', () => {
+  it('flat input keeps existing fast-path (no children anywhere)', () => {
     const rows: readonly RowSpec[] = [row('r1', { name: 'b' }), row('r2', { name: 'a' })];
     const spec: SortSpec = { colId: 'name', direction: 'asc' };
     const out = sortPass({ rows, sortSpec: [spec], columns });

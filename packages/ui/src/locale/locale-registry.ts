@@ -4,7 +4,7 @@ import type { ChronixLocale } from './chronix-locale.js';
 
 /**
  * Runtime registry of `ChronixLocale` instances keyed by their `name`
- * field (BCP 47 tag). Phase 3 (2026-06-02).
+ * field (BCP 47 tag). .
  *
  * Pre-registered at module init:
  *

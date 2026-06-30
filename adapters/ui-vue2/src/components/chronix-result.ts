@@ -8,7 +8,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixResult>` — Vue 2.7 port of the Phase 18 Result.
+ * `<ChronixResult>` — Vue 2.7 port of the Result.
  */
 export const ChronixResult = defineComponent({
   name: 'ChronixResult',

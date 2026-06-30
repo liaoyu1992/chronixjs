@@ -3,7 +3,7 @@ import type { DialogType } from './discrete-dialog-spec.js';
 /**
  * Input for `resolveDiscreteDialogClassList`.
  *
- * Phase 36 (2026-06-05).
+ * .
  */
 export interface ResolveDiscreteDialogClassListInput {
   readonly type: DialogType;

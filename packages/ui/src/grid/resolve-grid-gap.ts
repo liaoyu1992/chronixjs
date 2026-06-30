@@ -1,7 +1,7 @@
 /**
  * Pure helper — convert Grid `xGap` + `yGap` numeric values into a
  * record of optional CSS-Grid-gap inline-style declarations
- * (`column-gap` + `row-gap`). Phase 17 (2026-06-02).
+ * (`column-gap` + `row-gap`). .
  *
  * Contract:
  *

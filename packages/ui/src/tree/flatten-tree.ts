@@ -17,7 +17,7 @@ export interface FlatTreeEntry<T> {
  * Flatten a tree into a pre-order array of `FlatTreeEntry` records.
  * Pre-order matches DOM document order for rendering.
  *
- * Phase 5 (2026-06-02). Useful for:
+ * . Useful for:
  *
  * - Rendering a tree as a virtualized flat list (Tree component
  *   plus `KitVirtualList` from cx-kit).

@@ -4,7 +4,7 @@ import DemoApp from './DemoApp.vue';
 import './styles.css';
 
 /**
- * Phase 46: the prior URL-flag module exports (PARITY_MODE,
+ * the prior URL-flag module exports (PARITY_MODE,
  * PARITY_WEEKENDS_VISIBLE, PARITY_USE_LINE_EVENT_COLOR,
  * PARITY_PRIORITY_CALLBACK) were folded into the `useDemoConfig`
  * schema in DemoApp.vue. Cross-demo parity Playwright tests continue

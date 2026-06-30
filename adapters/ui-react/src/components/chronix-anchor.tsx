@@ -21,7 +21,7 @@ export interface ChronixAnchorProps extends Omit<HTMLAttributes<HTMLElement>, 'c
 }
 
 /**
- * `<ChronixAnchor>` — React 18 port of the Phase 35 Anchor.
+ * `<ChronixAnchor>` — React 18 port of the Anchor.
  * Renders a vertical anchor navigation with optional rail and background.
  */
 export function ChronixAnchor(props: ChronixAnchorProps): JSX.Element {

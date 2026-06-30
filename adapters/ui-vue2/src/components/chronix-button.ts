@@ -16,7 +16,7 @@ import { useUIContext } from '../composables/use-ui-context.js';
  * IR. Verbatim port of `adapters/ui-vue3`'s `ChronixButton`; same
  * resolved props, same class list, same DOM shape.
  *
- * Phase 12 (2026-06-02). The runtime differences from the Vue 3 sibling:
+ * . The runtime differences from the Vue 3 sibling:
  *
  * - The render function uses Vue 2's nested data-object syntax:
  *   `attrs` for HTML attributes (`type`, `disabled`, `aria-disabled`)
@@ -24,7 +24,7 @@ import { useUIContext } from '../composables/use-ui-context.js';
  * - `defineComponent` is `Vue.extend` under the hood; behavior identical
  *   for the surface we use.
  *
- * Props mirror the Vue 3 adapter; behavior follows Phase 0.3 Decision
+ * Props mirror the Vue 3 adapter; behavior follows Decision
  * A.1 default-merge precedence (own prop strict → context → interface
  * default).
  */

@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}'],
-    // CI-friendly timeout: Phase 45.5 server-side anticipatory
+    // CI-friendly timeout: server-side anticipatory
     // prefetch tests await network-like delays + scroll-driven
     // viewport recomputation; 5000ms default is fine locally but
     // ubuntu-runner is consistently slower (timed out × 3 retries

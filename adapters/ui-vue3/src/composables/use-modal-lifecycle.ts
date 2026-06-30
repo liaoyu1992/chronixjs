@@ -19,9 +19,9 @@ import {
 import { useUIContext } from './use-ui-context.js';
 
 /**
- * Vue 3 modal/drawer lifecycle composable — Phase 27 (2026-06-03).
+ * Vue 3 modal/drawer lifecycle composable — .
  * Shared by `<ChronixModal>` + `<ChronixDrawer>`. Distinct from
- * Phase 26's `usePopupLifecycle` because Modal/Drawer don't have an
+ * `usePopupLifecycle` because Modal/Drawer don't have an
  * anchor (no placement math); they pin to the viewport via
  * `position: fixed; inset: 0` and rely on the wrapper's flex
  * centering (Modal) or edge-positioning (Drawer).
@@ -33,7 +33,7 @@ import { useUIContext } from './use-ui-context.js';
  * - Escape close (when `escClosable: true`).
  * - Mask click close (when `maskClosable: true`).
  * - Body scroll lock on open / unlock on close (counter-based,
- *   stack-aware via Phase 27 `lockBodyScroll` / `unlockBodyScroll`).
+ *   stack-aware `lockBodyScroll` / `unlockBodyScroll`).
  * - Focus trap: focus first focusable on open; Tab/Shift+Tab wrap
  *   via document keydown.
  */

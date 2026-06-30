@@ -1,5 +1,5 @@
 /**
- * Result IR — Phase 18 (2026-06-02). Tier A terminal-state display.
+ * Result IR — . Tier A terminal-state display.
  *
  * Renders a centered `(icon, title, description, actions)` block for
  * wizard completion / error pages / async-success screens.
@@ -54,9 +54,9 @@ export const defaultResultProps: ResultProps = {
 };
 
 /**
- * Built-in icon characters per status. Phase 9 icon registry will
- * substitute SVGs once geometry helpers mature; this is the Phase 18
- * stub matching Phase 15 Empty's icon-placeholder convention.
+ * Built-in icon characters per status. icon registry will
+ * substitute SVGs once geometry helpers mature; this is the
+ * stub matching Empty's icon-placeholder convention.
  *
  * Shared by all 3 adapters so the rendered icon character is
  * byte-identical across vue3 / vue2 / react.

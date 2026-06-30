@@ -116,7 +116,7 @@ describe('columnLayoutPass', () => {
       ]),
     );
     // Without clamp each would be 400. maxWidth=100 caps c1.
-    // (Note: chronix's Phase 1 algorithm does not redistribute the
+    // (Note: chronix's algorithm does not redistribute the
     // saved budget to other flex columns — c2 stays at 400. A
     // later phase may add a redistribute step if needed.)
     expect(result.widthByColId['c1']).toBe(100);

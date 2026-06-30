@@ -1,5 +1,5 @@
 /**
- * chronix-ui tree module — Phase 5 (2026-06-02).
+ * chronix-ui tree module — .
  *
  * Framework-agnostic tree-traversal helpers used by Tree, Cascader,
  * TreeSelect, Menu, Dropdown, and other hierarchical components.
@@ -33,7 +33,7 @@ export { collectDescendantKeys } from './collect-descendant-keys.js';
 export type { TreeNodeLookup } from './find-tree-node.js';
 export { findTreeNode } from './find-tree-node.js';
 
-// Phase 30 — Tier C Tree component IR.
+// Tier C Tree component IR.
 export type { TreeNodeData, TreeProps } from './tree-component-spec.js';
 export { DEFAULT_TREE_ROW_HEIGHT_PX, defaultTreeProps } from './tree-component-spec.js';
 export { normalizeExpandedKeysProp } from './normalize-expanded-keys-prop.js';

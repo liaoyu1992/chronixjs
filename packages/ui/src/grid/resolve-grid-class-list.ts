@@ -3,7 +3,7 @@ import type { GridProps } from './grid-spec.js';
 /**
  * Compute class set for the Grid root element.
  *
- * Phase 17 (2026-06-02).
+ * .
  *
  * Class structure:
  *

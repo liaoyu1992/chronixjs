@@ -1,5 +1,5 @@
 /**
- * chronix-ui popup module — Phase 4 (2026-06-02) per Phase 0.2 Decision A.1 / B.1.
+ * chronix-ui popup module — per Decision A.1 / B.1.
  *
  * Framework-agnostic popup positioning. Adapter packages
  * (`@chronixjs/ui-vue3`, `@chronixjs/ui-vue2`, `@chronixjs/ui-react`)
@@ -34,9 +34,9 @@ export { flipPopupOnOverflow } from './flip-popup-on-overflow.js';
 export { resolvePopupPlacement } from './resolve-popup-placement.js';
 
 /**
- * Phase 26 (2026-06-03) — popup trigger spec + z-index counter shared
+ * — popup trigger spec + z-index counter shared
  * across the 4 Popover-infra components (Popover / Tooltip / Popconfirm
- * / PopSelect) and downstream Phase 27+ popup-bearing components.
+ * / PopSelect) and downstream + popup-bearing components.
  */
 export type { PopupTrigger } from './trigger-spec.js';
 export {
@@ -47,7 +47,7 @@ export {
 export { nextPopupZIndex, resetPopupZIndexForTests } from './z-index-counter.js';
 
 /**
- * Phase 27 (2026-06-03) — focus-trap + body-scroll-lock helpers
+ * — focus-trap + body-scroll-lock helpers
  * shared by Modal + Drawer adapters' `useModalLifecycle` composable
  * / hook. KitFocusTrap promotion to cx-kit deferred until another
  * package needs it.

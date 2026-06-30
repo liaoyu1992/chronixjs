@@ -7,7 +7,7 @@ import { useMessage } from './use-message.js';
 import { useNotification } from './use-notification.js';
 
 /**
- * Phase 36 (2026-06-05) — React imperative API hook tests.
+ * — React imperative API hook tests.
  * 2 tests per API: (1) factory returns expected methods, (2) stylesheet injection.
  */
 

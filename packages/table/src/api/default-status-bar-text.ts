@@ -1,5 +1,5 @@
 /**
- * Phase 36 (2026-05-28): row counts surfaced to the optional status
+ * row counts surfaced to the optional status
  * bar. Adapters compute this from their internal state + pass to the
  * default-text helper or to the consumer's custom renderer.
  */
@@ -21,7 +21,7 @@ export interface StatusBarCounts {
 }
 
 /**
- * Phase 36 (2026-05-28): default Chinese-locale status-bar summary.
+ * default Chinese-locale status-bar summary.
  *
  * Format: "N 行 · 已选 M · 过滤后 K" with the latter two segments
  * omitted when not applicable:

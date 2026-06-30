@@ -5,7 +5,7 @@ import type { CellComparatorArgs, ColumnSpec, RowSpec, SortSpec } from '../ir/in
 /**
  * Input to `sortPass`.
  *
- * Phase 8 (2026-05-24) shipped single-column sort; Phase 8.1
+ * shipped single-column sort;
  * (2026-05-24) widens `sortSpec` to `readonly SortSpec[]` for
  * lex-order multi-column sort. An empty array (or null / undefined)
  * is the identity case.
@@ -30,7 +30,7 @@ export interface SortPassInput {
  *
  * `rejected` is `true` when ANY entry in the spec referenced a
  * non-existent `colId` OR a column with `sortable: false`. Atomic
- * rejection — Phase 8.1 doesn't surface per-entry rejection because
+ * rejection.1 doesn't surface per-entry rejection because
  * the calling SFC's click handler always normalizes the spec first
  * (a column with `sortable: false` cannot be added to the array via
  * the SFC). The flag protects against consumers wiring a
@@ -52,7 +52,7 @@ export interface SortPassResult {
  *    resolve the matching column. When ANY entry's `colId` is
  *    unknown OR the column has `sortable === false`, return
  *    `{sortedRows: rows, rejected: true}` (atomic rejection — keeps
- *    the pass's contract simple and matches Phase 8's "either the
+ *    the pass's contract simple and matches "either the
  *    whole sort applies or nothing does" rule).
  * 3. **Indexed sort**. Wrap each row in `{row, idx}` so the secondary
  *    comparator key (original index) keeps the sort stable for
@@ -94,7 +94,7 @@ export function sortPass(input: SortPassInput): SortPassResult {
     resolved.push({ column, sign: entry.direction === 'asc' ? 1 : -1 });
   }
 
-  // Phase 30.1.2 (2026-05-28): tree-aware sort. When ANY row has
+  // tree-aware sort. When ANY row has
   // `children`, recurse so siblings at each level are sorted with the
   // SAME spec — matches Decision E.1 + reference-grid default. Flat
   // datasets short-circuit through the standard top-level sort below.
@@ -107,7 +107,7 @@ export function sortPass(input: SortPassInput): SortPassResult {
 }
 
 /**
- * Phase 30.1.2 (2026-05-28): tree-aware sort recurses into `children`.
+ * tree-aware sort recurses into `children`.
  * Sorts the top-level row list, then for each emitted row with
  * children recursively sorts that subtree using the same resolved
  * spec. Pure: rebuilds RowSpec entries only when their `children`
@@ -146,10 +146,10 @@ function sortTreeRows(
 }
 
 /**
- * Flat-list sort kernel extracted from Phase 8.1 — same algorithm
+ * Flat-list sort kernel extracted — same algorithm
  * (indexed-stable lex-order with null-last + direction sign + custom
  * comparator support); just lifted into a reusable function so
- * Phase 30.1.2's recursive walker can share it. Identity-preserves
+ * recursive walker can share it. Identity-preserves
  * the input array reference when the resulting order matches the
  * input order (relevant for the tree-recursive case where sibling
  * subtrees may already be sorted at deeper levels).
@@ -201,7 +201,7 @@ function hasAnyChildrenTopLevel(rows: readonly RowSpec[]): boolean {
 }
 
 /**
- * Phase 8 (2026-05-24): generic comparator used when a column omits
+ * generic comparator used when a column omits
  * its own `comparator`. Auto-detects the runtime type of the two
  * non-null values + dispatches to the matching ordering:
  *

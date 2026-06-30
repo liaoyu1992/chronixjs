@@ -4,7 +4,7 @@ import type { ExportStyle } from './export-style.js';
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Phase 39 (2026-05-29): discriminated union over Excel cell types.
+ * discriminated union over Excel cell types.
  *
  * Maps 1:1 to exceljs's `Cell.value` shape used by the `exportToXlsx`
  * async wrapper. The discriminator (`type`) lets the wrapper switch on
@@ -23,7 +23,7 @@ export type XlsxCellValue =
   | { readonly type: 'null'; readonly value: null };
 
 /**
- * Phase 39.3 (2026-05-29): freeze-pane configuration. When set on a
+ * freeze-pane configuration. When set on a
  * sheet's `ExportToXlsxOptions.freezePane`, the async `exportToXlsx`
  * helper threads `{state:'frozen', xSplit, ySplit}` to exceljs's
  * `worksheet.views[0]` so Excel renders the configured rows + columns
@@ -34,7 +34,7 @@ export type XlsxCellValue =
  * Pass `{ySplit: 1}` to freeze the header row; `{xSplit: 2}` to freeze
  * the leftmost 2 columns; `{xSplit: 2, ySplit: 1}` to freeze both.
  *
- * Phase 39.3 ships explicit numeric values only (no auto-detect from
+ * ships explicit numeric values only (no auto-detect from
  * `ColumnSpec.pinned`) per Decision D.2 — consumers may want a
  * different freeze policy than the on-screen pinning.
  */
@@ -44,9 +44,9 @@ export interface ExportToXlsxFreezePane {
 }
 
 /**
- * Phase 39 (2026-05-29): options accepted by `buildXlsxSheetData` and
+ * options accepted by `buildXlsxSheetData` and
  * passed through to the `exportToXlsx` async wrapper. Mirrors the
- * shape of `ExportToCsvOptions` from Phase 35 where applicable, with
+ * shape of `ExportToCsvOptions` where applicable, with
  * `sheetName` added as the xlsx-specific extension.
  */
 export interface ExportToXlsxOptions {
@@ -69,16 +69,16 @@ export interface ExportToXlsxOptions {
   readonly columnIds?: readonly string[];
 
   /**
-   * Phase 39.3 (2026-05-29): when set, configure exceljs's
+   * when set, configure exceljs's
    * `worksheet.views = [{state:'frozen', xSplit, ySplit}]` so Excel
    * renders the configured rows/columns as frozen. Unset = no freeze
-   * (default — preserves Phase 39 backwards compatibility).
+   * (default — preserves backwards compatibility).
    */
   readonly freezePane?: ExportToXlsxFreezePane;
 }
 
 /**
- * Phase 39 (2026-05-29): input shape for `buildXlsxSheetData`.
+ * input shape for `buildXlsxSheetData`.
  */
 export interface BuildXlsxSheetDataInput {
   /** Rows to export. Iteration order = output row order. */
@@ -90,7 +90,7 @@ export interface BuildXlsxSheetDataInput {
 }
 
 /**
- * Phase 39 (2026-05-29): result of `buildXlsxSheetData`. The async
+ * result of `buildXlsxSheetData`. The async
  * `exportToXlsx` wrapper consumes this shape and emits exceljs cells
  * via `worksheet.addRow` + per-cell `type` override (when not string).
  *
@@ -110,11 +110,11 @@ export interface BuildXlsxSheetDataResult {
   /** Per-column pixel widths preserved from `ColumnSpec.width` (or default 100). */
   readonly columnWidths: readonly number[];
   /**
-   * Phase 39.4 (2026-05-29): per-column body-cell style; entry `c` is
+   * per-column body-cell style; entry `c` is
    * `undefined` when the column has no `exportStyle` set. The async
    * `exportToXlsx` wrapper iterates body cells and applies each non-
    * undefined style via exceljs's per-cell `cell.style` setter; header
-   * row preserves Phase 39 Decision C.1 bold-row default (never reads
+   * row preserves Decision C.1 bold-row default (never reads
    * this array).
    */
   readonly columnExportStyles: readonly (ExportStyle | undefined)[];
@@ -130,7 +130,7 @@ export interface BuildXlsxSheetDataResult {
 const DEFAULT_COLUMN_WIDTH_PX = 100;
 
 /**
- * Phase 39 (2026-05-29): project the consumer's rows + columns into a
+ * project the consumer's rows + columns into a
  * sheet-data shape ready for the async `exportToXlsx` wrapper.
  *
  * Pure function. No DOM, no I/O, no exceljs import — safe to run in
@@ -185,7 +185,7 @@ export function buildXlsxSheetData(input: BuildXlsxSheetDataInput): BuildXlsxShe
 
   const columnWidths: number[] = exportedColumns.map((col) => col.width ?? DEFAULT_COLUMN_WIDTH_PX);
 
-  // Phase 39.4 (2026-05-29): collect per-column body-cell styles in
+  // collect per-column body-cell styles in
   // the SAME order as `exportedColumns` so consumers can index by
   // column position post-subset.
   const columnExportStyles: (ExportStyle | undefined)[] = exportedColumns.map(

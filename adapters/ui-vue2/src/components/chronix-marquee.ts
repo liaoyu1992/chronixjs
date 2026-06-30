@@ -17,7 +17,7 @@ import {
 } from 'vue';
 
 /**
- * `<ChronixMarquee>` — Vue 2.7 port of the Phase 22 Marquee.
+ * `<ChronixMarquee>` — Vue 2.7 port of the Marquee.
  *
  * DOM shape + class list byte-identical to vue3 sibling. Uses
  * Vue 2.7 composition-API `onMounted` / `onBeforeUnmount` via the

@@ -1,7 +1,7 @@
 /**
- * Drawer component IR — Phase 27 (2026-06-03). Tier B portal-mounted
+ * Drawer component IR — . Tier B portal-mounted
  * surface that slides in from an edge of the viewport. Shares the
- * Phase 27 focus-trap + body-scroll-lock + Escape-close infra with
+ * focus-trap + body-scroll-lock + Escape-close infra with
  * Modal (via the adapter `useModalLifecycle` composable / hook);
  * differs from Modal in layout-only (edge-pinned vs centered).
  *
@@ -18,7 +18,7 @@ import type { ModalCloseReason } from '../modal/modal-spec.js';
 export type DrawerPlacement = 'left' | 'right' | 'top' | 'bottom';
 
 export interface DrawerProps {
-  /** Controlled visibility (Phase 26 idiom). */
+  /** Controlled visibility (idiom). */
   readonly show: boolean | undefined;
   readonly placement: DrawerPlacement;
   readonly title: string | undefined;

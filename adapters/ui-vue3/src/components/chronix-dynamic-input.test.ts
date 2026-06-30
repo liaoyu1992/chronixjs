@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixDynamicInput } from './chronix-dynamic-input.js';
 
 /**
- * Phase 35 (2026-06-05) — DynamicInput mount tests (vue3).
+ * — DynamicInput mount tests (vue3).
  */
 describe('ChronixDynamicInput', () => {
   it('renders a div with base class and data-testid', () => {

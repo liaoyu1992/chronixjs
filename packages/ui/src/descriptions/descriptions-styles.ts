@@ -1,5 +1,5 @@
 /**
- * Descriptions stylesheet — Phase 21 (2026-06-03).
+ * Descriptions stylesheet — .
  *
  * Multi-column key-value grid layout. The root `<div>` carries
  * the size + placement + bordered + with-title modifiers; the

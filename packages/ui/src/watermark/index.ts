@@ -1,5 +1,5 @@
 /**
- * chronix-ui watermark module — Phase 22 (2026-06-03).
+ * chronix-ui watermark module — .
  */
 
 export type { WatermarkProps } from './watermark-spec.js';

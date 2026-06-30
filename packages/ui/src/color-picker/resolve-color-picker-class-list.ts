@@ -1,5 +1,5 @@
 /**
- * ColorPicker BEM class-list resolvers — Phase 33 (2026-06-05).
+ * ColorPicker BEM class-list resolvers — .
  */
 
 export interface ResolveColorPickerRootClassListInput {

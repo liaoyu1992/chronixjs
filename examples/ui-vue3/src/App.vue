@@ -144,7 +144,7 @@ function handleBreadcrumbItemClick(_item: BreadcrumbItem) {
 const BREADCRUMB_BASIC_ITEMS: readonly BreadcrumbItem[] = [
   { key: 'home', label: 'Home', href: '/', clickable: false },
   { key: 'docs', label: 'Docs', href: '/docs', clickable: false },
-  { key: 'current', label: 'Phase 19', href: undefined, clickable: false },
+  { key: 'current', label: '', href: undefined, clickable: false },
 ];
 
 const BREADCRUMB_CLICKABLE_ITEMS: readonly BreadcrumbItem[] = [
@@ -275,7 +275,7 @@ const TIMELINE_TIMESTAMP_ITEMS: readonly TimelineItem[] = [
 const TIMELINE_DASHED_ITEMS: readonly TimelineItem[] = [
   {
     key: 'a',
-    title: 'Phase 1',
+    title: '',
     description: undefined,
     timestamp: undefined,
     color: 'info',
@@ -283,7 +283,7 @@ const TIMELINE_DASHED_ITEMS: readonly TimelineItem[] = [
   },
   {
     key: 'b',
-    title: 'Phase 2',
+    title: '',
     description: undefined,
     timestamp: undefined,
     color: 'info',
@@ -291,7 +291,7 @@ const TIMELINE_DASHED_ITEMS: readonly TimelineItem[] = [
   },
   {
     key: 'c',
-    title: 'Phase 3',
+    title: '',
     description: undefined,
     timestamp: undefined,
     color: 'info',
@@ -364,7 +364,7 @@ const HEATMAP_CELLS = [
   [4, 6, 7, 1, 5],
 ];
 
-// Phase 25 — Tier B form input demo state
+// Tier B form input demo state
 const phase25InputText = ref('Hello');
 const phase25InputTextarea = ref('Line 1\nLine 2');
 const phase25InputClearable = ref('Clear me');
@@ -391,7 +391,7 @@ const PHASE25_AUTOCOMPLETE_OPTIONS: readonly AutoCompleteOption[] = [
   { key: 'ca', label: 'California', value: 'CA' },
 ];
 
-// Phase 26 — Popover infrastructure demo state (all controlled show=true
+// Popover infrastructure demo state (all controlled show=true
 // so Playwright assertions find the popup content without driving events).
 const PHASE26_POP_SELECT_OPTIONS: readonly PopSelectOption[] = [
   { key: 'a', label: 'Action one', value: 'a', disabled: false },
@@ -400,7 +400,7 @@ const PHASE26_POP_SELECT_OPTIONS: readonly PopSelectOption[] = [
 ];
 const phase26PopSelectValue = ref('a');
 
-// Phase 27 — Popover-consuming Tier B (6 components). All shown
+// Popover-consuming Tier B (6 components). All shown
 // statefully so Playwright can find content at page load.
 const PHASE27_DROPDOWN_OPTIONS: readonly DropdownOption[] = [
   { key: 'edit', label: 'Edit', value: 'edit', disabled: false, icon: undefined },
@@ -435,7 +435,7 @@ const PHASE27_MENU_ITEMS: readonly MenuItem[] = [
   { key: 'settings', label: 'Settings', icon: undefined, disabled: false, children: undefined },
 ];
 
-// Phase 28 — Layout family (8 components). Controlled state where
+// Layout family (8 components). Controlled state where
 // applicable so Playwright assertions land on content at page load.
 const PHASE28_TAB_ITEMS: readonly TabItem[] = [
   { key: 'overview', label: 'Overview', disabled: false, content: 'Overview tab body' },
@@ -465,7 +465,7 @@ const PHASE28_COLLAPSE_ITEMS: readonly CollapseItem[] = [
 const phase28CollapseValue = ref<readonly string[]>(['a']);
 const phase28TabValue = ref<string>('overview');
 
-// Phase 29 — Tier B remainder demo state
+// Tier B remainder demo state
 const PHASE29_CAROUSEL_ITEMS: readonly CarouselItem[] = [
   { key: 'a', content: 'Slide A — overview' },
   { key: 'b', content: 'Slide B — details' },
@@ -473,7 +473,7 @@ const PHASE29_CAROUSEL_ITEMS: readonly CarouselItem[] = [
 ];
 const phase29CarouselValue = ref<number>(0);
 
-// Phase 30 — Tier C Tree demo state
+// Tier C Tree demo state
 const PHASE30_TREE_ITEMS: readonly TreeNodeSpec<TreeNodeData>[] = [
   {
     key: 'docs',
@@ -505,7 +505,7 @@ const PHASE30_VIRTUAL_TREE_ITEMS: readonly TreeNodeSpec<TreeNodeData>[] = Array.
 );
 const phase30VirtualTreeValue = ref<string | undefined>(undefined);
 
-// Phase 31 — Select family
+// Select family
 const PHASE31_SELECT_OPTIONS: readonly import('@chronixjs/ui').SelectOption[] = [
   { key: 'apple', label: 'Apple', value: 'apple' },
   { key: 'banana', label: 'Banana', value: 'banana' },
@@ -554,12 +554,12 @@ const PHASE31_MENTION_OPTIONS: readonly import('@chronixjs/ui').SelectOption[] =
 ];
 const phase31MentionValue = ref('');
 
-// Phase 32 — DatePicker / TimePicker / Calendar
+// DatePicker / TimePicker / Calendar
 const phase32DatePickerValue = ref<Date | undefined>(undefined);
 const phase32TimePickerValue = ref<Date | undefined>(undefined);
 const phase32CalendarValue = ref<Date | undefined>(undefined);
 
-// Phase 33 — ColorPicker / Transfer / Slider / Pagination
+// ColorPicker / Transfer / Slider / Pagination
 const phase33ColorPickerValue = ref<string | null>('#4096ff');
 const phase33TransferValue = ref<(string | number)[]>(['a']);
 const phase33SliderValue = ref<number>(50);
@@ -571,13 +571,13 @@ const phase34Rules = {
   email: { type: 'email' as const, message: 'Invalid email' },
 };
 
-// Phase 35 — DynamicInput / DynamicTags / Anchor / InfiniteScroll / NumberAnimation / Scrollbar / Upload
+// DynamicInput / DynamicTags / Anchor / InfiniteScroll / NumberAnimation / Scrollbar / Upload
 const phase35DynamicInputValue = ref<unknown[]>(['Item 1', 'Item 2']);
 const phase35DynamicTagsValue = ref<string[]>(['Tag 1', 'Tag 2']);
 const phase35NumberAnimationTo = ref(100);
 const phase35UploadFiles = ref([]);
 
-// Phase 37 — Carousel lazy + thumbnails
+// Carousel lazy + thumbnails
 const PHASE37_LAZY_CAROUSEL_ITEMS = [
   { key: 'la', content: 'Lazy A', thumbnailLabel: 'A' },
   { key: 'lb', content: 'Lazy B', thumbnailLabel: 'B' },
@@ -587,7 +587,7 @@ const PHASE37_LAZY_CAROUSEL_ITEMS = [
 ];
 const phase37LazyCarouselValue = ref(0);
 
-// Phase 37 — Tabs editable
+// Tabs editable
 const PHASE37_TAB_ITEMS = [
   { key: 'p1', label: 'Tab 1', disabled: false, content: 'Content 1', closable: true },
   { key: 'p2', label: 'Tab 2', disabled: false, content: 'Content 2', closable: true },
@@ -595,7 +595,7 @@ const PHASE37_TAB_ITEMS = [
 ];
 const phase37TabsValue = ref('p1');
 
-// Phase 37 — Mention multi-source
+// Mention multi-source
 const PHASE37_MENTION_SOURCES = [
   {
     trigger: '@',
@@ -619,7 +619,7 @@ const phase37MentionValue = ref('');
   <ChronixUIProvider>
     <div class="demo-page" data-testid="demo-page">
       <h1>@chronixjs/ui-vue3 demo</h1>
-      <p>Phase 11 Button pilot — Phase 10 dev-server target on port 8731.</p>
+      <p>Button pilot — dev-server target on port 8731.</p>
 
       <section class="demo-section">
         <h2>Variants</h2>
@@ -679,7 +679,7 @@ const phase37MentionValue = ref('');
         </div>
       </section>
 
-      <ChronixDivider data-testid="divider-section">Phase 13 — Tag + Divider</ChronixDivider>
+      <ChronixDivider data-testid="divider-section">Tag + Divider</ChronixDivider>
 
       <section class="demo-section">
         <h2>Tag types</h2>
@@ -730,7 +730,7 @@ const phase37MentionValue = ref('');
         <span>after vertical divider</span>
       </section>
 
-      <ChronixDivider data-testid="divider-badge-section">Phase 14 — Badge</ChronixDivider>
+      <ChronixDivider data-testid="divider-badge-section">Badge</ChronixDivider>
 
       <section class="demo-section">
         <h2>Badge standalone (numeric + truncation + string)</h2>
@@ -776,9 +776,7 @@ const phase37MentionValue = ref('');
         </div>
       </section>
 
-      <ChronixDivider data-testid="divider-info-section"
-        >Phase 15 — Alert + Card + Empty</ChronixDivider
-      >
+      <ChronixDivider data-testid="divider-info-section">Alert + Card + Empty</ChronixDivider>
 
       <section class="demo-section">
         <h2>Alert types</h2>
@@ -850,7 +848,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-loading-section">
-        Phase 16 — Loading states (Spin + Progress + Skeleton)
+        Loading states (Spin + Progress + Skeleton)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -897,7 +895,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-layout-section">
-        Phase 17 — Layout primitives (Space + Flex + Grid)
+        Layout primitives (Space + Flex + Grid)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -988,7 +986,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-status-numeric-section">
-        Phase 18 — Result + Statistic + Countdown
+        Result + Statistic + Countdown
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1068,7 +1066,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-info-arch-section">
-        Phase 19 — Information architecture (PageHeader + Breadcrumb)
+        Information architecture (PageHeader + Breadcrumb)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1161,7 +1159,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-process-timeline-section">
-        Phase 20 — Steps + Timeline
+        Steps + Timeline
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1210,7 +1208,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-data-display-section">
-        Phase 21 — Data display (Descriptions + List)
+        Data display (Descriptions + List)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1278,7 +1276,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-visual-artifacts-section">
-        Phase 22 — Visual artifacts (Watermark + QrCode + Marquee)
+        Visual artifacts (Watermark + QrCode + Marquee)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1364,7 +1362,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-info-density-section">
-        Phase 23 — Information density (Ellipsis + Thing + Log)
+        Information density (Ellipsis + Thing + Log)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1451,7 +1449,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-tier-a-finale-section">
-        Phase 24 — Tier A finale (12 components)
+        Tier A finale (12 components)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1529,7 +1527,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-tier-b-form-inputs-section">
-        Phase 25 — Tier B form inputs (8 components)
+        Tier B form inputs (8 components)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1631,7 +1629,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider data-testid="divider-popover-infra-section">
-        Phase 26 — Popover infrastructure (4 components)
+        Popover infrastructure (4 components)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1691,7 +1689,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider title-placement="left">
-        Phase 27 — Popover-consuming Tier B (6 components)
+        Popover-consuming Tier B (6 components)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -1768,9 +1766,7 @@ const phase37MentionValue = ref('');
         </div>
       </section>
 
-      <ChronixDivider title-placement="left">
-        Phase 28 — Layout family (8 components)
-      </ChronixDivider>
+      <ChronixDivider title-placement="left"> Layout family (8 components) </ChronixDivider>
 
       <section class="demo-section">
         <h2>Layout shell (header + sider + content + footer)</h2>
@@ -1853,9 +1849,7 @@ const phase37MentionValue = ref('');
         </div>
       </section>
 
-      <ChronixDivider title-placement="left">
-        Phase 29 — Tier B remainder (3 components)
-      </ChronixDivider>
+      <ChronixDivider title-placement="left"> Tier B remainder (3 components) </ChronixDivider>
 
       <section class="demo-section">
         <h2>Carousel</h2>
@@ -1881,7 +1875,7 @@ const phase37MentionValue = ref('');
         </ChronixFocusDetector>
       </section>
 
-      <ChronixDivider title-placement="left"> Phase 30 — Tier C Tree (1 component) </ChronixDivider>
+      <ChronixDivider title-placement="left"> Tier C Tree (1 component) </ChronixDivider>
 
       <section class="demo-section">
         <h2>Tree (single-select, one branch expanded)</h2>
@@ -1906,9 +1900,7 @@ const phase37MentionValue = ref('');
         />
       </section>
 
-      <ChronixDivider title-placement="left">
-        Phase 31 — Tier C Select family (4 components)
-      </ChronixDivider>
+      <ChronixDivider title-placement="left"> Tier C Select family (4 components) </ChronixDivider>
 
       <section class="demo-section">
         <h2>Select (single)</h2>
@@ -1964,7 +1956,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider title-placement="left">
-        Phase 32 — DatePicker / TimePicker / Calendar (3 components)
+        DatePicker / TimePicker / Calendar (3 components)
       </ChronixDivider>
 
       <section class="demo-section">
@@ -2036,7 +2028,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <section class="demo-section">
-        <h2>Phase 34 — Form</h2>
+        <h2>Form</h2>
         <ChronixForm
           :model="phase34Model"
           :rules="phase34Rules"
@@ -2054,7 +2046,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider title-placement="left">
-        Phase 35 — DynamicInput / DynamicTags / Anchor / NumberAnimation / Scrollbar / Upload
+        DynamicInput / DynamicTags / Anchor / NumberAnimation / Scrollbar / Upload
       </ChronixDivider>
 
       <section class="demo-section">
@@ -2107,7 +2099,7 @@ const phase37MentionValue = ref('');
       </section>
 
       <ChronixDivider title-placement="left">
-        Phase 37 — Carousel lazy + thumbnails / Tabs editable / Mention multi-source
+        Carousel lazy + thumbnails / Tabs editable / Mention multi-source
       </ChronixDivider>
 
       <section class="demo-section">

@@ -4,7 +4,7 @@ const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 /**
- * Phase 46: today's local midnight, matching `examples/gantt-vue3/src/sample-data.ts`.
+ * today's local midnight, matching `examples/gantt-vue3/src/sample-data.ts`.
  * The axis planner normalizes anchorDate to local midnight, so bars anchored
  * at the same reference produce `x = startHour × pxPerHour` exactly in any
  * timezone. Replaces the prior hardcoded `2026-05-18T00:00:00` anchor so
@@ -79,14 +79,14 @@ function multiDayBar(
  * Twelve rows × ~22 bars sized to exercise placement across day / week /
  * month / season / halfYear / year views. Bar spans range from a few
  * hours (visible at day view) to multiple days (visible at week+) so
- * every view in the picker shows non-trivial geometry. Phase 31.2's
+ * every view in the picker shows non-trivial geometry.
  * DemoApp.vue copies this list into a mutable `ref<BarSpec[]>` so drag
- * commits persist visually. Phase 31.5.2 expanded from 5 to 12 rows so
+ * commits persist visually. expanded from 5 to 12 rows so
  * the demo's default `400px` `maxBodyHeight` cap triggers vertical
  * scroll — visible proof the dual-scrollport architecture works.
  */
-// Phase 49: rows gain `region` + `base` columns alongside the existing
-// `name` leaf column so the chronix-vue2 sidebar (added in Phase 49)
+// rows gain `region` + `base` columns alongside the existing
+// `name` leaf column so the chronix-vue2 sidebar (added)
 // can demonstrate vGrouping rowspan merging. Three regions (北区/中区/
 // 南区) × 6 base groupings produce visible vertical merges in the
 // sidebar table.
@@ -103,8 +103,8 @@ export const sampleRows: readonly RowSpec[] = [
   { id: 'r10', columns: { region: '南区', base: '客户端基地', name: '客户端 Mobile' } },
   { id: 'r11', columns: { region: '南区', base: '基建基地', name: '基建 Platform' } },
   { id: 'r12', columns: { region: '南区', base: '基建基地', name: '支持 Support' } },
-  // Phase 47.4: dedicated row exercising same-row time-overlap stacking
-  // (Phase 30 BarPlacementPass + BarStackHeightPass). The 3 bar-stack-*
+  // dedicated row exercising same-row time-overlap stacking
+  // (BarPlacementPass + BarStackHeightPass). The 3 bar-stack-*
   // bars below pair-wise overlap so greedy interval coloring assigns
   // levels 0 / 1 / 2 → distinct Y values + row-height expansion to fit
   // 3 stacked tracks. Mirrors chronix-vue3 + chronix-react fixtures so
@@ -128,7 +128,7 @@ export const sampleRows: readonly RowSpec[] = [
  * in DemoApp.vue so drag/resize/progress commits update the chart
  * reactively.
  *
- * Phase 46: extendedProps.priority added to 3 bars so the
+ * extendedProps.priority added to 3 bars so the
  * `samplePriorityCallback` from `sample-callbacks.ts` has something
  * meaningful to switch on when the `priorityCallback` URL flag is set.
  */
@@ -139,13 +139,13 @@ export function initialSampleBars(): BarSpec[] {
   });
   return [
     // Design (row 0): 4 bars; d1 starts before the week-view anchor
-    // (hour −24) so the Phase 31.4 left-continuation triangle fires
+    // (hour −24) so the left-continuation triangle fires
     // in the default week view.
     bar('d1', 'r1', -24, 36, 'Kickoff & wireframes'),
     bar('d2', 'r1', 48, 96, 'High-fidelity mocks'),
     bar('d3', 'r1', 108, 156, 'Design review'),
     bar('d4', 'r1', 162, 198, 'Final signoff'),
-    // Frontend (row 1): 5 bars; two overlap to exercise Phase 30 stacking
+    // Frontend (row 1): 5 bars; two overlap to exercise stacking
     withPriority(bar('f1', 'r2', 12, 48, 'Routes & shell', 50), 'high'),
     bar('f2', 'r2', 36, 72, 'Component library'),
     bar('f3', 'r2', 96, 144, 'Forms & validation'),
@@ -158,7 +158,7 @@ export function initialSampleBars(): BarSpec[] {
     bar('b4', 'r3', 186, 210, 'API docs'),
     bar('b5', 'r3', 216, 240, 'Service contracts'),
     // QA (row 3): 4 bars; q3 ends after the week-view axis (hour 192)
-    // so the Phase 31.4 right-continuation triangle fires.
+    // so the right-continuation triangle fires.
     bar('q1', 'r4', 72, 120, 'Smoke tests'),
     bar('q2', 'r4', 120, 144, 'Regression run'),
     bar('q3', 'r4', 156, 192, 'Load tests'),
@@ -168,7 +168,7 @@ export function initialSampleBars(): BarSpec[] {
     bar('rel2', 'r5', 192, 204, 'Prod ship'),
     bar('rel3', 'r5', 210, 234, 'Hotfix rollout'),
     bar('rel4', 'r5', 240, 264, 'Version tag'),
-    // Phase 31.5.2: additional rows so the default 400px maxBodyHeight
+    // additional rows so the default 400px maxBodyHeight
     // cap triggers vertical scroll. Each row gets 1-2 modest bars so the
     // chart is visibly busy without overwhelming the demo.
     bar('ops1', 'r6', 30, 90, 'Pipeline setup'),
@@ -191,7 +191,7 @@ export function initialSampleBars(): BarSpec[] {
     bar('sup1', 'r12', 36, 120, 'Customer onboarding'),
     bar('sup2', 'r12', 132, 192, 'Office hours'),
     bar('sup3', 'r12', 198, 240, 'Knowledge base'),
-    // Phase 47.4: 3 same-row time-overlapping bars on r13. Sorted-by-start
+    // 3 same-row time-overlapping bars on r13. Sorted-by-start
     // order is bar-stack-1, bar-stack-2, bar-stack-3; all three pair-wise
     // overlap (0-10 ∩ 5-15 ∩ 8-18 are non-empty), so greedy interval
     // coloring assigns levels 0 / 1 / 2 respectively and each renders at
@@ -235,7 +235,7 @@ const heartMarker: CustomLinkMarker = {
 };
 
 /**
- * Phase 31.4.1 sample dependency links. Each link uses one of the chronix-
+ * sample dependency links. Each link uses one of the chronix-
  * supported routings (`'square'` 3-segment elbow / `'smooth'` cubic-Bézier
  * forward-only) and one of the 7 built-in marker shapes. `rel-stagecut`
  * carries a `colorOverride` so the cascade demo shows a per-link color

@@ -12,7 +12,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixDescriptions>` — Vue 3 SFC wrapping the core
- * `DescriptionsProps` IR. Phase 21 (2026-06-03). Tier A
+ * `DescriptionsProps` IR. . Tier A
  * multi-column key-value display.
  *
  * Slots:

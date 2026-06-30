@@ -23,7 +23,7 @@ export interface ChronixInfiniteScrollProps extends Omit<
 }
 
 /**
- * `<ChronixInfiniteScroll>` — React 18 port of the Phase 35 InfiniteScroll.
+ * `<ChronixInfiniteScroll>` — React 18 port of the InfiniteScroll.
  * Uses IntersectionObserver to detect when the user is near the bottom
  * and calls `onLoad` for more data.
  */

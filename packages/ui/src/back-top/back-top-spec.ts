@@ -1,5 +1,5 @@
 /**
- * BackTop component IR — Phase 27 (2026-06-03). Tier B floating
+ * BackTop component IR — . Tier B floating
  * "back to top" button. Shown when `window.scrollY >=
  * visibilityThreshold`. Click scrolls to top via `window.scrollTo`.
  *

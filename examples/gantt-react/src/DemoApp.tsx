@@ -48,7 +48,7 @@ import { sampleBarsParity, sampleLinksParity, sampleRowsParity } from './sample-
 import { initialSampleBars, sampleLinks, sampleRows, todayLocalMidnight } from './sample-data.js';
 
 /**
- * **Phase 46: demo config schema** for the chronix-react demo. Mirror of
+ * **demo config schema** for the chronix-react demo. Mirror of
  * `examples/gantt-vue3/src/App.vue` `DEMO_SCHEMA`. Every toggle in the
  * demo is one entry; URL is source of truth.
  */
@@ -75,17 +75,17 @@ const DEMO_SCHEMA = {
     'Show vertical today-line with original spec defaults (red #ff6b6b, 2 px, dashed, 今日 tooltip)',
   ),
   todayCellBg: bool(true, 'Show today-column background tint (rgba(255, 220, 40, .15))'),
-  useLineEventColor: bool(false, 'Color dependency lines by source bar (Phase 28.3)'),
+  useLineEventColor: bool(false, 'Color dependency lines by source bar '),
 } as const;
 
-// Phase 22 / 34: declarative headerToolbar DSL.
+// declarative headerToolbar DSL.
 const HEADER_TOOLBAR: ToolbarInput = {
   left: 'prev,next today',
   center: 'title',
   right: 'day,week,month,season,halfYear,year',
 };
 
-// Phase 48: resource-panel columns mirroring `examples/gantt-vue3/src/
+// resource-panel columns mirroring `examples/gantt-vue3/src/
 // App.vue:105-109`. The first two columns are grouped (vGrouping) so
 // consecutive rows that share the same region / base collapse into a
 // single rowspan cell. `name` is the leaf column — one cell per row.
@@ -148,7 +148,7 @@ export const DemoApp: FC = () => {
 
   const ganttRef = useRef<GanttHandle | null>(null);
 
-  // Phase 46: parity mode auto-enables priorityCallback so the cross-demo
+  // parity mode auto-enables priorityCallback so the cross-demo
   // `useLineEventColor` parity test sees matching colors. Independent
   // from the toggle UI (which is for default-mode users to flip live).
   const isPriorityCallbackParity = cfg.values.priorityCallback && cfg.values.parity;
@@ -369,7 +369,7 @@ export const DemoApp: FC = () => {
             </button>
           </div>
           <div className="cx-demo-validation-toggles" role="group" aria-label="validation gates">
-            <span className="cx-demo-validation-label">validation (Phase 19):</span>
+            <span className="cx-demo-validation-label">validation </span>
             <label title="Reject cross-row time-intersecting drops">
               <input
                 type="checkbox"
@@ -404,7 +404,7 @@ export const DemoApp: FC = () => {
             </label>
           </div>
           <div className="cx-demo-validation-toggles" role="group" aria-label="bar styling">
-            <span className="cx-demo-validation-label">bar styling (Phase 20):</span>
+            <span className="cx-demo-validation-label">bar styling </span>
             <label title="barBackgroundColor + barBorderColor at component level">
               <input
                 type="checkbox"
@@ -481,13 +481,13 @@ export const DemoApp: FC = () => {
           />
         </div>
         {/*
-          Phase 24: imperative-handle test-button bar. Positioned offscreen
+          imperative-handle test-button bar. Positioned offscreen
           (top: -9999px) so Playwright can click it without it leaking into
           any captured VRT snapshot. Each button drives the chart via the
           adapter's exposed `GanttHandle`; chart re-renders via the same
           compute-and-emit pathway the toolbar uses.
         */}
-        <div className="cx-demo-handle-test-bar" role="group" aria-label="Phase 24 handle tests">
+        <div className="cx-demo-handle-test-bar" role="group" aria-label="handle tests">
           <button
             type="button"
             data-test-handle-method="next"

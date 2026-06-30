@@ -19,9 +19,9 @@ import {
 import { useUIContext } from './use-ui-context.js';
 
 /**
- * React modal/drawer lifecycle hook — Phase 27 (2026-06-03). Same
+ * React modal/drawer lifecycle hook — . Same
  * surface as Vue 3 / Vue 2 `useModalLifecycle` composables. Distinct
- * from Phase 26 `usePopupLifecycle` because Modal/Drawer don't have
+ * `usePopupLifecycle` because Modal/Drawer don't have
  * an anchor (no placement math); they pin to the viewport via
  * `position: fixed; inset: 0`.
  */

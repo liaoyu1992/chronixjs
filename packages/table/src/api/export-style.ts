@@ -1,8 +1,8 @@
 /**
- * Phase 39.4 (2026-05-29): chronix-curated subset of exceljs's per-cell
+ * chronix-curated subset of exceljs's per-cell
  * style fields. Consumers attach this to a `ColumnSpec.exportStyle?`
  * field; `exportToXlsx` threads it through to exceljs's `Cell.style`
- * for body cells (header row preserves Phase 39 Decision C.1 bold-row
+ * for body cells (header row preserves Decision C.1 bold-row
  * default).
  *
  * Field selection optimizes for the most common consumer styling
@@ -94,7 +94,7 @@ export interface ExcelJsCellStyle {
 const DEFAULT_BORDER_ARGB = 'FF000000';
 
 /**
- * Phase 39.4 (2026-05-29): translate a chronix `ExportStyle` into the
+ * translate a chronix `ExportStyle` into the
  * exceljs `Cell.style` shape. Pure function; only sets fields present
  * in the input (the result has no false-y defaults that would
  * accidentally override exceljs's column-default styles).

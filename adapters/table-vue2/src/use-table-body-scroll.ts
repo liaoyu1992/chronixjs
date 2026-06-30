@@ -1,11 +1,11 @@
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 /**
- * Phase 41.2 (2026-05-25): tracks the body scrollport element's
+ * tracks the body scrollport element's
  * `clientHeight` + `scrollTop` so the virtual-rows pass can pick the
  * visible row window when the body's content height exceeds its
  * viewport. Verbatim port of `adapters/table-vue3/src/use-table-body-scroll.ts`
- * (chronix-table-vue3 Phase 4 form).
+ * (chronix-table-vue3 form).
  *
  * Designed as the vertical-axis sibling of `useTableContainerSize` —
  * that composable tracks horizontal `clientWidth` on the wrapper

@@ -81,7 +81,7 @@ async function flush(): Promise<void> {
   });
 }
 
-describe('useMenuKeyboardNav (Phase 84 — react)', () => {
+describe('useMenuKeyboardNav (react)', () => {
   it('isOpen: false → handleKeydown is no-op and activeIndex is -1', () => {
     const { hook } = setupHook(['a', 'b', 'c'], { isOpen: false });
     expect(hook.result.current.activeIndex).toBe(-1);

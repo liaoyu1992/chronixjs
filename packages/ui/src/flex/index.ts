@@ -1,5 +1,5 @@
 /**
- * chronix-ui flex module — Phase 17 (2026-06-02).
+ * chronix-ui flex module — .
  *
  * Core IR for the Flex 1D layout primitive. Adapter components
  * consume these types + pure helpers to render framework-specific

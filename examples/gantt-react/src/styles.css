@@ -22,7 +22,7 @@ body,
   padding: 0;
 }
 
-/* Phase 46: chronix-react demo chrome mirrors chronix-vue3
+/* chronix-react demo chrome mirrors chronix-vue3
    (examples/gantt-vue3/src/styles.css) so the URL-driven config layer +
    parity banner + events panel + URL schema docs panel render with the
    same visual structure across adapters. */
@@ -257,7 +257,7 @@ body,
 }
 
 /*
- * Phase 24: imperative-handle test-button bar. Positioned offscreen so
+ * imperative-handle test-button bar. Positioned offscreen so
  * Playwright can click via data-test-handle-method selector without the
  * bar leaking into any captured VRT snapshot or into the demo's visible
  * chrome. Buttons remain in document flow + interactive (NOT

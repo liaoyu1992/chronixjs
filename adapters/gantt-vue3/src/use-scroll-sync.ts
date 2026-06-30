@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 /**
- * Phase 23: bidirectional vertical scroll sync between two DOM
+ * bidirectional vertical scroll sync between two DOM
  * elements. Reads each element's scroll event and writes the other's
  * `scrollTop` in lockstep, guarded by a source-tracking flag so the
  * writeback doesn't fire its own scroll event in an infinite loop.

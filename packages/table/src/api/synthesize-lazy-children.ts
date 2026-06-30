@@ -1,7 +1,7 @@
 import type { RowSpec } from '../ir/index.js';
 
 /**
- * Input to `synthesizeLazyChildren` (Phase 34, 2026-05-28).
+ * Input to `synthesizeLazyChildren` (2026-05-28).
  *
  * `rows` is the consumer's tree-shaped row list (each row may carry
  * `children?: readonly RowSpec[]` OR `hasChildren?: boolean`).
@@ -43,7 +43,7 @@ export interface SynthesizeLazyChildrenResult {
 }
 
 /**
- * Phase 34 (2026-05-28): walk a tree-shaped row list once + substitute
+ * walk a tree-shaped row list once + substitute
  * `row.children = loadedChildrenByRowId.get(row.id)` for every lazy
  * parent that has loaded children cached. Output flows into
  * `treeFlattenPass` (or any other tree-aware pass) unchanged.
@@ -73,10 +73,10 @@ export interface SynthesizeLazyChildrenResult {
  *
  * ```
  * props.rows
- *   → pinnedRowsPass         (Phase 31)
+ *   → pinnedRowsPass
  *   → filterPass + sortPass + ...
- *   → synthesizeLazyChildren (Phase 34, this helper)
- *   → treeFlattenPass        (Phase 30)
+ *   → synthesizeLazyChildren (this helper)
+ *   → treeFlattenPass
  *   → ...
  * ```
  *

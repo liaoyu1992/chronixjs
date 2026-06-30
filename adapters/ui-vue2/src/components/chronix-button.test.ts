@@ -19,7 +19,7 @@ const Button = ChronixButton as unknown as VueConstructor;
 const Provider = ChronixUIProvider as unknown as VueConstructor;
 
 /**
- * Phase 12 (2026-06-02) — vue2 port of the 21-case Phase 11 vue3 mount
+ * — vue2 port of the 21-case vue3 mount
  * test suite. Same assertions, same DOM-shape expectations; only the
  * test-utils API differs (vue-test-utils v1 vs v2). Parity-by-port:
  * any divergence here is a chronix-ui regression, not a vue2-isms

@@ -1,5 +1,5 @@
 /**
- * Message IR — Phase 36 (2026-06-05). Imperative toast API.
+ * Message IR — . Imperative toast API.
  *
  * Lightweight inline notifications rendered at fixed positions on the
  * viewport. Each message is an item in a queue managed by the adapter.

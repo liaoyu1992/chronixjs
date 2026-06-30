@@ -13,7 +13,7 @@ import type { PlacedBar } from '../layout/types.js';
  *
  * Geometry fields (`renderX/Y/Width/Height`) reflect LIVE transaction
  * state: e.g. mid-drag they include the deltaX/deltaY shift and the
- * cross-row snap-to-target-strip math from Phase 9. Same numbers the
+ * cross-row snap-to-target-strip math . Same numbers the
  * default `<rect>` would use, so a custom renderer can drop them
  * straight into a `<rect>` of its own.
  *
@@ -38,7 +38,7 @@ export interface BarSlotArgs {
   readonly activeTransaction: AnyTransaction | null;
   /**
    * Whether this bar's id is in the adapter's `selectedBarIds` prop.
-   * Phase 12 addition — custom renderers can react visually (e.g.
+   * addition — custom renderers can react visually (e.g.
    * thicker stroke, glow, accent fill) when a bar is selected. The
    * default `<rect>` path applies `.cx-gantt-bar--selected` class
    * automatically; slot renderers own their visual representation
@@ -46,16 +46,16 @@ export interface BarSlotArgs {
    */
   readonly isSelected: boolean;
   /**
-   * Phase 20: resolved background color from the bar-color
+   * resolved background color from the bar-color
    * cascade (theme → component prop → `BarSpec.style` → callback).
    * Custom slot renderers should consume this rather than reading
    * `theme.barBackgroundColor` directly so they pick up per-bar
    * style overrides + callback outputs automatically.
    */
   readonly resolvedBackgroundColor: string;
-  /** Phase 20: resolved border color (same cascade). */
+  /** resolved border color (same cascade). */
   readonly resolvedBorderColor: string;
-  /** Phase 20: resolved text color (same cascade). */
+  /** resolved text color (same cascade). */
   readonly resolvedTextColor: string;
 }
 

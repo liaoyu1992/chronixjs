@@ -79,8 +79,8 @@ export const sampleRows: readonly RowSpec[] = [
   { id: 'workshop-d', columns: { region: '三亚', base: '三亚基地', name: '车间 D' } },
   { id: 'workshop-e', columns: { region: '三亚', base: '三亚基地', name: '车间 E' } },
   { id: 'workshop-f', columns: { region: '三亚', base: '三亚基地', name: '车间 F' } },
-  // Phase 30: dedicated row exercising same-row time-overlap stacking.
-  // Before Phase 30 chronix collapsed all overlapping bars to identical
+  // dedicated row exercising same-row time-overlap stacking.
+  // Before chronix collapsed all overlapping bars to identical
   // Y (one rendered, others hidden). After: each gets its own stack level
   // and renders at a distinct Y within the row.
   { id: 'workshop-stack', columns: { region: '三亚', base: '三亚基地', name: '待排' } },
@@ -99,7 +99,7 @@ export const sampleRows: readonly RowSpec[] = [
   }),
 ];
 
-// Phase 20: a few bars get `extendedProps.priority` so the demo's
+// a few bars get `extendedProps.priority` so the demo's
 // bar-color callback toggle has something meaningful to switch on.
 // `extendedProps` is the BarSpec slot for user-supplied opaque
 // payload — chronix never inspects it.
@@ -150,7 +150,7 @@ export const sampleBars: readonly BarSpec[] = [
   multiDayBar('bar-25', 'workshop-e', 5, 12, 'E-多日任务 A', 40),
   multiDayBar('bar-26', 'workshop-f', 8, 15, 'F-多日任务 B', 60),
 
-  // Phase 30: 3 same-row time-overlapping bars on the dedicated stacking
+  // 3 same-row time-overlapping bars on the dedicated stacking
   // row. Sorted-by-start order is bar-stack-1, bar-stack-2, bar-stack-3;
   // all three pair-wise overlap (0-10 ∩ 5-15 ∩ 8-18 are non-empty), so
   // greedy interval coloring assigns levels 0 / 1 / 2 respectively and

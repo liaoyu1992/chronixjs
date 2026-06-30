@@ -1,5 +1,5 @@
 /**
- * Collapse component IR — Phase 28 (2026-06-04). Tier B
+ * Collapse component IR — . Tier B
  * accordion / multi-expand panel list. Each item's body is wrapped in
  * a `<ChronixCollapseTransition>` for height animation.
  *

@@ -89,7 +89,7 @@ describe('<ChronixGantt>', () => {
     expect(wrapper.find('svg.cx-gantt-body').exists()).toBe(true);
   });
 
-  it('Phase 23: wrapper div is a grid and the chart-pane (NOT the wrapper) owns overflow', () => {
+  it('wrapper div is a grid and the chart-pane (NOT the wrapper) owns overflow', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
     });
@@ -102,7 +102,7 @@ describe('<ChronixGantt>', () => {
     expect(chartPane.style.overflowY).toBe('hidden');
   });
 
-  it('Phase 23: header SVG sits inside cx-gantt-chart-header-pane (overflow: hidden) and is no longer sticky', () => {
+  it('header SVG sits inside cx-gantt-chart-header-pane (overflow: hidden) and is no longer sticky', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
     });
@@ -137,7 +137,7 @@ describe('<ChronixGantt>', () => {
     expect(Number(rect.attributes('width'))).toBeCloseTo(240, 5);
     expect(Number(rect.attributes('x'))).toBeCloseTo(8 * 60, 5);
     expect(Number(rect.attributes('height'))).toBe(30);
-    expect(Number(rect.attributes('y'))).toBe(4); // Phase 43: barVerticalPadding default 8 → 4
+    expect(Number(rect.attributes('y'))).toBe(4); // barVerticalPadding default 8 → 4
   });
 
   it('reacts to props.bars changes — rect count updates after a setProps', async () => {
@@ -346,7 +346,7 @@ describe('<ChronixGantt> interactions', () => {
 
   it('cross-row drag: mid-drag renders bar at target strip Y + intra-strip offset', async () => {
     // Two bars (one per row) so both strips get definite heights from
-    // `BarStackHeightPass`. Strip layout with default props (Phase 43):
+    // `BarStackHeightPass`. Strip layout with default props
     //   r1: y=0,  height=38 (barHeight 30 + topPad 4 + bottomPad 4)
     //   r2: y=39, height=38 (rowSpacing 1 gap)
     // Bar 'b1' on r1: y=4 (=0 + barVerticalPadding 4), height 30. Intra-
@@ -366,7 +366,7 @@ describe('<ChronixGantt> interactions', () => {
     await svg.trigger('pointermove', { clientX: 600, clientY: 60, pointerId: 1 });
 
     const b1 = wrapper.find('[data-bar-id="b1"]');
-    expect(Number(b1.attributes('y'))).toBe(43); // Phase 43: r2.y (39) + barVerticalPadding (4)
+    expect(Number(b1.attributes('y'))).toBe(43); // r2.y (39) + barVerticalPadding (4)
 
     await svg.trigger('pointerup', { clientX: 600, clientY: 60, pointerId: 1 });
   });
@@ -406,7 +406,7 @@ describe('<ChronixGantt> interactions', () => {
     await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 600, clientY: 500, pointerId: 1 });
 
-    // No projected row → render falls back to free-Y = bar.y + deltaY = 4 + 480 = 484 (Phase 43 default).
+    // No projected row → render falls back to free-Y = bar.y + deltaY = 4 + 480 = 484 (default).
     const b1 = wrapper.find('[data-bar-id="b1"]');
     expect(Number(b1.attributes('y'))).toBe(484);
 
@@ -443,7 +443,7 @@ describe('<ChronixGantt> interactions', () => {
   });
 });
 
-describe('<ChronixGantt> validation gates (Phase 19)', () => {
+describe('<ChronixGantt> validation gates ', () => {
   it('bar-drag rejected by eventOverlap: false → onBarDrop not emitted, onBarDropRejected fires with reason "overlap"', async () => {
     // b1 on r1 (8-12), b2 on r2 (9-13). Drag b1 right +60px (1 hour)
     // so its new range becomes 9-13 on r1 — cross-row time intersect
@@ -628,7 +628,7 @@ describe('<ChronixGantt> validation gates (Phase 19)', () => {
   });
 });
 
-describe('<ChronixGantt> selectOverlap / selectConstraint (Phase 55)', () => {
+describe('<ChronixGantt> selectOverlap / selectConstraint ', () => {
   it('range-select rejected by selectOverlap: false when proposal intersects an existing bar', async () => {
     // b1 on r2 (8-12) — different row from where we select, so pointerdown
     // lands in empty space (r1's strip). Drag-select on r1 from x=180 (3h)
@@ -695,7 +695,7 @@ describe('<ChronixGantt> selectOverlap / selectConstraint (Phase 55)', () => {
   });
 });
 
-describe('<ChronixGantt> bar color pipeline (Phase 20)', () => {
+describe('<ChronixGantt> bar color pipeline ', () => {
   it('default bar <rect> has inline fill + stroke matching theme defaults', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [bar('b1', 'r1', 8, 12)], rows, axisInput },
@@ -807,7 +807,7 @@ describe('<ChronixGantt> axis ticks', () => {
   });
 
   it('header SVG height = default band (44 = 1 × 20 + 24); body SVG height = contentSize.height (69)', () => {
-    // Phase 43: two rows, empty-row default height 34 (= barHeight + firstBarTopPadding),
+    // two rows, empty-row default height 34 (= barHeight + firstBarTopPadding),
     // rowSpacing 1 → contentSize.height = 34 + 1 + 34 = 69.
     // Day view has 1 headerRow; band = 1×20 + 24 = 44.
     const wrapper = mount(ChronixGantt, {
@@ -827,14 +827,14 @@ describe('<ChronixGantt> axis ticks', () => {
         headerRowHeight: 30,
       },
     });
-    // Phase 43: one bar on r1 → r1 height = 4 + 30 + 4 = 38. r2 (empty) = 34.
+    // one bar on r1 → r1 height = 4 + 30 + 4 = 38. r2 (empty) = 34.
     // Content height: 38 + 1 + 34 = 73. Header band: 1×30 + 40 = 70.
     expect(Number(wrapper.find('svg.cx-gantt-header').attributes('height'))).toBe(70);
     expect(Number(wrapper.find('svg.cx-gantt-body').attributes('height'))).toBe(73);
     // Bar group now sits at the body SVG's origin — no transform.
     const barsGroup = wrapper.find('.cx-gantt-bars');
     expect(barsGroup.attributes('transform')).toBeUndefined();
-    // Rect's own y comes straight from the layout (Phase 43: y=4 from barVerticalPadding 4).
+    // Rect's own y comes straight from the layout (y=4 from barVerticalPadding 4).
     const rect = wrapper.find('[data-bar-id="b1"]');
     expect(Number(rect.attributes('y'))).toBe(4);
   });
@@ -844,7 +844,7 @@ describe('<ChronixGantt> axis ticks', () => {
       props: { bars: [], rows, axisInput, headerHeight: 0, headerRowHeight: 0 },
     });
     expect(Number(wrapper.find('svg.cx-gantt-header').attributes('height'))).toBe(0);
-    expect(Number(wrapper.find('svg.cx-gantt-body').attributes('height'))).toBe(69); // Phase 43: 34 + 1 + 34
+    expect(Number(wrapper.find('svg.cx-gantt-body').attributes('height'))).toBe(69); // 34 + 1 + 34
     expect(wrapper.find('.cx-gantt-axis-divider').exists()).toBe(false);
     expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(0);
     // Tick lines + labels still render (we don't gate them on headerHeight).
@@ -1209,7 +1209,7 @@ describe('<ChronixGantt> bar-drag live-update', () => {
         editable: true,
       },
     });
-    // Bar at content x=480..720, y=4..34 (Phase 43). Click center, drag +60 px right.
+    // Bar at content x=480..720, y=4..34 . Click center, drag +60 px right.
     const svg = wrapper.find('svg.cx-gantt-body');
     await svg.trigger('pointerdown', { clientX: 600, clientY: 20, button: 0, pointerId: 1 });
     await svg.trigger('pointermove', { clientX: 660, clientY: 20, pointerId: 1 });
@@ -1217,7 +1217,7 @@ describe('<ChronixGantt> bar-drag live-update', () => {
     const rect = wrapper.find('[data-bar-id="b1"]');
     expect(Number(rect.attributes('x'))).toBe(540); // 480 + 60
     expect(Number(rect.attributes('width'))).toBe(240); // unchanged
-    expect(Number(rect.attributes('y'))).toBe(4); // Phase 43: y=4 unchanged (no y delta yet)
+    expect(Number(rect.attributes('y'))).toBe(4); // y=4 unchanged (no y delta yet)
     // No commit yet.
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
   });
@@ -1236,7 +1236,7 @@ describe('<ChronixGantt> bar-drag live-update', () => {
     // Move +10 px down (still in content space; clientY shifts by same).
     await svg.trigger('pointermove', { clientX: 600, clientY: 30, pointerId: 1 });
     const rect = wrapper.find('[data-bar-id="b1"]');
-    expect(Number(rect.attributes('y'))).toBe(14); // Phase 43: 4 + 10
+    expect(Number(rect.attributes('y'))).toBe(14); // 4 + 10
   });
 
   it('after pointer-up commit the live preview ends; rect x is back to layout value', async () => {
@@ -1427,7 +1427,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     { id: 'r2', columns: { region: '海口', vehicle: '车间 B' } },
   ];
 
-  it('with no `columns` prop the sidebar renders no DOM (back to the Phase 4.5 two-pane shape)', () => {
+  it('with no `columns` prop the sidebar renders no DOM (back to the two-pane shape)', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows: rowsWithNames, axisInput },
     });
@@ -1525,7 +1525,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
       },
     });
     const sidebarRows = wrapper.findAll('.cx-gantt-sidebar-row');
-    // Phase 43: 2 strips. rowSpacing defaults to 1. Empty-row strip
+    // 2 strips. rowSpacing defaults to 1. Empty-row strip
     // default height = 34 (barHeight 30 + firstBarTopPadding 4).
     // Non-last row height = strip.height + rowSpacing = 34 + 1 = 35.
     // Last row stays at strip.height = 34.
@@ -1564,12 +1564,12 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
     expect(root.style.display).toBe('grid');
     // sidebarWidth = 80 + 120 = 200; middle track is the 8-px divider
-    // (Phase 14); right track is `auto` so the grid's intrinsic width
+    //; right track is `auto` so the grid's intrinsic width
     // grows with the chart and overflow:auto engages horizontal scroll.
     expect(root.style.gridTemplateColumns).toBe('200px 4px auto');
   });
 
-  it('Phase 23: wrapper is a 1-column grid when `columns` is omitted (chart-only layout)', () => {
+  it('wrapper is a 1-column grid when `columns` is omitted (chart-only layout)', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows: rowsWithNames, axisInput },
     });
@@ -1599,7 +1599,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     );
   });
 
-  it('Phase 23: sidebar-header sits inside cx-gantt-sidebar-header-pane (overflow: hidden), no longer sticky', () => {
+  it('sidebar-header sits inside cx-gantt-sidebar-header-pane (overflow: hidden), no longer sticky', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1620,7 +1620,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     expect(header.style.background).not.toBe('');
   });
 
-  it('Phase 23: sidebar-body sits inside cx-gantt-sidebar-pane (overflow: auto), no longer sticky', () => {
+  it('sidebar-body sits inside cx-gantt-sidebar-pane (overflow: auto), no longer sticky', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1638,7 +1638,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     expect(body.style.background).not.toBe('');
   });
 
-  it('Phase 23: no z-index stacking on sidebar/chart panes (sticky positioning removed)', () => {
+  it('no z-index stacking on sidebar/chart panes (sticky positioning removed)', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1802,7 +1802,7 @@ describe('<ChronixGantt> sidebar vGrouping (rowspan merge)', () => {
     expect(bodyRows.map((r) => r.attributes('data-row-id'))).toEqual(['r1', 'r2', 'r3', 'r4']);
   });
 
-  it('Phase 23: the `.cx-gantt-sidebar-body` div lives inside the sidebar-pane wrapper (no longer sticky)', () => {
+  it('the `.cx-gantt-sidebar-body` div lives inside the sidebar-pane wrapper (no longer sticky)', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
     });
@@ -1834,7 +1834,7 @@ describe('<ChronixGantt> sidebar vGrouping (rowspan merge)', () => {
   it('a `columns` array where no entry has `group: true` renders one cell per row in every column (no merges)', () => {
     // Same rows as the grouped test, but columns drop `group: true`
     // entirely. Every cell should render individually — backward
-    // compatible with Phase 5 v0 behavior.
+    // compatible with v0 behavior.
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -1854,7 +1854,7 @@ describe('<ChronixGantt> sidebar vGrouping (rowspan merge)', () => {
   });
 });
 
-describe('<ChronixGantt> theme (Phase 10)', () => {
+describe('<ChronixGantt> theme ', () => {
   // Bar with progress so the progress-overlay-themed rect + label both
   // render in tests that exercise progress tokens.
   const progressBars = [
@@ -1966,7 +1966,7 @@ describe('<ChronixGantt> theme (Phase 10)', () => {
   });
 });
 
-describe('<ChronixGantt> slot registry (Phase 11)', () => {
+describe('<ChronixGantt> slot registry ', () => {
   it('no slotRegistry prop → bars render as default <rect class="cx-gantt-bar">', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
@@ -2081,7 +2081,7 @@ describe('<ChronixGantt> slot registry (Phase 11)', () => {
   });
 });
 
-describe('<ChronixGantt> selection model (Phase 12)', () => {
+describe('<ChronixGantt> selection model ', () => {
   it("plain click on bar body emits 'bar-click' with { barId, sourceBar, jsEvent }", async () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [bar('b1', 'r1', 8, 12)], rows, axisInput },
@@ -2206,7 +2206,7 @@ describe('<ChronixGantt> selection model (Phase 12)', () => {
   });
 });
 
-describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
+describe('<ChronixGantt> sidebar resize divider ', () => {
   const rowsWithNames: readonly RowSpec[] = [
     { id: 'r1', columns: { region: '海口', vehicle: '车间 A' } },
     { id: 'r2', columns: { region: '海口', vehicle: '车间 B' } },
@@ -2227,7 +2227,7 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
     const divider = wrapper.find('.cx-gantt-sidebar-divider');
     expect(divider.exists()).toBe(true);
     expect((divider.element as HTMLElement).style.cursor).toBe('col-resize');
-    // Phase 23: under dual-scrollport the divider sits in grid column 2
+    // under dual-scrollport the divider sits in grid column 2
     // naturally — no sticky-left positioning required.
     expect((divider.element as HTMLElement).style.left).toBe('');
     expect((divider.element as HTMLElement).style.position).toBe('');
@@ -2409,7 +2409,7 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
   });
 });
 
-describe('<ChronixGantt> drag/resize lifecycle emits (Phase 16)', () => {
+describe('<ChronixGantt> drag/resize lifecycle emits ', () => {
   it('drag bar body: emits bar-dragstart on first non-zero pointermove, bar-dragstop on pointerup, bar-drop after bar-dragstop', async () => {
     const wrapper = mount(ChronixGantt, {
       props: {
@@ -2468,7 +2468,7 @@ describe('<ChronixGantt> drag/resize lifecycle emits (Phase 16)', () => {
     expect(wrapper.emitted('bar-dragstart')).toBeFalsy();
     expect(wrapper.emitted('bar-dragstop')).toBeFalsy();
     expect(wrapper.emitted('bar-drop')).toBeFalsy();
-    // Phase 12 click discrimination still fires bar-click.
+    // click discrimination still fires bar-click.
     expect(wrapper.emitted('bar-click')).toHaveLength(1);
   });
 
@@ -2526,7 +2526,7 @@ describe('<ChronixGantt> drag/resize lifecycle emits (Phase 16)', () => {
   });
 });
 
-describe('<ChronixGantt> — Phase 21 todayLine', () => {
+describe('<ChronixGantt> — todayLine', () => {
   // Pin `Date.now()` to mid-axis so the line lands inside the axis
   // range. The axisInput defaults to `anchorDate: 2026-05-13T00:00:00Z`
   // (day view spans the next 24 hours); 08:00 UTC is well inside that
@@ -2643,7 +2643,7 @@ describe('<ChronixGantt> — Phase 21 todayLine', () => {
   });
 });
 
-describe('Phase 22.2 todayCellBg', () => {
+describe('todayCellBg', () => {
   it('renders no today-cell rect when prop is false (default)', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
@@ -2715,7 +2715,7 @@ describe('Phase 22.2 todayCellBg', () => {
   });
 });
 
-describe('Phase 22 toolbar', () => {
+describe('toolbar', () => {
   const DEMO_TOOLBAR = {
     left: 'prev,next today',
     center: 'title',
@@ -2850,7 +2850,7 @@ describe('Phase 22 toolbar', () => {
   });
 });
 
-describe('<ChronixGantt> — reference interaction parity (Phase 54)', () => {
+describe('<ChronixGantt> — reference interaction parity ', () => {
   it('eventStartEditable={false} removes cx-gantt-bar--draggable but keeps cx-gantt-bar--resizable', () => {
     const wrapper = mount(ChronixGantt, {
       props: {
@@ -2885,14 +2885,14 @@ describe('<ChronixGantt> — reference interaction parity (Phase 54)', () => {
   });
 });
 
-describe('<ChronixGantt> hitTestFromClient (Phase 56)', () => {
+describe('<ChronixGantt> hitTestFromClient ', () => {
   it('handle.hitTestFromClient maps client coords to {time, rowId} via body rect + axis + strips', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput },
     });
     const svg = wrapper.find('svg.cx-gantt-body').element as SVGSVGElement;
     // jsdom returns 0-rect by default. Override so the helper sees a
-    // concrete origin — same idiom as the Phase 52 / 54 SFC tests for
+    // concrete origin — same idiom as the SFC tests for
     // pointer-coord math.
     svg.getBoundingClientRect = () =>
       ({ left: 100, top: 50, right: 1540, bottom: 530, width: 1440, height: 480 }) as DOMRect;

@@ -1,6 +1,6 @@
 /**
- * Phase 81 (2026-05-30): pre-built columns tool panel — a vue3
- * functional component the consumer drops into Phase 80's
+ * pre-built columns tool panel — a vue3
+ * functional component the consumer drops in's
  * `ToolPanelDescriptor.renderer` slot.
  *
  * Pure UI wrapper over `TableHandle.toggleColumnVisibility` +

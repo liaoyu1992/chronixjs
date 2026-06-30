@@ -3,7 +3,7 @@
  * thousand separator, and locale decimal separator. Pure helper for
  * InputNumber + Statistic + any future numeric display.
  *
- * Phase 7 (2026-06-02).
+ * .
  *
  * Behavior:
  *

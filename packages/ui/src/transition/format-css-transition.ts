@@ -4,7 +4,7 @@ import type { TransitionSpec } from './transition-spec.js';
  * Format a CSS `transition` property value from a list of property
  * names + a `TransitionSpec`. Pure helper.
  *
- * Phase 8 (2026-06-02). Output is a comma-separated list of
+ * . Output is a comma-separated list of
  * `property duration easing[ delay]` entries, suitable for inline
  * `style.transition` or a `.css` `transition: ...` declaration.
  *

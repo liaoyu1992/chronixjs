@@ -1,5 +1,5 @@
 /**
- * Discrete Dialog stylesheet — Phase 36 (2026-06-05). Same pattern as
+ * Discrete Dialog stylesheet — . Same pattern as
  * Alert/Button/Tag: single core CSS string, idempotent injection,
  * CSS-var token fallback.
  */

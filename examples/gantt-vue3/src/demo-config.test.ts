@@ -128,7 +128,7 @@ describe('useDemoConfig', () => {
     });
   });
 
-  it('Phase 21: todayLine bool schema field round-trips through URL', async () => {
+  it('todayLine bool schema field round-trips through URL', async () => {
     setUrl('?todayLine=true');
     const cfg = useDemoConfig({
       todayLine: bool(false, 'Show today-line'),

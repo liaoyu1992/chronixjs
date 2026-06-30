@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixDivider } from './chronix-divider.js';
 
 /**
- * Phase 13 (2026-06-02) — Divider mount tests (vue3). Mirrors the
+ * — Divider mount tests (vue3). Mirrors the
  * core's `resolveDividerClassList` test pairs to confirm the SFC
  * wires through identical class sets + correct DOM-level role
  * semantics.

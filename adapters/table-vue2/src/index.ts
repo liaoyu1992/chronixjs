@@ -1,17 +1,17 @@
 /**
  * @chronixjs/table-vue2 — Vue 2.7 adapter for the chronix-table core.
  *
- * Phase 0 (2026-05-23): package skeleton.
- * Phase 41 (2026-05-25): first rendering surface — `<ChronixTable>`
+ * package skeleton.
+ * first rendering surface — `<ChronixTable>`
  * SFC + `useTableLayout` + `useTableContainerSize` composables.
- * Verbatim port of chronix-table-vue3's Phase 2 form (commit
+ * Verbatim port of chronix-table-vue3's form (commit
  * `3518eb7`). Vue 2.7's composition API surface is identical to
- * Vue 3 for everything Phase 41 uses; deltas are limited to the
+ * Vue 3 for everything uses; deltas are limited to the
  * `ctx.expose` call shape + the local `toValue` / `MaybeRefOrGetter`
  * shim (Vue 2.7 predates Vue 3.3's helpers).
  *
  * Subsequent vue2 sub-phases (41.1 / 41.2 / 42 / 43 / ...) port
- * vue3 Phase 3+ behaviors progressively.
+ * vue3 + behaviors progressively.
  */
 
 export {

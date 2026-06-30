@@ -1,13 +1,13 @@
 /**
- * Input component IR — Phase 25 (2026-06-03). Tier B text-entry
+ * Input component IR — . Tier B text-entry
  * surface. Single export with `type: 'text' | 'textarea'` variant
  * discriminator (one Input component covers both single-line + multi-
  * line cases).
  *
- * Co-located with Phase 7 input helpers (parseNumberInput /
+ * Co-located with input helpers (parseNumberInput /
  * clampNumberInput / formatNumberInput / composeKeyboardSelection /
  * ImeCompositionState) which are consumed by InputNumber + AutoComplete
- * in this same Phase 25 wave.
+ * in this same wave.
  */
 
 export type InputType = 'text' | 'textarea';

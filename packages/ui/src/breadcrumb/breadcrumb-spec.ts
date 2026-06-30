@@ -1,5 +1,5 @@
 /**
- * Breadcrumb IR — Phase 19 (2026-06-02). Tier A navigation primitive.
+ * Breadcrumb IR — . Tier A navigation primitive.
  *
  * Renders a hierarchical-path navigation: a sequence of items
  * (typically 3-7) joined by a separator. Each item is either a link
@@ -7,13 +7,13 @@
  * page / non-clickable). The trailing item is conventionally the
  * current page and rendered as a `<span>`.
  *
- * Per Phase 19 Decision C.1, items come EXCLUSIVELY from the
+ * Per Decision C.1, items come EXCLUSIVELY from the
  * `items: readonly BreadcrumbItem[]` array prop. There is no
  * `<ChronixBreadcrumbItem>` sub-component (would double the export
  * surface for v0.1.0 with no consumer-side ergonomic gain over a
  * plain array).
  *
- * Per Phase 19 Decision D.1, items that are clickable (have `href`
+ * Per Decision D.1, items that are clickable (have `href`
  * OR `clickable: true`) always emit `item-click` (Vue) / call
  * `onItemClick(item)` (React) when clicked. Native `<a href>`
  * navigation is NOT suppressed — consumers wanting client-side

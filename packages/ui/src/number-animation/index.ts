@@ -1,5 +1,5 @@
 /**
- * chronix-ui number-animation module — Phase 35 (2026-06-05).
+ * chronix-ui number-animation module — .
  *
  * Pure-function helpers for an animated number display. No DOM access,
  * no framework dependency. Adapters drive requestAnimationFrame (or

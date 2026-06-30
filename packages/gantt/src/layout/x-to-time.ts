@@ -1,7 +1,7 @@
 import type { PlannedAxis } from './types.js';
 
 /**
- * Phase 54 — maps an x position (in chart content-coord space, i.e.
+ * maps an x position (in chart content-coord space, i.e.
  * `0` = first axis tick, `axis.totalWidth` = last tick + 1 slot) to a
  * `Date` using the axis's nominal `pxPerMs = slotWidth / slotDurationMs`
  * conversion rate.

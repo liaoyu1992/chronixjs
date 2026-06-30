@@ -7,7 +7,7 @@ import {
 import { computed, defineComponent, h, type VNode } from 'vue';
 
 /**
- * `<ChronixWatermark>` — Vue 2.7 port of the Phase 22 Watermark.
+ * `<ChronixWatermark>` — Vue 2.7 port of the Watermark.
  *
  * Inline style is an object on `style:`; Vue 2 accepts the same
  * camelCase object form as Vue 3. DOM shape, class list, slot

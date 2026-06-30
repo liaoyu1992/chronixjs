@@ -1,5 +1,5 @@
 /**
- * Select class-list resolver — Phase 31 (2026-06-04).
+ * Select class-list resolver — .
  *
  * Pure BEM class resolvers for Select root, trigger, dropdown, option,
  * filter-input, arrow, empty, tag, and tag-close elements.

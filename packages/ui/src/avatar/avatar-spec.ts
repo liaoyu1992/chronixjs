@@ -1,5 +1,5 @@
 /**
- * Avatar IR — Phase 24 (2026-06-03). Tier A image/text/fallback
+ * Avatar IR — . Tier A image/text/fallback
  * avatar with shape + size.
  */
 

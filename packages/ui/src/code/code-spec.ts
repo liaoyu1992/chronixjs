@@ -1,5 +1,5 @@
 /**
- * Code IR — Phase 24 (2026-06-03). Tier A `<pre><code>` block.
+ * Code IR — . Tier A `<pre><code>` block.
  * No syntax highlighting in v0.1.0-alpha (deferred per design doc).
  */
 

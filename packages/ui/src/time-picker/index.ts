@@ -1,5 +1,5 @@
 /**
- * TimePicker module — Phase 32 (2026-06-05).
+ * TimePicker module — .
  *
  * Framework-agnostic time picker IR: time unit generation,
  * formatting/parsing, BEM class resolvers, CSS.

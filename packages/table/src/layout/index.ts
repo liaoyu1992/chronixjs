@@ -1,13 +1,13 @@
 /**
  * Layout-pass barrel.
  *
- * Phase 1 (2026-05-23): `columnLayoutPass`.
- * Phase 3 (2026-05-23): `rowLayoutPass`.
- * Phase 4 (2026-05-23): `virtualRowsPass`.
- * Phase 8 (2026-05-24): `sortPass` (single-column row reordering).
- * Phase 9 (2026-05-24): `filterPass` (multi-column AND).
- * Phase 11 (2026-05-24): `pagePass` (post-sort row slicing).
- * Phase 17 (2026-05-26): `pinnedColsPass` (sticky-offset metadata for
+ * `columnLayoutPass`.
+ * `rowLayoutPass`.
+ * `virtualRowsPass`.
+ * `sortPass` (single-column row reordering).
+ * `filterPass` (multi-column AND).
+ * `pagePass` (post-sort row slicing).
+ * `pinnedColsPass` (sticky-offset metadata for
  *   left + right pinned columns).
  * Subsequent passes land in their owning feature phases.
  */

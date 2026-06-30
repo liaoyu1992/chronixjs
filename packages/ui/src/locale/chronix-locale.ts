@@ -1,21 +1,21 @@
 /**
  * chronix-ui locale spec.
  *
- * Phase 2 (2026-06-01) shipped a `{ name }` stub.
- * Phase 3 (2026-06-02) extends to:
+ * shipped a `{ name }` stub.
+ * extends to:
  *
  * - `ChronixLocaleCommon` slice — universal verbs / states / labels
  *   shared across every component (OK, Cancel, Loading, No data, …).
  * - `ChronixLocale` top-level interface — `name` (BCP 47 tag) + `common`
  *   slice + room for per-component slices that future phases will append
- *   as their components land (e.g. Phase 77 adds `datePicker`, Phase 90
+ *   as their components land (e.g. adds `datePicker`,
  *   adds `form`, …).
- * - 3 preset locales shipped from Phase 3: `defaultEnUSLocale` (English),
+ * - 3 preset locales shipped `defaultEnUSLocale` (English),
  *   `defaultZhCNLocale` (Simplified Chinese), `defaultJaJPLocale`
  *   (Japanese). Additional locales (de-DE, fr-FR, etc.) are consumer-
  *   contributed via `registerLocale` (see `./locale-registry.ts`).
  *
- * Mirrors the theme module's nested-slice pattern (Phase 0.1 Decision B.1):
+ * Mirrors the theme module's nested-slice pattern (Decision B.1):
  * `common` is the shared baseline, per-component slices are optional
  * extensions. Composition via `mergeLocales` (see `./merge-locales.ts`)
  * follows the same shallow-per-slice semantics as `mergeChronixUITheme`.
@@ -24,7 +24,7 @@
 /**
  * Universal locale messages used by every component. Each key is a
  * single short label or sentence; no interpolation parameters in
- * Phase 3 (parameterized messages — e.g. "Showing {start}-{end} of
+ * (parameterized messages — e.g. "Showing {start}-{end} of
  * {total}" — land per-component as ICU format function fields).
  */
 export interface ChronixLocaleCommon {
@@ -69,7 +69,7 @@ export interface ChronixLocaleCommon {
 }
 
 /**
- * Top-level chronix-ui locale. Phase 3 ships `name` + `common`. Per-
+ * Top-level chronix-ui locale. ships `name` + `common`. Per-
  * component slices (DatePicker, Form, Upload, Pagination, …) are
  * declared with `?` optional modifier and added by their respective
  * component phases; consumers without those components see no overhead.
@@ -118,7 +118,7 @@ export interface ChronixLocaleOverrides {
 }
 
 /**
- * English (United States) preset. Phase 3 baseline locale.
+ * English (United States) preset. baseline locale.
  */
 export const defaultEnUSLocale: ChronixLocale = {
   name: 'en-US',

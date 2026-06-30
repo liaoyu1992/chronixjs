@@ -10,7 +10,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixProgress>` — Vue 2.7 port of the Phase 16 Progress (line
+ * `<ChronixProgress>` — Vue 2.7 port of the Progress (line
  * variant). Verbatim surface mirror of vue3 sibling.
  */
 export const ChronixProgress = defineComponent({

@@ -1,5 +1,5 @@
 /**
- * Time unit generation — Phase 32 (2026-06-05).
+ * Time unit generation — .
  *
  * Generates hour/minute/second value lists with step support.
  * Used by TimePicker adapter to render scrollable columns.

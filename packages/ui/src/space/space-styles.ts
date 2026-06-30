@@ -1,5 +1,5 @@
 /**
- * Space stylesheet — Phase 17 (2026-06-02).
+ * Space stylesheet — .
  *
  * Single-element flex container; per-instance `gap` value comes from
  * inline `style="gap: ..."` set by the adapter via `resolveSpaceGap`.

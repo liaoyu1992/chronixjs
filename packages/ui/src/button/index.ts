@@ -1,5 +1,5 @@
 /**
- * chronix-ui button module — Phase 11 (2026-06-02).
+ * chronix-ui button module — .
  *
  * Core IR for the Button component. Adapter SFCs in
  * `@chronixjs/ui-vue3` / `ui-vue2` / `ui-react` consume these types +
@@ -16,7 +16,7 @@
  *   `cx-ui-button*` BEM class names.
  *
  * Theme tokens for Button live in the `button` slice of `ChronixUITheme`
- * (Phase 1). Adapters apply tokens via CSS-var fallback in static
+ * . Adapters apply tokens via CSS-var fallback in static
  * CSS rules.
  */
 

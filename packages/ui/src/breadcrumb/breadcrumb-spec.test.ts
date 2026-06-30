@@ -18,7 +18,7 @@ describe('defaultBreadcrumbProps', () => {
     const items: BreadcrumbItem[] = [
       { key: 'home', label: 'Home', href: '/', clickable: false },
       { key: 'docs', label: 'Docs', href: '/docs', clickable: false },
-      { key: 'current', label: 'Phase 19', href: undefined, clickable: false },
+      { key: 'current', label: '', href: undefined, clickable: false },
     ];
     const override: BreadcrumbProps = {
       ...defaultBreadcrumbProps,
@@ -55,7 +55,7 @@ describe('BreadcrumbItem shape', () => {
   it('accepts non-clickable trailing items', () => {
     const trailing: BreadcrumbItem = {
       key: 'current',
-      label: 'Phase 19',
+      label: '',
       href: undefined,
       clickable: false,
     };

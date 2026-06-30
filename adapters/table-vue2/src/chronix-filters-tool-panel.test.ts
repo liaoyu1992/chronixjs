@@ -164,7 +164,7 @@ describe('<ChronixFiltersToolPanel> (vue2)', () => {
   });
 });
 
-describe('Phase 100.2: advanced filter typeahead (vue2)', () => {
+describe('advanced filter typeahead (vue2)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -204,7 +204,7 @@ describe('Phase 100.2: advanced filter typeahead (vue2)', () => {
     const items = wrapper.findAll('[data-testid="cx-filters-typeahead-item"]');
     expect(items).toHaveLength(1);
     expect(items.at(0).attributes('aria-selected')).toBe('true');
-    // Label is in the first span (Phase 100.2.1 layout adds a
+    // Label is in the first span (layout adds a
     // category badge in the second span).
     expect(items.at(0).find('span').text()).toBe('名称');
     wrapper.destroy();
@@ -232,7 +232,7 @@ describe('Phase 100.2: advanced filter typeahead (vue2)', () => {
     wrapper.destroy();
   });
 
-  it('100.2 (vue2): Enter commits active item — textarea replaced with col.id + trailing space (Phase 100.2.4 auto-trigger)', async () => {
+  it('100.2 (vue2): Enter commits active item — textarea replaced with col.id + trailing space (auto-trigger)', async () => {
     const wrapper = mount(FiltersPanelForTest, {
       propsData: { tableHandle: makeHandle(), columns, filterSpec: [] },
       attachTo: document.body,
@@ -246,7 +246,7 @@ describe('Phase 100.2: advanced filter typeahead (vue2)', () => {
     await ta.trigger('input');
     await ta.trigger('keydown', { key: 'Enter' });
     await wrapper.vm.$nextTick();
-    // Phase 100.2.4 (vue2 port): column commit appends a trailing
+    // (vue2 port): column commit appends a trailing
     // space + re-triggers the typeahead. The post-commit typeahead
     // opens for the operator slot.
     expect(taEl.value).toBe('name ');
@@ -270,7 +270,7 @@ describe('Phase 100.2: advanced filter typeahead (vue2)', () => {
     wrapper.destroy();
   });
 
-  it('100.2 (vue2): click on a typeahead item commits the selection (Phase 100.2.4 trailing space)', async () => {
+  it('100.2 (vue2): click on a typeahead item commits the selection (trailing space)', async () => {
     const wrapper = mount(FiltersPanelForTest, {
       propsData: { tableHandle: makeHandle(), columns, filterSpec: [] },
       attachTo: document.body,
@@ -292,7 +292,7 @@ describe('Phase 100.2: advanced filter typeahead (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.1: typeahead slot detection + operator/keyword suggestions (vue2)', () => {
+describe('typeahead slot detection + operator/keyword suggestions (vue2)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -385,7 +385,7 @@ describe('Phase 100.2.1: typeahead slot detection + operator/keyword suggestions
     wrapper.destroy();
   });
 
-  it('100.2.1 (vue2): Enter commits operator item + Phase 100.2.4 trailing space', async () => {
+  it('100.2.1 (vue2): Enter commits operator item + trailing space', async () => {
     const wrapper = mount(FiltersPanelForTest, {
       propsData: { tableHandle: makeHandle(), columns, filterSpec: [] },
       attachTo: document.body,
@@ -404,7 +404,7 @@ describe('Phase 100.2.1: typeahead slot detection + operator/keyword suggestions
     wrapper.destroy();
   });
 
-  it('100.2.1 (vue2): Enter commits keyword item + Phase 100.2.4 trailing space', async () => {
+  it('100.2.1 (vue2): Enter commits keyword item + trailing space', async () => {
     const wrapper = mount(FiltersPanelForTest, {
       propsData: { tableHandle: makeHandle(), columns, filterSpec: [] },
       attachTo: document.body,
@@ -442,7 +442,7 @@ describe('Phase 100.2.1: typeahead slot detection + operator/keyword suggestions
   });
 });
 
-describe('Phase 100.2.3: operator subset by column type (vue2)', () => {
+describe('operator subset by column type (vue2)', () => {
   const typedColumns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -560,7 +560,7 @@ describe('Phase 100.2.3: operator subset by column type (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.2: value slot suggestions (vue2)', () => {
+describe('value slot suggestions (vue2)', () => {
   const typedColumns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -763,7 +763,7 @@ describe('detectTypeaheadSlot (vue2)', () => {
     expect(ADVANCED_FILTER_OPERATORS.length).toBe(12);
     expect(ADVANCED_FILTER_KEYWORDS).toEqual(['AND', 'OR', 'NOT']);
   });
-  // Phase 100.2.2 (2026-06-01 — vue2 port): prevColumn extraction.
+  // (2026-06-01 — vue2 port): prevColumn extraction.
   it("100.2.2 (vue2): after 'qty > ' → value slot with prevColumn='qty'", () => {
     const r = detectTypeaheadSlot('qty > ', 6);
     expect(r.slot).toBe('value');
@@ -804,7 +804,7 @@ describe('extractWordAtCursor (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.2.2: histogram count badge per value (vue2)', () => {
+describe('histogram count badge per value (vue2)', () => {
   const typedColumns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -902,7 +902,7 @@ describe('Phase 100.2.2.2: histogram count badge per value (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.2.3: date-typed value formatter (vue2)', () => {
+describe('date-typed value formatter (vue2)', () => {
   const dateColumns: readonly ColumnSpec[] = [
     { id: 'createdAt', field: 'createdAt', headerName: 'Created', type: 'date' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -1028,7 +1028,7 @@ describe('Phase 100.2.2.3: date-typed value formatter (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.3.1: custom column-type operator override (vue2)', () => {
+describe('custom column-type operator override (vue2)', () => {
   const customColumns: readonly ColumnSpec[] = [
     { id: 'price', field: 'price', headerName: 'Price', type: 'currency' },
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
@@ -1145,7 +1145,7 @@ describe('Phase 100.2.3.1: custom column-type operator override (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.3.2: localized operator labels (vue2)', () => {
+describe('localized operator labels (vue2)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量', type: 'number' },
@@ -1278,7 +1278,7 @@ describe('Phase 100.2.3.2: localized operator labels (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.4: auto-trigger after operator commit (vue2)', () => {
+describe('auto-trigger after operator commit (vue2)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -1398,7 +1398,7 @@ describe('Phase 100.2.4: auto-trigger after operator commit (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.6: auto-scroll active item into view (vue2)', () => {
+describe('auto-scroll active item into view (vue2)', () => {
   const manyColumns: readonly ColumnSpec[] = Array.from({ length: 30 }, (_, i) => ({
     id: `col${i}`,
     field: `col${i}`,
@@ -1499,7 +1499,7 @@ describe('Phase 100.2.6: auto-scroll active item into view (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.2.4: string-literal-internal typeahead (vue2)', () => {
+describe('string-literal-internal typeahead (vue2)', () => {
   const typedColumns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -1605,7 +1605,7 @@ describe('Phase 100.2.2.4: string-literal-internal typeahead (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.5: per-slot recent LRU rings (vue2)', () => {
+describe('per-slot recent LRU rings (vue2)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -1700,7 +1700,7 @@ describe('Phase 100.2.5: per-slot recent LRU rings (vue2)', () => {
   });
 });
 
-describe('Phase 100.2.2.1: SSR async value getter (vue2)', () => {
+describe('SSR async value getter (vue2)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
   ];
@@ -1745,7 +1745,7 @@ describe('Phase 100.2.2.1: SSR async value getter (vue2)', () => {
     taEl.selectionStart = 10;
     taEl.selectionEnd = 10;
     await ta.trigger('input');
-    // Phase 118 (2026-06-02 — vue2 port): getter widened with
+    // (2026-06-02 — vue2 port): getter widened with
     // optional 3rd `signal?: AbortSignal` arg.
     expect(getter).toHaveBeenCalledWith('status', 'i', expect.any(AbortSignal));
     wrapper.destroy();
@@ -1859,7 +1859,7 @@ describe('Phase 100.2.2.1: SSR async value getter (vue2)', () => {
   });
 });
 
-describe('Phase 112: persistent typeahead recent (vue2)', () => {
+describe('persistent typeahead recent (vue2)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -2001,7 +2001,7 @@ describe('formatFilterChipLabel (vue2)', () => {
   });
 });
 
-describe('Phase 118: P3 finale — AbortController + per-column recents (vue2)', () => {
+describe('P3 finale — AbortController + per-column recents (vue2)', () => {
   const phase118Columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -2009,7 +2009,7 @@ describe('Phase 118: P3 finale — AbortController + per-column recents (vue2)',
   ];
   const phase118Handle = makeHandle();
 
-  it('Phase 118 (vue2): getter receives an AbortSignal arg', async () => {
+  it('(vue2): getter receives an AbortSignal arg', async () => {
     const getter = vi.fn<
       (colId: string, query: string, signal?: AbortSignal) => Promise<readonly ColumnUniqueValue[]>
     >(() => Promise.resolve([{ value: 'OK', count: 1 }]));
@@ -2035,7 +2035,7 @@ describe('Phase 118: P3 finale — AbortController + per-column recents (vue2)',
     wrapper.destroy();
   });
 
-  it('Phase 118 (vue2): rapid typing aborts the prior in-flight controller', async () => {
+  it('(vue2): rapid typing aborts the prior in-flight controller', async () => {
     const signals: AbortSignal[] = [];
     const getter = vi.fn((_colId: string, _query: string, signal?: AbortSignal) => {
       if (signal != null) signals.push(signal);
@@ -2064,7 +2064,7 @@ describe('Phase 118: P3 finale — AbortController + per-column recents (vue2)',
     wrapper.destroy();
   });
 
-  it('Phase 118 (vue2): typeaheadRecentScope="per-column-value" mounts cleanly', () => {
+  it('(vue2): typeaheadRecentScope="per-column-value" mounts cleanly', () => {
     const wrapper = mount(FiltersPanelForTest, {
       propsData: {
         tableHandle: phase118Handle,

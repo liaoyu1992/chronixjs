@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixNumberAnimation } from './chronix-number-animation.js';
 
 /**
- * Phase 35 (2026-06-05) — NumberAnimation mount tests (vue3).
+ * — NumberAnimation mount tests (vue3).
  */
 describe('ChronixNumberAnimation', () => {
   it('renders a span with base class and data-testid', () => {

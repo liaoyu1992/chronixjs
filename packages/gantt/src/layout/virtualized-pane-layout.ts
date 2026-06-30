@@ -5,7 +5,7 @@ import type {
 } from './types.js';
 
 /**
- * Phase 2 layout pass #5 — derives the subset of the timeline that's
+ * layout pass #5 — derives the subset of the timeline that's
  * actually in-frame, so the renderer can skip strips and slots outside
  * the visible viewport.
  *

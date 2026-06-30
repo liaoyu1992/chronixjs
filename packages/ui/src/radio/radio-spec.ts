@@ -1,8 +1,8 @@
 /**
- * Radio + RadioGroup component IR — Phase 25 (2026-06-03). Tier B
+ * Radio + RadioGroup component IR — . Tier B
  * single-selection-from-set surface. Radio is exported as a standalone
  * component but typical authoring path is `<ChronixRadioGroup>` with
- * array-only `options` prop (Phase 19 Breadcrumb precedent for
+ * array-only `options` prop (Breadcrumb precedent for
  * array-only authoring; sub-component slot-nested Radio is
  * foreclosed in v0.1.0-alpha).
  */

@@ -48,7 +48,7 @@ import {
 type ViewId = AxisRangePlanInput['viewId'];
 
 /**
- * **Phase 20.6: demo config schema.**
+ * **demo config schema.**
  *
  * Every toggle in the demo is one entry here. Adding a new
  * Phase-21+ toggle = 1 line (`newToggle: bool(false, '...')`)
@@ -68,24 +68,24 @@ const DEMO_SCHEMA = {
   editable: bool(true, 'Enable bar drag + edge resize'),
   selectable: bool(true, 'Enable calendar range-select on empty rows'),
   parity: bool(false, 'Swap demo data to the original spec dataset (32 resources × 25 events)'),
-  // Phase 19 validators
+  // validators
   eventOverlap: bool(false, 'Reject cross-row time-intersecting drops'),
   eventConstraint: bool(false, 'Constrain drag/resize destination to today 08:00–20:00'),
   eventAllow: bool(false, 'Reject drops/resizes whose start is before 08:00'),
   selectAllow: bool(false, 'Reject range-selects wider than 4 hours'),
-  // Phase 20 bar styling
+  // bar styling
   themedBars: bool(false, 'Override bar bg + border via component props'),
   umbrellaColor: bool(false, 'Use barColor umbrella prop (sets both fill + stroke)'),
   priorityCallback: bool(false, 'Per-priority bar background callback (high/medium/low)'),
-  // Phase 21 today line (default ON Phase 22.2, matching original visible default)
+  // today line (default ON matching original visible default)
   todayLine: bool(
     true,
     'Show vertical today-line with original spec defaults (red #ff6b6b, 2 px, dashed, 今日 tooltip)',
   ),
-  // Phase 22.2 today cell bg (default ON matching original `todayBgColor`)
+  // today cell bg (default ON matching original `todayBgColor`)
   todayCellBg: bool(true, 'Show today-column background tint (rgba(255, 220, 40, .15))'),
-  // Phase 28.3 link rendering
-  useLineEventColor: bool(false, 'Color dependency lines by source bar (Phase 28.3)'),
+  // link rendering
+  useLineEventColor: bool(false, 'Color dependency lines by source bar '),
   // Sidebar/chart divider gap (px). 0 removes the gap (and the resize handle).
   dividerWidth: num(4, 'Sidebar↔timeline divider width in px (0 = no gap)'),
 } as const;
@@ -94,14 +94,14 @@ const cfg = useDemoConfig(DEMO_SCHEMA);
 
 const initialBars = cfg.parity.value ? sampleBarsParity : sampleBars;
 const initialRows = cfg.parity.value ? sampleRowsParity : sampleRows;
-// Phase 28.3.1: parity mode wires the curated 8-edge parity link set
+// parity mode wires the curated 8-edge parity link set
 // (`sampleLinksParity`) so cross-demo `useLineEventColor` assertions
 // have a non-empty dependency graph to compare. Default (non-parity)
 // mode keeps the original `sampleLinks` set.
 const initialLinks = cfg.parity.value ? sampleLinksParity : sampleLinks;
 
 // Resource-panel column descriptors. Three columns demonstrate
-// Phase 5.x's vGrouping rowspan merge: 地区 + 基地 are flagged
+// vGrouping rowspan merge: 地区 + 基地 are flagged
 // `group: true` so consecutive rows that share their value collapse
 // into one cell.
 const columns: readonly ColumnSpec[] = [
@@ -135,7 +135,7 @@ interface DemoEvent {
 const events = ref<DemoEvent[]>([]);
 let nextEventId = 0;
 
-// Phase 12: selection helper. Default single + shift-toggle multi-select
+// selection helper. Default single + shift-toggle multi-select
 // with auto-clear-on-empty-click.
 const selection = useGanttSelection();
 
@@ -182,7 +182,7 @@ const activeBarBackgroundCallback = computed<BarColorFunc | undefined>(() => {
   return undefined;
 });
 
-// Phase 21: parity mode auto-enables the today-line so cross-demo
+// parity mode auto-enables the today-line so cross-demo
 // screenshots match the original default visible state
 // (its demo turns todayLine on by default). Standalone `?todayLine=true`
 // flag still works in non-parity mode for chronix users to see the
@@ -195,7 +195,7 @@ const activeTodayLine = computed<TodayLineOption | false>(() => {
   return false;
 });
 
-// Phase 22.2: parity mode auto-enables today-cell-bg so cross-demo
+// parity mode auto-enables today-cell-bg so cross-demo
 // screenshots match the original default visible state.
 // Standalone `?todayCellBg=true` flag still works for chronix-only
 // users to opt in without flipping the parity dataset.
@@ -205,20 +205,20 @@ const activeTodayCellBg = computed<TodayCellBgOption | false>(() => {
   return false;
 });
 
-// Phase 22: anchorDate becomes a local-ref so toolbar nav buttons
+// anchorDate becomes a local-ref so toolbar nav buttons
 // (prev / next / today) can shift it via `update:axisInput`. URL
-// persistence stays scoped to `cfg.view` (Phase 20.6 schema field) —
+// persistence stays scoped to `cfg.view` (schema field) —
 // anchor-date URL persistence is deferred to a future i18n / date-
 // URL phase. Seeded at module-load with today's local midnight.
 const anchorDate = ref<Date>(todayLocalMidnight());
 
-// Phase 24: imperative-handle ref. Demo binds it via the `ref` template
+// imperative-handle ref. Demo binds it via the `ref` template
 // attr below; the Phase-24 test-button bar invokes methods on it. The
 // chart re-renders via the normal `v-model:axis-input` round-trip
 // (compute-and-emit pathway documented in PHASE_24_IMPERATIVE_HANDLE_DESIGN).
 const ganttRef = ref<GanttHandle | null>(null);
 
-// Phase 24: fixed scroll target one day after the anchor — gives the
+// fixed scroll target one day after the anchor — gives the
 // cross-demo parity assertion a deterministic destination that exists in
 // every view's axis window without depending on the live "today" date.
 function scrollTargetDate(): Date {
@@ -235,7 +235,7 @@ const axisInput = computed<AxisRangePlanInput>(() => ({
   weekendsVisible: true,
 }));
 
-// Phase 22: toolbar two-way binding. The toolbar emits the full new
+// toolbar two-way binding. The toolbar emits the full new
 // `axisInput`; the demo decomposes it back into the two reactive
 // sources (`cfg.view` URL-persisted, `anchorDate` local).
 function onUpdateAxisInput(next: AxisRangePlanInput): void {
@@ -243,7 +243,7 @@ function onUpdateAxisInput(next: AxisRangePlanInput): void {
   anchorDate.value = next.anchorDate;
 }
 
-// Phase 22: original spec headerToolbar wiring. Three nav buttons +
+// original spec headerToolbar wiring. Three nav buttons +
 // a title + six view-toggle buttons, matching the original spec
 // demo's `headerToolbar` shape (see DemoApp.vue:1346-1350).
 const HEADER_TOOLBAR = {
@@ -397,7 +397,7 @@ function resetBars(): void {
           <button type="button" @click="resetBars">reset</button>
         </div>
         <div class="cx-demo-validation-toggles" role="group" aria-label="validation gates">
-          <span class="cx-demo-validation-label">validation (Phase 19):</span>
+          <span class="cx-demo-validation-label">validation </span>
           <label title="Reject cross-row time-intersecting drops">
             <input v-model="cfg.eventOverlap.value" type="checkbox" />
             eventOverlap: false
@@ -416,7 +416,7 @@ function resetBars(): void {
           </label>
         </div>
         <div class="cx-demo-validation-toggles" role="group" aria-label="bar styling">
-          <span class="cx-demo-validation-label">bar styling (Phase 20):</span>
+          <span class="cx-demo-validation-label">bar styling </span>
           <label title="barBackgroundColor + barBorderColor at component level">
             <input v-model="cfg.themedBars.value" type="checkbox" />
             themed bars
@@ -473,7 +473,7 @@ function resetBars(): void {
         />
       </div>
       <!--
-        Phase 24: imperative-handle test-button bar. Positioned offscreen
+        imperative-handle test-button bar. Positioned offscreen
         (top: -9999px) so Playwright can click it without it leaking into
         any captured VRT snapshot. Each button drives the chart via the
         adapter's exposed `GanttHandle`; chart re-renders via the same
@@ -481,7 +481,7 @@ function resetBars(): void {
         assertions in tooling/golden-runner/tests/parity.spec.ts pair
         these against equivalent buttons on the original spec demo.
       -->
-      <div class="cx-demo-handle-test-bar" role="group" aria-label="Phase 24 handle tests">
+      <div class="cx-demo-handle-test-bar" role="group" aria-label="handle tests">
         <button data-test-handle-method="next" @click="ganttRef?.next()">handle.next()</button>
         <button data-test-handle-method="today" @click="ganttRef?.today()">handle.today()</button>
         <button data-test-handle-method="changeView-month" @click="ganttRef?.changeView('month')">

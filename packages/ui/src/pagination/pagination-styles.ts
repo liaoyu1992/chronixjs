@@ -1,5 +1,5 @@
 /**
- * Pagination CSS — Phase 33 (2026-06-05).
+ * Pagination CSS — .
  *
  * BEM styles for cx-ui-pagination + all sub-elements.
  * CSS var tokens with fallbacks for theme customization.

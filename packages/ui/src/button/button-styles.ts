@@ -1,5 +1,5 @@
 /**
- * Button stylesheet — Phase 12 (2026-06-02).
+ * Button stylesheet — .
  *
  * Hoisted from `adapters/ui-vue3/src/components/chronix-button-styles.ts`
  * into the framework-agnostic core so all 3 adapters (vue3 / vue2 /
@@ -7,7 +7,7 @@
  * cross-adapter visual parity automatic — none of the adapters owns
  * the CSS independently.
  *
- * Tokens live in the `button` slice of `ChronixUITheme` (Phase 1).
+ * Tokens live in the `button` slice of `ChronixUITheme` .
  * Two-level fallback (`var(--cx-ui-button-*, fallback)`) keeps buttons
  * readable even when no `<ChronixUIProvider>` is mounted.
  *

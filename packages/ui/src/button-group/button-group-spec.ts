@@ -1,5 +1,5 @@
 /**
- * ButtonGroup IR — Phase 24 (2026-06-03). Tier A flex-container
+ * ButtonGroup IR — . Tier A flex-container
  * that groups `<ChronixButton>` children with merged borders.
  */
 

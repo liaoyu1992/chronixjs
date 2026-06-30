@@ -264,7 +264,7 @@ describe('validateSelect', () => {
     expect(allowFunc.mock.calls[0]?.[0]).toMatchObject({ rowId: 'r1' });
   });
 
-  it('falls back to eventOverlap when selectOverlap is unset (Phase 55 fallback)', () => {
+  it('falls back to eventOverlap when selectOverlap is unset (fallback)', () => {
     // With eventOverlap: false + an intersecting bar, select should now
     // reject. This REPLACES the Phase-19-era parking-gap assertion.
     const existingBar = bar('m', 'r1', 10, 12);
@@ -276,7 +276,7 @@ describe('validateSelect', () => {
   });
 });
 
-describe('validateSelect — selectOverlap (Phase 55)', () => {
+describe('validateSelect — selectOverlap ', () => {
   const existingBar = bar('m', 'r1', 10, 12);
 
   it('selectOverlap: false vetoes a proposal that intersects an existing bar', () => {
@@ -329,7 +329,7 @@ describe('validateSelect — selectOverlap (Phase 55)', () => {
   });
 });
 
-describe('validateSelect — selectConstraint (Phase 55)', () => {
+describe('validateSelect — selectConstraint ', () => {
   const tightWindow: EventConstraint = {
     range: {
       start: new Date(todayMs + 8 * MS_PER_HOUR),

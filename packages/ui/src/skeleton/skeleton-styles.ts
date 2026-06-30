@@ -1,5 +1,5 @@
 /**
- * Skeleton stylesheet — Phase 16 (2026-06-02).
+ * Skeleton stylesheet — .
  *
  * Single-element placeholder: solid background color + optional
  * shimmer animation via a linear-gradient with shifting background

@@ -8,7 +8,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixAlert>` — Vue 2.7 port of the Phase 15 Alert. Verbatim
+ * `<ChronixAlert>` — Vue 2.7 port of the Alert. Verbatim
  * surface mirror of vue3 sibling; runtime differences are Vue 2's
  * `attrs:` data-object for `role` + `aria-label` HTML attributes and
  * `on:` for `click`.

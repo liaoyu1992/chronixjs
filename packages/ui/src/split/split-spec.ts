@@ -1,5 +1,5 @@
 /**
- * Split component IR — Phase 28 (2026-06-04). Tier B 2-pane
+ * Split component IR — . Tier B 2-pane
  * resizable splitter. Drag the bar between two panes to redistribute
  * space.
  *

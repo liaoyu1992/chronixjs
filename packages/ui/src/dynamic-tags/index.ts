@@ -1,5 +1,5 @@
 /**
- * chronix-ui dynamic-tags module — Phase 35 (2026-06-05).
+ * chronix-ui dynamic-tags module — .
  *
  * Pure-function helpers for an inline tag editor component. No DOM
  * access, no framework dependency.

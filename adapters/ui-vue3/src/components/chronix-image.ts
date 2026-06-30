@@ -11,7 +11,7 @@ import { defineComponent, h, ref, useAttrs, type PropType } from 'vue';
 import { ChronixModal } from './chronix-modal.js';
 
 /**
- * `<ChronixImage>` — Vue 3. Phase 28 (2026-06-04). Enhanced `<img>`
+ * `<ChronixImage>` — Vue 3. . Enhanced `<img>`
  * with native lazy loading + error fallback + previewable lightbox
  * via inlined `<ChronixModal>`. `inheritAttrs: false` so consumer
  * attrs (e.g. `data-testid`) land on the `<img>` and not the wrapper.

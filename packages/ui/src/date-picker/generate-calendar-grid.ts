@@ -1,5 +1,5 @@
 /**
- * Calendar grid generation — Phase 32 (2026-06-05).
+ * Calendar grid generation — .
  *
  * Produces a 42-cell (6 rows × 7 columns) grid for a given year/month.
  * Shared by DatePicker and Calendar components.

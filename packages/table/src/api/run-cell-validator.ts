@@ -1,7 +1,7 @@
 import type { ColumnSpec, EditValidationError, RowSpec } from '../ir/index.js';
 
 /**
- * Phase 101 (2026-06-01): run a `ColumnSpec.validator` against a
+ * run a `ColumnSpec.validator` against a
  * post-coerce typed value and normalise the result into a
  * `EditValidationError | null` shape the adapter can dispatch on.
  *

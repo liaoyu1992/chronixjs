@@ -1,5 +1,5 @@
 /**
- * Transition IR — Phase 8 (2026-06-02).
+ * Transition IR — .
  *
  * Declarative spec for component enter/leave animations consumed by
  * Modal, Drawer, Popover, Tooltip, Tabs, Collapse, and any future
@@ -14,7 +14,7 @@
 
 /**
  * Standard duration in milliseconds for chronix-ui transitions.
- * Phase 8 ships 200ms as the default — fast enough to feel responsive,
+ * ships 200ms as the default — fast enough to feel responsive,
  * slow enough that users can register the motion.
  */
 export const DEFAULT_TRANSITION_DURATION_MS = 200;

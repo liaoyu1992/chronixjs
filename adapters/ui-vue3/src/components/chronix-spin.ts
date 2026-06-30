@@ -12,12 +12,12 @@ import { useUIContext } from '../composables/use-ui-context.js';
 /**
  * `<ChronixSpin>` — Vue 3 SFC wrapping the core `SpinProps` IR.
  *
- * Phase 16 (2026-06-02). Tier A loading-state primitive.
+ * . Tier A loading-state primitive.
  *
  * Props:
  *
  * - `size` — `'small' | 'medium' | 'large'`. Default `undefined`,
- *   falls back to `ChronixUIContext.size` (Phase 0.3 Decision A.1
+ *   falls back to `ChronixUIContext.size` (Decision A.1
  *   precedence). The interface default is `'medium'`.
  * - `show` — `boolean`. Default `true`. `false` hides the spin
  *   (display: none) without unmounting (preserves animation state).
@@ -27,7 +27,7 @@ import { useUIContext } from '../composables/use-ui-context.js';
  * Slots:
  *
  * - `default` — currently unused (the "wrap-children with overlay
- *   spinner" form is out of scope for Phase 16). Reserved for future
+ *   spinner" form is out of scope). Reserved for future
  *   extension.
  */
 export const ChronixSpin = defineComponent({

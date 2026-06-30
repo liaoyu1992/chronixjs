@@ -1,8 +1,8 @@
 /**
- * chronix-ui locale module — Phase 3 (2026-06-02).
+ * chronix-ui locale module — .
  *
- * Phase 2 (2026-06-01) shipped a `{ name }` stub used by the context
- * module. Phase 3 expands to the full locale system:
+ * shipped a `{ name }` stub used by the context
+ * module. expands to the full locale system:
  *
  * - `ChronixLocale` + `ChronixLocaleCommon` + `ChronixLocaleOverrides` —
  *   nested-slice interfaces matching the theme module's shape.

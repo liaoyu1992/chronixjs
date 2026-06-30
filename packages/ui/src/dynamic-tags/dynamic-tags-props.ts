@@ -1,5 +1,5 @@
 /**
- * DynamicTags component IR — Phase 35 (2026-06-05).
+ * DynamicTags component IR — .
  *
  * Props spec for an inline tag editor where the user can add tags by
  * typing and remove them via a close icon on each tag chip.

@@ -4,7 +4,7 @@ import type { TreeKeyPath, TreeNodeSpec } from './tree-spec.js';
  * Transform every node in the tree by applying `fn` to derive a new
  * payload, while preserving the tree's structure + each node's `key`.
  *
- * Phase 5 (2026-06-02). Type-changing: input `TreeNodeSpec<T>` becomes
+ * . Type-changing: input `TreeNodeSpec<T>` becomes
  * output `TreeNodeSpec<U>` where `U` is `fn`'s return type. Useful for:
  *
  * - Computing per-node derived state (e.g. "disabled" flag from raw

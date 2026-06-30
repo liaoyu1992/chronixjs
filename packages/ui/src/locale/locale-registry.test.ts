@@ -8,7 +8,7 @@ import {
 } from './chronix-locale.js';
 import { getLocale, hasLocale, listLocaleNames, registerLocale } from './locale-registry.js';
 
-// The registry is process-global by design (Phase 3 deliberately omits
+// The registry is process-global by design (deliberately omits
 // a delete API to encourage immutable registration). To avoid cross-test
 // state leakage WITHOUT introducing a teardown API, each test that
 // registers a custom locale uses a UNIQUE name via this counter.

@@ -31,7 +31,7 @@ export interface ChronixUploadProps extends Omit<
 }
 
 /**
- * `<ChronixUpload>` — React 18 port of the Phase 35 Upload.
+ * `<ChronixUpload>` — React 18 port of the Upload.
  * Renders a hidden file input, a trigger element, and a file list
  * with status tracking per file.
  */

@@ -36,7 +36,7 @@ function baseInput(barSpec: BarSpec): ResolveBarStyleInput {
     themeBackgroundColor: '#3b82f6',
     themeBorderColor: '#1e40af',
     themeTextColor: '#ffffff',
-    // Phase 28.2: font cascade defaults match `defaultChronixTheme`.
+    // font cascade defaults match `defaultChronixTheme`.
     themeFontSize: 12,
     themeFontWeight: 400,
   };
@@ -51,7 +51,7 @@ describe('resolveBarStyle — theme default cascade', () => {
       textColor: '#ffffff',
       fontSize: 12,
       fontWeight: 400,
-      // Phase 28.3: no callback → empty class-names array.
+      // no callback → empty class-names array.
       classNames: [],
     });
   });
@@ -194,7 +194,7 @@ describe('resolveBarStyle — full cascade precedence', () => {
   });
 });
 
-describe('resolveBarStyle — Phase 28.2 font cascade', () => {
+describe('resolveBarStyle.2 font cascade', () => {
   it('returns themeFontSize / themeFontWeight when no font callback is set', () => {
     const result = resolveBarStyle(baseInput(bar('b1')));
     expect(result.fontSize).toBe(12);
@@ -266,7 +266,7 @@ describe('resolveBarStyle — Phase 28.2 font cascade', () => {
   });
 });
 
-describe('resolveBarStyle — Phase 28.3 `barClassNamesCallback`', () => {
+describe('resolveBarStyle.3 `barClassNamesCallback`', () => {
   it('returns an empty `classNames` array when no class callback is set', () => {
     const result = resolveBarStyle(baseInput(bar('b1')));
     expect(result.classNames).toEqual([]);

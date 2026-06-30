@@ -4,14 +4,14 @@ import { mapExportStyleToExcelJs, type ExcelJsCellStyle } from './export-style.j
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Phase 39 (2026-05-29): single-sheet input shape — `{rows, columns,
+ * single-sheet input shape — `{rows, columns,
  * options}`. Identical structure to `BuildXlsxSheetDataInput`; the
  * async wrapper composes `buildXlsxSheetData` then routes the
  * projected sheet data through exceljs's workbook builder.
  *
- * Phase 39.1 (2026-05-29) wraps this in the discriminated union
+ * wraps this in the discriminated union
  * `ExportToXlsxInput` along with `MultiSheetExportToXlsxInput`. Pre-
- * existing Phase 39 callers pass this shape unchanged.
+ * existing callers pass this shape unchanged.
  */
 export interface SingleSheetExportToXlsxInput {
   readonly rows: readonly RowSpec[];
@@ -20,7 +20,7 @@ export interface SingleSheetExportToXlsxInput {
 }
 
 /**
- * Phase 39.1 (2026-05-29): multi-sheet input shape. Carries an array
+ * multi-sheet input shape. Carries an array
  * of single-sheet specs; each entry becomes its own worksheet in the
  * output workbook. Per-entry `options.sheetName` controls each sheet's
  * tab label.
@@ -33,16 +33,16 @@ export interface MultiSheetExportToXlsxInput {
 }
 
 /**
- * Phase 39 + 39.1 (2026-05-29): public input to `exportToXlsx`. Either
- * single-sheet (the original Phase 39 shape) or multi-sheet (Phase
- * 39.1 superset). Backwards-compatible — every Phase 39 caller continues
+ * + 39.1 (2026-05-29): public input to `exportToXlsx`. Either
+ * single-sheet (the original shape) or multi-sheet (Phase
+ * 39.1 superset). Backwards-compatible — every caller continues
  * to type-check + behave identically.
  */
 export type ExportToXlsxInput = SingleSheetExportToXlsxInput | MultiSheetExportToXlsxInput;
 
 /**
  * Minimum shape of the `exceljs` module we depend on. Pinned to the
- * subset Phase 39 uses so we don't pull exceljs's full type surface
+ * subset uses so we don't pull exceljs's full type surface
  * into chronix-table's public types. The actual exceljs runtime
  * matches this shape; consumers without exceljs installed see this
  * type but never instantiate it.
@@ -94,7 +94,7 @@ interface ExcelJsRow {
 const EXCELJS_PIXELS_PER_WIDTH_UNIT = 7;
 
 /**
- * Phase 39 (2026-05-29): generate an XLSX `ArrayBuffer` from the
+ * generate an XLSX `ArrayBuffer` from the
  * consumer's rows + columns.
  *
  * Composes the pure `buildXlsxSheetData` helper (which does all type
@@ -126,7 +126,7 @@ const EXCELJS_PIXELS_PER_WIDTH_UNIT = 7;
  * `'string'` produces text cells.
  */
 export async function exportToXlsx(input: ExportToXlsxInput): Promise<ArrayBuffer> {
-  // Phase 39.1 (2026-05-29): dispatch on the discriminator. Single-
+  // dispatch on the discriminator. Single-
   // sheet branch wraps in a 1-element array so the multi-sheet loop
   // handles both cases uniformly. Caller's shape is type-narrowed by
   // TypeScript via `'sheets' in input`.
@@ -174,7 +174,7 @@ export async function exportToXlsx(input: ExportToXlsxInput): Promise<ArrayBuffe
       headerRow.font = { bold: true };
     }
 
-    // Phase 39.4 (2026-05-29): pre-compute per-column exceljs style
+    // pre-compute per-column exceljs style
     // map once per sheet — body-cell style application below references
     // it by column index. Identity-stable; consumers paying for no
     // styling allocate a length-0 array (skipped via the early-return
@@ -194,10 +194,10 @@ export async function exportToXlsx(input: ExportToXlsxInput): Promise<ArrayBuffe
     for (const row of sheetData.cells) {
       const values = row.map((cell) => cell.value);
       worksheet.addRow(values);
-      // Phase 39.4: apply per-column body-cell style. exceljs's row /
+      // apply per-column body-cell style. exceljs's row /
       // cell indices are 1-based, so this body row's number is
       // `headerOffset + bodyRowIndex + 1`. Skip entirely when no
-      // column carries a style (fast-path; preserves Phase 39 perf).
+      // column carries a style (fast-path; preserves perf).
       if (anyColumnStyled) {
         const excelRow = worksheet.getRow(headerOffset + bodyRowIndex + 1);
         for (let c = 0; c < exceljsStyleByCol.length; c += 1) {
@@ -210,7 +210,7 @@ export async function exportToXlsx(input: ExportToXlsxInput): Promise<ArrayBuffe
       bodyRowIndex += 1;
     }
 
-    // Phase 39.3 (2026-05-29): per-sheet freeze-pane. Threads through
+    // per-sheet freeze-pane. Threads through
     // to exceljs's worksheet.views array. Only fires when the consumer
     // explicitly sets options.freezePane (Decision D.1 — no
     // auto-detect from ColumnSpec.pinned).

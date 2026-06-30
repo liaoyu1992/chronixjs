@@ -2,7 +2,7 @@ import type { CellRef } from './compute-cell-range-envelope.js';
 import type { ColumnSpec } from '../ir/index.js';
 
 /**
- * Phase 26 (2026-05-28): the 10 supported navigation directions for
+ * the 10 supported navigation directions for
  * keyboard-driven active-cell motion. `up` / `down` / `left` / `right`
  * are single-cell moves; `home` / `end` jump to first / last column in
  * the current row; `page-up` / `page-down` jump by `pageRowCount` rows
@@ -23,10 +23,10 @@ export type NavigationDirection =
   | 'table-end';
 
 /**
- * Phase 26 (2026-05-28): pure traversal helper for keyboard-driven
+ * pure traversal helper for keyboard-driven
  * cell-level navigation. Computes the next active cell given the
  * current focus + a direction. Walks ALL visible cells (in contrast
- * to Phase 12.2's `findNextEditableCell` which skips non-editable).
+ * 's `findNextEditableCell` which skips non-editable).
  *
  * **Edge behavior** (Decision C.1): pressing a direction key that
  * would move past the table boundary returns `null` (the adapter

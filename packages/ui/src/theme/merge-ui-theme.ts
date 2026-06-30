@@ -7,7 +7,7 @@ import type { ChronixUITheme, ChronixUIThemeOverrides } from './chronix-ui-theme
  * `{ ...base[slice], ...overrides[slice] }`. Slices NOT present in
  * `overrides` are preserved by reference (no spurious copy).
  *
- * Phase 1 (2026-06-01) per Phase 0.1 Decision C.1.
+ * per Decision C.1.
  *
  * Composition use cases:
  *
@@ -35,7 +35,7 @@ import type { ChronixUITheme, ChronixUIThemeOverrides } from './chronix-ui-theme
  * that had overrides; reference-identical for slices that didn't.
  *
  * Note: when chronix-ui adds new theme slices in future phases (e.g.
- * Phase 56 `tree`, Phase 63 `select`), this function must extend its
+ * `tree`, `select`), this function must extend its
  * per-slice merge clauses. The cost is a small, well-localized edit per
  * slice; TypeScript will catch missing slices because the return type
  * requires them.

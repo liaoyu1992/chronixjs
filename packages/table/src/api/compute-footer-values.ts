@@ -2,12 +2,12 @@ import type { ColumnSpec } from '../ir/column-spec.js';
 import type { RowSpec } from '../ir/row-spec.js';
 
 /**
- * Phase 24 (2026-05-27): walk `visibleColumns` and call each column's
+ * walk `visibleColumns` and call each column's
  * `aggregator(rows)` to produce a per-colId map of aggregate values for
  * the optional sticky footer row. Columns without an `aggregator` are
  * omitted from the output entirely — the adapter renders an empty
  * placeholder cell for them, sized to the column's width, so the footer
- * row stays column-aligned with the body + header strips (Phase 24
+ * row stays column-aligned with the body + header strips (
  * Decision C.1).
  *
  * The `rows` input is the post-filter row set (Decision A.1) — the
@@ -17,7 +17,7 @@ import type { RowSpec } from '../ir/row-spec.js';
  *
  * **Exception safety**: when an aggregator throws, its colId's entry is
  * set to `null` (the throw is swallowed). Sibling aggregators are not
- * affected. Matches Phase 5 `valueFormatter`'s defensive posture so a
+ * affected. Matches `valueFormatter`'s defensive posture so a
  * single misbehaving aggregator can't crash the whole footer render.
  *
  * **Hidden columns**: the helper does not filter `hide: true` columns

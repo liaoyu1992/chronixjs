@@ -6,7 +6,7 @@ import { ChronixUIProvider } from '../providers/chronix-ui-provider.js';
 import { ChronixButton } from './chronix-button.js';
 
 /**
- * Phase 12 (2026-06-02) — react port of the 21-case Phase 11 vue3 mount
+ * — react port of the 21-case vue3 mount
  * test suite. Same assertions on DOM shape + class set + ARIA + event
  * suppression; the only differences are React idioms (`onClick`
  * callback prop vs `@click` emit; `children` vs default slot;

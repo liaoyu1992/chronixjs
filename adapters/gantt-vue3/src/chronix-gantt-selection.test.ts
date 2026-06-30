@@ -35,7 +35,7 @@ const axisInput: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> selection overlay + visible resize handle — Phase 28.1', () => {
+describe('<ChronixGantt> selection overlay + visible resize handle', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

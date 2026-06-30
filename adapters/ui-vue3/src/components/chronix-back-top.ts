@@ -18,10 +18,10 @@ import {
 } from 'vue';
 
 /**
- * `<ChronixBackTop>` — Vue 3 floating "back to top" button. Phase 27
+ * `<ChronixBackTop>` — Vue 3 floating "back to top" button.
  * (2026-06-03). Renders only when `window.scrollY >= visibilityThreshold`.
  * Click scrolls to top via `window.scrollTo`. Default content is the
- * Phase 9 `chevron-up` icon; consumer may override via default slot.
+ * `chevron-up` icon; consumer may override via default slot.
  */
 export const ChronixBackTop = defineComponent({
   name: 'ChronixBackTop',

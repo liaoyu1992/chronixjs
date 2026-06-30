@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 
 /**
- * Transfer core tests — Phase 33 (2026-06-05).
+ * Transfer core tests — .
  */
 
 import { describe, expect, it } from 'vitest';

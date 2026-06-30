@@ -1,5 +1,5 @@
 /**
- * Phase 26 / Phase 32.6: snap a horizontal grid line's y coordinate
+ * snap a horizontal grid line's y coordinate
  * to the device pixel grid so a 1-px stroke renders as a single
  * device row at any `devicePixelRatio` (100% / 125% / 150% OS
  * scaling) and any fractional CSS row height.
@@ -21,7 +21,7 @@
  * The defensive fallback to `dpr = 1` preserves correct output for
  * those environments.
  *
- * Phase 32.6 relocation note: prior to Phase 32.6, each chronix
+ * relocation note: prior, each chronix
  * adapter shipped its own inline copy. All 3 adapters now consume
  * this canonical implementation directly via
  * `@chronixjs/gantt`.

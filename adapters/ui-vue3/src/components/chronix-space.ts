@@ -13,7 +13,7 @@ import { computed, defineComponent, h, type CSSProperties, type PropType } from 
 /**
  * `<ChronixSpace>` — Vue 3 SFC wrapping the core `SpaceProps` IR.
  *
- * Phase 17 (2026-06-02). Tier A 1D layout primitive. Consumers
+ * . Tier A 1D layout primitive. Consumers
  * needing full flexbox control (named direction / wrap-reverse /
  * inline-style gap) should use `<ChronixFlex>` instead — both ship.
  *

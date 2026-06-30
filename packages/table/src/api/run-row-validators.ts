@@ -2,7 +2,7 @@ import type { RowSpec } from '../ir/row-spec.js';
 import type { RowValidator, RowValidationViolation } from '../ir/row-validator.js';
 
 /**
- * Phase 115 (2026-06-02): run all `rowValidators` against a row +
+ * run all `rowValidators` against a row +
  * concatenate the returned violation arrays.
  *
  * Iterates the validators array in order; flattens each validator's
@@ -13,7 +13,7 @@ import type { RowValidator, RowValidationViolation } from '../ir/row-validator.j
  * nothing" rather than a runtime exception on every commit.
  *
  * Throws from inside `validator.validate` are NOT caught — same
- * posture as `runCellValidator` (Phase 101). A throwing validator
+ * posture as `runCellValidator` . A throwing validator
  * surfaces to the consumer's error boundary; defensive try/catch
  * would hide consumer bugs.
  *

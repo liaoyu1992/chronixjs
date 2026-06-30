@@ -7,7 +7,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixEmpty>` — Vue 2.7 port of the Phase 15 Empty.
+ * `<ChronixEmpty>` — Vue 2.7 port of the Empty.
  */
 export const ChronixEmpty = defineComponent({
   name: 'ChronixEmpty',

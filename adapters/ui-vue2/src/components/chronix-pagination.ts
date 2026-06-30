@@ -10,7 +10,7 @@ import { computed, defineComponent, h, ref } from 'vue';
 
 /**
  * `<ChronixPagination>` — Vue 2 pagination with page buttons + prev/next.
- * Phase 33 (2026-06-05).
+ * .
  */
 export const ChronixPagination = defineComponent({
   name: 'ChronixPagination',

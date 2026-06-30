@@ -22,13 +22,13 @@ import {
 import { useUIContext } from './use-ui-context.js';
 
 /**
- * Vue 3 popup lifecycle composable — shared by the 4 Phase 26 components
- * (Popover / Tooltip / Popconfirm / PopSelect) and downstream Phase 27+
- * popup-bearing components. Phase 26 (2026-06-03).
+ * Vue 3 popup lifecycle composable — shared by the 4 components
+ * (Popover / Tooltip / Popconfirm / PopSelect) and downstream +
+ * popup-bearing components. .
  *
  * Concerns wrapped:
  * - Controlled vs uncontrolled `show` state (consumer prop wins).
- * - Anchor + popup `getBoundingClientRect()` measurement → Phase 4
+ * - Anchor + popup `getBoundingClientRect()` measurement →
  *   `resolvePopupPlacement` → reactive coords + `actualPlacement`.
  * - z-index assignment on open via `nextPopupZIndex`.
  * - Trigger lifecycle: click / hover / focus / manual.

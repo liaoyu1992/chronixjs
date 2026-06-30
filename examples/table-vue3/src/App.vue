@@ -49,17 +49,17 @@ const STATUS_CLASS_MAP: Readonly<Record<string, string>> = {
   计划: 'cx-status--planned',
 };
 
-// Phase 13 (2026-05-25): columns is reactive so the
+// columns is reactive so the
 // `column-width-change` emit can rebuild the columns array per
 // Decision A.1 (emit-only persistence; chronix-table does not mutate
 // the prop). Conversion from `const` to `ref<readonly ColumnSpec[]>`
 // is the load-bearing change.
 const columns = ref<readonly ColumnSpec[]>([
-  // Phase 17 (2026-05-26): id + name pinned left → stay glued to the
+  // id + name pinned left → stay glued to the
   // body's left edge during horizontal scroll. With the selection rail
   // also on the left (left of the pinned zone), the demo shows a
   // 3-layer left edge: selection rail → pinned zone → center scroll.
-  // Phase 23 (2026-05-27): id + name share `headerGroup: '基础信息'`
+  // id + name share `headerGroup: '基础信息'`
   // → render as one labelled group cell spanning both columns in a
   // second header row above the leaf row. qty + price share
   // `headerGroup: '财务'`. status + note stay un-grouped to demo the
@@ -79,21 +79,21 @@ const columns = ref<readonly ColumnSpec[]>([
     field: 'qty',
     headerName: '数量',
     width: 100,
-    // Phase 9.1: type:'number' wires the filter input to the prefix-
+    // type:'number' wires the filter input to the prefix-
     // syntax parser (parsePrefixNumberFilter) so users can type
     // `5`, `>10`, `<20`, `>=5`, `<=10`, `!=3`, `5..50`.
     type: 'number',
-    // Phase 5: valueFormatter prepends a unit label for body cells
+    // valueFormatter prepends a unit label for body cells
     // AND footer cells (the SFC routes the aggregator output through
     // the same formatter so the footer reads "合计 N 件").
     valueFormatter: ({ value }) =>
       typeof value === 'number' ? `${value} 件` : `${String(value ?? 0)} 件`,
-    // Phase 23.1 (2026-05-27): nested path form — qty + price under
+    // nested path form — qty + price under
     // 财务 > 订单 (level 0 = 财务 spans both; level 1 = 订单 spans
     // both). Tests the union (string vs array) — id+name stay on the
     // string shortcut form '基础信息'.
     headerGroup: ['财务', '订单'],
-    // Phase 24 (2026-05-27): sum aggregator over filtered rows. The
+    // sum aggregator over filtered rows. The
     // sticky footer renders the result formatted by the same
     // valueFormatter as body cells (so it reads "合计 N 件" — wait,
     // valueFormatter returns "N 件"; consumer wanting the "合计" prefix
@@ -101,9 +101,9 @@ const columns = ref<readonly ColumnSpec[]>([
     // formatter. Here we keep it simple and let the row read "N 件").
     aggregator: (rs) =>
       rs.reduce((s, r) => s + (typeof r.data['qty'] === 'number' ? r.data['qty'] : 0), 0),
-    // Phase 39.4 (2026-05-29): per-column body-cell xlsx style. Bold
+    // per-column body-cell xlsx style. Bold
     // right-aligned numeric format with thousands separator. Header
-    // row preserves the Phase 39 bold default (untouched by exportStyle).
+    // row preserves the bold default (untouched by exportStyle).
     exportStyle: {
       font: { bold: true },
       alignment: { horizontal: 'right' },
@@ -111,7 +111,7 @@ const columns = ref<readonly ColumnSpec[]>([
     },
   },
   {
-    // Phase 12.1: number-typed editable column. No valueFormatter
+    // number-typed editable column. No valueFormatter
     // so the editor opens with the raw numeric string (e.g. "9.99")
     // — type:'number' triggers <input type="number"> with
     // inputmode="decimal" + coerceEditDraftValue runs on commit so
@@ -123,7 +123,7 @@ const columns = ref<readonly ColumnSpec[]>([
     type: 'number',
     editable: true,
     headerGroup: ['财务', '订单'],
-    // Phase 24 (2026-05-27): average aggregator over filtered rows;
+    // average aggregator over filtered rows;
     // the demo uses a custom valueFormatter on the aggregator path by
     // returning a pre-formatted string ("均价 X.XX") so the footer cell
     // distinguishes itself from body cells (which render raw numeric).
@@ -139,23 +139,23 @@ const columns = ref<readonly ColumnSpec[]>([
     field: 'status',
     headerName: '状态',
     width: 120,
-    // Phase 5: state-driven cellClass for status color-coding.
+    // state-driven cellClass for status color-coding.
     cellClass: ({ value }) => STATUS_CLASS_MAP[String(value)] ?? 'cx-status--unknown',
-    // Phase 13: opt OUT of resize so the user can verify resizable:false
+    // opt OUT of resize so the user can verify resizable:false
     // suppresses the resizer affordance.
     resizable: false,
-    // Phase 14 (2026-05-26): opt OUT of reorder so the user can verify
+    // opt OUT of reorder so the user can verify
     // reorderable:false skips the drag-to-reorder pointer wiring (cursor
     // stays default / pointer for sort, no move-start emit on drag).
     reorderable: false,
-    // Phase 43 (2026-05-29): opt INTO the set-filter dropdown UI.
+    // opt INTO the set-filter dropdown UI.
     // The filter-row cell renders a <details> checkbox list of unique
     // status values instead of the default text input.
     filterUi: 'set',
   },
-  // Phase 12: editable: true opts the column into in-cell editing
+  // editable: true opts the column into in-cell editing
   // (双击 → input overlay → Enter / Tab / Blur 提交，Esc 取消).
-  // Phase 15 (2026-05-26): autosizeable:false explicit opt-out — the
+  // autosizeable:false explicit opt-out — the
   // resizer still drag-resizes, but dbl-click does NOT autosize. This
   // demos the per-column opt-OUT independently of resizable:false.
   {
@@ -166,9 +166,9 @@ const columns = ref<readonly ColumnSpec[]>([
     minWidth: 160,
     editable: true,
     autosizeable: false,
-    // Phase 17 (2026-05-26): note pinned right → glued to the body's
+    // note pinned right → glued to the body's
     // right edge during horizontal scroll. dblclick-to-edit still
-    // works inside the pinned cell (Phase 12 wiring is delegated +
+    // works inside the pinned cell (wiring is delegated +
     // position-agnostic).
     pinned: 'right',
   },
@@ -200,7 +200,7 @@ const NOTE_CYCLE = [
   '归档至 wiki',
 ] as const;
 
-// Phase 12: rows is reactive so cell-value-change handler can
+// rows is reactive so cell-value-change handler can
 // mirror commits back into the source-of-truth array.
 const rows = ref<readonly RowSpec[]>(
   Array.from({ length: 50 }, (_, i) => {
@@ -211,7 +211,7 @@ const rows = ref<readonly RowSpec[]>(
         id: idx,
         name: NAME_CYCLE[i % NAME_CYCLE.length],
         qty: (idx * 7) % 50,
-        // Phase 12.1: numeric prices spanning 0.99..99.50 with one
+        // numeric prices spanning 0.99..99.50 with one
         // decimal place so the editor exercises float coercion.
         price: Math.round(((idx * 13) % 100) * 10 + 99) / 10,
         status: STATUS_CYCLE[i % STATUS_CYCLE.length],
@@ -221,7 +221,7 @@ const rows = ref<readonly RowSpec[]>(
   }),
 );
 
-// Phase 8 + 8.1: track the current sort state (array) for the on-screen indicator.
+// + 8.1: track the current sort state (array) for the on-screen indicator.
 const currentSort = ref<readonly SortSpec[]>([]);
 function onSortChange(payload: SortChangePayload): void {
   currentSort.value = payload.sortSpec;
@@ -236,13 +236,13 @@ function describeSort(specs: readonly SortSpec[]): string {
   return `按 ${parts.join(' + ')}`;
 }
 
-// Phase 9: track the current filter state for the on-screen indicator.
+// track the current filter state for the on-screen indicator.
 const currentFilter = ref<readonly FilterSpec[]>([]);
 function onFilterChange(payload: FilterChangePayload): void {
   currentFilter.value = payload.filterSpec;
 }
 
-// Phase 41 (2026-05-29): track current quick-find needle + match count.
+// track current quick-find needle + match count.
 const currentQuickFindText = ref<string>('');
 const currentQuickFindMatchCount = ref<number>(0);
 function onQuickFindTextChange(payload: { quickFindText: string }): void {
@@ -302,7 +302,7 @@ function describeFilter(specs: readonly FilterSpec[]): string {
   return `已过滤：${parts.join(' AND ')}`;
 }
 
-// Phase 42 (2026-05-29): advanced filter DSL input.
+// advanced filter DSL input.
 const advancedFilterText = ref<string>('');
 const advancedFilterErrors = ref<readonly ParseFilterExpressionError[]>([]);
 const advancedFilterStatus = ref<string>('');
@@ -338,7 +338,7 @@ function onAdvancedFilterFillExample(): void {
 // the imperative-handle return type below (template doesn't reference it).
 type _Phase42Imports = FilterExpression;
 
-// Phase 10: track the current selection for the on-screen pill.
+// track the current selection for the on-screen pill.
 const currentSelection = ref<readonly string[]>([]);
 function onSelectionChange(payload: SelectionChangePayload): void {
   currentSelection.value = payload.selectedRowIds;
@@ -349,7 +349,7 @@ function describeSelection(ids: readonly string[]): string {
   return `已选 ${ids.length} 行: ${ids.slice(0, 5).join(', ')} 等`;
 }
 
-// Phase 11: track current pagination state for the on-screen pill.
+// track current pagination state for the on-screen pill.
 // The footer inside <ChronixTable> renders its own page controls;
 // the pill mirrors the state for visibility + demonstrates
 // page-change emit observability.
@@ -367,7 +367,7 @@ function describePage(page: number, pageSize: number): string {
   return `第 ${page + 1} / ${totalPages} 页 — 显示 ${visibleStart}-${visibleEnd} / ${total} 行`;
 }
 
-// Phase 12: track the last cell edit + write it back into rows.
+// track the last cell edit + write it back into rows.
 // chronix-table itself does NOT mutate rows — consumers (demo
 // here) own the persistence path. We mirror by writing into the
 // row's data object then triggering rows.value reassignment so
@@ -388,7 +388,7 @@ function describeLastEdit(text: string): string {
   return text === '' ? '未编辑 (双击 备注 列 → 输入 → Enter 提交)' : `最近编辑: ${text}`;
 }
 
-// Phase 13 (2026-05-25): track the last column resize + rebuild the
+// track the last column resize + rebuild the
 // columns array per Decision A.1 (emit-only persistence — chronix
 // does NOT mutate the columns prop). The rebuild sets the column's
 // width to the new value and clears `flex` per Decision B.1 so
@@ -413,7 +413,7 @@ function describeLastResize(text: string): string {
   return text === '' ? '未调整列宽 (悬浮表头右边缘 → 拖动)' : `最近列宽变更: ${text}`;
 }
 
-// Phase 14 (2026-05-26): track the last column reorder + rebuild the
+// track the last column reorder + rebuild the
 // columns array via `computeColumnReorder` per Decision A.1 (emit-only
 // persistence; chronix-table does NOT mutate the columns prop). The pure
 // helper handles the splice + reinsert math including no-op-position
@@ -432,7 +432,7 @@ function onColumnOrderChange(payload: ColumnOrderChangePayload): void {
   lastReorder.value = `${movedLabel} → ${targetLabel} 之${positionLabel}`;
 }
 
-// Phase 44 (2026-05-29): row drag — emit-only persistence. Consumer
+// row drag — emit-only persistence. Consumer
 // rebuilds props.rows via `computeRowReorder` inside the row-order-
 // change handler.
 const lastRowReorder = ref<string>('');
@@ -452,7 +452,7 @@ function describeLastReorder(text: string): string {
     : `最近列序变更: ${text}`;
 }
 
-// Phase 25 (2026-05-27): track the last visibility change + rebuild the
+// track the last visibility change + rebuild the
 // columns array with the new `hide` value per Decision A.1 (emit-only
 // persistence; chronix-table does NOT mutate the columns prop).
 const lastVisibilityChange = ref<string>('');
@@ -469,7 +469,7 @@ function describeLastVisibilityChange(text: string): string {
     : `最近列显隐: ${text}`;
 }
 
-// Phase 15 (2026-05-26): wire the imperative autosize TableHandle methods
+// wire the imperative autosize TableHandle methods
 // via a template ref captured by `useTemplateRef`. Dbl-click on the
 // resizer triggers autosize natively from the SFC; these buttons cover
 // the programmatic API + the autosize-all batch.
@@ -481,7 +481,7 @@ function onAutosizeQty(): void {
   tableRef.value?.autosizeColumn('qty');
 }
 
-// Phase 16 (2026-05-26): cell-range selection demo state. Track the
+// cell-range selection demo state. Track the
 // last range envelope + the gesture-source pill so the user can see
 // drag-extend / shift+click-extend / imperative wiring work end-to-end.
 const lastRange = ref<string>('');
@@ -519,7 +519,7 @@ function onClearCellRange(): void {
   tableRef.value?.clearCellRange();
 }
 
-// Phase 19 (2026-05-27): clipboard copy demo state. Shows the first
+// clipboard copy demo state. Shows the first
 // 80 chars of the most-recently-copied TSV so the user can verify
 // the same value lands on the clipboard. Pill renders both the
 // keyboard (Ctrl+C) path and the programmatic copy-button path.
@@ -541,7 +541,7 @@ async function onCopyCellRange(): Promise<void> {
   await tableRef.value?.copyCellRangeToClipboard();
 }
 
-// Phase 20 (2026-05-27): clipboard paste demo state. Tracks the most
+// clipboard paste demo state. Tracks the most
 // recent paste mutations + applies them to the reactive `rows` array
 // (emit-only persistence — chronix-table doesn't mutate the rows
 // prop; consumer mirrors via the mutations array per Decision B.1).
@@ -585,9 +585,9 @@ async function onPasteCellRange(): Promise<void> {
   await tableRef.value?.pasteCellRangeFromClipboard();
 }
 
-// Phase 21 (2026-05-27): drag-fill demo state. Tracks the most recent
+// drag-fill demo state. Tracks the most recent
 // fill mutations + applies them to the reactive `rows` array (emit-only
-// persistence — same shape as the Phase 20 paste handler).
+// persistence — same shape as the paste handler).
 const lastFillSummary = ref<string>('');
 function describeFillSummary(s: string): string {
   return s === ''
@@ -630,7 +630,7 @@ function onFillToR10Qty(): void {
   tableRef.value?.fillCellRange({ rowId: 'r10', colId: 'qty' });
 }
 
-// Phase 22 (2026-05-27): undo / redo demo state. enableUndoHistory:
+// undo / redo demo state. enableUndoHistory:
 // true on <ChronixTable> auto-records every cell-edit / paste / fill
 // gesture; the history-replay emit carries the (already-reversed for
 // undo / original for redo) mutations array — consumer applies via
@@ -675,7 +675,7 @@ function onHistoryReplay(payload: HistoryReplayPayload): void {
     payload.batch.mutations.length > 3 ? ` (+${payload.batch.mutations.length - 3} 更多)` : '';
   lastHistoryReplay.value = `${payload.direction} (${payload.batch.source}) ${payload.batch.mutations.length} cells: ${sample}${more}`;
 }
-// Phase 23 (2026-05-27): header-group-click state pill. The labelled
+// header-group-click state pill. The labelled
 // group cells in the second header row emit this when clicked; empty
 // placeholder cells do NOT emit (no `data-group-name` attr to resolve).
 const lastHeaderGroupClick = ref<string>('');
@@ -696,7 +696,7 @@ function onClearHistoryClick(): void {
   tableRef.value?.clearHistory();
 }
 
-// Phase 27 (2026-05-28): opt-out toggle for keyboard auto-scroll. Default
+// opt-out toggle for keyboard auto-scroll. Default
 // ON; flipping OFF lets the user verify the active outline persists on a
 // cell scrolled out of view (proving the active state lives in IR, not
 // in DOM-focus).
@@ -705,7 +705,7 @@ function onExportCsv(): void {
   tableRef.value?.exportToCsv('chronix-table-demo.csv', { rowSource: 'filtered' });
 }
 
-// Phase 39 (2026-05-29): xlsx export demo handler. Async — awaits the
+// xlsx export demo handler. Async — awaits the
 // dynamic exceljs import + workbook serialization before the anchor
 // click fires. Optional exceljs peer dep is installed at the demo
 // level so the real export path runs.
@@ -727,7 +727,7 @@ async function onExportXlsx(): Promise<void> {
   }
 }
 
-// Phase 39.1 (2026-05-29): multi-sheet xlsx demo — produce a workbook
+// multi-sheet xlsx demo — produce a workbook
 // with 3 sheets (Filtered / All / Selected).
 async function onExportXlsxMultiSheet(): Promise<void> {
   if (xlsxBusy.value) return;
@@ -735,7 +735,7 @@ async function onExportXlsxMultiSheet(): Promise<void> {
   xlsxError.value = '';
   try {
     await tableRef.value?.exportToXlsxMultiSheet('chronix-table-multi-sheet.xlsx', [
-      // Phase 39.3 (2026-05-29): demo per-sheet freeze-pane. The
+      // demo per-sheet freeze-pane. The
       // Filtered sheet freezes the first column + the header row;
       // the All sheet freezes nothing; the Selected sheet freezes
       // just the header row.
@@ -758,7 +758,7 @@ async function onExportXlsxMultiSheet(): Promise<void> {
   }
 }
 
-// Phase 38 (2026-05-29): saved-views demo. Uses localStorage as a
+// saved-views demo. Uses localStorage as a
 // persistence layer per the consumer-owns-persistence stance (core
 // helpers are I/O-free). The two buttons demonstrate the full round-
 // trip: serialize via getTableView() + JSON.stringify, then restore
@@ -788,12 +788,12 @@ function onLoadView(): void {
   }
 }
 function onColumnsChange(payload: { columns: readonly ColumnSpec[]; reason: string }): void {
-  // Phase 38: atomic prop rebuild on applyTableView. The emit fires
+  // atomic prop rebuild on applyTableView. The emit fires
   // ONCE with the reconciled array; do a single ref.value = next.
   columns.value = payload.columns;
 }
 function onJumpFarActiveCell(): void {
-  // Phase 27: programmatic setActiveCell to a far cell — exercises the
+  // programmatic setActiveCell to a far cell — exercises the
   // auto-scroll path that the keyboard nav also hits. r19 is the last
   // row on page 1 (page size = 20) so it's definitely below the visible
   // viewport, and `qty` is a center (non-pinned) column.
@@ -801,7 +801,7 @@ function onJumpFarActiveCell(): void {
 }
 
 /**
- * Phase 30 (2026-05-28): file-tree demo data. ~85 rows nested 4 levels
+ * file-tree demo data. ~85 rows nested 4 levels
  * deep — projects (level 0) → modules (level 1) → folders (level 2) →
  * files (level 3). Sizes / dates synthesized deterministically so the
  * demo renders identically across runs.
@@ -935,7 +935,7 @@ function onTreeCollapseAll(): void {
   walk(treeRows.value);
 }
 
-// Phase 31 + 32 + 33 demo (2026-05-28): pinned rows + tooltip + overlay.
+// + 32 + 33 demo (2026-05-28): pinned rows + tooltip + overlay.
 // Reuses the main `rows` data; synthesizes top + bottom "summary" rows
 // via RowSpec.pinned, declares tooltipField on the 备注 column, and
 // wires loading + no-rows toggle controls.
@@ -988,7 +988,7 @@ function onTier2ToggleEmpty(): void {
   tier2EmptyMode.value = !tier2EmptyMode.value;
 }
 
-// Phase 34 demo (2026-05-28): lazy-load tree children. Synthetic
+// demo (2026-05-28): lazy-load tree children. Synthetic
 // childrenLoader returns hardcoded data after a 500ms setTimeout.
 // One injected failure path: rowId 'lazy-fail-1' always rejects.
 const lazyRoots = ref<readonly RowSpec[]>([
@@ -1041,7 +1041,7 @@ function onLazyInvalidateAll(): void {
   lazyTableRef.value?.invalidateLazyChildren();
 }
 
-// Phase 45 (2026-05-29): server-side row model demo. Toggle the mode
+// server-side row model demo. Toggle the mode
 // to switch the same column set between a clientSide rows list and a
 // mock-async server returning 250 rows in chunks (500ms latency per
 // block). The serverSideDataSource implements the consumer contract +
@@ -1078,15 +1078,15 @@ const mockServerSideDataSource: ServerSideDataSource = {
   },
 };
 const rowModelType = ref<'clientSide' | 'serverSide'>('serverSide');
-// Phase 45.1 (2026-05-30) demo wiring: paginationEnabled toggle for
+// demo wiring: paginationEnabled toggle for
 // server-side mode. When ON, pageSize OVERRIDES cacheBlockSize (page N
-// maps 1:1 to block N). Default OFF to preserve the original Phase 45
+// maps 1:1 to block N). Default OFF to preserve the original
 // demo behavior.
 const serverSidePaginationEnabled = ref<boolean>(false);
 function onToggleServerSidePagination(): void {
   serverSidePaginationEnabled.value = !serverSidePaginationEnabled.value;
 }
-// Phase 45.2 (2026-05-30) demo wiring: invalidate block 0 only —
+// demo wiring: invalidate block 0 only —
 // preserves totalRowCount + other blocks + lets the SFC re-fetch block 0
 // on next read. Contrast with `refreshServerSideRows()` (whole-cache nuke).
 function onInvalidateServerSideBlock0(): void {
@@ -1108,7 +1108,7 @@ function onRefreshServerSide(): void {
   serverSideTableRef.value?.refreshServerSideRows();
 }
 
-// Phase 46 (2026-05-30): Tier 3 finale demo data + handlers.
+// Tier 3 finale demo data + handlers.
 const tier3Counter = ref<Record<string, number>>({});
 const tier3Rows: readonly RowSpec[] = [
   {
@@ -1135,8 +1135,7 @@ const tier3Rows: readonly RowSpec[] = [
     data: {
       title: '新增数据导出',
       assignee: 'Carol',
-      notes:
-        '需要支持 CSV + xlsx 双格式;遵守现有 Phase 38/39 export 流程;对接 Phase 33 loading overlay。',
+      notes: '需要支持 CSV + xlsx 双格式;遵守现有 export 流程;对接 loading overlay。',
       protected: false,
     },
   },
@@ -1189,7 +1188,7 @@ const tier3LastDeleteCount = computed(() =>
     .reduce((s, [, v]) => s + v, 0),
 );
 
-// Phase 80 (2026-05-30): Tool-panel container demo. The container
+// Tool-panel container demo. The container
 // hosts 2 consumer-supplied tool panels (Info + Help). Renderers
 // close over reactive state (rows.value.length, selection count)
 // so the panels stay in sync with the table.
@@ -1253,7 +1252,7 @@ function onToolPanelWidthChange(payload: ToolPanelWidthChangePayload): void {
   toolPanelLastWidth.value = payload.width;
 }
 
-// Phase 83 (2026-05-30): context-menu config + last-action mirror so the
+// context-menu config + last-action mirror so the
 // header strip can display what the user just picked from a cell right-click.
 const phase83LastContextAction = ref<string>('—');
 const phase83ContextMenuConfig = computed<ContextMenuConfig>(() => ({
@@ -1295,38 +1294,37 @@ function onColumnHeaderMenuAction(payload: {
     <header class="demo-page__header">
       <h1>@chronixjs/table-vue3</h1>
       <p>
-        Phase 8 + 8.1 + 9 + 9.1 + 10 + 10.1 + 11 + 11.1 + 12 + 12.1 + 12.2 + 13 + 14 demo — 50 行 ×
-        6 列 + checkbox 选择列 + 分页 + 备注 / 单价列双击编辑 + 表头拖拽改列宽 + 表头拖拽改列序。
+        + 8.1 + 9 + 9.1 + 10 + 10.1 + 11 + 11.1 + 12 + 12.1 + 12.2 + 13 + 14 demo — 50 行 × 6 列 +
+        checkbox 选择列 + 分页 + 备注 / 单价列双击编辑 + 表头拖拽改列宽 + 表头拖拽改列序。
         排序：点击表头 (循环 null → 升序 → 降序 → null)，Shift+点击 追加副排序。
         过滤：在表头下方输入框中输入。 字符串列 (名称 / 状态 / 备注) 走 case-insensitive contains
         匹配。 数量 列 (type:'number') 走前缀语法：`5` / `>10` / `<20` / `>=5` / `<=10` / `!=3` /
         `5..50`。 多列输入即 AND 组合；Filter 先于 Sort。 行选择：点击行 单选；Ctrl/Cmd+点击
         多选切换；Shift+点击 范围选择；左侧 checkbox 列 + 表头三态 select-all。 分页：底部 « » +
         可点击页码列表（>7 页时自动 ellipsis）+ 共 X 行 + 每页 select。 编辑：双击 备注 (文本) /
-        单价 (数字) 列 cell → 输入 → Enter / Tab / Blur 提交，Esc 取消。 Phase 12.1：单价 列走
-        &lt;input type="number"&gt; + coerceEditDraftValue — 空输入提交为 null，非数字 (如 `abc`)
-        拒提交并保持编辑态。 Phase 12.2：Tab / Shift+Tab 提交当前 cell
-        并跨列+跨行自动跳到下一/上一可编辑单元格 (单价 → 备注 → 下一行单价 →
-        ...)；末尾关闭编辑器；非法输入拒提交时停留原 cell。 Phase 13：悬浮任意表头列右边缘 4px 区域
-        → 拖动调整列宽 (实时反馈)；pointerup 提交 `column-width-change` emit，consumer 回写 columns
-        prop (flex 列变 explicit width，其他 flex 列继续分配剩余空间)。 状态 列设
-        `resizable:false`，无 resize 把手。 Phase 14：拖动表头单元格 ≥ 5px (Chebyshev)
-        阈值触发列移动 — 实时 gap-line 落点指示 (落点单元格左/右 半边决定 before/after)；pointerup
-        提交并通过 `column-order-change` emit 回写 columns prop (`computeColumnReorder`
-        纯函数处理重排)；状态 列设 `reorderable:false`，不响应拖拽；header click 仍触发排序循环
-        (阈值未跨越)。 Phase 15：**双击表头列右边缘 4px 区域** autosize 列宽到内容 (Canvas
-        measureText 取每行 + header 最宽 + padding + 限制 min/max)；或调用 imperative
+        单价 (数字) 列 cell → 输入 → Enter / Tab / Blur 提交，Esc 取消。 单价 列走 &lt;input
+        type="number"&gt; + coerceEditDraftValue — 空输入提交为 null，非数字 (如 `abc`)
+        拒提交并保持编辑态。 Tab / Shift+Tab 提交当前 cell 并跨列+跨行自动跳到下一/上一可编辑单元格
+        (单价 → 备注 → 下一行单价 → ...)；末尾关闭编辑器；非法输入拒提交时停留原 cell。
+        悬浮任意表头列右边缘 4px 区域 → 拖动调整列宽 (实时反馈)；pointerup 提交
+        `column-width-change` emit，consumer 回写 columns prop (flex 列变 explicit width，其他 flex
+        列继续分配剩余空间)。 状态 列设 `resizable:false`，无 resize 把手。 拖动表头单元格 ≥ 5px
+        (Chebyshev) 阈值触发列移动 — 实时 gap-line 落点指示 (落点单元格左/右 半边决定
+        before/after)；pointerup 提交并通过 `column-order-change` emit 回写 columns prop
+        (`computeColumnReorder` 纯函数处理重排)；状态 列设 `reorderable:false`，不响应拖拽；header
+        click 仍触发排序循环 (阈值未跨越)。 **双击表头列右边缘 4px 区域** autosize 列宽到内容
+        (Canvas measureText 取每行 + header 最宽 + padding + 限制 min/max)；或调用 imperative
         `autosizeColumn(colId)` / `autosizeAllColumns()`。`column-width-change` emit 与拖拽 resize
         同一渠道；`状态` 列 `resizable:false` 隐式禁用；`备注` 列 `autosizeable:false` 显式 opt-out
         dbl-click 行为 (resizer 仍可拖)。
         <strong>
-          Phase 16：cell 上 pointerdown + drag 选区 → 矩形 cell-range；shift+click 在已有 range
-          上延伸 focus；按钮可程序化设定/清空。`cellRangeSelection: 'enabled'` 开启 — 默认 `'none'`
+          cell 上 pointerdown + drag 选区 → 矩形 cell-range；shift+click 在已有 range 上延伸
+          focus；按钮可程序化设定/清空。`cellRangeSelection: 'enabled'` 开启 — 默认 `'none'`
           保留原有 cell-click / row-select / dblclick-edit 行为不变。 矩形内的 cell 带
           `cx-table-cell--in-cell-range` modifier (淡蓝高亮)。
         </strong>
         <strong>
-          Phase 17：`pinned: 'left'` (ID + 名称) / `'right'` (备注) 把列粘在 body 的左/右边缘 —
+          `pinned: 'left'` (ID + 名称) / `'right'` (备注) 把列粘在 body 的左/右边缘 —
           缩窄窗口或滚动表格时保持可见。`pinnedColsPass` 在 `columnLayoutPass` 之后计算累积偏移；
           per-cell `position: sticky` 在已有 flat 行布局上加位，无 wrapper / 无列重排。 单元格交互
           (cell-click / cell-range / dblclick-edit / 行选高亮) 在 pinned + center 两 zone
@@ -1336,31 +1334,29 @@ function onColumnHeaderMenuAction(payload: {
           selection rail 也 sticky 在同一侧，与 pinned 列并排。
         </strong>
         <strong>
-          Phase 19：cell-range 激活时按 Ctrl+C (Mac: Cmd+C) → 复制为 TSV → 写入
-          `navigator.clipboard` → 粘到 Excel / Sheets / Notion / VS Code
-          保留单元格结构。`valueFormatter` 在复制时生效 (例如 数量 列以 `N 件` 形式输出)。 新增
-          `cell-range-copy` emit + `copyCellRangeToClipboard()` TableHandle
-          方法，按钮可程序化触发同一路径。
+          cell-range 激活时按 Ctrl+C (Mac: Cmd+C) → 复制为 TSV → 写入 `navigator.clipboard` → 粘到
+          Excel / Sheets / Notion / VS Code 保留单元格结构。`valueFormatter` 在复制时生效 (例如 数量
+          列以 `N 件` 形式输出)。 新增 `cell-range-copy` emit + `copyCellRangeToClipboard()`
+          TableHandle 方法，按钮可程序化触发同一路径。
         </strong>
         <strong>
-          Phase 20：cell-range 激活时按 Ctrl+V (Mac: Cmd+V) → 从 `navigator.clipboard` 读 TSV →
-          解析为 2D 网格 → 映射到选区 (1×1 → fill-all；N×M → clamp-overflow， 多余 paste cell
-          丢弃，多余 envelope cell 保留不变) → 按 `column.type` coerce (数字列空 → null / 非法 →
-          silently skip) → `cell-range-paste` emit 一次 carry mutations 数组；consumer 用 Map
-          批量回写 `rows`。 Phase 12 `cell-value-change` 的 oldValue/newValue 形状一致，handler
-          可复用。 试着拷贝几个 cell 后选另一片区域按 Ctrl+V，或直接点 paste 按钮 — 选区内的 cell
-          都会按列类型 coerce 后更新。
+          cell-range 激活时按 Ctrl+V (Mac: Cmd+V) → 从 `navigator.clipboard` 读 TSV → 解析为 2D 网格
+          → 映射到选区 (1×1 → fill-all；N×M → clamp-overflow， 多余 paste cell 丢弃，多余 envelope
+          cell 保留不变) → 按 `column.type` coerce (数字列空 → null / 非法 → silently skip) →
+          `cell-range-paste` emit 一次 carry mutations 数组；consumer 用 Map 批量回写 `rows`。
+          `cell-value-change` 的 oldValue/newValue 形状一致，handler 可复用。 试着拷贝几个 cell
+          后选另一片区域按 Ctrl+V，或直接点 paste 按钮 — 选区内的 cell 都会按列类型 coerce 后更新。
         </strong>
         <strong>
-          Phase 21：cell-range 激活时其右下角出现 8×8 蓝色 drag-fill 小方块。drag 该 handle 向下 /
-          向右 → 沿主导轴 axis-lock 扩展选区 (Decision A.1，避免对角 2D 拼接) → pointerup 时
-          constant-fill (modulo copy；Decision B.1，不做算术级数推断) → `cell-range-fill` emit carry
-          mutations 数组 (与 Phase 20 paste 同形状)，consumer 同样 Map 批量回写。预览期间 fill 区
-          cells 套虚线 outline；selection 自动扩到 fill 范围。`fillCellRange(targetCell)` handle
-          方法 + 按钮可程序化触发同一路径。
+          cell-range 激活时其右下角出现 8×8 蓝色 drag-fill 小方块。drag 该 handle 向下 / 向右 →
+          沿主导轴 axis-lock 扩展选区 (Decision A.1，避免对角 2D 拼接) → pointerup 时 constant-fill
+          (modulo copy；Decision B.1，不做算术级数推断) → `cell-range-fill` emit carry mutations
+          数组 (与 paste 同形状)，consumer 同样 Map 批量回写。预览期间 fill 区 cells 套虚线
+          outline；selection 自动扩到 fill 范围。`fillCellRange(targetCell)` handle 方法 +
+          按钮可程序化触发同一路径。
         </strong>
         <strong>
-          Phase 22：`enableUndoHistory: true` 启用 undo/redo 栈。 Ctrl+Z (Mac: Cmd+Z) 撤销最新 batch
+          `enableUndoHistory: true` 启用 undo/redo 栈。 Ctrl+Z (Mac: Cmd+Z) 撤销最新 batch
           (cell-edit / paste / fill 任意 gesture 均自动 record) → SFC fire `history-replay` 携带
           REVERSED mutations → consumer 用 Map 批量回写 (同 paste/fill handler)。 Ctrl+Y /
           Ctrl+Shift+Z 重做 → fire `history-replay` 携带 ORIGINAL mutations。 `undo() / redo() /
@@ -1401,7 +1397,7 @@ function onColumnHeaderMenuAction(payload: {
           />
         </label>
         <label class="demo-page__inline-toggle demo-page__advanced-filter">
-          高级 filter (Phase 42 DSL):
+          高级 filter (DSL):
           <input
             type="text"
             data-testid="advanced-filter-input"
@@ -1439,7 +1435,7 @@ function onColumnHeaderMenuAction(payload: {
         <button type="button" @click="onClearHistoryClick">clearHistory</button>
         <label class="demo-page__inline-toggle">
           <input v-model="enableAutoScroll" type="checkbox" />
-          enableKeyboardAutoScroll (Phase 27)
+          enableKeyboardAutoScroll
         </label>
         <button type="button" @click="onJumpFarActiveCell">setActiveCell r19/qty</button>
         <button type="button" data-testid="csv-export-btn" @click="onExportCsv">Export CSV</button>
@@ -1508,7 +1504,7 @@ function onColumnHeaderMenuAction(payload: {
     </section>
     <section class="demo-page__table demo-page__tree-table">
       <header class="demo-page__tree-header">
-        <h2>Phase 30 — Tree data (vue3 baseline)</h2>
+        <h2>Tree data (vue3 baseline)</h2>
         <p>
           File-tree demo with ~85 rows nested 4 levels (project → module → folder → file). 单击
           chevron 展开 / 折叠；activeCell 在 <code>名称</code> 列时: <strong>Enter</strong> /
@@ -1537,7 +1533,7 @@ function onColumnHeaderMenuAction(payload: {
     </section>
     <section class="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
       <header>
-        <h2>Phase 31 + 32 + 33 — Pinned rows + tooltip + overlay</h2>
+        <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
         <p>
           <strong>Pinned rows</strong>：顶端常驻 ⭐ 行 + 底端 合计 行 (RowSpec.pinned: 'top' /
           'bottom')，不参与排序 / 过滤 / 分页 / 虚拟化。 <strong>Tooltip</strong>：悬停 备注 列
@@ -1561,7 +1557,7 @@ function onColumnHeaderMenuAction(payload: {
     </section>
     <section class="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
       <header>
-        <h2>Phase 34 — Lazy-load tree children</h2>
+        <h2>Lazy-load tree children</h2>
         <p>
           <strong>Lazy load</strong>：<code>hasChildren: true</code> + 无 <code>children</code> →
           首次展开调用 <code>childrenLoader</code>；500ms 模拟延迟；<code>lazy-fail-1</code>
@@ -1594,21 +1590,20 @@ function onColumnHeaderMenuAction(payload: {
       data-testid="server-side-section"
     >
       <header>
-        <h2>Phase 45 — Server-side row model</h2>
+        <h2>Server-side row model</h2>
         <p>
           <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per request.
           <strong>Skeleton rows</strong>: unloaded indices render shimmer bars; virtualization
           computes the full Y range from the server-reported <code>totalRowCount</code>.
           <strong>Sort / filter</strong>: change triggers <code>applyView</code> → in-flight blocks
-          abort via <code>AbortSignal</code> → fresh dispatch.
-          <strong>Phase 45.1 pagination</strong>: toggle ON → <code>pageSize</code> (25) becomes the
-          effective <code>cacheBlockSize</code>, page N maps 1:1 to block N, the body renders only
-          the current page's slice. <strong>Phase 45.2 invalidate</strong>:
-          <code>invalidateServerSideBlocks([0])</code> returns block 0 to IDLE state;
-          <code>totalRowCount</code> + other blocks + sort/filter are PRESERVED (contrast with
-          <code>refreshServerSideRows()</code> = whole-cache nuke). <strong>Toggle</strong>: switch
-          to <code>clientSide</code> mode to compare against the same column set without server-side
-          wiring.
+          abort via <code>AbortSignal</code> → fresh dispatch. <strong>pagination</strong>: toggle
+          ON → <code>pageSize</code> (25) becomes the effective <code>cacheBlockSize</code>, page N
+          maps 1:1 to block N, the body renders only the current page's slice.
+          <strong>invalidate</strong>: <code>invalidateServerSideBlocks([0])</code> returns block 0
+          to IDLE state; <code>totalRowCount</code> + other blocks + sort/filter are PRESERVED
+          (contrast with <code>refreshServerSideRows()</code> = whole-cache nuke).
+          <strong>Toggle</strong>: switch to <code>clientSide</code> mode to compare against the
+          same column set without server-side wiring.
         </p>
         <div class="demo-page__autosize-actions">
           <button type="button" data-testid="server-side-toggle" @click="onToggleRowModelType">
@@ -1622,14 +1617,14 @@ function onColumnHeaderMenuAction(payload: {
             data-testid="server-side-pagination-toggle"
             @click="onToggleServerSidePagination"
           >
-            Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }} (Phase 45.1)
+            Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }}
           </button>
           <button
             type="button"
             data-testid="server-side-invalidate-block-0"
             @click="onInvalidateServerSideBlock0"
           >
-            invalidateServerSideBlocks([0]) (Phase 45.2)
+            invalidateServerSideBlocks([0])
           </button>
         </div>
       </header>
@@ -1650,7 +1645,7 @@ function onColumnHeaderMenuAction(payload: {
       data-testid="tier3-finale-section"
     >
       <header>
-        <h2>Phase 46 — Tier 3 finale (Row number + Actions + Row auto-height)</h2>
+        <h2>Tier 3 finale (Row number + Actions + Row auto-height)</h2>
         <p>
           <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code> pinned-left auto
           renders <code>1, 2, 3</code>. <strong>Actions</strong>:
@@ -1677,7 +1672,7 @@ function onColumnHeaderMenuAction(payload: {
     </section>
     <section class="demo-page__table demo-page__tool-panel-table" data-testid="tool-panel-section">
       <header>
-        <h2>Phase 80 — Tool-panel container (chronix-NEW)</h2>
+        <h2>Tool-panel container (chronix-NEW)</h2>
         <p>
           <strong>chronix-NEW container</strong>: replaces reference's sidebar with a composable
           descriptor-array API. <strong>2 panels</strong>: Info (live row/column count) + Help

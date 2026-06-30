@@ -1,5 +1,5 @@
 /**
- * FocusDetector component IR — Phase 29 (2026-06-04). Tier B
+ * FocusDetector component IR — . Tier B
  * transparent-wrapper event observer. Emits `focus(event)` when focus
  * enters the wrapper from outside; emits `blur(event)` when focus
  * leaves entirely.

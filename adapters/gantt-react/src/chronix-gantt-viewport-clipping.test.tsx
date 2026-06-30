@@ -29,7 +29,7 @@ function bar(id: string, startHourOffset: number, endHourOffset: number): BarSpe
 }
 
 /**
- * Mirror of vue2 Phase 31.5.2.1's `driveChartScroll` helper for the RTL
+ * Mirror of vue2 `driveChartScroll` helper for the RTL
  * environment. Stubs `clientWidth` via `Object.defineProperty`, mutates
  * `scrollLeft` + dispatches a `scroll` event so `useChartScrollState`'s
  * scroll listener fires (jsdom doesn't auto-fire scroll on assignment).
@@ -52,7 +52,7 @@ function driveChartScroll(
   });
 }
 
-describe('<ChronixGantt> viewport-clipping continuation triangles — Phase 32.5.1', () => {
+describe('<ChronixGantt> viewport-clipping continuation triangles', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
   let originalResizeObserver: typeof globalThis.ResizeObserver | undefined;
   // `useChartScrollState` constructs a single ResizeObserver per pane;

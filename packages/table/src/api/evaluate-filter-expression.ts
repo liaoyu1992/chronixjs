@@ -9,7 +9,7 @@ import type {
 } from '../ir/index.js';
 
 /**
- * Context passed to `buildExpressionPredicate` (Phase 42, 2026-05-29).
+ * Context passed to `buildExpressionPredicate` (2026-05-29).
  *
  * `columns` mirrors the surface that `filter-pass.ts` already consumes
  * — needed at compile time so every compare leaf can resolve its
@@ -59,7 +59,7 @@ function walkValidate(
 
 /**
  * Compile a `FilterExpression` AST into a per-row predicate closure
- * (Phase 42). The AST is walked once at compile time; the resulting
+ * . The AST is walked once at compile time; the resulting
  * function is a plain `(row: RowSpec) => boolean` that the per-row
  * AND walk inside `filterPass` can call without further allocation.
  *
@@ -71,7 +71,7 @@ function walkValidate(
  *   when both sides coerce to text (per `coerceToText`). Boolean
  *   and null comparisons fall through to the typed branches.
  * - `contains` / `startsWith` / `endsWith` — case-insensitive
- *   substring tests via `coerceToText` (mirroring Phase 9 text-
+ *   substring tests via `coerceToText` (mirroring text-
  *   filter's default).
  * - `in` — true when the cell value (after `coerceToText` /
  *   `coerceToNumber`) equals ANY entry of the `value` array. Null

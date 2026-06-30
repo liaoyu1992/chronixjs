@@ -1,11 +1,11 @@
 /**
- * Steps IR — Phase 20 (2026-06-03). Tier A wizard / multi-stage
+ * Steps IR — . Tier A wizard / multi-stage
  * progress indicator.
  *
  * Renders an iterated sequence of `(indicator + content)` items
  * joined by separators. Each step has a derived
  * `StepStatus = 'wait' | 'process' | 'finish' | 'error'` that drives
- * indicator content + CSS modifier. Per Phase 20 Decision B.1 the
+ * indicator content + CSS modifier. Per Decision B.1 the
  * derivation has TWO sources:
  *
  * - `StepItem.status` (per-item override, takes precedence).
@@ -24,9 +24,9 @@
  * - **`StepsProps`** + **`defaultStepsProps`**.
  * - **`STEP_INDICATOR_FINISH_PLACEHOLDER`** + **`STEP_INDICATOR_ERROR_PLACEHOLDER`**
  *   — unicode characters rendered inside the indicator for the
- *   finish + error statuses. Phase 9 icon registry will substitute
- *   SVGs once geometry helpers mature; this is the Phase 20 stub
- *   matching Phase 15 Empty / Phase 18 Result / Phase 19 PageHeader
+ *   finish + error statuses. icon registry will substitute
+ *   SVGs once geometry helpers mature; this is the stub
+ *   matching Empty / Result / PageHeader
  *   placeholder-icon convention.
  */
 
@@ -80,12 +80,12 @@ export const defaultStepsProps: StepsProps = {
 
 /**
  * Unicode placeholder rendered inside the indicator for the
- * `'finish'` status. Phase 9 icon registry SVG swap pending.
+ * `'finish'` status. icon registry SVG swap pending.
  */
 export const STEP_INDICATOR_FINISH_PLACEHOLDER = '✓';
 
 /**
  * Unicode placeholder rendered inside the indicator for the
- * `'error'` status. Phase 9 icon registry SVG swap pending.
+ * `'error'` status. icon registry SVG swap pending.
  */
 export const STEP_INDICATOR_ERROR_PLACEHOLDER = '✕';

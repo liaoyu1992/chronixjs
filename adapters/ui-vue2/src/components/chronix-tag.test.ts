@@ -7,7 +7,7 @@ import { ChronixUIProvider } from '../providers/chronix-ui-provider.js';
 import { ChronixTag } from './chronix-tag.js';
 
 /**
- * Phase 13 (2026-06-02) — Tag mount tests (vue2). Verbatim port of
+ * — Tag mount tests (vue2). Verbatim port of
  * the vue3 Tag suite to `@vue/test-utils@1.x`. The `VueConstructor`
  * cast bridges Vue 2.7's `defineComponent` return type (Vue 3-style)
  * to vue-test-utils v1's call signature.

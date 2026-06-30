@@ -1,5 +1,5 @@
 /**
- * Transfer module — Phase 33 (2026-06-05).
+ * Transfer module — .
  *
  * Framework-agnostic transfer IR: list computation, filtering,
  * bulk actions, BEM class resolvers, CSS.

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixDivider } from './chronix-divider.js';
 
 /**
- * Phase 13 (2026-06-02) — Divider mount tests (react). Verbatim port
+ * — Divider mount tests (react). Verbatim port
  * of the vue3 Divider suite to `@testing-library/react`.
  */
 

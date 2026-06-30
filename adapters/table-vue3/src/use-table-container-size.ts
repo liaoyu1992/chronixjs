@@ -1,17 +1,17 @@
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 /**
- * Phase 2: tracks the table wrapper element's `clientWidth` so the
+ * tracks the table wrapper element's `clientWidth` so the
  * column-layout pass can re-distribute flex weights when the parent
  * container resizes. Returned value is a Vue ref that updates
  * reactively.
  *
  * Designed as a primitive that downstream phases can reuse:
  *
- *   - **Phase 10+** — pinned columns split into left / center / right
+ *   - **+** — pinned columns split into left / center / right
  *     scroll zones; each zone observes its own element via a separate
  *     `useTableContainerSize` instance.
- *   - **Phase 4** — `virtualRowsPass` needs the body element's
+ *   - **** — `virtualRowsPass` needs the body element's
  *     `clientHeight` for the visible-row window; a sibling
  *     `useTableContainerHeight` (or extended shape) lands then.
  *

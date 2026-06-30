@@ -16,7 +16,7 @@ export interface ChronixQrCodeProps extends Omit<HTMLAttributes<HTMLDivElement>,
 }
 
 /**
- * `<ChronixQrCode>` — React port of the Phase 22 QrCode.
+ * `<ChronixQrCode>` — React port of the QrCode.
  *
  * Renders an `<svg>` when an encoder factory has been registered
  * via `registerQrCodeEncoder(qrcode)` AND the value encodes

@@ -1,7 +1,7 @@
 import type { ColumnSpec, FilterSpec, SortSpec } from '../ir/index.js';
 
 /**
- * Phase 40.2 (2026-05-29): input to `formatColumnHeaderDescription`.
+ * input to `formatColumnHeaderDescription`.
  *
  * The helper composes a human-readable description of a column's
  * current sort + filter state. The output is consumed by the SFC's
@@ -17,7 +17,7 @@ export interface FormatColumnHeaderDescriptionInput {
 }
 
 /**
- * Phase 40.2 (2026-05-29): produce the description string referenced
+ * produce the description string referenced
  * by the columnheader's `aria-describedby` attribute.
  *
  * Format:

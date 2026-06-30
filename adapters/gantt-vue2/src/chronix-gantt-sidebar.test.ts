@@ -46,7 +46,7 @@ const groupedColumns: readonly ColumnSpec[] = [
 
 const GanttForTest = ChronixGantt as unknown as typeof Vue;
 
-describe('<ChronixGantt> sidebar pane (Phase 49)', () => {
+describe('<ChronixGantt> sidebar pane ', () => {
   describe('with `columns` prop (3-pane mode)', () => {
     it('renders cx-gantt-sidebar-pane + cx-gantt-sidebar-header-pane DOM', () => {
       const wrapper = mount(GanttForTest, {
@@ -91,7 +91,7 @@ describe('<ChronixGantt> sidebar pane (Phase 49)', () => {
       });
       const wrapperEl = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
       // 60 + 100 + 80 = 240 px sidebar.
-      // Phase 50: sidebar(240) + divider(8) + chart(auto) = 3-column grid.
+      // sidebar(240) + divider(8) + chart(auto) = 3-column grid.
       expect(wrapperEl.style.gridTemplateColumns).toBe('240px 4px auto');
     });
 
@@ -105,7 +105,7 @@ describe('<ChronixGantt> sidebar pane (Phase 49)', () => {
         },
       });
       const chartPane = wrapper.find('div.cx-gantt-chart-pane').element as HTMLElement;
-      // Phase 50: chart-pane shifts to column 3 (sidebar=1, divider=2, chart=3).
+      // chart-pane shifts to column 3 (sidebar=1, divider=2, chart=3).
       expect(chartPane.style.gridColumn).toBe('3');
     });
 
