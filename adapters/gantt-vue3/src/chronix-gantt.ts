@@ -3271,12 +3271,7 @@ export const ChronixGantt = defineComponent({
         // Effective area width = user override (if drag has happened)
         // or the natural sum of `ColumnSpec.width` — this drives the
         // grid track (how much horizontal space the sidebar pane gets).
-        // The sidebar *table* is always sized to the natural column sum
-        // (`sidebarTableWidth`), independent of the drag: dragging the
-        // divider narrower than the columns makes the pane overflow and
-        // reveal a horizontal scrollbar rather than compressing the cols.
         sidebarWidth = effectiveSidebarWidth.value;
-        const sidebarTableWidth = sidebarBaseWidth.value;
 
         // Build two distinct `<colgroup>` vnodes — one per sidebar
         // table. Reusing a single vnode in two tree positions triggers
