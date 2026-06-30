@@ -507,6 +507,135 @@ def run_ai_analysis(session_obs: list[dict]) -> list[dict]:
     return []
 
 
+def _parse_id_mapping(output: str, valid_ids: set) -> dict | None:
+    """Parse the id-resolution JSON array into {index: id}.
+
+    Only keeps ids that are 'NEW' or present in valid_ids, so a hallucinated id
+    never overwrites a real one. Returns None if no usable mapping parsed (the
+    caller then treats the whole resolution as a no-op)."""
+    cleaned = re.sub(r'```(?:json)?\s*', '', output)
+    cleaned = re.sub(r'```\s*', '', cleaned).strip()
+    candidates = [cleaned]
+    lb, rb = cleaned.find('['), cleaned.rfind(']')
+    if lb >= 0 and rb > lb:
+        candidates.append(cleaned[lb:rb + 1])
+    for text in candidates:
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(data, list):
+            continue
+        mapping = {}
+        for item in data:
+            if not isinstance(item, dict):
+                continue
+            idx = item.get("index")
+            rid = str(item.get("id", "")).strip()
+            if isinstance(idx, int) and rid and (rid == "NEW" or rid in valid_ids):
+                mapping[idx] = rid
+        if mapping:
+            return mapping
+    return None
+
+
+def resolve_instinct_ids_via_ai(ae, existing_instincts: list[dict],
+                                new_instincts: list[dict]) -> list[dict]:
+    """Semantically map each new instinct onto an existing id when they describe
+    the same behavior — curing AI-instinct id drift.
+
+    Token Jaccard cannot do this (see find_merge_target_id's EMPIRICAL NOTE):
+    instinct actions are Chinese and triggers short generic English, so
+    rephrasings share too few tokens while unrelated patterns collide on common
+    ones. One batched gateway call lets the model match across language and
+    phrasing. On any failure (no key, network, unparseable output) the new
+    instincts are returned unchanged — no regression; the Jaccard fallback and
+    write loop in main() proceed as before.
+    """
+    if not existing_instincts or not new_instincts:
+        return new_instincts
+
+    # Bound the registry so the prompt stays manageable as the corpus grows;
+    # prefer the highest-confidence, most-reinforced instincts.
+    registry = sorted(
+        existing_instincts,
+        key=lambda x: (x.get("confidence", 0), int(x.get("observed_count", 1) or 1)),
+        reverse=True,
+    )[:60]
+
+    def short(s, n=120):
+        return (s or "").replace("\n", " ").strip()[:n]
+
+    existing_lines = "\n".join(
+        f"{i + 1}. {inst.get('id', '')} | {short(inst.get('trigger', ''))} | "
+        f"{short(ae._extract_action(inst.get('body', '')))}"
+        for i, inst in enumerate(registry)
+    )
+    new_lines = "\n".join(
+        f"{i}. {short(inst.get('trigger', ''))} | {short(inst.get('action', ''))}"
+        for i, inst in enumerate(new_instincts)
+    )
+
+    prompt = (
+        "You are matching newly observed coding-behavior patterns against a "
+        "registry of existing \"instincts\".\n\n"
+        f"EXISTING INSTINCTS (number | id | trigger | action):\n{existing_lines}\n\n"
+        f"NEW PATTERNS (index | trigger | action):\n{new_lines}\n\n"
+        "For EACH new pattern (by index), decide whether it describes the SAME "
+        "underlying behavior as one of the existing instincts — even if worded "
+        "differently or in a different language.\n"
+        "- If it matches an existing instinct, output that instinct's id exactly.\n"
+        "- If it is a genuinely new behavior, output NEW.\n\n"
+        "Return ONLY a raw JSON array (no prose, no code fences), one object per "
+        "new pattern, in index order:\n"
+        '[{"index": 0, "id": "<existing-id-or-NEW>"}, ...]'
+    )
+
+    valid_ids = {inst.get("id") for inst in registry}
+    model = resolve_analysis_model()
+    last_error: Exception | None = None
+
+    for attempt in range(2):
+        p = prompt if attempt == 0 else prompt + FIRMER_SUFFIX
+        try:
+            output = _call_messages_api(p, model)
+        except urllib.error.HTTPError as e:
+            last_error = e
+            if e.code in (400, 404) and model != FALLBACK_MODEL:
+                model = FALLBACK_MODEL
+            continue
+        except Exception as e:
+            last_error = e
+            continue
+        mapping = _parse_id_mapping(output, valid_ids)
+        if mapping is not None:
+            resolved = 0
+            for idx, inst in enumerate(new_instincts):
+                target = mapping.get(idx)
+                if target and target != "NEW" and target != inst.get("id"):
+                    inst["id"] = target
+                    resolved += 1
+            if resolved:
+                try:
+                    log_file = (
+                        Path(__file__).resolve().parents[1]
+                        / "data" / "observations" / "analysis.log"
+                    )
+                    log_file.parent.mkdir(parents=True, exist_ok=True)
+                    with open(log_file, "a", encoding="utf-8") as f:
+                        ts = datetime.now(timezone.utc).isoformat()
+                        f.write(f"{ts} AI id-resolution: {resolved}/{len(new_instincts)} "
+                                f"new instincts mapped to existing ids\n")
+                except Exception:
+                    pass
+            return new_instincts
+
+    # Both attempts failed — leave ids as-is (Jaccard fallback in main() still runs).
+    if last_error is not None:
+        _log_ai_failure(last_error)
+    return new_instincts
+
+
 # ---------- Instinct File Management ----------
 
 
@@ -527,6 +656,16 @@ def find_merge_target_id(ae, existing_instincts: list[dict], instinct: dict):
     Compares trigger + action text (the new instinct's `action` field vs the
     existing instinct's `## Action` body section), matching auto-evolve's
     deduplicate logic. Returns the existing id to reuse, or None to create new.
+
+    EMPIRICAL NOTE: on the real instinct corpus this Jaccard match is
+    effectively a no-op. Max pairwise similarity is ~0.28 (with CJK bigrams) /
+    <0.5 (English-only): instinct `action` text is Chinese and triggers are
+    short generic English, so rephrasings of the SAME behavior share too few
+    tokens to cross any safe threshold, while unrelated behaviors can collide
+    on shared tokens like "claude code". This is the root cause of AI-instinct
+    id drift — every session spawns a fresh 0.5-confidence file that decays.
+    Curing drift requires a SEMANTIC matcher (AI id-resolution or embeddings),
+    not token Jaccard; this fallback is retained only as a cheap best-effort.
     """
     new_tokens = ae.tokenize(
         instinct.get("trigger", "") + " " + instinct.get("action", "")
@@ -644,7 +783,10 @@ def apply_confidence_decay(instincts_dir: Path):
             # Decay
             confidence = existing.get("confidence", 0.5)
             new_confidence = max(0.1, confidence - 0.05)
-            deprecated = new_confidence < 0.55
+            # Compare on the rounded value: 0.6-0.05 is 0.5499999999999999 in
+            # IEEE754, so a raw `< 0.55` false-positives at exactly the 0.55
+            # boundary and wrongly deprecates an instinct that should survive.
+            deprecated = round(new_confidence, 2) < 0.55
 
             # Rewrite with updated confidence
             content = md_file.read_text(encoding="utf-8")
@@ -690,14 +832,23 @@ def main():
     # Path B: AI semantic analysis
     ai_instincts = run_ai_analysis(session_obs)
 
-    # Combine and write instinct files
-    all_new_instincts = stat_instincts + ai_instincts
-
     # Load existing instincts once for semantic merge. Reusing auto-evolve's
     # tokenize/jaccard lets a repeated-but-differently-worded instinct reinforce
     # its existing file instead of spawning a new 0.5-confidence one.
     ae = _load_auto_evolve()
     existing_instincts = ae.load_all_instincts(paths["instincts_dir"])
+
+    # P0-A: semantically resolve AI instinct ids against the existing registry,
+    # so a rephrased-but-same pattern reinforces its existing file instead of
+    # drifting to a new 0.5-confidence one. Token Jaccard cannot do this (see
+    # find_merge_target_id's EMPIRICAL NOTE); one batched gateway call can.
+    # resolve_instinct_ids_via_ai is a no-op on any failure (no key / network /
+    # unparseable output), so the Jaccard fallback below still covers that case.
+    if ai_instincts and existing_instincts:
+        ai_instincts = resolve_instinct_ids_via_ai(ae, existing_instincts, ai_instincts)
+
+    # Combine and write instinct files
+    all_new_instincts = stat_instincts + ai_instincts
 
     merged = 0
     for instinct in all_new_instincts:
