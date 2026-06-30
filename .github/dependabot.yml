@@ -34,6 +34,12 @@ updates:
         patterns:
           - '@changesets/*'
     ignore:
+      # Vue 2.7 is final Vue 2 release; Vue 3.x requires full migration.
+      # Only allow minor/patch updates within 2.7.x.
+      - dependency-name: 'vue'
+        versions: ['>=3']
+      - dependency-name: 'vue'
+        update-types: ['version-update:semver-major']
       # TypeScript 6 needs typescript-eslint 9 + tsup TS6-aware release.
       # Re-evaluate once both ship; remove this ignore then.
       - dependency-name: 'typescript'
