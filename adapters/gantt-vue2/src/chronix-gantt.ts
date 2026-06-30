@@ -3283,12 +3283,7 @@ export const ChronixGantt = defineComponent({
       // `effectiveSidebarWidth` returns the user-dragged
       // override (if any) or falls back to the natural sum of per-
       // column widths — it drives the grid track (sidebar pane width).
-      // The sidebar *table* is sized to the natural column sum
-      // (`sidebarTableWidth`) so dragging narrower than the columns
-      // overflows the pane and reveals a horizontal scrollbar instead
-      // of compressing the columns.
       const sidebarWidth = effectiveSidebarWidth.value;
-      const sidebarTableWidth = sidebarBaseWidth.value;
       const rowsById = new Map(props.rows.map((r) => [r.id, r]));
       const rowsForSpans = strips.value
         .map((strip) => rowsById.get(strip.rowId))
