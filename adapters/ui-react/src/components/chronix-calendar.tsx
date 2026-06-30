@@ -36,7 +36,7 @@ export interface ChronixCalendarProps {
   readonly onChange?: (value: Date | undefined) => void;
 }
 
-export function ChronixCalendar(props: ChronixCalendarProps): JSX.Element {
+export function ChronixCalendar(props: ChronixCalendarProps): React.ReactElement {
   const { value, disabled = defaultCalendarProps.disabled, isDateDisabled, onChange } = props;
 
   useEffect(() => {

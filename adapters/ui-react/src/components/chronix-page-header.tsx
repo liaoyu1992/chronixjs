@@ -36,7 +36,7 @@ export interface ChronixPageHeaderProps extends Omit<HTMLAttributes<HTMLDivEleme
 /**
  * `<ChronixPageHeader>` — React port of the PageHeader.
  */
-export function ChronixPageHeader(props: ChronixPageHeaderProps): JSX.Element {
+export function ChronixPageHeader(props: ChronixPageHeaderProps): React.ReactElement {
   const {
     title = defaultPageHeaderProps.title,
     subtitle = defaultPageHeaderProps.subtitle,

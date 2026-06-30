@@ -26,7 +26,7 @@ export interface ChronixInputNumberProps extends Omit<HTMLAttributes<HTMLDivElem
   readonly onChange?: (value: number | null) => void;
 }
 
-export function ChronixInputNumber(props: ChronixInputNumberProps): JSX.Element {
+export function ChronixInputNumber(props: ChronixInputNumberProps): React.ReactElement {
   const {
     value = defaultInputNumberProps.value,
     min = defaultInputNumberProps.min,

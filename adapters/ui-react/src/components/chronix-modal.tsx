@@ -28,7 +28,7 @@ export interface ChronixModalProps extends Omit<
   readonly onClose?: (reason: ModalCloseReason) => void;
 }
 
-export function ChronixModal(props: ChronixModalProps): JSX.Element | null {
+export function ChronixModal(props: ChronixModalProps): React.ReactElement | null {
   const {
     show = undefined,
     title,

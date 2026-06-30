@@ -28,7 +28,7 @@ export interface ChronixBadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>,
  * wrapped mode resolution uses React's `Children.count` to mirror
  * the Vue slot-presence detection.
  */
-export function ChronixBadge(props: ChronixBadgeProps): JSX.Element {
+export function ChronixBadge(props: ChronixBadgeProps): React.ReactElement {
   const {
     value = defaultBadgeProps.value,
     max = defaultBadgeProps.max,

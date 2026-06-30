@@ -16,7 +16,7 @@ export interface ChronixTypographyProps extends Omit<HTMLAttributes<HTMLElement>
   readonly children?: ReactNode;
 }
 
-export function ChronixTypography(props: ChronixTypographyProps): JSX.Element {
+export function ChronixTypography(props: ChronixTypographyProps): React.ReactElement {
   const {
     variant = defaultTypographyProps.variant,
     level = defaultTypographyProps.level,

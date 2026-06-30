@@ -37,7 +37,7 @@ export interface ChronixCascaderProps extends Omit<
   readonly onChange?: (value: string | string[]) => void;
 }
 
-export function ChronixCascader(props: ChronixCascaderProps): JSX.Element {
+export function ChronixCascader(props: ChronixCascaderProps): React.ReactElement {
   const {
     value,
     options = defaultCascaderProps.options,
@@ -152,7 +152,7 @@ export function ChronixCascader(props: ChronixCascaderProps): JSX.Element {
   }, [disabled, lifecycle.visible, onShowChange]);
 
   // trigger
-  const triggerChildren: JSX.Element[] = [];
+  const triggerChildren: React.ReactElement[] = [];
   if (multiple && normalizedValue.length > 0) {
     for (const val of normalizedValue) {
       const label = resolveCascaderPathLabels(options, val).join(' / ');
@@ -199,7 +199,7 @@ export function ChronixCascader(props: ChronixCascaderProps): JSX.Element {
       const isSelected = leafVal !== undefined && normalizedValue.includes(leafVal);
       const isDisabled = !!(opt as { disabled?: boolean }).disabled;
       const classes = resolveCascaderOptionClassList(isSelected, isActive, isDisabled).join(' ');
-      const children: (string | JSX.Element)[] = [opt.label];
+      const children: (string | React.ReactElement)[] = [opt.label];
       if (!isLeaf(opt))
         children.push(
           <span key="arr" className="cx-ui-cascader__option-arrow">

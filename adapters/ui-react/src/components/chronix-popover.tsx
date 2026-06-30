@@ -26,7 +26,7 @@ export interface ChronixPopoverProps extends Omit<
   readonly onShowChange?: (show: boolean) => void;
 }
 
-export function ChronixPopover(props: ChronixPopoverProps): JSX.Element {
+export function ChronixPopover(props: ChronixPopoverProps): React.ReactElement {
   const {
     show = undefined,
     trigger = defaultPopoverProps.trigger,

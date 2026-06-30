@@ -12,7 +12,7 @@ export interface ChronixButtonGroupProps extends Omit<HTMLAttributes<HTMLDivElem
   readonly children?: ReactNode;
 }
 
-export function ChronixButtonGroup(props: ChronixButtonGroupProps): JSX.Element {
+export function ChronixButtonGroup(props: ChronixButtonGroupProps): React.ReactElement {
   const {
     vertical = defaultButtonGroupProps.vertical,
     size = defaultButtonGroupProps.size,

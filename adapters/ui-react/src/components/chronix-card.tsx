@@ -31,7 +31,7 @@ export interface ChronixCardProps extends Omit<
  * region is exposed as a named React prop rather than `children` to
  * mirror the Vue `footer` named slot semantically.
  */
-export function ChronixCard(props: ChronixCardProps): JSX.Element {
+export function ChronixCard(props: ChronixCardProps): React.ReactElement {
   const {
     size = defaultCardProps.size,
     title = defaultCardProps.title,

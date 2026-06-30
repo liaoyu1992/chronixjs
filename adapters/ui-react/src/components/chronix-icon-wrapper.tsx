@@ -14,7 +14,7 @@ export interface ChronixIconWrapperProps extends Omit<
   readonly children?: ReactNode;
 }
 
-export function ChronixIconWrapper(props: ChronixIconWrapperProps): JSX.Element {
+export function ChronixIconWrapper(props: ChronixIconWrapperProps): React.ReactElement {
   const {
     size = defaultIconWrapperProps.size,
     color = defaultIconWrapperProps.color,

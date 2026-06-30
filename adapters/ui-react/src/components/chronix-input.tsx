@@ -32,7 +32,7 @@ export interface ChronixInputProps extends Omit<
   readonly onClear?: () => void;
 }
 
-export function ChronixInput(props: ChronixInputProps): JSX.Element {
+export function ChronixInput(props: ChronixInputProps): React.ReactElement {
   const {
     value = defaultInputProps.value,
     type = defaultInputProps.type,

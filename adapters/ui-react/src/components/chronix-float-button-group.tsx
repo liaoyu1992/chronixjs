@@ -26,7 +26,7 @@ export interface ChronixFloatButtonGroupProps extends Omit<
   readonly onExpandedChange?: (expanded: boolean) => void;
 }
 
-export function ChronixFloatButtonGroup(props: ChronixFloatButtonGroupProps): JSX.Element {
+export function ChronixFloatButtonGroup(props: ChronixFloatButtonGroupProps): React.ReactElement {
   const {
     shape = defaultFloatButtonGroupProps.shape,
     trigger,

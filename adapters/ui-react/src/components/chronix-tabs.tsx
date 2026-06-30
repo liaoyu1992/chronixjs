@@ -39,7 +39,7 @@ export interface ChronixTabsProps extends Omit<
   readonly onReorder?: (nextItems: readonly TabItem[]) => void;
 }
 
-export function ChronixTabs(props: ChronixTabsProps): JSX.Element {
+export function ChronixTabs(props: ChronixTabsProps): React.ReactElement {
   const {
     value,
     items = defaultTabsProps.items,

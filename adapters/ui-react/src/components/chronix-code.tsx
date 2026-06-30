@@ -6,7 +6,7 @@ export interface ChronixCodeProps extends Omit<HTMLAttributes<HTMLElement>, 'chi
   readonly inline?: boolean;
 }
 
-export function ChronixCode(props: ChronixCodeProps): JSX.Element {
+export function ChronixCode(props: ChronixCodeProps): React.ReactElement {
   const { value = defaultCodeProps.value, inline = defaultCodeProps.inline, ...rest } = props;
   useEffect(() => {
     ensureChronixCodeStyles();

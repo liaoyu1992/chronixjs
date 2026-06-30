@@ -23,7 +23,7 @@ export interface ChronixTransferProps extends Omit<
   readonly onChange?: (value: (string | number)[]) => void;
 }
 
-export function ChronixTransfer(props: ChronixTransferProps): JSX.Element {
+export function ChronixTransfer(props: ChronixTransferProps): React.ReactElement {
   const {
     options = defaultTransferProps.options,
     value = defaultTransferProps.value,

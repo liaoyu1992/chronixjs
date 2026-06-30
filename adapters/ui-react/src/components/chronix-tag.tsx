@@ -42,7 +42,7 @@ export interface ChronixTagProps extends Omit<HTMLAttributes<HTMLSpanElement>, '
  * surface mirror of the Vue adapters; React idioms swapped in
  * (`onClose` callback, `children`).
  */
-export function ChronixTag(props: ChronixTagProps): JSX.Element {
+export function ChronixTag(props: ChronixTagProps): React.ReactElement {
   const {
     type = defaultTagProps.type,
     size,

@@ -19,7 +19,7 @@ export interface ChronixColorPickerProps extends Omit<
   readonly onChange?: (value: string | null) => void;
 }
 
-export function ChronixColorPicker(props: ChronixColorPickerProps): JSX.Element {
+export function ChronixColorPicker(props: ChronixColorPickerProps): React.ReactElement {
   const {
     value,
     swatches = [],

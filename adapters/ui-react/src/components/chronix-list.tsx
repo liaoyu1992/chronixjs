@@ -24,7 +24,7 @@ export interface ChronixListProps extends Omit<HTMLAttributes<HTMLUListElement>,
  * — NEW (Breadcrumb's `HTMLElement` precedent for
  * `<nav>` is the closest sibling).
  */
-export function ChronixList(props: ChronixListProps): JSX.Element {
+export function ChronixList(props: ChronixListProps): React.ReactElement {
   const {
     items = defaultListProps.items,
     bordered = defaultListProps.bordered,

@@ -50,7 +50,7 @@ export interface ChronixSelectProps extends Omit<
   readonly onChange?: (value: string | string[]) => void;
 }
 
-export function ChronixSelect(props: ChronixSelectProps): JSX.Element {
+export function ChronixSelect(props: ChronixSelectProps): React.ReactElement {
   const {
     value,
     options = defaultSelectProps.options,
@@ -237,7 +237,7 @@ export function ChronixSelect(props: ChronixSelectProps): JSX.Element {
   );
 
   // ── trigger content ──
-  const triggerChildren: JSX.Element[] = [];
+  const triggerChildren: React.ReactElement[] = [];
 
   if (multiple && normalizedValue.length > 0) {
     for (let i = 0; i < normalizedValue.length; i++) {
@@ -301,7 +301,7 @@ export function ChronixSelect(props: ChronixSelectProps): JSX.Element {
   }
 
   // ── dropdown content ──
-  const dropdownChildren: JSX.Element[] = [];
+  const dropdownChildren: React.ReactElement[] = [];
 
   if (filterable) {
     dropdownChildren.push(

@@ -27,7 +27,7 @@ export interface ChronixInfiniteScrollProps extends Omit<
  * Uses IntersectionObserver to detect when the user is near the bottom
  * and calls `onLoad` for more data.
  */
-export function ChronixInfiniteScroll(props: ChronixInfiniteScrollProps): JSX.Element {
+export function ChronixInfiniteScroll(props: ChronixInfiniteScrollProps): React.ReactElement {
   const {
     distance = defaultInfiniteScrollProps.distance,
     loading = defaultInfiniteScrollProps.loading,

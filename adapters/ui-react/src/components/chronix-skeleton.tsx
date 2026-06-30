@@ -26,7 +26,7 @@ export interface ChronixSkeletonProps extends Omit<
  * `<ChronixSkeleton>` — React port of the Skeleton.
  * Verbatim surface mirror of the Vue adapters.
  */
-export function ChronixSkeleton(props: ChronixSkeletonProps): JSX.Element {
+export function ChronixSkeleton(props: ChronixSkeletonProps): React.ReactElement {
   const {
     shape = defaultSkeletonProps.shape,
     width = defaultSkeletonProps.width,

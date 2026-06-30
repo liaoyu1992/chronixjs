@@ -42,7 +42,7 @@ export interface ChronixMentionProps extends Omit<
   readonly onChange?: (value: string) => void;
 }
 
-export function ChronixMention(props: ChronixMentionProps): JSX.Element {
+export function ChronixMention(props: ChronixMentionProps): React.ReactElement {
   const {
     value = defaultMentionProps.value,
     options = defaultMentionProps.options,
@@ -177,7 +177,7 @@ export function ChronixMention(props: ChronixMentionProps): JSX.Element {
   );
 
   // dropdown options
-  const optionNodes: JSX.Element[] = [];
+  const optionNodes: React.ReactElement[] = [];
   if (flatEntries.length === 0) {
     optionNodes.push(
       <div key="empty" className={resolveMentionEmptyClassList().join(' ')}>

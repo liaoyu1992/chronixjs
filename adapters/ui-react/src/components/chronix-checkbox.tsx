@@ -19,7 +19,7 @@ export interface ChronixCheckboxProps extends Omit<
   readonly children?: ReactNode;
 }
 
-export function ChronixCheckbox(props: ChronixCheckboxProps): JSX.Element {
+export function ChronixCheckbox(props: ChronixCheckboxProps): React.ReactElement {
   const {
     checked = defaultCheckboxProps.checked,
     indeterminate = defaultCheckboxProps.indeterminate,

@@ -49,7 +49,7 @@ function mapKeyToDirection(key: string): MenuTreeNavDirection | null {
   }
 }
 
-export function ChronixMenu(props: ChronixMenuProps): JSX.Element {
+export function ChronixMenu(props: ChronixMenuProps): React.ReactElement {
   const {
     value,
     items = defaultMenuProps.items,

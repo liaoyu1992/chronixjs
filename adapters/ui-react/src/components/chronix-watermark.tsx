@@ -24,7 +24,7 @@ export interface ChronixWatermarkProps extends Omit<HTMLAttributes<HTMLDivElemen
  * shadowed by the chronix prop (`Omit<HTMLAttributes, 'content'>`);
  * pass-through HTML attributes via spread otherwise.
  */
-export function ChronixWatermark(props: ChronixWatermarkProps): JSX.Element {
+export function ChronixWatermark(props: ChronixWatermarkProps): React.ReactElement {
   const {
     content = defaultWatermarkProps.content,
     width = defaultWatermarkProps.width,

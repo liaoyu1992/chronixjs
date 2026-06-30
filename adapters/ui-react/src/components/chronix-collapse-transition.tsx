@@ -23,7 +23,9 @@ export interface ChronixCollapseTransitionProps extends Omit<
   readonly children?: ReactNode;
 }
 
-export function ChronixCollapseTransition(props: ChronixCollapseTransitionProps): JSX.Element {
+export function ChronixCollapseTransition(
+  props: ChronixCollapseTransitionProps,
+): React.ReactElement {
   const { show, duration = defaultCollapseTransitionProps.duration, children, ...rest } = props;
   useEffect(() => {
     ensureChronixCollapseTransitionStyles();

@@ -12,7 +12,7 @@ export interface ChronixHighlightProps extends Omit<HTMLAttributes<HTMLSpanEleme
   readonly caseSensitive?: boolean;
 }
 
-export function ChronixHighlight(props: ChronixHighlightProps): JSX.Element {
+export function ChronixHighlight(props: ChronixHighlightProps): React.ReactElement {
   const {
     value = defaultHighlightProps.value,
     pattern = defaultHighlightProps.pattern,

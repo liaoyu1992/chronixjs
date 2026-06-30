@@ -29,7 +29,7 @@ export interface ChronixDropdownProps extends Omit<
   readonly onSelect?: (option: DropdownOption) => void;
 }
 
-export function ChronixDropdown(props: ChronixDropdownProps): JSX.Element {
+export function ChronixDropdown(props: ChronixDropdownProps): React.ReactElement {
   const {
     show = undefined,
     trigger = defaultDropdownProps.trigger,

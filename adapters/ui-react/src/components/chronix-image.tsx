@@ -28,7 +28,7 @@ export interface ChronixImageProps extends Omit<
   readonly onPreviewClose?: () => void;
 }
 
-export function ChronixImage(props: ChronixImageProps): JSX.Element {
+export function ChronixImage(props: ChronixImageProps): React.ReactElement {
   const {
     src,
     alt,

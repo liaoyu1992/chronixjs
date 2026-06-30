@@ -22,7 +22,7 @@ export interface ChronixSpaceProps extends Omit<HTMLAttributes<HTMLDivElement>, 
 /**
  * `<ChronixSpace>` — React port of the Space.
  */
-export function ChronixSpace(props: ChronixSpaceProps): JSX.Element {
+export function ChronixSpace(props: ChronixSpaceProps): React.ReactElement {
   const {
     size = defaultSpaceProps.size,
     vertical = defaultSpaceProps.vertical,

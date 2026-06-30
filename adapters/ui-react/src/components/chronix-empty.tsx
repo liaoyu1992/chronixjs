@@ -24,7 +24,7 @@ export interface ChronixEmptyProps extends Omit<HTMLAttributes<HTMLDivElement>, 
 /**
  * `<ChronixEmpty>` — React 18 port of the Empty.
  */
-export function ChronixEmpty(props: ChronixEmptyProps): JSX.Element {
+export function ChronixEmpty(props: ChronixEmptyProps): React.ReactElement {
   const {
     size = defaultEmptyProps.size,
     description = defaultEmptyProps.description,

@@ -22,7 +22,7 @@ export interface ChronixAvatarProps extends Omit<HTMLAttributes<HTMLSpanElement>
   readonly children?: ReactNode;
 }
 
-export function ChronixAvatar(props: ChronixAvatarProps): JSX.Element {
+export function ChronixAvatar(props: ChronixAvatarProps): React.ReactElement {
   const {
     src = defaultAvatarProps.src,
     text = defaultAvatarProps.text,

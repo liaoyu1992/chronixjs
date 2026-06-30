@@ -31,7 +31,7 @@ export interface ChronixDrawerProps extends Omit<
   readonly onClose?: (reason: ModalCloseReason) => void;
 }
 
-export function ChronixDrawer(props: ChronixDrawerProps): JSX.Element | null {
+export function ChronixDrawer(props: ChronixDrawerProps): React.ReactElement | null {
   const {
     show = undefined,
     placement = defaultDrawerProps.placement,

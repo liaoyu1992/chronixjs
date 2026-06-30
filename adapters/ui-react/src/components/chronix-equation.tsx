@@ -14,7 +14,7 @@ export interface ChronixEquationProps extends Omit<
   readonly display?: EquationDisplay;
 }
 
-export function ChronixEquation(props: ChronixEquationProps): JSX.Element {
+export function ChronixEquation(props: ChronixEquationProps): React.ReactElement {
   const {
     value = defaultEquationProps.value,
     display = defaultEquationProps.display,

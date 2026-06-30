@@ -31,7 +31,7 @@ export interface ChronixSplitProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   readonly onResizeEnd?: () => void;
 }
 
-export function ChronixSplit(props: ChronixSplitProps): JSX.Element {
+export function ChronixSplit(props: ChronixSplitProps): React.ReactElement {
   const {
     direction = defaultSplitProps.direction,
     defaultSize = defaultSplitProps.defaultSize,

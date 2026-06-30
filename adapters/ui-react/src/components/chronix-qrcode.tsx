@@ -23,7 +23,7 @@ export interface ChronixQrCodeProps extends Omit<HTMLAttributes<HTMLDivElement>,
  * successfully. Otherwise renders the `--unavailable`
  * placeholder.
  */
-export function ChronixQrCode(props: ChronixQrCodeProps): JSX.Element {
+export function ChronixQrCode(props: ChronixQrCodeProps): React.ReactElement {
   const {
     value = defaultQrCodeProps.value,
     size = defaultQrCodeProps.size,

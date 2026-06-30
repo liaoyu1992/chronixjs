@@ -11,7 +11,7 @@ export interface ChronixElementProps extends Omit<HTMLAttributes<HTMLElement>, '
   readonly children?: ReactNode;
 }
 
-export function ChronixElement(props: ChronixElementProps): JSX.Element {
+export function ChronixElement(props: ChronixElementProps): React.ReactElement {
   const {
     tag = defaultElementProps.tag,
     inline = defaultElementProps.inline,

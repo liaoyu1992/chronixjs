@@ -51,7 +51,7 @@ export interface ChronixButtonProps extends Omit<
  * default-merge precedence (own prop strict → context → interface
  * default).
  */
-export function ChronixButton(props: ChronixButtonProps): JSX.Element {
+export function ChronixButton(props: ChronixButtonProps): React.ReactElement {
   const {
     variant = defaultButtonProps.variant,
     size,

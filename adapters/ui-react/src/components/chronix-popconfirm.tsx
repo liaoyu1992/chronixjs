@@ -35,7 +35,7 @@ export interface ChronixPopconfirmProps extends Omit<
   readonly onNegativeClick?: (event: ReactMouseEvent<HTMLButtonElement>) => void;
 }
 
-export function ChronixPopconfirm(props: ChronixPopconfirmProps): JSX.Element {
+export function ChronixPopconfirm(props: ChronixPopconfirmProps): React.ReactElement {
   const {
     title = defaultPopconfirmProps.title,
     positiveText = defaultPopconfirmProps.positiveText,

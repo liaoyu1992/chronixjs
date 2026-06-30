@@ -21,7 +21,7 @@ export interface ChronixLayoutSiderProps extends Omit<HTMLAttributes<HTMLElement
   readonly onCollapsedChange?: (collapsed: boolean) => void;
 }
 
-export function ChronixLayoutSider(props: ChronixLayoutSiderProps): JSX.Element {
+export function ChronixLayoutSider(props: ChronixLayoutSiderProps): React.ReactElement {
   const {
     width = defaultLayoutSiderProps.width,
     collapsedWidth = defaultLayoutSiderProps.collapsedWidth,

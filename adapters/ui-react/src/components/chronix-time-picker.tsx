@@ -38,7 +38,7 @@ export interface ChronixTimePickerProps extends Omit<
   readonly onChange?: (value: Date | undefined) => void;
 }
 
-export function ChronixTimePicker(props: ChronixTimePickerProps): JSX.Element {
+export function ChronixTimePicker(props: ChronixTimePickerProps): React.ReactElement {
   const {
     value,
     format: fmt = defaultTimePickerProps.format,
