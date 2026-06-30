@@ -27,6 +27,7 @@ import argparse
 import importlib.util
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -100,12 +101,21 @@ def delete_deprecated(instincts_dir) -> int:
 
 
 def prune_single_observation(instincts_dir, instincts, dry_run=False) -> int:
-    """Remove single-observation instincts (count<=1 AND confidence<=0.5)."""
+    """Remove single-observation instincts (count<=1 AND confidence<=0.5).
+
+    A one-session grace period protects instincts created *today*: stop.sh
+    runs consolidate in the same pass that auto-analyze just wrote a fresh
+    0.5/count=1 instinct, so pruning it immediately would delete the signal
+    before it can ever be re-observed next session. We skip anything observed
+    today (mirrors apply_confidence_decay's own guard)."""
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     removed = 0
     for inst in instincts:
         conf = float(inst.get("confidence", 0.5))
         count = int(inst.get("observed_count", 1) or 1)
         if conf <= 0.5 and count <= 1:
+            if inst.get("observed_at", "") == today:
+                continue  # fresh this session; give it a chance to recur
             if dry_run:
                 removed += 1
                 continue
@@ -161,7 +171,12 @@ def main():
     instincts_now = ae.load_all_instincts(instincts_dir)
     pruned = prune_single_observation(instincts_dir, instincts_now, args.dry_run)
 
-    after = len(list(instincts_dir.glob("*.md")))
+    if args.dry_run:
+        # Nothing was actually deleted; project the post-cleanup count so the
+        # dry-run message is honest instead of always echoing `before`.
+        after = before - dep_count - merged_files - pruned
+    else:
+        after = len(list(instincts_dir.glob("*.md")))
     mode = "[DRY RUN]" if args.dry_run else ""
     print(f"[consolidate] {before} -> {after} files "
           f"({len(multi)} clusters, {merged_files} merged; "
