@@ -4,7 +4,7 @@ import { deriveViewportClipping } from './derive-viewport-clipping.js';
 
 const TRIANGLE_MARGIN = 1;
 
-describe('deriveViewportClipping — Phase 27.1', () => {
+describe('deriveViewportClipping', () => {
   it('returns both flags false when the bar is fully inside the viewport', () => {
     // viewport: [50, 450) content-coords (scrollLeft=50, clientWidth=400)
     // bar: [100, 300) content-coords (renderX=100, renderWidth=200)
@@ -64,7 +64,7 @@ describe('deriveViewportClipping — Phase 27.1', () => {
     expect(rightBoundary.isViewportClippedEnd).toBe(false);
   });
 
-  it('Phase 28.2.2: bar fully right of viewport yields both flags false', () => {
+  it('bar fully right of viewport yields both flags false', () => {
     // viewport: [0, 800); bar: [1000, 2000) — entirely offscreen-right.
     // Without the overlap guard, isViewportClippedEnd would fire (the
     // bar's right edge 2000 > viewportRight 800) and downstream
@@ -76,7 +76,7 @@ describe('deriveViewportClipping — Phase 27.1', () => {
     expect(result.isViewportClippedEnd).toBe(false);
   });
 
-  it('Phase 28.2.2: bar fully left of viewport yields both flags false', () => {
+  it('bar fully left of viewport yields both flags false', () => {
     // viewport: [500, 1300); bar: [0, 400) — entirely offscreen-left
     // (right edge 400 < scrollLeft 500). Without the overlap guard,
     // isViewportClippedStart would fire (renderX 0 < scrollLeft 500)
@@ -88,7 +88,7 @@ describe('deriveViewportClipping — Phase 27.1', () => {
     expect(result.isViewportClippedEnd).toBe(false);
   });
 
-  it('Phase 28.2.2: bar with right edge EXACTLY at scrollLeft yields no clip (boundary)', () => {
+  it('bar with right edge EXACTLY at scrollLeft yields no clip (boundary)', () => {
     // viewport: [500, 1300); bar: [100, 500) — right edge sits EXACTLY
     // on scrollLeft. Strict `>` overlap check means no overlap; both
     // flags stay false.

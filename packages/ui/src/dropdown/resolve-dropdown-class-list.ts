@@ -7,7 +7,7 @@ export interface ResolveDropdownClassListInput {
 
 /**
  * Class list for the portal-mounted dropdown panel. Mirrors the
- * Phase 26 popover pattern (`--placement-*` modifier driven by the
+ * popover pattern (`--placement-*` modifier driven by the
  * post-flip `actualPlacement` + `--open` modifier on visible).
  */
 export function resolveDropdownClassList(input: ResolveDropdownClassListInput): string[] {

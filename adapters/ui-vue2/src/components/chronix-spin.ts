@@ -10,7 +10,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 import { useUIContext } from '../composables/use-ui-context.js';
 
 /**
- * `<ChronixSpin>` — Vue 2.7 port of the Phase 16 Spin. Verbatim
+ * `<ChronixSpin>` — Vue 2.7 port of the Spin. Verbatim
  * surface mirror of vue3 sibling; runtime difference is the `attrs:`
  * data-object for the indicator's `role` + `aria-label`.
  */

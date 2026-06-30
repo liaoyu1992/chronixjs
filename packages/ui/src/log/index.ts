@@ -1,5 +1,5 @@
 /**
- * chronix-ui log module — Phase 23 (2026-06-03).
+ * chronix-ui log module — .
  */
 
 export type { LogProps } from './log-spec.js';

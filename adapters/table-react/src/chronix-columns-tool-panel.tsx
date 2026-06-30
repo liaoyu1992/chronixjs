@@ -1,6 +1,6 @@
 /**
- * Phase 81 (2026-05-30 — react port): pre-built columns tool
- * panel component the consumer drops into Phase 80's
+ * (2026-05-30 — react port): pre-built columns tool
+ * panel component the consumer drops in's
  * `ToolPanelDescriptor.renderer` slot.
  *
  * Pure UI wrapper over `TableHandle.toggleColumnVisibility` +

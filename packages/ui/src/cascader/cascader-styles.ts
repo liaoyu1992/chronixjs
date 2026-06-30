@@ -1,5 +1,5 @@
 /**
- * Cascader CSS — Phase 31 (2026-06-04).
+ * Cascader CSS — .
  */
 
 export const CHRONIX_CASCADER_CSS = `

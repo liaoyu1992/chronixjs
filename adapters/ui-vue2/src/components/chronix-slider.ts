@@ -10,7 +10,7 @@ import { computed, defineComponent, h, ref, type PropType } from 'vue';
 
 /**
  * `<ChronixSlider>` — Vue 2 slider with track + thumb + marks.
- * Phase 33 (2026-06-05).
+ * .
  */
 export const ChronixSlider = defineComponent({
   name: 'ChronixSlider',

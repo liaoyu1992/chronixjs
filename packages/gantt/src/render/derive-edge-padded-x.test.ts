@@ -13,7 +13,7 @@ const TITLE_LEFT_PADDING = 8;
 const TITLE_RIGHT_PADDING = 4;
 const DOT_EDGE_INSET = 1;
 
-describe('deriveEdgePaddedX — Phase 28.2.1', () => {
+describe('deriveEdgePaddedX', () => {
   it('default left: no clipping returns renderEdge + defaultInset', () => {
     // Bar at renderX=100, no clipping → title-left at 100 + 8 = 108.
     const x = deriveEdgePaddedX(
@@ -49,7 +49,7 @@ describe('deriveEdgePaddedX — Phase 28.2.1', () => {
 
   it('axis-only-clipped left: returns renderEdge + triangleMargin + triangleSize + consumerGap', () => {
     // Bar at renderX=100, axis-clipped left → title-left at
-    // 100 + 1 + 6 + 4 = 111 (cleared past the bar-edge-locked Phase 27 triangle).
+    // 100 + 1 + 6 + 4 = 111 (cleared past the bar-edge-locked triangle).
     const x = deriveEdgePaddedX(
       'start',
       100,

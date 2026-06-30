@@ -1,14 +1,14 @@
 /**
- * Phase 50 — sidebar-divider drag-to-resize constants + clamp helper.
+ * sidebar-divider drag-to-resize constants + clamp helper.
  * Relocated to core from `adapters/gantt-vue3/src/chronix-gantt.ts` locals
- * (Phase 38 / Phase 49 3rd-consumer threshold pattern: when 3
+ * (3rd-consumer threshold pattern: when 3
  * adapters share a primitive, it consolidates here).
  *
  * Shared by chronix-vue3 + chronix-vue2 + chronix-react sidebar
  * divider state machines. Re-exported via the adapter index.ts files
  * so consumer-facing `import { SIDEBAR_DIVIDER_WIDTH } from
  * '@chronixjs/gantt-{vue3,vue2,react}'` paths continue to resolve
- * via the Phase 38 re-export idiom.
+ * via the re-export idiom.
  */
 
 /**
@@ -19,7 +19,7 @@
  * prop is non-empty). Wide enough to be a comfortable grab target
  * for pointer drag without visually competing with chart content.
  */
-export const SIDEBAR_DIVIDER_WIDTH = 8;
+export const SIDEBAR_DIVIDER_WIDTH = 4;
 
 /**
  * Minimum pixel width allotted to BOTH the sidebar pane AND the

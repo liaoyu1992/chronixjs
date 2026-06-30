@@ -1,5 +1,5 @@
 /**
- * Popup / floating-element IR — Phase 4 (2026-06-02) per Phase 0.2 Decision A.1 / B.1.
+ * Popup / floating-element IR — per Decision A.1 / B.1.
  *
  * Pure-data types consumed by `resolvePopupPlacement` and emitted as
  * the placement result. Adapter packages (`@chronixjs/ui-vue3`,

@@ -90,7 +90,7 @@ export interface PointerHitTestInput {
 
 /**
  * Pure-functional hit-test: viewport pointer position → bar id + zone, or
- * `null` for a miss outside every strip. Adapter prerequisite for Phase 4.
+ * `null` for a miss outside every strip. Adapter prerequisite .
  *
  * Single-pass over placed bars + strips; no DOM, no `elementFromPoint`,
  * no implicit z-order rules beyond input order. Adapters that need

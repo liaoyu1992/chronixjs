@@ -6,7 +6,7 @@ import {
 import { computed, defineComponent, h } from 'vue';
 
 /**
- * `<ChronixEllipsis>` — Vue 2.7 port of the Phase 23 Ellipsis.
+ * `<ChronixEllipsis>` — Vue 2.7 port of the Ellipsis.
  *
  * Root element is `<span>` (NOT `<div>`) — 23-fr2: inline element
  * so it composes within inline flows.

@@ -1,7 +1,7 @@
 import { useEffect, useState, type RefObject } from 'react';
 
 /**
- * Phase 48.1 (2026-05-25): React hook that tracks the body scrollport
+ * React hook that tracks the body scrollport
  * element's `clientHeight` + `scrollTop` so the virtual-rows pass can
  * pick the visible row window when the body's content height exceeds
  * its viewport. Returned values are plain `number`s (NOT Vue-style
@@ -28,7 +28,7 @@ import { useEffect, useState, type RefObject } from 'react';
  * ref-for-cleanup discipline because React may have nullified the
  * RefObject by the time the effect cleanup runs.
  *
- * Decision C.1 (carried from Phase 48) — `typeof ResizeObserver
+ * Decision C.1 (carried) — `typeof ResizeObserver
  * !== 'undefined'` gate covers both jsdom (test env, no
  * ResizeObserver) AND SSR with one mechanism. In jsdom the observer
  * simply never fires; tests can fire scroll events directly +

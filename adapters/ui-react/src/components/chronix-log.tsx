@@ -10,7 +10,7 @@ export interface ChronixLogProps extends Omit<HTMLAttributes<HTMLDivElement>, 'c
 }
 
 /**
- * `<ChronixLog>` — React port of the Phase 23 Log.
+ * `<ChronixLog>` — React port of the Log.
  *
  * Root `<div>` carries optional inline `maxHeight` + `overflow:
  * auto` style. Inner `<ol class="__lines">` iterates `lines` into

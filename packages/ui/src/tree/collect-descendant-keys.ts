@@ -5,7 +5,7 @@ import type { TreeNodeSpec } from './tree-spec.js';
 /**
  * Collect all descendant keys of a node in pre-order. Pure function.
  *
- * Phase 5 (2026-06-02). Used by Tree's checkbox-cascade logic, "expand
+ * . Used by Tree's checkbox-cascade logic, "expand
  * all" operations, and bulk-action targeting.
  *
  * By default, the result EXCLUDES `node.key` itself (only descendants).

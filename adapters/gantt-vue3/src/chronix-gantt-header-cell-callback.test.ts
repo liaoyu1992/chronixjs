@@ -16,7 +16,7 @@ const weekAxis: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> headerCellClassNamesCallback — Phase 29', () => {
+describe('<ChronixGantt> headerCellClassNamesCallback', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

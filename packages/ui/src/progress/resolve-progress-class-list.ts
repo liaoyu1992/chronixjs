@@ -3,7 +3,7 @@ import type { ProgressProps } from './progress-spec.js';
 /**
  * Compute class set for the Progress root element.
  *
- * Phase 16 (2026-06-02).
+ * .
  *
  * Class structure:
  *

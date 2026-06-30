@@ -3,7 +3,7 @@ import type { SkeletonProps } from './skeleton-spec.js';
 /**
  * Compute class set for the Skeleton root element.
  *
- * Phase 16 (2026-06-02).
+ * .
  *
  * Class structure:
  *

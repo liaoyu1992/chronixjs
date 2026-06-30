@@ -31,7 +31,7 @@ function renderWithPane(): {
   };
 }
 
-describe('useChartScrollState (Phase 32.5)', () => {
+describe('useChartScrollState ', () => {
   it('initial state: scrollLeft 0 + clientWidth 0 when pane has default jsdom dimensions', () => {
     const { result } = renderWithPane();
     expect(result.current.scrollLeft).toBe(0);

@@ -7,7 +7,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixDivider>` — Vue 2.7 port of the Phase 13 Divider pilot.
+ * `<ChronixDivider>` — Vue 2.7 port of the Divider pilot.
  * Same DOM shape + class set as the vue3 sibling; runtime differences
  * are Vue 2's nested `attrs:` data-object for `role`.
  */

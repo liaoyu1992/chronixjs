@@ -1,5 +1,5 @@
 /**
- * AvatarGroup IR — Phase 24 (2026-06-03). Tier A horizontal stack
+ * AvatarGroup IR — . Tier A horizontal stack
  * of overlapping avatars with overflow +N indicator.
  */
 

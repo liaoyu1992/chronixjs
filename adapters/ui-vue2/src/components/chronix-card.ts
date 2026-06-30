@@ -8,7 +8,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixCard>` — Vue 2.7 port of the Phase 15 Card.
+ * `<ChronixCard>` — Vue 2.7 port of the Card.
  */
 export const ChronixCard = defineComponent({
   name: 'ChronixCard',

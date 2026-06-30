@@ -3,7 +3,7 @@ import { getCellValue } from '../render/format-cell-value.js';
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Input to `computeColumnNumericExtents` (Phase 98.2, 2026-05-31).
+ * Input to `computeColumnNumericExtents` (2026-05-31).
  *
  * - `rows` is the FULL row population to walk — typically the
  *   `props.rows` passed to the table.
@@ -26,7 +26,7 @@ export interface ColumnNumericExtents {
 
 /**
  * Compute the `[min, max]` numeric extents for a column from a row
- * population (Phase 98.2, 2026-05-31). Used by adapters when wiring a
+ * population (2026-05-31). Used by adapters when wiring a
  * Number filter range slider — the slider needs a known value range
  * to map pointer positions to filter values.
  *

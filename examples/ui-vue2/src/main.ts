@@ -6,7 +6,7 @@ import App from './App.vue';
 
 import './styles.css';
 
-// Phase 22 — register the optional QR encoder factory so
+// register the optional QR encoder factory so
 // <ChronixQrCode> renders the SVG matrix instead of the
 // `--unavailable` placeholder.
 registerQrCodeEncoder(qrcode);

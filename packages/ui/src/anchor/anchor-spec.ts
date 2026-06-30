@@ -1,5 +1,5 @@
 /**
- * Anchor IR — Phase 35. Vertical anchor navigation with
+ * Anchor IR. Vertical anchor navigation with
  * optional rail and active indicator.
  */
 

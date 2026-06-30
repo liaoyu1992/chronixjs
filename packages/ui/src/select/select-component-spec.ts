@@ -1,5 +1,5 @@
 /**
- * Select component IR — Phase 31 (2026-06-04).
+ * Select component IR — .
  *
  * Full-featured select: single/multi, filterable, virtual scrolling,
  * clearable, loading state. Combines `OptionSpec` shared types with

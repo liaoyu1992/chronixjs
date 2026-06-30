@@ -39,7 +39,7 @@ const fullToolbar: ToolbarInput = {
   right: 'day,week,month,season,halfYear,year',
 };
 
-describe('<ChronixGantt> header toolbar (Phase 34)', () => {
+describe('<ChronixGantt> header toolbar ', () => {
   afterEach(() => {
     cleanup();
   });

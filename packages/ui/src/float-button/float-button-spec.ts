@@ -1,5 +1,5 @@
 /**
- * FloatButton component IR — Phase 28 (2026-06-04). Tier B floating
+ * FloatButton component IR — . Tier B floating
  * action button anchored to a viewport corner. Adapter wraps the
  * button in `<ChronixTooltip>` when `tooltip` is defined.
  *
@@ -22,7 +22,7 @@ export interface FloatButtonProps {
   readonly top: number | undefined;
   /** When defined, takes precedence over `right` and pins to left. */
   readonly left: number | undefined;
-  /** Phase 9 IconRegistry name. */
+  /** IconRegistry name. */
   readonly icon: string | undefined;
   /**
    * Hover tooltip text. Adapter wraps button in `<ChronixTooltip>`

@@ -14,18 +14,18 @@ import type { ViewId } from '../layout/types.js';
  * the original spec and re-read on demand rather than re-calling the getter
  * in a hot path.
  *
- * **Controlled-prop contract for view / navigation methods** (Phase 24):
+ * **Controlled-prop contract for view / navigation methods**
  * `changeView` / `prev` / `next` / `today` / `gotoDate` / `incrementDate`
  * / `zoomTo` all emit `update:axisInput` with the new shape. They have
  * **no effect** unless the consumer wires `v-model:axis-input` (or the
  * equivalent prop+listener pair). Same channel as the toolbar widgets
- * (Phase 22) — single pathway, no internal-state hybrid.
+ * — single pathway, no internal-state hybrid.
  *
  * `scrollToDate` is the documented exception: it writes the chart
  * wrapper's `scrollLeft` directly. No emit; no consumer wiring required.
  */
 export interface GanttHandle {
-  // --- View / navigation (Phase 24) ----------------------------------
+  // --- View / navigation ----------------------------------
 
   /** Switch to a different view preset. Emits `update:axisInput` with `viewId`. */
   changeView(viewId: ViewId): void;
@@ -55,7 +55,7 @@ export interface GanttHandle {
    */
   zoomTo(date: Date, viewId?: ViewId): void;
 
-  // --- Scroll (Phase 24) ---------------------------------------------
+  // --- Scroll ---------------------------------------------
 
   /**
    * Scroll the chart wrapper horizontally so that `date` is visible.
@@ -70,7 +70,7 @@ export interface GanttHandle {
    */
   scrollToDate(date: Date): void;
 
-  // --- Read-only bar lookup (Phase 24) -------------------------------
+  // --- Read-only bar lookup -------------------------------
 
   /** Look up a bar by its stable id. Returns `undefined` when absent. */
   getBarById(id: string): BarSpec | undefined;
@@ -78,7 +78,7 @@ export interface GanttHandle {
   /** Live bar collection. Includes any in-flight transaction overlay. */
   getBars(): readonly BarSpec[];
 
-  // --- Existing data accessors (Phase 4+) ----------------------------
+  // --- Existing data accessors (+) ----------------------------
 
   /** Live bar collection wrapped in `BarTable` for indexed lookups. */
   getBarTable(): BarTable;
@@ -105,10 +105,10 @@ export interface GanttHandle {
     listener: (payload: GanttEventMap[K]) => void,
   ): () => void;
 
-  // --- External hit-test (Phase 56) ---------------------------------
+  // --- External hit-test ---------------------------------
 
   /**
-   * Phase 56: hit-test from client (page) coordinates. Returns the
+   * hit-test from client (page) coordinates. Returns the
    * calendar `time` + target `rowId` if the point falls inside the
    * chart body's content area + a known row strip; otherwise `null`.
    *

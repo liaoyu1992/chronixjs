@@ -1,5 +1,5 @@
 /**
- * Focus-trap helpers — Phase 27 (2026-06-03). Shared by Modal +
+ * Focus-trap helpers — . Shared by Modal +
  * Drawer adapters' `useModalLifecycle` composable / hook to keep
  * keyboard focus inside the panel while it's open.
  *

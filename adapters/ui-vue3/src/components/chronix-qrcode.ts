@@ -9,7 +9,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixQrCode>` — Vue 3 SFC wrapping the core `QrCodeProps`
- * IR. Phase 22 (2026-06-03). Tier A QR code SVG rendering.
+ * IR. . Tier A QR code SVG rendering.
  *
  * Renders a square `<svg>` when an encoder factory has been
  * registered via `registerQrCodeEncoder(qrcode)` AND the value

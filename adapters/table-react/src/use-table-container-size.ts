@@ -1,7 +1,7 @@
 import { useEffect, useState, type RefObject } from 'react';
 
 /**
- * Phase 48 (2026-05-25): React hook that tracks the table wrapper
+ * React hook that tracks the table wrapper
  * element's `clientWidth` so the column-layout pass can re-distribute
  * flex weights when the parent container resizes. Returned value is
  * a plain `number` (NOT a Vue-style ref) — React's state model
@@ -9,10 +9,10 @@ import { useEffect, useState, type RefObject } from 'react';
  *
  * Designed as a primitive that downstream phases can reuse:
  *
- *   - **Phase 48.2 (Sprint 5)** — `virtualRowsPass` needs the body
+ *   - **(Sprint 5)** — `virtualRowsPass` needs the body
  *     element's `clientHeight` for the visible-row window; a sibling
  *     `useTableBodyScroll` hook will land then.
- *   - **Phase 51-54** — selection / pagination / edit / resize all
+ *   - **-54** — selection / pagination / edit / resize all
  *     consume the resolved widths derived downstream from this hook.
  *
  * Listens via `ResizeObserver` for size updates + seeds the initial

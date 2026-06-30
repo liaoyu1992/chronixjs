@@ -16,7 +16,7 @@ function setDpr(value: number | undefined): void {
   });
 }
 
-describe('snapHorizontalGridLineY — Phase 26 / Phase 32.6', () => {
+describe('snapHorizontalGridLineY', () => {
   afterEach(() => {
     setDpr(originalDpr);
   });

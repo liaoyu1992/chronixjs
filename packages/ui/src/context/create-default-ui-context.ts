@@ -6,7 +6,7 @@ import type { ChronixUIContext } from './chronix-ui-context.js';
 /**
  * Produce a baseline `ChronixUIContext` with framework-agnostic defaults.
  *
- * Phase 2 (2026-06-01) per Phase 0.3 Decision A.1.
+ * per Decision A.1.
  *
  * Used by the adapter `<ChronixUIProvider>` when no parent provider is
  * mounted (the root provider's "parent" is the default). Also used by
@@ -17,10 +17,10 @@ import type { ChronixUIContext } from './chronix-ui-context.js';
  * Defaults:
  *
  * - `theme`: `defaultChronixUITheme` (light preset).
- * - `locale`: `defaultEnUSLocale` (`{ name: 'en-US' }` stub; Phase 3
+ * - `locale`: `defaultEnUSLocale` (`{ name: 'en-US' }` stub;
  *   extends with message keys).
  * - `size`: `'medium'`.
- * - `clsPrefix`: `'cx-ui'` — informational only in v0.1.0 (per Phase 0.3
+ * - `clsPrefix`: `'cx-ui'` — informational only in v0.1.0 (per
  *   Decision C.1).
  * - `disabled`: `false`.
  * - `portalContainer`: `'body'` — the standard portal mount target.

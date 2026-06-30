@@ -15,7 +15,7 @@ import type { CellStateMeta } from '../render/cell-state-classes.js';
  * Both `undefined` for multi-day band cells (month-name bands
  * spanning many days) and for hourly tick labels in day/week views.
  *
- * `viewId` (Phase 45) carries the current view so consumers can
+ * `viewId` carries the current view so consumers can
  * branch on it (e.g. larger label classes in `'year'` view, weekend
  * tinting only in `'week'` view). Always defined — the adapter
  * resolves it from the `axisInput.viewId` at render time.

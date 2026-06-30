@@ -3,7 +3,7 @@ import type { StepStatus } from './steps-spec.js';
 /**
  * Compute class set for a single Step item element.
  *
- * Phase 20 (2026-06-03).
+ * .
  *
  * `derivedStatus` comes from `deriveStepItemStatus(item, idx,
  * current)` — the adapter computes it once per item and passes the

@@ -9,7 +9,7 @@ import { computed, defineComponent, h, ref, type VNode } from 'vue';
 
 /**
  * `<ChronixAnchor>` — Vue 3 vertical anchor navigation component.
- * Phase 35 (2026-06-05).
+ * .
  *
  * Props:
  *

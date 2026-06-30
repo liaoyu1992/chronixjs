@@ -1,6 +1,6 @@
 /**
- * Phase 82 (2026-05-30): pre-built filters tool panel — a vue3
- * functional component the consumer drops into Phase 80's
+ * pre-built filters tool panel — a vue3
+ * functional component the consumer drops in's
  * `ToolPanelDescriptor.renderer` slot.
  *
  * Pure UI wrapper over `TableHandle.setFilter` +
@@ -15,7 +15,7 @@
  * entry + advanced-filter textarea + parse-result feedback).
  * Variant-specific chip formatting per design C.1.
  *
- * Phase 100.2 (2026-05-31) wires the cx-kit Phase 100 autocomplete
+ * wires the cx-kit autocomplete
  * helpers (`filterAutocompleteItems` + `computeMatchSpans`) into the
  * advanced-filter textarea as a column-name typeahead popover.
  * Triggered on input when the word-at-cursor is non-empty AND not
@@ -62,16 +62,16 @@ export interface ChronixFiltersToolPanelProps {
   readonly columns: readonly ColumnSpec[];
   readonly filterSpec: readonly FilterSpec[];
   /**
-   * Phase 100.2.2 (2026-06-01): row population to source unique
+   * row population to source unique
    * values from for the advanced-filter typeahead value slot. When
    * undefined OR empty, the value slot stays empty (popover
-   * suppressed for value typing — same as Phase 100.2.1 behavior).
+   * suppressed for value typing — same as behavior).
    * When set, the panel calls `collectUniqueColumnValues` per column
    * (cached) to populate value suggestions.
    */
   readonly advancedFilterValueSourceRows?: readonly RowSpec[];
   /**
-   * Phase 100.2.2.3 (2026-06-01): formatter for date-typed value
+   * formatter for date-typed value
    * suggestions in the advanced-filter typeahead. When set + column
    * type is `'date'`, formatter is called with the ISO string for the
    * popover display label. The inserted DSL text remains the raw
@@ -79,28 +79,28 @@ export interface ChronixFiltersToolPanelProps {
    */
   readonly formatTypeaheadDateValue?: (iso: string) => string;
   /**
-   * Phase 100.2.3.1 (2026-06-01): consumer-supplied operator override
+   * consumer-supplied operator override
    * dictionary for custom column types (or built-in type override).
    * Spread-merged on top of `OPERATORS_BY_COLUMN_TYPE` — consumer keys
    * win on collision; new keys are added.
    */
   readonly operatorsByCustomColumnType?: Readonly<Record<string, readonly string[]>>;
   /**
-   * Phase 100.2.3.2 (2026-06-01): consumer-supplied localized label
+   * consumer-supplied localized label
    * dictionary for the advanced-filter operator typeahead. Maps DSL
    * key (`>=`, `contains`, etc.) to display label. Inserted text
    * remains the DSL key (parser-correct).
    */
   readonly operatorLabels?: Readonly<Record<string, string>>;
   /**
-   * Phase 100.2.5 (2026-06-01): cap on per-slot-kind recent
+   * cap on per-slot-kind recent
    * typeahead-selection rings. Default 5; clamped to [0, 20]. Pass 0
    * to disable the recent feature entirely (no ring populated, no
    * recent badge rendered).
    */
   readonly typeaheadRecentLimit?: number;
   /**
-   * Phase 100.2.2.1 (2026-06-01): consumer-supplied async value
+   * consumer-supplied async value
    * getter for the value-slot typeahead. When set, used in preference
    * over `advancedFilterValueSourceRows` (getter wins per Decision
    * R.1). Receives `(colId, query)` and resolves to the unique-value
@@ -111,7 +111,7 @@ export interface ChronixFiltersToolPanelProps {
     colId: string,
     query: string,
     /**
-     * Phase 118 (2026-06-02): optional `AbortSignal` passed through
+     * optional `AbortSignal` passed through
      * to consumer-controlled `fetch` calls. When a new request fires
      * for the same `${colId}::${query}` key (rapid typing), the prior
      * request's controller is aborted before the new one fires.
@@ -122,8 +122,8 @@ export interface ChronixFiltersToolPanelProps {
     signal?: AbortSignal,
   ) => Promise<readonly ColumnUniqueValue[]>;
   /**
-   * Phase 112 (2026-06-01): persistence backend selector for the
-   * typeahead recent rings (Phase 100.2.5). Default `'memory'`
+   * persistence backend selector for the
+   * typeahead recent rings . Default `'memory'`
    * preserves the original chronix-first NO-storage precedent.
    * `'localStorage'` activates opt-in `window.localStorage`
    * persistence keyed by `cx-table-typeahead-recent::${slot}`.
@@ -132,8 +132,8 @@ export interface ChronixFiltersToolPanelProps {
    */
   readonly typeaheadRecentStorage?: 'memory' | 'localStorage';
   /**
-   * Phase 118 (2026-06-02): scope of the typeahead recent rings.
-   * Default `'global'` preserves Phase 100.2.5 O.1 behavior — one
+   * scope of the typeahead recent rings.
+   * Default `'global'` preserves O.1 behavior — one
    * ring per slot kind, shared across all columns. `'per-column-value'`
    * keys VALUE-slot recent rings by `${slot}:${colId}` so each
    * column's value recents stay segregated from siblings. Operator /
@@ -200,7 +200,7 @@ export function formatFilterChipLabel(spec: FilterSpec, columns: readonly Column
 }
 
 /**
- * Phase 100.2 (2026-05-31): word-at-cursor extraction for the
+ * word-at-cursor extraction for the
  * advanced filter typeahead. Walks left and right from `cursorPos`
  * over non-terminator chars; terminators are whitespace + DSL
  * delimiters (`= ! > < ( ) , "`). Also detects "inside a string
@@ -236,8 +236,8 @@ export function extractWordAtCursor(
 }
 
 /**
- * Phase 100.2.1 (2026-06-01): 12 advanced-filter operators ratified
- * by Phase 42's DSL parser. Suggested in operator-slot context.
+ * 12 advanced-filter operators ratified
+ * 's DSL parser. Suggested in operator-slot context.
  */
 export const ADVANCED_FILTER_OPERATORS: readonly string[] = [
   '=',
@@ -255,14 +255,14 @@ export const ADVANCED_FILTER_OPERATORS: readonly string[] = [
 ];
 
 /**
- * Phase 100.2.1 (2026-06-01): 3 conjunction / negation keywords
- * ratified by Phase 42's DSL parser. Suggested in conjunction-slot
+ * 3 conjunction / negation keywords
+ * ratified 's DSL parser. Suggested in conjunction-slot
  * context.
  */
 export const ADVANCED_FILTER_KEYWORDS: readonly string[] = ['AND', 'OR', 'NOT'];
 
 /**
- * Phase 100.2.3 (2026-06-01): per-column-type allowed operator subset.
+ * per-column-type allowed operator subset.
  * When the prior column's `ColumnSpec.type` matches a key, the operator
  * typeahead is filtered to only the listed operators. Unknown / absent
  * type falls back to the full `ADVANCED_FILTER_OPERATORS` list
@@ -279,7 +279,7 @@ const ADVANCED_FILTER_OPERATOR_SET = new Set(ADVANCED_FILTER_OPERATORS);
 const ADVANCED_FILTER_KEYWORD_SET = new Set(['AND', 'OR', 'NOT']);
 
 /**
- * Phase 100.2.1 (2026-06-01): typeahead slot classification — the
+ * typeahead slot classification — the
  * 4 token positions where typeahead suggestions differ.
  *
  * - `'column'`: after expression-start / `(` / `,` / a conjunction
@@ -288,25 +288,25 @@ const ADVANCED_FILTER_KEYWORD_SET = new Set(['AND', 'OR', 'NOT']);
  *   expected. Suggest 12 operators.
  * - `'value'`: after a comparison operator — a value (literal /
  *   string / numeric) is expected. v100.2.1 suppresses suggestions
- *   here (deferred to Phase 100.2.2 for column-value collection).
+ *   here (deferred for column-value collection).
  * - `'conjunction'`: after a complete comparison expression (value
  *   literal / `isNull` / `isNotNull` / closing `)`) — `AND` / `OR`
  *   / `NOT` is expected. Suggest 3 keywords.
  */
 export type TypeaheadSlot = 'column' | 'operator' | 'value' | 'conjunction';
 
-/** Phase 118 (2026-06-02): frozen empty array for absent-recent-ring lookups. */
+/** frozen empty array for absent-recent-ring lookups. */
 const EMPTY_RECENT_RING: readonly string[] = Object.freeze([]);
 
 /**
- * Phase 100.2.1 (2026-06-01): scan tokens backward from cursor to
+ * scan tokens backward from cursor to
  * classify the slot. Token-back scan (NOT full re-parse) per
  * Decision G.1. Tokenizer recognizes the same chars as
  * `extractWordAtCursor` for token boundaries; reads the IMMEDIATELY
  * PRIOR token (skipping whitespace), classifies its shape, and maps
  * to a slot per Decision G.1's classification rules.
  *
- * Phase 100.2.2 (2026-06-01): widened return to include `prevColumn`
+ * widened return to include `prevColumn`
  * when slot is `'value'` — walks past the comparison operator + any
  * whitespace + reads the prior identifier token (the column name).
  * Absent if the prior token isn't a recognizable identifier (e.g.
@@ -336,7 +336,7 @@ export function detectTypeaheadSlot(
   const ch = text[i - 1];
   if (ch === '(' || ch === ',') return { slot: 'column', prevToken: ch };
   if (ch === '"') {
-    // Phase 100.2.2.4 (2026-06-01): disambiguate opening vs closing
+    // disambiguate opening vs closing
     // quote by counting unescaped `"` chars before this position.
     // Even count → encountered `"` IS opening (cursor sits inside an
     // open literal); odd count → closing (literal already closed).
@@ -417,7 +417,7 @@ export function detectTypeaheadSlot(
       opStart--;
     }
     const opText = text.slice(opStart, opEnd);
-    // Phase 100.2.2 (2026-06-01): also walk past the operator + whitespace
+    // also walk past the operator + whitespace
     // to read the prior identifier (column name) for value-slot value
     // suggestion source resolution.
     let j = opStart;
@@ -453,7 +453,7 @@ export function detectTypeaheadSlot(
     if (tokenText === 'isNull' || tokenText === 'isNotNull') {
       return { slot: 'conjunction', prevToken: tokenText };
     }
-    // Phase 100.2.2 (2026-06-01): also walk past the word-op + whitespace
+    // also walk past the word-op + whitespace
     // to read the prior identifier (column name) for value-slot resolution.
     let j = start;
     while (j > 0 && (text[j - 1] === ' ' || text[j - 1] === '\t' || text[j - 1] === '\n')) j--;
@@ -481,7 +481,7 @@ export function detectTypeaheadSlot(
 }
 
 /**
- * Phase 100.2.1 (2026-06-01): discriminated-union typeahead item
+ * discriminated-union typeahead item
  * shape. The `kind` discriminator drives both the suggestion source
  * (per detected slot) and the commit logic (insert `colId` for
  * column items vs `text` for operator/keyword items).
@@ -510,9 +510,9 @@ export type TypeaheadItem =
     };
 
 /**
- * Phase 100.2.2 (2026-06-01): format a raw column value as its DSL
+ * format a raw column value as its DSL
  * representation. Strings are wrapped in double quotes (with embedded
- * `"` backslash-escaped per Phase 42 grammar); numbers / booleans /
+ * `"` backslash-escaped per grammar); numbers / booleans /
  * null are emitted bare.
  */
 export function formatValueAsDsl(value: string | number | boolean | null): {
@@ -586,7 +586,7 @@ export const ChronixFiltersToolPanel = defineComponent({
     const advancedFilterText = ref('');
     const parseErrors = ref<readonly ParseFilterExpressionError[]>([]);
 
-    // Phase 100.2: typeahead state. `typeaheadOpen` controls popover
+    // typeahead state. `typeaheadOpen` controls popover
     // mount; `typeaheadActiveIdx` is the highlighted suggestion (-1
     // = none); `typeaheadQuery` is the extracted word-at-cursor;
     // `typeaheadWordRange` is the char range of the word in textarea
@@ -607,8 +607,8 @@ export const ChronixFiltersToolPanel = defineComponent({
       })),
     );
 
-    // Phase 100.2.1 (2026-06-01): typeahead slot state — drives the
-    // suggestion source per detected token-back context. Phase 100.2.3
+    // typeahead slot state — drives the
+    // suggestion source per detected token-back context.
     // (2026-06-01): widened from a single `TypeaheadSlot` ref to the
     // full `detectTypeaheadSlot` result so the `typeaheadMatches`
     // computed can read `prevToken` (column id for operator slot type
@@ -619,7 +619,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       readonly prevColumn?: string;
     }>({ slot: 'column' });
 
-    // Phase 100.2.2 (2026-06-01): per-colId cache of unique-value
+    // per-colId cache of unique-value
     // collection results. Cleared whenever
     // `props.advancedFilterValueSourceRows` reference changes (entire
     // cache invalidation per Decision H.1 — avoids per-row equality
@@ -632,23 +632,23 @@ export const ChronixFiltersToolPanel = defineComponent({
       },
     );
 
-    // Phase 100.2.2.4 (2026-06-01): tracks whether cursor sits inside
+    // tracks whether cursor sits inside
     // an open string literal in a value-slot context. Set in
     // `triggerTypeaheadAt`; read by `typeaheadMatches` (filter to
     // string-kind values) + `commitTypeaheadSelection` (insert text
     // is bare-value + closing `"`).
     const typeaheadInsideStringLiteral = ref<boolean>(false);
 
-    // Phase 100.2.5 (2026-06-01): per-slot-kind LRU rings for recent
+    // per-slot-kind LRU rings for recent
     // typeahead selections. Push on commit; render-overlay in
     // `typeaheadMatches`. In-memory only by default (chronix-first
-    // NO-storage precedent per Phase 99.2.5 K.1).
+    // NO-storage precedent per K.1).
     //
-    // Phase 112 (2026-06-01): when `typeaheadRecentStorage` is set to
+    // when `typeaheadRecentStorage` is set to
     // `'localStorage'`, hydrate on mount + write-through on commit
     // via `createLocalStorageRecentStorage`. Default `'memory'`
-    // preserves Phase 100.2.5 zero-storage behavior.
-    // Phase 118 (2026-06-02): keys widened from `TypeaheadSlot` to
+    // preserves zero-storage behavior.
+    // keys widened from `TypeaheadSlot` to
     // `string` so per-column scope can use `${slot}:${colId}` keys.
     // When `typeaheadRecentScope === 'global'`, keys remain the
     // plain slot literals (backwards-compat).
@@ -662,7 +662,7 @@ export const ChronixFiltersToolPanel = defineComponent({
         : createMemoryRecentStorage(),
     );
     onMounted(() => {
-      // Phase 112: hydrate recent rings from the configured storage
+      // hydrate recent rings from the configured storage
       // backend on mount. Memory backend returns empty rings (no-op).
       const storage = typeaheadRecentStorage.value;
       const slots: readonly TypeaheadSlot[] = ['column', 'operator', 'value', 'conjunction'];
@@ -674,7 +674,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       if (hydrated.size > 0) recentTypeaheadByKind.value = hydrated;
     });
     /**
-     * Phase 118 (2026-06-02): compute the recent-ring key for a
+     * compute the recent-ring key for a
      * given slot. When `typeaheadRecentScope === 'per-column-value'`
      * AND slot is `'value'` AND a non-null `colId` is supplied, the
      * key widens to `${slot}:${colId}` — each column's value recents
@@ -703,13 +703,13 @@ export const ChronixFiltersToolPanel = defineComponent({
       const newMap = new Map(recentTypeaheadByKind.value);
       newMap.set(key, next);
       recentTypeaheadByKind.value = newMap;
-      // Phase 112: write-through to the configured storage backend.
-      // Phase 118: storage key uses the same per-column suffix when
+      // write-through to the configured storage backend.
+      // storage key uses the same per-column suffix when
       // applicable (localStorage rehydration on-demand via readRecent).
       typeaheadRecentStorage.value.write(key, next);
     }
     /**
-     * Phase 118 (2026-06-02): read the recent ring for a slot,
+     * read the recent ring for a slot,
      * lazily hydrating from the storage backend when an entry is
      * absent from the in-memory map (covers per-column rings that
      * weren't hydrated at onMounted).
@@ -726,7 +726,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       return ring;
     }
 
-    // Phase 100.2.2.1 (2026-06-01): SSR async value getter cache +
+    // SSR async value getter cache +
     // request-id race-token. Key `${colId}::${query}`. Stored as
     // sentinel `'loading'` / `'error'` strings; resolved arrays
     // populate on getter-promise settle (only if request-id matches).
@@ -735,7 +735,7 @@ export const ChronixFiltersToolPanel = defineComponent({
     >(new Map());
     const asyncRequestIdByKey = ref<Map<string, number>>(new Map());
     let nextAsyncRequestId = 1;
-    // Phase 118 (2026-06-02): per-key AbortController. On supersession
+    // per-key AbortController. On supersession
     // (new request for same key), abort the prior controller before
     // allocating a new one. The race-discard token check (Phase
     // 100.2.2.1 T.1) stays in place as defense-in-depth for consumers
@@ -772,7 +772,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       const newResultMap = new Map(asyncValueResultsByKey.value);
       newResultMap.set(key, 'loading');
       asyncValueResultsByKey.value = newResultMap;
-      // Phase 118: abort prior in-flight controller for this key
+      // abort prior in-flight controller for this key
       // (supersession); allocate a fresh one for the new request.
       const prior = asyncAbortControllerByKey.get(key);
       if (prior != null) {
@@ -804,7 +804,7 @@ export const ChronixFiltersToolPanel = defineComponent({
 
     const typeaheadMatches = computed<readonly AutocompleteMatch<TypeaheadItem>[]>(() => {
       if (!typeaheadOpen.value) return [];
-      // Phase 100.2.1: gate item source on detected slot. Value slot
+      // gate item source on detected slot. Value slot
       // suppresses (returns empty array — popover render condition
       // already handles empty matches).
       const detected = typeaheadSlotDetected.value;
@@ -816,13 +816,13 @@ export const ChronixFiltersToolPanel = defineComponent({
           label: c.headerName ?? c.id,
         }));
       } else if (detected.slot === 'operator') {
-        // Phase 100.2.3 (2026-06-01): filter operator list by the
+        // filter operator list by the
         // prior column's `type` when known. The `prevToken` returned
         // by `detectTypeaheadSlot` for operator slot IS the column
-        // identifier (per Phase 100.2.1 detector logic).
-        // Phase 100.2.3.1 (2026-06-01): spread-merge consumer-provided
+        // identifier (per detector logic).
+        // spread-merge consumer-provided
         // dict on top — consumer wins on key collision (Decision E.1).
-        // Phase 100.2.3.2 (2026-06-01): resolve consumer-provided
+        // resolve consumer-provided
         // localized label per operator at item-mapping time (Decision
         // G.1 + H.1).
         const colId = detected.prevToken;
@@ -847,8 +847,8 @@ export const ChronixFiltersToolPanel = defineComponent({
           text: kw,
         }));
       } else {
-        // Phase 100.2.2 (2026-06-01): value slot pipeline.
-        // Phase 100.2.2.1 (2026-06-01): when `advancedFilterValueGetter`
+        // value slot pipeline.
+        // when `advancedFilterValueGetter`
         // is set, use async branch (getter wins over rows per Decision
         // R.1). Otherwise fall back to existing sync-rows path.
         const colId = detected.prevColumn;
@@ -880,16 +880,16 @@ export const ChronixFiltersToolPanel = defineComponent({
           }
           valueSourceList = cached.values;
         }
-        // Phase 100.2.2.4 (2026-06-01): when cursor is inside an open
+        // when cursor is inside an open
         // string literal, filter to string-kind values only (number /
-        // boolean / null are not legal inside `"..."` per Phase 42
+        // boolean / null are not legal inside `"..."` per
         // grammar).
         const filteredValueList = typeaheadInsideStringLiteral.value
           ? valueSourceList.filter((v) => typeof v.value === 'string')
           : valueSourceList;
         items = filteredValueList.map((v) => {
           const formatted = formatValueAsDsl(v.value);
-          // Phase 100.2.2.3 (2026-06-01): resolve consumer-supplied date
+          // resolve consumer-supplied date
           // formatter (Decision C.1 + D.1) at item-mapping time. Strip the
           // surrounding quotes that `formatValueAsDsl` added before passing
           // to the formatter (consumer expects bare ISO); re-wrap output.
@@ -902,7 +902,7 @@ export const ChronixFiltersToolPanel = defineComponent({
             const isoBare = formatted.text.slice(1, -1);
             displayText = `"${props.formatTypeaheadDateValue(isoBare)}"`;
           }
-          // Phase 100.2.2.2 (2026-06-01): pass through `v.count` to the
+          // pass through `v.count` to the
           // popover for the histogram badge (Decision A.1 + B.1).
           return displayText != null
             ? {
@@ -920,11 +920,11 @@ export const ChronixFiltersToolPanel = defineComponent({
               };
         });
       }
-      // Phase 100.2.5 (2026-06-01): prepend per-slot recent items
+      // prepend per-slot recent items
       // marked `recent: true` (Decision O.1). Dedup: items whose key
       // matches a recent entry are removed from the non-recent
       // section so the same item doesn't appear twice.
-      // Phase 118 (2026-06-02): when `typeaheadRecentScope` is
+      // when `typeaheadRecentScope` is
       // `'per-column-value'` AND we're in the value slot, route the
       // ring lookup through `readRecent` with the column-context
       // colId (= detected.prevToken for the value slot).
@@ -957,7 +957,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       });
     });
 
-    // Phase 100.2.2.1 (2026-06-01): render placeholder state for the
+    // render placeholder state for the
     // async value getter — `'loading'` shows "加载中…", `'error'`
     // shows "加载失败". Returns null when not in async-loading-error
     // context (popover renders matches as normal).
@@ -1014,7 +1014,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       typeaheadInsideStringLiteral.value = false;
     }
 
-    // Phase 100.2.4 (2026-06-01): extracted from `onTextareaInput` so
+    // extracted from `onTextareaInput` so
     // the post-commit auto-trigger path (in `commitTypeaheadSelection`)
     // can re-run typeahead detection at the post-insertion cursor
     // without synthesizing a fake Event (Decision J.1). When called
@@ -1026,7 +1026,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       advancedFilterText.value = value;
       const extracted = extractWordAtCursor(value, cursorPos);
       const detected = detectTypeaheadSlot(value, cursorPos);
-      // Phase 100.2.2.4 (2026-06-01): allow typeahead when cursor sits
+      // allow typeahead when cursor sits
       // inside an open string literal IF detected slot is 'value' AND
       // prevColumn resolved. Other slots in literal context still close.
       if (extracted.isInsideStringLiteral) {
@@ -1041,7 +1041,7 @@ export const ChronixFiltersToolPanel = defineComponent({
         closeTypeahead();
         return;
       }
-      // Phase 100.2.1 / 100.2.2: detect slot before opening. Value
+      // detect slot before opening. Value
       // slot opens IF there's a prevColumn id resolved AND
       // `advancedFilterValueSourceRows` is non-empty (the
       // `typeaheadMatches` computed will return an empty array if
@@ -1053,7 +1053,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       typeaheadWordRange.value = { start: extracted.start, end: extracted.end };
       typeaheadOpen.value = true;
       refreshTypeaheadAnchor();
-      // Phase 100.2.2.1 (2026-06-01): fire async value getter when set
+      // fire async value getter when set
       // + value slot + prevColumn resolved. Cache key is `colId::query`;
       // race-token discards stale resolves.
       if (
@@ -1080,11 +1080,11 @@ export const ChronixFiltersToolPanel = defineComponent({
       const active = matches[idx];
       if (active == null) return;
       const text = advancedFilterText.value;
-      // Phase 100.2.1 + Phase 100.2.2: column items insert `colId`;
+      // + column items insert `colId`;
       // operator / keyword / value items insert their literal text
       // (value items are pre-formatted as DSL — strings quoted,
       // numbers/booleans/null bare).
-      // Phase 100.2.2.4 (2026-06-01): when committing a value-kind item
+      // when committing a value-kind item
       // INSIDE an open string literal context, insert bare-value +
       // closing `"` (consumer already typed the opening quote; the
       // wordRange is the bare-query range between opening `"` and
@@ -1103,7 +1103,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       }
       const nextText = text.slice(0, wordRange.start) + insertText + text.slice(wordRange.end);
       const newCursorPos = wordRange.start + insertText.length;
-      // Phase 100.2.4 (2026-06-01): for column / operator / keyword
+      // for column / operator / keyword
       // commits, append a trailing space + re-trigger typeahead at the
       // new cursor (Decision I.1 — value-kind commits skip; appending
       // space after a value would cause parse errors).
@@ -1112,10 +1112,10 @@ export const ChronixFiltersToolPanel = defineComponent({
         ? nextText.slice(0, newCursorPos) + ' ' + nextText.slice(newCursorPos)
         : nextText;
       const finalCursorPos = shouldAutoTrigger ? newCursorPos + 1 : newCursorPos;
-      // Phase 100.2.5 (2026-06-01): push to per-slot recent ring
+      // push to per-slot recent ring
       // BEFORE close/autotrigger (Decision P.1 — commit lifecycle is
       // the single point where user-intent crystallizes).
-      // Phase 118 (2026-06-02): scope push by colId for value slots
+      // scope push by colId for value slots
       // when `typeaheadRecentScope === 'per-column-value'`.
       const slot = typeaheadSlotDetected.value.slot;
       const pushText = active.item.kind === 'column' ? active.item.colId : active.item.text;
@@ -1180,7 +1180,7 @@ export const ChronixFiltersToolPanel = defineComponent({
       document.removeEventListener('pointerdown', onDocumentPointerDown);
     });
 
-    // Phase 100.2.6 (2026-06-01): scroll the active typeahead item into
+    // scroll the active typeahead item into
     // view after arrow-key navigation moves `typeaheadActiveIdx` past
     // the visible window of the 240px-max-height scrollable popover.
     // `flush: 'post'` ensures the DOM reflects the new active class
@@ -1317,12 +1317,12 @@ export const ChronixFiltersToolPanel = defineComponent({
               : null,
           ]),
         ]),
-        // Phase 100.2: typeahead popover. Mounts only when
+        // typeahead popover. Mounts only when
         // `typeaheadOpen` is true AND matches array non-empty. Fixed
         // position anchored below the textarea. Listbox semantics
         // (role="listbox" with role="option" children + the combobox
         // points at the active option via aria-activedescendant).
-        // Phase 100.2.2.1 (2026-06-01): also mount popover for async
+        // also mount popover for async
         // 'loading' / 'error' placeholder state.
         typeaheadOpen.value &&
         (typeaheadMatches.value.length > 0 || asyncPlaceholderState.value != null) &&
@@ -1377,10 +1377,10 @@ export const ChronixFiltersToolPanel = defineComponent({
                   ]
                 : typeaheadMatches.value.map((match, idx) => {
                     const isActive = idx === typeaheadActiveIdx.value;
-                    // Phase 100.2.1: per-kind display label + category
+                    // per-kind display label + category
                     // badge. Column items show headerName label;
                     // operator / keyword items show the literal token.
-                    // Phase 100.2.2.3 + 100.2.3.2 (2026-06-01): value /
+                    // + 100.2.3.2 (2026-06-01): value /
                     // operator variants may carry consumer-overridden
                     // `displayText` (date formatter / localized labels);
                     // prefer it over `text` when present.
@@ -1420,7 +1420,7 @@ export const ChronixFiltersToolPanel = defineComponent({
                       },
                       [
                         h('span', {}, renderMatchLabel(displayLabel, typeaheadQuery.value)),
-                        // Phase 100.2.5 (2026-06-01): "recent" badge for
+                        // "recent" badge for
                         // items committed earlier this session.
                         match.item.recent === true
                           ? h(
@@ -1441,7 +1441,7 @@ export const ChronixFiltersToolPanel = defineComponent({
                               'recent',
                             )
                           : null,
-                        // Phase 100.2.2.2 (2026-06-01): histogram count
+                        // histogram count
                         // badge for value items (Decision A.1 + B.1).
                         match.item.kind === 'value' && match.item.count != null
                           ? h(

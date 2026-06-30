@@ -3,7 +3,7 @@ import type { AlertProps } from './alert-spec.js';
 /**
  * Compute class set for the Alert root element.
  *
- * Phase 15 (2026-06-02).
+ * .
  *
  * Class structure:
  *

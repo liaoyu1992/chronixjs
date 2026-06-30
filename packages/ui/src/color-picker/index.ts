@@ -1,5 +1,5 @@
 /**
- * ColorPicker module — Phase 33 (2026-06-05).
+ * ColorPicker module — .
  *
  * Framework-agnostic color picker IR: BEM class resolvers, CSS.
  * Color math delegated to `@chronixjs/cx-kit/color-picker`.

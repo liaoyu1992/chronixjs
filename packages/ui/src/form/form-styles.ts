@@ -1,5 +1,5 @@
 /**
- * chronix-ui form CSS — Phase 34 (2026-06-05).
+ * chronix-ui form CSS — .
  *
  * BEM CSS for ChronixForm + ChronixFormItem with CSS var tokens.
  * Injected idempotently via `ensureChronixFormStyles()`.

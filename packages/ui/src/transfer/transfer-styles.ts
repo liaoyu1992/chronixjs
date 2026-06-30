@@ -1,5 +1,5 @@
 /**
- * Transfer CSS — Phase 33 (2026-06-05).
+ * Transfer CSS — .
  *
  * BEM styles for cx-ui-transfer + all sub-elements.
  * CSS var tokens with fallbacks for theme customization.

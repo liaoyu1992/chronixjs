@@ -1,5 +1,5 @@
 /**
- * InfiniteScroll IR — Phase 35. Container that emits a load-more
+ * InfiniteScroll IR. Container that emits a load-more
  * event when the user scrolls near the bottom.
  */
 

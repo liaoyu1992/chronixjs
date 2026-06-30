@@ -6,7 +6,7 @@ import {
 import { useCallback, useMemo, useState } from 'react';
 
 /**
- * React imperative Loading Bar hook — Phase 36 (2026-06-05).
+ * React imperative Loading Bar hook — .
  * Same surface as Vue 3 / Vue 2 `useLoadingBar()` composables.
  *
  * Usage:

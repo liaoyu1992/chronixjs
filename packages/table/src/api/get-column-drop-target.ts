@@ -1,5 +1,5 @@
 /**
- * Phase 14 (2026-05-26): resolved drop target for an in-flight column-
+ * resolved drop target for an in-flight column-
  * move drag. Produced by `getColumnDropTarget` on every `pointermove`
  * during a drag session, consumed by the SFC's drop-indicator render
  * (the 2px vertical line at the candidate boundary) + by the
@@ -18,7 +18,7 @@ export interface ColumnDropTarget {
 }
 
 /**
- * Phase 14 (2026-05-26): rect data for a single header cell. The
+ * rect data for a single header cell. The
  * vue3 adapter measures DOM via `getBoundingClientRect()` then passes
  * `{ left, right }` per visible column id. Kept as a separate type
  * (not just `DOMRect`) so the helper stays framework-agnostic + the
@@ -30,11 +30,11 @@ export interface ColumnHeaderRect {
 }
 
 /**
- * Phase 18 (2026-05-27): optional zone filter for `getColumnDropTarget`.
+ * optional zone filter for `getColumnDropTarget`.
  * When `pinnedZoneByColId` is supplied, the resolver only emits drop
  * targets whose zone matches the moved column's zone — cross-zone
  * drops become silent no-ops (no indicator + no commit). When the
- * option is omitted, the helper behaves identically to its Phase 14
+ * option is omitted, the helper behaves identically to its
  * form (fully backward-compatible).
  *
  * The map is keyed by column id; the value is the column's
@@ -47,7 +47,7 @@ export interface GetColumnDropTargetOptions {
 }
 
 /**
- * Phase 14 (2026-05-26): resolve the candidate drop target for a
+ * resolve the candidate drop target for a
  * column-move drag given the current `pointerClientX`. Iterates the
  * supplied header-cell rect map, skipping `excludeColId` (the column
  * being dragged never drops onto itself), and:
@@ -66,10 +66,10 @@ export interface GetColumnDropTargetOptions {
  * (i.e. `getBoundingClientRect().left` / `.right`); `pointerClientX`
  * is the live `PointerEvent.clientX`. Pure function — no DOM access.
  *
- * Phase 18 (2026-05-27): when `options.pinnedZoneByColId` is supplied,
+ * when `options.pinnedZoneByColId` is supplied,
  * candidate cells whose zone differs from the moved column's zone are
  * skipped (treated like `excludeColId` — `continue`). This closes
- * Phase 17's parked cross-zone reorder item: dragging a left-pinned
+ * parked cross-zone reorder item: dragging a left-pinned
  * column over a center / right-pinned target yields `null` instead of
  * a meaningless drop target that the consumer would mirror but
  * `pinnedColsPass` would re-partition right back. When the option is

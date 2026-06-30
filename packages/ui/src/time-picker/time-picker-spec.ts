@@ -1,5 +1,5 @@
 /**
- * TimePicker component IR — Phase 32 (2026-06-05).
+ * TimePicker component IR — .
  *
  * Single time picker with scrollable hour/minute/second columns.
  * Uses date-fns for time formatting/parsing. Value is `Date | undefined`.

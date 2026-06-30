@@ -1,5 +1,5 @@
 /**
- * Menu component IR — Phase 27 (2026-06-03). Tier B inline-rendered
+ * Menu component IR — . Tier B inline-rendered
  * hierarchical menu (horizontal or vertical) with tree-aware keyboard
  * navigation.
  *
@@ -20,7 +20,7 @@
 export interface MenuItem {
   readonly key: string;
   readonly label: string;
-  /** Phase 9 IconRegistry name; `undefined` = no icon. */
+  /** IconRegistry name; `undefined` = no icon. */
   readonly icon: string | undefined;
   readonly disabled: boolean;
   /**

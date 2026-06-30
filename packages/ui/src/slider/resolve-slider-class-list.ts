@@ -1,5 +1,5 @@
 /**
- * Slider BEM class-list resolvers — Phase 33 (2026-06-05).
+ * Slider BEM class-list resolvers — .
  */
 
 export interface ResolveSliderRootClassListInput {

@@ -42,7 +42,7 @@ const baseAxisInput = (): AxisRangePlanInput => ({
   weekendsVisible: true,
 });
 
-describe('@chronixjs/gantt-vue2 ChronixGantt (Phase 31 + 31.1)', () => {
+describe('@chronixjs/gantt-vue2 ChronixGantt (+ 31.1)', () => {
   it('mounts without error and emits a single <div.cx-gantt-wrapper> root with header + body SVGs', () => {
     const wrapper = mount(GanttForTest, {
       propsData: {
@@ -89,7 +89,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt (Phase 31 + 31.1)', () => {
       rows,
       axis,
       barHeight: 30,
-      barStackSpacing: 5, // Phase 43 default
+      barStackSpacing: 5, // default
     });
     const rowsWithHints = rows.map((r): RowSpec => {
       const hint = stackOut.heightByRowId.get(r.id);
@@ -105,9 +105,9 @@ describe('@chronixjs/gantt-vue2 ChronixGantt (Phase 31 + 31.1)', () => {
       axis,
       strips: swimlaneOut.strips,
       barHeight: 30,
-      barVerticalPadding: 4, // Phase 43 default
+      barVerticalPadding: 4, // default
       levelByBarId: stackOut.levelByBarId,
-      barStackSpacing: 5, // Phase 43 default
+      barStackSpacing: 5, // default
     });
     const expected = placement.placedBars[0];
     expect(expected).toBeDefined();
@@ -155,7 +155,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt (Phase 31 + 31.1)', () => {
     expect(wrapper.find('svg.cx-gantt-body').exists()).toBe(true);
   });
 
-  // Phase 31.1: axis chrome render cases.
+  // axis chrome render cases.
 
   it('header SVG dimensions match axis.totalWidth × (headerRows × headerRowHeight + headerHeight)', () => {
     const axisInput = baseAxisInput();
@@ -229,7 +229,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt (Phase 31 + 31.1)', () => {
   });
 });
 
-// Phase 31.2: SFC-level pointer interaction tests. Uses day axis for
+// SFC-level pointer interaction tests. Uses day axis for
 // predictable pxPerHour math (60 px/hour at viewportWidth=1440), then
 // triggers synthetic PointerEvents on the body SVG and inspects
 // `wrapper.emitted(...)` for the resulting component emits.
@@ -264,7 +264,7 @@ const pointerOpts = (clientX: number, clientY: number, pointerId = 1) => ({
   pointerId,
 });
 
-describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction (Phase 31.2)', () => {
+describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction ', () => {
   beforeEach(() => {
     // jsdom doesn't implement setPointerCapture / releasePointerCapture +
     // doesn't honor getBoundingClientRect from CSS. Stub both so the
@@ -514,7 +514,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction (Phase 31.2
   });
 });
 
-// Phase 31.2.1: Phase 19 validator gate SFC test cases.
+// validator gate SFC test cases.
 // Local fixtures mirror vue3's chronix-gantt.test.ts (anchor 2026-05-13)
 // so the numerical assertions (rejection reason strings, attempted
 // ranges, bar coordinates) port verbatim and drift detection between
@@ -563,7 +563,7 @@ const phase19AxisInput: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> validation gates (Phase 19) — Phase 31.2.1', () => {
+describe('<ChronixGantt> validation gates', () => {
   beforeEach(() => {
     // jsdom doesn't implement setPointerCapture / releasePointerCapture +
     // doesn't honor getBoundingClientRect from CSS. Stub both so the
@@ -787,7 +787,7 @@ describe('<ChronixGantt> validation gates (Phase 19) — Phase 31.2.1', () => {
     expect(wrapper.emitted('bar-resize-rejected')).toBeUndefined();
   });
 
-  it('range-select rejected by selectOverlap: false when proposal intersects an existing bar (Phase 55)', async () => {
+  it('range-select rejected by selectOverlap: false when proposal intersects an existing bar ', async () => {
     // b1 on r2 (8-12) — different row from where we select, so pointerdown
     // lands in empty space on r1. Drag-select on r1 from x=180 (3h) →
     // x=600 (10h) → proposal range 3-10 intersects b1's range 8-12 →
@@ -814,7 +814,7 @@ describe('<ChronixGantt> validation gates (Phase 19) — Phase 31.2.1', () => {
     expect(rejected![0]![0].reason).toBe('overlap');
   });
 
-  it('selectConstraint narrower than eventConstraint vetoes select-only (Phase 55)', async () => {
+  it('selectConstraint narrower than eventConstraint vetoes select-only ', async () => {
     // eventConstraint: 0..24h wide-open → drag passes.
     // selectConstraint: 8..12h narrow → select at 13..17 vetoed.
     const wrapper = mount(GanttForTest, {
@@ -852,7 +852,7 @@ describe('<ChronixGantt> validation gates (Phase 19) — Phase 31.2.1', () => {
   });
 });
 
-describe('<ChronixGantt> theme + slot + selection (Phase 31.3)', () => {
+describe('<ChronixGantt> theme + slot + selection ', () => {
   const themeBars = [makeBar('b1', 'r1', '2026-05-18T09:00', '2026-05-19T17:00')];
   const themeBars2 = [
     makeBar('b1', 'r1', '2026-05-18T09:00', '2026-05-19T17:00'),
@@ -1092,7 +1092,7 @@ describe('<ChronixGantt> theme + slot + selection (Phase 31.3)', () => {
   });
 });
 
-describe('<ChronixGantt> Phase 20 bar-color cascade (Phase 31.4)', () => {
+describe('<ChronixGantt> bar-color cascade ', () => {
   // Bars positioned inside the default week-view axis so the test asserts
   // are pixel-precise; off-axis bars would trigger the orphan-fallback
   // branch or affect class-list composition unrelated to the cascade.
@@ -1197,8 +1197,8 @@ describe('<ChronixGantt> Phase 20 bar-color cascade (Phase 31.4)', () => {
     expect(bar.attributes('stroke')).toBe('#abc123');
   });
 
-  it('barFontSizeCallback resolves to ResolvedBarStyle.fontSize — verified via <text> attribute after Phase 31.4 Commit 2 wires bar text', () => {
-    // Phase 31.4 Commit 1 only wires the cascade — bar text auto-render
+  it('barFontSizeCallback resolves to ResolvedBarStyle.fontSize — verified via <text> attribute after Commit 2 wires bar text', () => {
+    // Commit 1 only wires the cascade — bar text auto-render
     // lands in Commit 2. Verify the cascade fires by attaching a synthetic
     // callback that records its inputs.
     const seen: { defaultFontSize: number; defaultFontWeight: number }[] = [];
@@ -1238,7 +1238,7 @@ describe('<ChronixGantt> Phase 20 bar-color cascade (Phase 31.4)', () => {
   });
 });
 
-describe('<ChronixGantt> bar text + continuation triangles (Phase 31.4)', () => {
+describe('<ChronixGantt> bar text + continuation triangles ', () => {
   // Wide bar inside the axis range so axis-overlap + > 30 px width gates
   // pass — these tests target the title/triangle render, not the gates.
   const textRows = [makeRow('r1')];
@@ -1389,7 +1389,7 @@ describe('<ChronixGantt> bar text + continuation triangles (Phase 31.4)', () => 
   });
 });
 
-describe('<ChronixGantt> link rendering + LINK_SLOT_NAME wire (Phase 31.4.1)', () => {
+describe('<ChronixGantt> link rendering + LINK_SLOT_NAME wire ', () => {
   // Two bars with non-overlapping times so the router has somewhere to draw.
   // Both bars land on the week-view axis anchored at 2026-05-18T00:00:00.
   const linkBars: BarSpec[] = [
@@ -1605,7 +1605,7 @@ describe('<ChronixGantt> link rendering + LINK_SLOT_NAME wire (Phase 31.4.1)', (
   });
 });
 
-describe('<ChronixGantt> today line + grid lines (Phase 31.4.2)', () => {
+describe('<ChronixGantt> today line + grid lines ', () => {
   const chromeBars = [
     makeBar('cb1', 'cr1', '2026-05-18T09:00', '2026-05-19T17:00'),
     makeBar('cb2', 'cr2', '2026-05-19T00:00', '2026-05-20T12:00'),
@@ -1790,7 +1790,7 @@ describe('<ChronixGantt> today line + grid lines (Phase 31.4.2)', () => {
   });
 });
 
-describe('<ChronixGantt> imperative handle (Phase 31.5)', () => {
+describe('<ChronixGantt> imperative handle ', () => {
   // Two non-overlapping bars across 2 rows. Same fixture across all 12
   // cases so reasoning about handle outputs is consistent.
   const handleBars: BarSpec[] = [
@@ -1941,8 +1941,8 @@ describe('<ChronixGantt> imperative handle (Phase 31.5)', () => {
     expect(payload.viewId).toBe('day');
   });
 
-  it('case 10: scrollToDate(d) → writes chart-pane scrollLeft (Phase 31.5.2 real impl), no emit, no warn', () => {
-    // Phase 31.5.2 flipped this from the Phase 31.5 console.warn stub
+  it('case 10: scrollToDate(d) → writes chart-pane scrollLeft (real impl), no emit, no warn', () => {
+    // flipped this from the console.warn stub
     // to the real implementation: scrollToDate writes
     // `chartPaneRef.value.scrollLeft = pxPerMs × (date - axisStart)`
     // directly. The `no emit` invariant from the original case still
@@ -2014,7 +2014,7 @@ describe('<ChronixGantt> imperative handle (Phase 31.5)', () => {
   });
 });
 
-describe('<ChronixGantt> header toolbar (Phase 31.5.1)', () => {
+describe('<ChronixGantt> header toolbar ', () => {
   // Mirrors chronix-vue3:2600-2733 verbatim. Same demo DSL, same
   // selectors, same emit-shape assertions. Day-view anchor keeps the
   // title-format assertion at `YYYY-MM-DD` (test #11) parity with vue3.
@@ -2155,7 +2155,7 @@ describe('<ChronixGantt> header toolbar (Phase 31.5.1)', () => {
   });
 });
 
-describe('<ChronixGantt> today-cell-bg (Phase 31.x / Phase 22.2)', () => {
+describe('<ChronixGantt> today-cell-bg ', () => {
   // Anchor at today's local midnight so the today-cell falls inside the
   // axis (otherwise resolvedTodayCellBg returns null per the axis-overlap
   // clip). Using a frozen anchor would require time mocking — simpler to
@@ -2235,7 +2235,7 @@ describe('<ChronixGantt> today-cell-bg (Phase 31.x / Phase 22.2)', () => {
   });
 });
 
-describe('<ChronixGantt> slot rects (Phase 31.x / Phase 29)', () => {
+describe('<ChronixGantt> slot rects ', () => {
   const anchor = new Date('2026-05-18T00:00:00');
   const axisInput: AxisRangePlanInput = {
     viewId: 'week',
@@ -2291,7 +2291,7 @@ describe('<ChronixGantt> slot rects (Phase 31.x / Phase 29)', () => {
   });
 });
 
-describe('<ChronixGantt> headerCellClassNamesCallback (Phase 31.x / Phase 29)', () => {
+describe('<ChronixGantt> headerCellClassNamesCallback ', () => {
   const anchor = new Date('2026-05-18T00:00:00');
   const axisInput: AxisRangePlanInput = {
     viewId: 'week',
@@ -2367,7 +2367,7 @@ describe('<ChronixGantt> headerCellClassNamesCallback (Phase 31.x / Phase 29)', 
   });
 });
 
-describe('@chronixjs/gantt-vue2 ChronixGantt — geometry prop alignment (Phase 52)', () => {
+describe('@chronixjs/gantt-vue2 ChronixGantt — geometry prop alignment ', () => {
   // The 4 geometry props were declared on the vue3 adapter from
   // inception but never forwarded by vue2; the underlying useGanttLayout
   // hook already accepted them. Each test below verifies that passing a
@@ -2435,7 +2435,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — geometry prop alignment (Phase 
   });
 });
 
-describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Phase 53)', () => {
+describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering ', () => {
   beforeEach(() => {
     // jsdom doesn't implement setPointerCapture / releasePointerCapture +
     // doesn't honor getBoundingClientRect from CSS. Stub both so the
@@ -2500,7 +2500,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Pha
 
   // chronix-vue3 emits 3 cx-gantt-progress-* elements per bar that
   // declares both `progress.value` + `pointerOverlayId`. chronix-vue2
-  // never ported them at Phase 31 scaffold; Phase 53 closes the gap.
+  // never ported them at scaffold; closes the gap.
   // Each test below mounts a single bar with progress + asserts the
   // expected element renders.
   const row = makeRow('r1');
@@ -2599,7 +2599,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — progress overlay rendering (Pha
   });
 });
 
-describe('@chronixjs/gantt-vue2 ChronixGantt — reference interaction parity (Phase 54)', () => {
+describe('@chronixjs/gantt-vue2 ChronixGantt — reference interaction parity ', () => {
   const row = makeRow('r1');
 
   it('eventStartEditable={false} removes cx-gantt-bar--draggable but keeps cx-gantt-bar--resizable', () => {
@@ -2634,7 +2634,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — reference interaction parity (P
   });
 });
 
-describe('<ChronixGantt> hitTestFromClient (Phase 56)', () => {
+describe('<ChronixGantt> hitTestFromClient ', () => {
   it('handle.hitTestFromClient maps client coords to {time, rowId} via body rect + axis + strips', () => {
     const wrapper = mount(GanttForTest, {
       propsData: { bars: [], rows: phase19Rows, axisInput: phase19AxisInput },

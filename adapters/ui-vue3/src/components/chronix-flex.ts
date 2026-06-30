@@ -15,7 +15,7 @@ import { computed, defineComponent, h, type CSSProperties, type PropType } from 
 /**
  * `<ChronixFlex>` — Vue 3 SFC wrapping the core `FlexProps` IR.
  *
- * Phase 17 (2026-06-02). Idiomatic flexbox container.
+ * . Idiomatic flexbox container.
  */
 export const ChronixFlex = defineComponent({
   name: 'ChronixFlex',

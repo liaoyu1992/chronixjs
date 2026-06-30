@@ -3,7 +3,7 @@ import type { CountdownProps } from './countdown-spec.js';
 /**
  * Compute class set for the Countdown root element.
  *
- * Phase 18 (2026-06-02).
+ * .
  *
  * Class structure:
  *

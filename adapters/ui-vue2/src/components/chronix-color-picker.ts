@@ -10,7 +10,7 @@ import { computed, defineComponent, h, ref, type PropType } from 'vue';
 
 /**
  * `<ChronixColorPicker>` — Vue 2 color picker with trigger + panel.
- * Phase 33 (2026-06-05). Vue 2: no Teleport -> inline panel.
+ * . Vue 2: no Teleport -> inline panel.
  */
 export const ChronixColorPicker = defineComponent({
   name: 'ChronixColorPicker',

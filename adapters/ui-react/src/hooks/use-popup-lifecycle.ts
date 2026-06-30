@@ -22,7 +22,7 @@ import {
 import { useUIContext } from './use-ui-context.js';
 
 /**
- * React popup lifecycle hook. Phase 26 (2026-06-03). Same concerns as
+ * React popup lifecycle hook. . Same concerns as
  * the Vue 3 composable: controlled+uncontrolled `show`, anchor+popup
  * measurement, z-index, trigger lifecycle (click / hover / focus /
  * manual), click-outside + Escape, scroll/resize re-measurement,

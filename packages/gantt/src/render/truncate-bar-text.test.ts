@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { truncateBarText } from './truncate-bar-text.js';
 
-describe('truncateBarText — Phase 28.2 / Phase 32.6', () => {
+describe('truncateBarText', () => {
   it('returns the unmodified string when it already fits in the width budget', () => {
     // fontSize 12 → avgCharWidth 7.2 → maxChars = floor(72 / 7.2) = 10.
     // 'short' (5 chars) <= 10 → no truncation.

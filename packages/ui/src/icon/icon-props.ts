@@ -1,6 +1,6 @@
 /**
- * Icon component IR — Phase 24 (2026-06-03). Tier A SVG renderer
- * wrapping the Phase 9 IconRegistry.
+ * Icon component IR — . Tier A SVG renderer
+ * wrapping the IconRegistry.
  */
 
 import { getIcon } from './icon-registry.js';

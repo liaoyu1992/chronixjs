@@ -4,7 +4,7 @@ import { defaultChronixTableTheme } from './chronix-table-theme.js';
 import { cssVarsForTheme } from './css-vars-for-theme.js';
 
 describe('cssVarsForTheme', () => {
-  it('default theme produces all 30 expected --cx-table-* keys (Phase 36 adds status-bar-height + status-bar-bg)', () => {
+  it('default theme produces all 30 expected --cx-table-* keys (adds status-bar-height + status-bar-bg)', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     const keys = Object.keys(vars).sort();
     expect(keys).toEqual(
@@ -43,59 +43,59 @@ describe('cssVarsForTheme', () => {
     );
   });
 
-  it('Phase 34 tree-spinner-color + tree-error-color emit as raw color strings', () => {
+  it('tree-spinner-color + tree-error-color emit as raw color strings', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-tree-spinner-color']).toBe('#5a6675');
     expect(vars['--cx-table-tree-error-color']).toBe('#dc2626');
   });
 
-  it('Phase 36 status-bar tokens emit with px / raw-string conventions', () => {
+  it('status-bar tokens emit with px / raw-string conventions', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-status-bar-height']).toBe('28px');
     expect(vars['--cx-table-status-bar-bg']).toBe('#f4f6f8');
   });
 
-  it('Phase 31 pinned-row-z-index emits as raw number string (no px)', () => {
+  it('pinned-row-z-index emits as raw number string (no px)', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-pinned-row-z-index']).toBe('2');
   });
 
-  it('Phase 32 tooltip tokens emit per type', () => {
+  it('tooltip tokens emit per type', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-tooltip-delay-ms']).toBe('400');
     expect(vars['--cx-table-tooltip-bg']).toBe('#2a2f36');
     expect(vars['--cx-table-tooltip-color']).toBe('#ffffff');
   });
 
-  it('Phase 33 overlay-bg emits as raw color string', () => {
+  it('overlay-bg emits as raw color string', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-overlay-bg']).toBe('rgba(255, 255, 255, 0.85)');
   });
 
-  it('Phase 23 header-group tokens emit with px / raw-string conventions', () => {
+  it('header-group tokens emit with px / raw-string conventions', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-header-group-height']).toBe('28px');
     expect(vars['--cx-table-header-group-bg']).toBe('#e8ecf0');
   });
 
-  it('Phase 24 footer tokens emit with px / raw-string conventions', () => {
+  it('footer tokens emit with px / raw-string conventions', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-footer-height']).toBe('32px');
     expect(vars['--cx-table-footer-bg']).toBe('#f8f9fa');
   });
 
-  it('Phase 30 tree tokens emit with px / raw-string conventions', () => {
+  it('tree tokens emit with px / raw-string conventions', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-tree-indent-px']).toBe('16px');
     expect(vars['--cx-table-tree-chevron-color']).toBe('#5a6675');
   });
 
-  it('Phase 30.1.1 row-checkbox-indeterminate-color emits as raw color', () => {
+  it('row-checkbox-indeterminate-color emits as raw color', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-row-checkbox-indeterminate-color']).toBe('#5a6675');
   });
 
-  it('Phase 17 pinned-* tokens emit as raw color/string values', () => {
+  it('pinned-* tokens emit as raw color/string values', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
     expect(vars['--cx-table-pinned-shadow-color']).toBe('rgba(15, 23, 42, 0.12)');
     expect(vars['--cx-table-pinned-zone-bg']).toBe('inherit');

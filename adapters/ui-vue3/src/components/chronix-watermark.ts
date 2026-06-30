@@ -8,7 +8,7 @@ import { computed, defineComponent, h, type VNode } from 'vue';
 
 /**
  * `<ChronixWatermark>` — Vue 3 SFC wrapping the core
- * `WatermarkProps` IR. Phase 22 (2026-06-03). Tier A repeating
+ * `WatermarkProps` IR. . Tier A repeating
  * overlay watermark.
  *
  * The root `<div>` carries the SVG `data:` URL as inline

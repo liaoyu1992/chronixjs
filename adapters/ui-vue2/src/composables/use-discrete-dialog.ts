@@ -7,7 +7,7 @@ import {
 import { ref, type Ref } from 'vue';
 
 /**
- * Vue 2.7 imperative Discrete Dialog composable — Phase 36 (2026-06-05).
+ * Vue 2.7 imperative Discrete Dialog composable — .
  * Verbatim port of `adapters/ui-vue3`'s `useDiscreteDialog()`.
  *
  * Usage:

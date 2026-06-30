@@ -5,7 +5,7 @@ import { h } from 'vue';
 import { ChronixBadge } from './chronix-badge.js';
 
 /**
- * Phase 14 (2026-06-02) — Badge mount tests (vue3). Covers the
+ * — Badge mount tests (vue3). Covers the
  * "wrap-a-child" pattern + standalone mode + dot / processing / show
  * modifiers + numeric truncation.
  */

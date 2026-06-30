@@ -1,7 +1,7 @@
 import type { CellRange, CellRef } from './compute-cell-range-envelope.js';
 
 /**
- * Phase 28 (2026-05-28): pure routing helper for shift+arrow cell-range
+ * pure routing helper for shift+arrow cell-range
  * extension. Given the current cell-range (if any), the current
  * activeCell (if any), and the newly-navigated-to cell, returns the
  * `CellRange` the adapter should write.
@@ -15,7 +15,7 @@ import type { CellRange, CellRef } from './compute-cell-range-envelope.js';
  *   "first shift+arrow opens a session" case.
  * - When BOTH are null, use `newActive` for both anchor + focus
  *   (degenerate 1x1 range; the keyboard handler would already have
- *   initialized activeCell to top-left in the same tick via the Phase 26
+ *   initialized activeCell to top-left in the same tick via the
  *   initial-focus shortcut, so this branch is rarely hit in practice but
  *   makes the function total over its input domain).
  *
@@ -24,8 +24,8 @@ import type { CellRange, CellRef } from './compute-cell-range-envelope.js';
  * chronix-NEW (original grids couple shift+arrow extension to internal
  * SelectionExtender / RangeController classes that combine the
  * routing + DOM updates; the pure-function shape with input refs +
- * output CellRange is chronix's own posture, matching the Phase 26
- * `computeNextActiveCell` + Phase 27 `computeScrollIntoView` precedents).
+ * output CellRange is chronix's own posture, matching the
+ * `computeNextActiveCell` + `computeScrollIntoView` precedents).
  */
 export function deriveShiftArrowCellRange(
   currentRange: CellRange | null,

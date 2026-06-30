@@ -40,7 +40,7 @@ const routedLink: RoutedLink = {
   marker: { x: 400, y: 65, angleDeg: 0 },
 };
 
-describe('LINK_SLOT_NAME + LinkSlotArgs — Phase 28.3', () => {
+describe('LINK_SLOT_NAME + LinkSlotArgs', () => {
   it('exports LINK_SLOT_NAME as the literal "link" constant', () => {
     expect(LINK_SLOT_NAME).toBe('link');
   });

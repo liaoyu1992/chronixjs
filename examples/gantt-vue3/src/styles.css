@@ -65,7 +65,7 @@ body {
   margin-bottom: 16px;
 }
 
-/* Phase 17 parity-mode banner — only visible when the demo loads
+/* parity-mode banner — only visible when the demo loads
    with `?parity=true`. Signals that sample data has been swapped for
    the cross-demo parity dataset. Generic styling (no logo, no
    colors that would interfere with VRT screenshots in default mode
@@ -129,7 +129,7 @@ body {
   color: #1f2937;
 }
 
-/* Phase 20.6: URL schema reference panel — auto-rendered from the
+/* URL schema reference panel — auto-rendered from the
    demo's config schema. Shareable demo URLs encode every toggle so
    testers can reproduce a state with one click. */
 .cx-demo-url-schema {
@@ -219,7 +219,7 @@ body {
 
 .cx-gantt-wrapper {
   background: #ffffff;
-  /* Phase 23: the chart-pane (NOT the wrapper) owns vertical scroll
+  /* the chart-pane (NOT the wrapper) owns vertical scroll
      now. The `max-body-height="70vh"` prop on `<ChronixGantt>` sets
      grid-template-rows row 2 to 70vh; both the chart-pane and the
      sidebar-pane inherit that cap and engage vertical scroll above
@@ -227,7 +227,7 @@ body {
      wrapper. */
 }
 
-/* Phase 20: bar fill / stroke moved to theme tokens (applied inline
+/* bar fill / stroke moved to theme tokens (applied inline
    by <ChronixGantt>). Non-color hooks (border-radius, cursor) stay
    in CSS — they're style-only and don't participate in the
    per-bar color cascade. */
@@ -238,7 +238,7 @@ body {
   cursor: move;
 }
 
-/* Phase 12 selection state — accent stroke when the consumer's
+/* selection state — accent stroke when the consumer's
    `selectedBarIds` includes this bar. The class is added by the
    adapter automatically on the default <rect>. Custom slot
    renderers receive `BarSlotArgs.isSelected` and own their visual. */
@@ -315,7 +315,7 @@ body {
 }
 
 /*
- * Phase 24: imperative-handle test-button bar. Positioned offscreen so
+ * imperative-handle test-button bar. Positioned offscreen so
  * Playwright can click via data-test-handle-method selector without the
  * bar leaking into any captured VRT snapshot or into the demo's visible
  * chrome. Buttons remain in document flow + interactive (NOT

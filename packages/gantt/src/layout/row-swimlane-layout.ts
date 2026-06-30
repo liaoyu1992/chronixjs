@@ -2,7 +2,7 @@ import type { RowSwimlaneLayoutInput, RowSwimlaneLayoutOutput, SwimlaneStrip } f
 
 /**
  * Resolves Y positions and heights for every row in the timeline body.
- * Phase 2 layout pass #2 — independent of `AxisRangePlanner` (X axis) so
+ * layout pass #2 — independent of `AxisRangePlanner` (X axis) so
  * the two passes can run in any order or in parallel.
  *
  * v0 contract is a flat top-to-bottom stack at `defaultRowHeight` (or the

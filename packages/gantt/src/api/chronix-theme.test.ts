@@ -42,30 +42,30 @@ const EXPECTED_TOKEN_KEYS: readonly (keyof ChronixTheme)[] = [
   'sidebarBodyFontSize',
   'progressLabelFontSize',
   'progressLabelFontWeight',
-  // Bar fill / stroke (Phase 20)
+  // Bar fill / stroke
   'barBackgroundColor',
   'barBorderColor',
   'barTextColor',
-  // Today line (Phase 21)
+  // Today line
   'todayLineColor',
   'todayLineTooltipBg',
-  // Today cell bg (Phase 22.2)
+  // Today cell bg
   'todayCellBgColor',
-  // Toolbar (Phase 22)
+  // Toolbar
   'toolbarBg',
   'toolbarButtonBg',
   'toolbarButtonBgActive',
   'toolbarButtonBorder',
   'toolbarButtonColor',
   'toolbarTitleColor',
-  // Bar text (Phase 28.2)
+  // Bar text
   'barFontSize',
   'barFontWeight',
-  // Grid lines (Phase 26)
+  // Grid lines
   'gridLineColor',
   'gridLineWeekStartColor',
   'gridLineRowRuleColor',
-  // Bar selection + resize handles (Phase 28.1)
+  // Bar selection + resize handles
   'barSelectedBorderColor',
   'barSelectedBorderWidth',
   'barResizerThickness',
@@ -149,7 +149,7 @@ describe('defaultChronixTheme', () => {
     expect(defaultChronixTheme.progressFillOpacity).toBeLessThanOrEqual(1);
   });
 
-  it('Phase 28.1 selection/resizer defaults pin to the original spec', () => {
+  it('selection/resizer defaults pin to the original spec', () => {
     // Selection border: rgba(0,0,0,0.3) stroke + 2px width mirror the
     // hard-coded values on `.gantt-event-selection-border`. Resizer
     // thickness 8 px mirrors `edgeResizeZone`; dot size 8 px mirrors

@@ -1,5 +1,5 @@
 /**
- * Phase 10.1 (2026-05-24): compute the inclusive range of rowIds
+ * compute the inclusive range of rowIds
  * between an anchor and a clicked row, in the order they appear in
  * the currently-displayed row list.
  *

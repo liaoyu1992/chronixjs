@@ -1,9 +1,9 @@
 /**
- * Log stylesheet — Phase 23 (2026-06-03).
+ * Log stylesheet — .
  *
  * Root `<div>` is the terminal-style container (dark background,
  * monospace, optional `max-height` from adapter inline style).
- * The lines container is `<ol>` — Phase 21 21-fr2 sibling for
+ * The lines container is `<ol>` — 21-fr2 sibling for
  * `<ol>` UA reset applies (`padding-inline-start: 40px;
  * list-style-type: decimal` defaults must be reset).
  *
@@ -30,7 +30,7 @@ export const CHRONIX_LOG_CSS = `
 }
 
 .cx-ui-log__lines {
-  /* <ol> user-agent reset — Phase 21 21-fr2 sibling for <ol>. */
+  /* <ol> user-agent reset — 21-fr2 sibling for <ol>. */
   list-style: none;
   margin: 0;
   padding: 0;

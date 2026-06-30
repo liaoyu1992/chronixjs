@@ -8,7 +8,7 @@ import {
 import { ref, type Ref } from 'vue';
 
 /**
- * Vue 2.7 imperative Message queue composable — Phase 36 (2026-06-05).
+ * Vue 2.7 imperative Message queue composable — .
  * Verbatim port of `adapters/ui-vue3`'s `useMessage()`.
  *
  * Usage:

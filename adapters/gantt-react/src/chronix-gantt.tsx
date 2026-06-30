@@ -103,23 +103,22 @@ import {
   type SelectPayload,
   type SelectRejectedPayload,
 } from './use-gantt-pointer.js';
-import { useScrollSync } from './use-scroll-sync.js';
 
 import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
 
 // Re-export the click payload types so existing consumers importing them
-// from `./chronix-gantt.js` (Phase 32.2 surface) keep working — the
+// from `./chronix-gantt.js` (surface) keep working — the
 // canonical definitions now live in `./use-gantt-selection.js` since
-// Phase 32.3 introduced the matching hook. Mirrors vue2's convention
+// introduced the matching hook. Mirrors vue2's convention
 // where the use-gantt-selection composable owns the payload shapes.
 export type { BarClickPayload, EmptyAreaClickPayload };
 
 const DEFAULT_HEADER_HEIGHT = 24;
 const DEFAULT_HEADER_ROW_HEIGHT = 20;
 const SVG_NS = 'http://www.w3.org/2000/svg';
-// Phase 32.5.1 — title + dot positioning consumes `deriveEdgePaddedX`
-// so the viewport-clipped sub-case (Phase 27.1) lights up alongside
-// the axis-clipped sub-case (Phase 27) + default branch. The 4
+// title + dot positioning consumes `deriveEdgePaddedX`
+// so the viewport-clipped sub-case lights up alongside
+// the axis-clipped sub-case + default branch. The 4
 // per-consumer constants below correspond to the helper's
 // `defaultInset` + `consumerGap` parameters (see helper JSDoc table):
 //
@@ -150,15 +149,15 @@ const TITLE_LEFT_PADDING = 8;
 const TITLE_RIGHT_PADDING = 4;
 const TITLE_TRIANGLE_GAP = 4;
 
-// Phase 49 — `ColumnSpec` interface + `computeRowSpans` helper moved
+// `ColumnSpec` interface + `computeRowSpans` helper moved
 // to `@chronixjs/gantt` core (Decision B.2). Imported at the top of
 // this module from `@chronixjs/gantt`; re-exported from
 // `adapters/gantt-react/src/index.ts` so consumer-facing
 // `import { ColumnSpec } from '@chronixjs/gantt-react'` continues to
-// resolve via the Phase 38 re-export idiom.
+// resolve via the re-export idiom.
 
 /**
- * Phase 32.4.1 (Phase 28.3 in chronix-vue3 / Phase 31.4.1 in chronix-vue2):
+ * (in chronix-vue3 / in chronix-vue2):
  * encode a color string into the suffix used in marker ids. Strips
  * non-alphanumeric so `'#3788d8'` → `'3788d8'`, `'rgb(255, 0, 0)'` →
  * `'rgb25500'`. Matches vue2/vue3 encoding so cross-adapter consumers
@@ -169,7 +168,7 @@ function markerColorId(color: string): string {
 }
 
 /**
- * Phase 32.4.1: the 7 built-in marker shapes. Excludes `'none'` (which
+ * the 7 built-in marker shapes. Excludes `'none'` (which
  * suppresses the marker-end attribute entirely rather than emitting a
  * def). Ordering matches vue2/vue3 verbatim so the defs aggregator
  * emits markers in identical order.
@@ -187,7 +186,7 @@ const BUILTIN_MARKER_TYPES = [
 type BuiltinMarkerType = (typeof BUILTIN_MARKER_TYPES)[number];
 
 /**
- * Phase 32.4.1: render one built-in `<marker>` def as a React element.
+ * render one built-in `<marker>` def as a React element.
  * Geometry ports verbatim from vue2/vue3 (which themselves port verbatim
  * from the original spec); width / height fixed at 4.5;
  * `markerUnits="strokeWidth"` scales with stroke; `overflow="visible"`
@@ -326,7 +325,7 @@ function renderBuiltinMarker(
 }
 
 /**
- * Phase 32.4.1: render a user-defined `<marker>` def. The custom marker is
+ * render a user-defined `<marker>` def. The custom marker is
  * positioned at its viewBox origin and emits one child per `paths` entry.
  * v0 uses the same `refX=4`, `refY=2.25`, `orient='auto'` as the built-in
  * arrow — consumers who need a different refX can wrap the custom marker's
@@ -366,7 +365,7 @@ function renderCustomMarker(
 }
 
 /**
- * Phase 32.4.1: resolve a link's `marker-end` URL for a given color.
+ * resolve a link's `marker-end` URL for a given color.
  * Returns `null` for `'none'` so the caller omits the `marker-end`
  * attribute entirely (an empty `url(...)` reference would suppress
  * strokes in some browsers).
@@ -382,7 +381,7 @@ export interface ChronixGanttProps {
   readonly bars: readonly BarSpec[];
   readonly rows: readonly RowSpec[];
   readonly axisInput: AxisRangePlanInput;
-  // Phase 52 — geometry prop surface alignment with chronix-vue3 +
+  // geometry prop surface alignment with chronix-vue3 +
   // chronix-vue2. 4 layout props threaded through to `useGanttLayout`
   // + 2 pointer props threaded through to `useGanttPointer`. Defaults
   // match the core hook defaults so omitting them is bit-for-bit
@@ -400,7 +399,7 @@ export interface ChronixGanttProps {
   /** Snap drag/resize/select time-delta to this multiple of ms. Default 0 (no snap). */
   readonly snapDurationMs?: number;
   /**
-   * Phase 48 — sidebar column descriptors. Supplying a non-empty
+   * sidebar column descriptors. Supplying a non-empty
    * `columns` array switches the wrapper from the 1-column (chart-
    * only) layout to a 2-column grid (sidebar + chart) matching
    * chronix-vue3. Each column contributes additively to the
@@ -417,14 +416,14 @@ export interface ChronixGanttProps {
   /** Allow bar drag + edge resize. Default false. */
   readonly editable?: boolean;
   /**
-   * Phase 54 — fine-grained drag gate. When `editable` is true, setting
+   * fine-grained drag gate. When `editable` is true, setting
    * this to `false` disables the bar-drag transaction while keeping
    * edge-resize available. Default `true`. Mirrors the parity
    * reference's `eventStartEditable`.
    */
   readonly eventStartEditable?: boolean;
   /**
-   * Phase 54 — fine-grained resize gate. When `editable` is true,
+   * fine-grained resize gate. When `editable` is true,
    * setting this to `false` disables the edge-resize transaction while
    * keeping bar-drag available. Default `true`. Mirrors the parity
    * reference's `eventDurationEditable`.
@@ -432,18 +431,18 @@ export interface ChronixGanttProps {
   readonly eventDurationEditable?: boolean;
   /** Allow calendar range-select on empty rows. Default false. */
   readonly selectable?: boolean;
-  // Phase 32.3 — theme prop. Partial override merged on top of
+  // theme prop. Partial override merged on top of
   // `defaultChronixTheme`; threaded through every inline attribute read.
   readonly theme?: Partial<ChronixTheme>;
-  // Phase 32.3 — slot registry. Consulted at BAR_SLOT_NAME +
-  // HEADER_CELL_SLOT_NAME render sites; LINK_SLOT_NAME defers to Phase 32.4.
+  // slot registry. Consulted at BAR_SLOT_NAME +
+  // HEADER_CELL_SLOT_NAME render sites; LINK_SLOT_NAME defers .
   readonly slotRegistry?: SlotRegistry;
-  // Phase 32.3 — controlled selection state. Drives `cx-gantt-bar--selected`
+  // controlled selection state. Drives `cx-gantt-bar--selected`
   // class, selection-border rect, resizer zones (when editable), and white
   // dot handles (when selected && editable). State management is
   // consumer-owned; use `useGanttSelection` for the standard pattern.
   readonly selectedBarIds?: readonly string[];
-  // Phase 32.4 — Phase 20 bar-color cascade. 4 component-prop overrides
+  // bar-color cascade. 4 component-prop overrides
   // + 5 per-bar callbacks running through `resolveBarStyle` (theme →
   // component prop → `BarSpec.style` → callback) per render pass.
   // `barColor` is the umbrella supplying both background + border at the
@@ -461,12 +460,12 @@ export interface ChronixGanttProps {
   readonly barFontSizeCallback?: BarFontSizeFunc;
   readonly barFontWeightCallback?: BarFontWeightFunc;
   readonly barClassNamesCallback?: BarClassNamesFunc;
-  // Phase 32.4.1 — dependency-link rendering. `links` provides the
+  // dependency-link rendering. `links` provides the
   // chart-level link list (router runs over them + `placedBars`).
   // `useLineEventColor: true` makes each link inherit its source bar's
-  // resolved background color (Phase 20 cascade output) via the
+  // resolved background color (cascade output) via the
   // render-pass-local `barColorByBarId` map. `onLineCallback` is the
-  // Phase 28.3 per-link override hook running AFTER the cascade.
+  // per-link override hook running AFTER the cascade.
   // `onLinkOrphan` fires per occurrence when a link references a
   // missing bar (callback always; console.warn once per id per
   // component-instance lifetime).
@@ -474,7 +473,7 @@ export interface ChronixGanttProps {
   readonly useLineEventColor?: boolean;
   readonly onLineCallback?: LinkRenderFunc;
   readonly onLinkOrphan?: (orphanLinkId: string) => void;
-  // Phase 32.4.2 — today line. `false` / omitted hides the line.
+  // today line. `false` / omitted hides the line.
   // `true` enables with all theme-token defaults. Object literal
   // overrides per-field. Cascade per knob:
   //   - stroke color: `config.color ?? theme.todayLineColor`
@@ -490,28 +489,34 @@ export interface ChronixGanttProps {
   // `Date.now()` sampled at render time — no setInterval keeps it
   // live across midnight.
   readonly todayLine?: TodayLineOption | boolean;
-  // Phase 32.5 — dual-scrollport `maxBodyHeight`. Passes through to the
+  // dual-scrollport `maxBodyHeight`. Passes through to the
   // `cx-gantt-chart-pane` div's `style.maxHeight`. When undefined
   // (default), grid-row 2 = CSS `auto` → row grows to content height →
   // no vertical scrollbar engages → pre-32.5 consumers see identical
   // visual output. When set (e.g. `'400px'`), row 2 caps + vertical
   // scrollbar engages on overflow.
   readonly maxBodyHeight?: string;
-  // Phase 41 — Phase 22.2 todayCellBg parity prop. `false` or omitted =
+  // Width (px) of the draggable divider between the resource sidebar and
+  // the timeline (the grid track between them). Defaults to 4
+  // (`SIDEBAR_DIVIDER_WIDTH`). Set smaller for a thinner grab handle, or 0
+  // to remove the gap (at 0 the divider is no longer a usable resize
+  // handle).
+  readonly sidebarDividerWidth?: number;
+  // todayCellBg parity prop. `false` or omitted =
   // hide (default); `true` = enable with theme default
   // (`theme.todayCellBgColor`); an object literal with `color` overrides
   // the default. Renders a `<rect class="cx-gantt-today-cell">` in body
   // + header SVGs spanning today's one-day slot. Pixel-aligned with the
   // bars (reuses the same `(t - axisStart) × pxPerMs` math).
   readonly todayCellBg?: TodayCellBgOption | boolean;
-  // Phase 41 — Phase 29 headerCellClassNamesCallback parity prop.
+  // headerCellClassNamesCallback parity prop.
   // Fires once per rendered header cell (outer band cells AND tick-row
   // labels); returned classes append to the cell's primary element. Use
   // for state-driven CSS hooks (weekend tinting, holiday markers, etc.).
   // For full cell-content replacement, register a template under the
   // `'header-cell'` slot via `slotRegistry`.
   readonly headerCellClassNamesCallback?: HeaderCellClassNamesFunc;
-  // Phase 41 — Phase 25 pointerMinDistance parity prop. Pythagorean
+  // pointerMinDistance parity prop. Pythagorean
   // pixel threshold the pointer must travel from pointerdown before a
   // bar-drag / resize / progress-handle / range-select transaction
   // commits. Default 5 px (matches vue3 + vue2 default). Pass 0 to
@@ -522,37 +527,37 @@ export interface ChronixGanttProps {
   readonly onBarResize?: (payload: BarResizePayload) => void;
   readonly onBarProgress?: (payload: BarProgressPayload) => void;
   readonly onSelect?: (payload: SelectPayload) => void;
-  // Phase 16 lifecycle callbacks
+  // lifecycle callbacks
   readonly onBarDragStart?: (payload: BarDragStartCallback) => void;
   readonly onBarDragStop?: (payload: BarDragStopCallback) => void;
   readonly onBarResizeStart?: (payload: BarResizeStartCallback) => void;
   readonly onBarResizeStop?: (payload: BarResizeStopCallback) => void;
-  // Phase 12 click callbacks
+  // click callbacks
   readonly onBarClick?: (payload: BarClickPayload) => void;
   readonly onEmptyAreaClick?: (payload: EmptyAreaClickPayload) => void;
-  // Phase 54 — bar hover callbacks (delegated handlers on the cx-gantt-
+  // bar hover callbacks (delegated handlers on the cx-gantt-
   // bars group). Suppress during an active transaction. Mirror the
   // original `eventMouseEnter` / `eventMouseLeave` options.
   readonly onBarMouseenter?: (payload: BarClickPayload) => void;
   readonly onBarMouseleave?: (payload: BarClickPayload) => void;
-  // Phase 19 validator predicates (drag / resize / select commits run
+  // validator predicates (drag / resize / select commits run
   // through these before firing the success callback; returning `false`
   // veto-aborts and fires the rejection callback instead).
   readonly eventAllow?: EventAllowFunc;
   readonly selectAllow?: SelectAllowFunc;
   readonly eventOverlap?: boolean | EventOverlapFunc;
   readonly eventConstraint?: EventConstraint;
-  // Phase 55: independent select-side overlap / constraint (fall back
+  // independent select-side overlap / constraint (fall back
   // to event* siblings when unset).
   readonly selectOverlap?: boolean | EventOverlapFunc;
   readonly selectConstraint?: EventConstraint;
-  // Phase 19 rejection callbacks
+  // rejection callbacks
   readonly onBarDropRejected?: (payload: BarDropRejectedPayload) => void;
   readonly onBarResizeRejected?: (payload: BarResizeRejectedPayload) => void;
   readonly onSelectRejected?: (payload: SelectRejectedPayload) => void;
 
   /**
-   * Phase 33 — controlled-prop round-trip channel for the imperative
+   * controlled-prop round-trip channel for the imperative
    * `GanttHandle`'s axis-mutating methods (`changeView` / `prev` /
    * `next` / `today` / `gotoDate` / `incrementDate` / `zoomTo`). The
    * handle method computes the new `AxisRangePlanInput` and fires
@@ -561,7 +566,7 @@ export interface ChronixGanttProps {
    * `update:axisInput` emit + vue2's `update:axis-input` v-model
    * semantics in React's controlled-prop idiom.
    *
-   * Also fired by Phase 34's header-toolbar view/nav buttons —
+   * Also fired 's header-toolbar view/nav buttons —
    * clicking a view button or `prev` / `next` / `today` dispatches
    * through the same `emit('update:axisInput', ...)` pathway so a
    * single consumer-side handler closes the loop for both imperative
@@ -570,7 +575,7 @@ export interface ChronixGanttProps {
   readonly onAxisInputChange?: (next: AxisRangePlanInput) => void;
 
   /**
-   * Phase 34 — header toolbar configuration. Accepts the chronix
+   * header toolbar configuration. Accepts the chronix
    * 3-section string DSL (`{ left, center, right }` or
    * `{ start, center, end }`) or `false` (default-omit) to hide the
    * toolbar. Widget names: `'title'`, any of the six `ViewId`s, and
@@ -589,17 +594,17 @@ export interface ChronixGanttProps {
 }
 
 /**
- * Phase 32.3 `<ChronixGantt>` for React 18: composes the `useGanttLayout`
- * hook (Phase 32.1) + `useGanttPointer` hook (Phase 32.2) and wires
+ * `<ChronixGantt>` for React 18: composes the `useGanttLayout`
+ * hook + `useGanttPointer` hook and wires
  * 4 pointer event handlers on the body SVG with native
  * `setPointerCapture` lifecycle. Emits 11 callback props (4 commit +
- * 4 lifecycle + 2 click + handle) + 7 Phase 19 props (4 validator + 3
- * rejection callbacks). Phase 32.3 adds three customization surfaces:
+ * 4 lifecycle + 2 click + handle) + 7 props (4 validator + 3
+ * rejection callbacks). adds three customization surfaces:
  * `theme` (Partial<ChronixTheme> merged onto defaults), `slotRegistry`
  * (BAR + HEADER_CELL templates), and controlled `selectedBarIds` with
  * selection-border + resizer-zone + dot-handle visual feedback.
  *
- * Deferred to Phase 32.4+: Phase 20 bar-color cascade / continuation
+ * Deferred +: bar-color cascade / continuation
  * triangles / bar text / LINK_SLOT_NAME / dual-scrollport /
  * viewport-aware lighting / toolbar / handle.
  */
@@ -632,10 +637,11 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     onLinkOrphan,
     todayLine,
     maxBodyHeight,
+    sidebarDividerWidth,
     todayCellBg,
     headerCellClassNamesCallback,
     pointerMinDistance,
-    // Phase 52 — geometry prop surface alignment with chronix-vue3 +
+    // geometry prop surface alignment with chronix-vue3 +
     // chronix-vue2. Defaults preserved at the hook layer; the props
     // are pure pass-throughs.
     barHeight,
@@ -644,7 +650,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     defaultRowHeight,
     progressHandleSize,
     snapDurationMs,
-    // Phase 54 — fine-grained drag/resize gates + hover callbacks.
+    // fine-grained drag/resize gates + hover callbacks.
     eventStartEditable,
     eventDurationEditable,
     onBarMouseenter,
@@ -673,7 +679,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   },
   ref,
 ) {
-  // Phase 33 — listener registry for `handle.subscribe()`. Per-FC-
+  // listener registry for `handle.subscribe()`. Per-FC-
   // instance Map<event-name, Set<Listener>> stored in useRef so it
   // outlives renders without triggering re-renders. The internal
   // `emit()` closure below fires BOTH the matching callback prop
@@ -760,7 +766,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       case 'empty-area-click':
         p.onEmptyAreaClick?.(payload as EmptyAreaClickPayload);
         break;
-      // Phase 54 — bar hover dispatch.
+      // bar hover dispatch.
       case 'bar-mouseenter':
         p.onBarMouseenter?.(payload as BarClickPayload);
         break;
@@ -798,7 +804,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     bars,
     rows,
     axisInput,
-    // Phase 52 — geometry prop surface alignment. Conditional-spread
+    // geometry prop surface alignment. Conditional-spread
     // each optional prop so `exactOptionalPropertyTypes` doesn't reject
     // explicit-undefined; the layout hook falls back to its own defaults
     // when the prop is omitted (omitted ≡ undefined ≡ unspecified).
@@ -808,7 +814,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     ...(defaultRowHeight !== undefined ? { defaultRowHeight } : {}),
   });
 
-  // Phase 32.3 — merged theme. `useMemo` keys on the `theme` prop's
+  // merged theme. `useMemo` keys on the `theme` prop's
   // identity so consumers who stabilize their theme (via their own
   // `useMemo`) get a stable merged object across re-renders. Inline
   // `theme={{ ... }}` literals still work (new identity per render → new
@@ -818,24 +824,24 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     [themeProp],
   );
 
-  // Phase 32.3 — O(1) per-bar selected-lookup. Rebuilt only when the
+  // O(1) per-bar selected-lookup. Rebuilt only when the
   // `selectedBarIds` prop identity changes; the per-bar render loop reads
   // `.has(bar.barId)` once per iteration.
   const selectedBarSet = useMemo(() => new Set(selectedBarIds ?? []), [selectedBarIds]);
 
-  // Phase 32.4.1 — route dependency links through the layout pass.
+  // route dependency links through the layout pass.
   // Re-derives when `links` or `placedBars` change (drag / resize /
   // view-switch). Orphans (a link referencing a bar id not in
   // `placedBars`) drop from the rendered output here — keeps the
   // render function pure. Orphan-id callback + console.warn live in a
   // separate `useEffect` below so side-effects run AFTER commit, not
-  // during render (Phase 32.2 ratified — no side-effects in render).
+  // during render (ratified — no side-effects in render).
   const routerOutput = useMemo<LinkRouterOutput>(
     () => defaultLinkRouter.route({ links: links ?? [], placedBars }),
     [links, placedBars],
   );
 
-  // Phase 32.4.2 — today line resolved state. Returns `null` when prop
+  // today line resolved state. Returns `null` when prop
   // is `false`/`undefined`, when axis has 0 ticks (degenerate empty
   // fixture), or when today's x-coordinate falls outside the axis
   // range (anchorDate well before/after today). Otherwise returns the
@@ -872,7 +878,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     };
   }, [todayLine, axis, t]);
 
-  // Phase 41 — Phase 22.2 todayCellBg geometry. Same shape as vue3
+  // todayCellBg geometry. Same shape as vue3
   // resolvedTodayCellBg: derive today-cell x/width from axis-start +
   // today-midnight + slotDurationMs math; clip to axis bounds.
   // Returns null when the prop is off OR today is outside the visible
@@ -900,7 +906,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     return { x, width, color };
   }, [todayCellBg, axis, t]);
 
-  // Phase 41 — Phase 29 headerCellClassNamesCallback normalizer.
+  // headerCellClassNamesCallback normalizer.
   // Returns a stable empty array when the callback is unset or returns
   // undefined. Returned string is wrapped to array; arrays pass
   // through. Caller concatenates onto the cell's primary className.
@@ -911,7 +917,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     return typeof raw === 'string' ? [raw] : raw;
   };
 
-  // Phase 41 — Phase 29 per-cell day-meta derivation helpers. Mirror
+  // per-cell day-meta derivation helpers. Mirror
   // vue3 lines 1525-1564. `todayStart` is sampled once per render so
   // all classes agree on which calendar day is "today". The band-cell
   // helper checks if the cell spans EXACTLY ONE calendar day via
@@ -942,7 +948,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     return tickIsDayEligible ? computeCellStateMeta(tick.time, headerTodayStart) : undefined;
   };
 
-  // Phase 32.4.1 — orphan tracking. Ref-stable across renders so the
+  // orphan tracking. Ref-stable across renders so the
   // warn-once semantic holds for the component instance lifetime. The
   // callback fires for every orphan in every router pass (mirrors
   // vue2/vue3 emit semantics); console.warn fires once per id (mirrors
@@ -972,7 +978,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     () => new Map(bars.map((bar) => [bar.id, bar.rowId])),
     [bars],
   );
-  // Phase 53: progress maps for the pointer hook's progress-handle
+  // progress maps for the pointer hook's progress-handle
   // hit-test + the per-bar progress overlay render below. `barProgressById`
   // captures the persisted progress value per bar (used as the displayed
   // value when no active progress-handle drag is in flight). `overlayIdByBarId`
@@ -1003,34 +1009,34 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     barRowIds,
     editable,
     selectable,
-    // Phase 41 — thread the prop so consumers can override the 5px
+    // thread the prop so consumers can override the 5px
     // default (e.g. `pointerMinDistance={0}` disables the gate for
     // tests / touch-friendly UIs). Conditional-spread because
     // exactOptionalPropertyTypes rejects an explicit `undefined`.
     ...(pointerMinDistance !== undefined ? { pointerMinDistance } : {}),
-    // Phase 52 — geometry prop surface alignment with chronix-vue3 +
+    // geometry prop surface alignment with chronix-vue3 +
     // chronix-vue2. Conditional-spread per `exactOptionalPropertyTypes`.
     ...(progressHandleSize !== undefined ? { progressHandleSize } : {}),
     ...(snapDurationMs !== undefined ? { snapDurationMs } : {}),
-    // Phase 54 — fine-grained drag/resize gates. Defaults preserved
+    // fine-grained drag/resize gates. Defaults preserved
     // at the hook layer; the props are pure pass-throughs.
     ...(eventStartEditable !== undefined ? { eventStartEditable } : {}),
     ...(eventDurationEditable !== undefined ? { eventDurationEditable } : {}),
-    // Phase 53 — thread progress maps so the hook's progress-handle
+    // thread progress maps so the hook's progress-handle
     // hit-test can resolve a bar's persisted progress + emit
     // `bar-progress` events on commit. Maps built above via useMemo;
     // empty when no bars opted in.
     barProgressById,
     overlayIdByBarId,
-    // Phase 32.2.1: thread the bars list into the composable so its
+    // thread the bars list into the composable so its
     // validator gate has a `movingBar` to resolve against
     // (`runDropValidation` short-circuits to null when bars is empty).
     bars,
-    // Phase 32.3 — edge-zone hit-test width tracks the visible cursor cue
+    // edge-zone hit-test width tracks the visible cursor cue
     // (resizer-zone rect width below). Single-token discipline keeps
     // theme overrides aligned with hit-test geometry.
     edgeZoneWidth: t.barResizerThickness,
-    // Phase 33 — always pass wrappers through `emit()` so subscribers
+    // always pass wrappers through `emit()` so subscribers
     // registered via `handle.subscribe(...)` fire alongside the
     // corresponding callback prop. emit() is a no-op when the prop
     // is undefined AND the listener set is empty.
@@ -1042,7 +1048,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     onBarDragStop: (p) => emit('bar-dragstop', p),
     onBarResizeStart: (p) => emit('bar-resizestart', p),
     onBarResizeStop: (p) => emit('bar-resizestop', p),
-    // Phase 32.2.1: Phase 19 validator inputs.
+    // validator inputs.
     ...(eventAllow !== undefined ? { eventAllow } : {}),
     ...(selectAllow !== undefined ? { selectAllow } : {}),
     ...(eventOverlap !== undefined ? { eventOverlap } : {}),
@@ -1059,7 +1065,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   // origin; matches vue2's `toContentXY` math.
   const bodySvgRef = useRef<SVGSVGElement | null>(null);
 
-  // Phase 32.5 — dual-scrollport refs. `chartPaneRef` wraps the body SVG
+  // dual-scrollport refs. `chartPaneRef` wraps the body SVG
   // and owns the scroll container. `chartHeaderInnerRef` wraps the
   // header SVG inside `cx-gantt-chart-header-pane` (overflow:hidden);
   // its transform is updated by the header-sync useEffect on every
@@ -1068,18 +1074,18 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   const chartPaneRef = useRef<HTMLDivElement | null>(null);
   const chartHeaderInnerRef = useRef<HTMLDivElement | null>(null);
 
-  // Phase 48 — sidebar pane refs (active when `columns` is non-empty).
+  // sidebar pane refs (active when `columns` is non-empty).
   // `sidebarPaneRef` owns the sidebar's vertical scroll container;
   // `sidebarHeaderInnerRef` wraps the sidebar's header `<table>` inside
   // `cx-gantt-sidebar-header-pane` (overflow:hidden) and takes a
   // translateX on horizontal sidebar scroll, mirroring how the chart-
-  // header pane tracks its body. Refs stay null in no-sidebar mode —
-  // `useScrollSync` no-ops, and the sidebar-header useEffect short-
-  // circuits at the null guard.
+  // header pane tracks its body. Refs stay null in no-sidebar mode — the
+  // inline chart-body vertical sync + sidebar-header useEffect both short-
+  // circuit at their null guards.
   const sidebarPaneRef = useRef<HTMLDivElement | null>(null);
   const sidebarHeaderInnerRef = useRef<HTMLDivElement | null>(null);
 
-  // Phase 50 — sidebar-divider drag-to-resize refs + state. Mirror
+  // sidebar-divider drag-to-resize refs + state. Mirror
   // of `adapters/gantt-vue3/src/chronix-gantt.ts:1134-1202` with React
   // idiom: `sidebarWidthOverride` is `useState` (triggers re-render
   // so the wrapper's gridTemplateColumns + sidebar <col> widths
@@ -1092,24 +1098,54 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   const dividerDragStartWidthRef = useRef<number | null>(null);
   const dividerDragStartClientXRef = useRef<number | null>(null);
 
-  // Phase 32.5 — scroll state. `chartScroll.scrollLeft` +
-  // `chartScroll.clientWidth` are reactive; Phase 32.5.1 viewport-clip
+  // scroll state. `chartScroll.scrollLeft` +
+  // `chartScroll.clientWidth` are reactive; viewport-clip
   // lighting will consume them. This phase only wires the source
   // plumbing + header horizontal sync.
   const chartScroll = useChartScrollState(chartPaneRef);
 
-  // Phase 48 — sidebar pane scroll state. Same hook (read-only horizontal
+  // sidebar pane scroll state. Same hook (read-only horizontal
   // + width reader); we only consume `scrollLeft` so the sidebar header
   // tracks horizontal sidebar scroll independently of the chart pane.
   const sidebarScroll = useChartScrollState(sidebarPaneRef);
 
-  // Phase 48 — bidirectional vertical scroll sync between sidebar +
-  // chart panes (rAF-source-tracking lockstep). When sidebar isn't
-  // rendered, sidebarPaneRef.current === null and the hook silently
-  // no-ops.
-  useScrollSync(sidebarPaneRef, chartPaneRef);
+  // b (vertical-scroll ownership): vertical sync from the sidebar-
+  // pane to the chart body SVG via transform: translateY(). The sidebar
+  // owns the vertical scrollbar (boundary); the chart-pane is overflow-y:
+  // hidden, so its body SVG is translated to follow the sidebar-pane's
+  // scrollTop, mirroring the header's horizontal translateX sync one axis
+  // over. A wheel over the chart is forwarded to the sidebar (the chart
+  // can't scroll vertically on its own), keeping wheel-over-chart working.
+  // Bar hit-testing stays correct: `svg.getBoundingClientRect()` reflects
+  // the transform, so the existing `clientY - bodyRect.top` math already
+  // accounts for it. Deps are the stable refs (run-once idiom).
+  useEffect(() => {
+    const sidebarPane = sidebarPaneRef.current;
+    const chart = chartPaneRef.current;
+    const bodySvg = bodySvgRef.current;
+    if (!sidebarPane || !chart || !bodySvg) return;
+    const sync = (): void => {
+      bodySvg.style.transform = `translateY(-${sidebarPane.scrollTop}px)`;
+    };
+    const onWheel = (e: WheelEvent): void => {
+      // Only forward vertical wheel; horizontal wheel (shift / trackpad
+      // deltaX) is left to scroll the chart-pane's own overflow-x.
+      if (e.deltaY === 0) return;
+      sidebarPane.scrollTop += e.deltaY;
+      e.preventDefault();
+      sync();
+    };
+    sidebarPane.addEventListener('scroll', sync, { passive: true });
+    // non-passive so preventDefault can stop the page from scrolling
+    chart.addEventListener('wheel', onWheel, { passive: false });
+    sync();
+    return () => {
+      sidebarPane.removeEventListener('scroll', sync);
+      chart.removeEventListener('wheel', onWheel);
+    };
+  }, [sidebarPaneRef, chartPaneRef, bodySvgRef]);
 
-  // Phase 50 — sidebar-divider pointer handlers. Mirror of
+  // sidebar-divider pointer handlers. Mirror of
   // chronix-vue3:1165-1202 with React event-type signatures. The
   // handlers read sidebarWidthOverride via React closure on each
   // render (state never goes stale because every setState triggers
@@ -1149,7 +1185,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     dividerRef.current?.releasePointerCapture?.(e.pointerId);
   }
 
-  // Phase 32.5 — chart-header horizontal sync. Inline useEffect keyed on
+  // chart-header horizontal sync. Inline useEffect keyed on
   // `chartScroll.scrollLeft`. When user scrolls the chart pane
   // horizontally, the chart-header-inner div's transform updates so the
   // header band visually follows body content.
@@ -1159,10 +1195,10 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     inner.style.transform = `translateX(${-chartScroll.scrollLeft}px)`;
   }, [chartScroll.scrollLeft]);
 
-  // Phase 48 — sidebar-header horizontal sync. Sibling of the chart
+  // sidebar-header horizontal sync. Sibling of the chart
   // useEffect above; reads `sidebarScroll.scrollLeft` and pushes a
   // translateX onto `sidebarHeaderInnerRef`. Independent from chart
-  // horizontal scroll (per Phase 23 contract: each pane owns its own
+  // horizontal scroll (per contract: each pane owns its own
   // horizontal scrollport). Null-guard skips no-sidebar mode.
   useEffect(() => {
     const inner = sidebarHeaderInnerRef.current;
@@ -1170,9 +1206,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     inner.style.transform = `translateX(${-sidebarScroll.scrollLeft}px)`;
   }, [sidebarScroll.scrollLeft]);
 
-  // Phase 33 — imperative `GanttHandle` facade. 16 methods covering
+  // imperative `GanttHandle` facade. 16 methods covering
   // view/navigation, scroll, read-only bar/row/link lookup, and
-  // event subscription. Mirrors vue3 Phase 24 + vue2 Phase 31.5
+  // event subscription. Mirrors vue3 + vue2
   // implementations; the `GanttHandle` interface itself lives in
   // core (`packages/gantt/src/api/gantt-handle.ts`) and is shared
   // across all 3 adapters.
@@ -1184,7 +1220,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   // (pure DOM side-effect; no callback fires). `subscribe` registers
   // into `listenerRegistry` and returns an unsubscribe function.
   // Per-render table wrappers — cheap inline objects, not memoized.
-  // The `pointer` reference is unstable per Phase 32.2's getter
+  // The `pointer` reference is unstable per getter
   // pattern (rebuilt each render) so memoization would just-recreate
   // anyway; inline construction is simpler.
   const barTable: BarTable = {
@@ -1335,7 +1371,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     // a dep when props evolve.
   );
 
-  // Phase 34 — toolbar widget model + title text. `parseToolbar()` is
+  // toolbar widget model + title text. `parseToolbar()` is
   // a pure function in core; useMemo keyed on the inputs prevents
   // re-parse on unrelated re-renders. `null` shape covers both
   // omitted (default) and explicit `false` to keep the JSX-return
@@ -1349,8 +1385,8 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   }, [headerToolbar, axisInput.viewId]);
   const toolbarTitleText = useMemo(() => formatToolbarTitle(axisInput), [axisInput]);
 
-  // Phase 34 — toolbar widget click dispatcher. View / nav clicks
-  // route through Phase 33's `emit('update:axisInput', ...)` helper
+  // toolbar widget click dispatcher. View / nav clicks
+  // route through `emit('update:axisInput', ...)` helper
   // (Decision A.1: inline math; mirrors vue3:859-881). Fires the
   // `onAxisInputChange` callback prop AND iterates any
   // `update:axisInput` subscribers registered via
@@ -1442,7 +1478,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   }
 
   function onPointerUp(e: ReactPointerEvent<SVGSVGElement>): void {
-    // Phase 12 click-vs-drag discrimination. Snapshot the active
+    // click-vs-drag discrimination. Snapshot the active
     // transaction + lastHit BEFORE commit/abort clears them — the
     // post-resolution click decision still needs `lastHit` to know
     // which bar would have been clicked.
@@ -1467,7 +1503,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           emit('bar-click', { barId: hit.barId, sourceBar, jsEvent: e });
         }
       } else if (hit.kind === 'empty-row') {
-        // Phase 54 — surface the calendar time via `xToTime`.
+        // surface the calendar time via `xToTime`.
         const pos = toContentXY(e);
         const clickTime = pos ? xToTime(pos.x, axis) : new Date(NaN);
         emit('empty-area-click', {
@@ -1502,7 +1538,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     }
   }
 
-  // Phase 54 — bar hover events (delegated). Same shape as vue3 + vue2.
+  // bar hover events (delegated). Same shape as vue3 + vue2.
   const lastHoveredBarIdRef = useRef<string | null>(null);
   // Track hovered bar IDs for progress handle visibility (intentionally unused for now)
   const [_hoveredBarIds, _setHoveredBarIds] = useState<Set<string>>(new Set());
@@ -1572,14 +1608,14 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   const barTemplate = slotRegistry?.get(BAR_SLOT_NAME);
   const linkSlotTemplate = slotRegistry?.get(LINK_SLOT_NAME);
 
-  // Phase 32.4.1 — render-pass-local map populated alongside `resolvedStyle`.
+  // render-pass-local map populated alongside `resolvedStyle`.
   // Read by the link-render block below when `useLineEventColor: true` so
   // dependency lines inherit the source bar's resolved background color.
   // Local to this render closure — cleared and rebuilt every render, no
   // cross-render state.
   const barColorByBarId = new Map<string, string>();
 
-  // Phase 32.4.1 — Decision B.1: extract bar render inputs to a pre-pass
+  // Decision B.1: extract bar render inputs to a pre-pass
   // loop so the link-render block (which reads `barColorByBarId`) sees a
   // fully populated map regardless of JSX sibling ordering. Cleaner data
   // flow than the side-effect-in-JSX-map alternative.
@@ -1626,7 +1662,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     return { bar, isSelected, sourceBar, resolvedStyle };
   });
 
-  // Phase 32.4.1 — link cascade + render block. Runs AFTER the bar pre-pass
+  // link cascade + render block. Runs AFTER the bar pre-pass
   // (Decision B.1) so `barColorByBarId` is fully populated. Cascade per
   // routed link: `routed.color` (from `LinkSpec.colorOverride` if set) →
   // `useLineEventColor` source-bar lookup → `theme.linkDefaultColor`.
@@ -1828,7 +1864,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     );
   });
 
-  // Phase 32.4.1 — marker `<defs>` aggregator. One `<marker>` per
+  // marker `<defs>` aggregator. One `<marker>` per
   // (color × built-in type) + one per (color × custom marker). Color set
   // includes the theme default plus POST-callback resolved colors so any
   // callback color swap still has its marker-end ref resolve to a real
@@ -1862,7 +1898,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     }
   }
 
-  // Phase 32.4.2 — body-side grid lines. Three line types:
+  // body-side grid lines. Three line types:
   //   - vertical 1-px `<rect class="cx-gantt-grid-vline">` per axis
   //     tick (cell boundary; matches vue2/vue3 + original spec).
   //     When the tick falls on Monday at 00:00 (ISO week start), the
@@ -1950,14 +1986,14 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       </g>
     ) : null;
 
-  // Phase 53 — body slot rects: one transparent `<rect class="cx-gantt-slot
+  // body slot rects: one transparent `<rect class="cx-gantt-slot
   // ...">` per axis tick — pure CSS hook for consumer styling (weekend
   // tinting, today-column emphasis, past/future fade). Sits BEHIND grid
   // lines + bars + links so consumer fills paint visibly without
   // obscuring chart chrome. `fill="transparent"` keeps the default render
   // pixel-identical to pre-Phase-53; classes alone let consumer CSS
   // opt-in to backgrounds via `.cx-gantt-slot-sat { background: ... }`
-  // selectors. Mirrors chronix-vue3 Phase 29 + chronix-vue2 lines 2645-2660.
+  // selectors. Mirrors chronix-vue3 + chronix-vue2 lines 2645-2660.
   const bodySlotChildren: ReactNode[] = [];
   for (const tick of axis.ticks) {
     const slotMeta = computeCellStateMeta(tick.time, headerTodayStart);
@@ -1982,7 +2018,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       </g>
     ) : null;
 
-  // Phase 32.4.2 — body-side today line. Renders BEFORE the bars group
+  // body-side today line. Renders BEFORE the bars group
   // so bars paint on top (matches vue2/vue3 + original spec layering
   // — the line acts as a vertical guide UNDER the bars). Stroke / dash
   // / width all driven by `resolvedTodayLine`. `pointer-events: none`
@@ -2003,7 +2039,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     />
   ) : null;
 
-  // Phase 32.4.2 — header-side today-line extras: a `<line>` spanning
+  // header-side today-line extras: a `<line>` spanning
   // the full header band so the line visually continues into the
   // body-side line below, plus a `<g class="cx-gantt-today-line-tooltip">`
   // widget (`<rect>` background + `<text>` label centered horizontally
@@ -2032,7 +2068,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       />,
     );
     if (tl.tooltip !== '') {
-      // Phase 44 D.7 — pre-measure tooltip width so long custom
+      // D.7 — pre-measure tooltip width so long custom
       // tooltips don't overflow the historical 36-px fixed rect.
       // Formula approximates mixed ASCII/CJK at a 0.7 width factor
       // against the 11-px font size + 8-px horizontal padding;
@@ -2067,7 +2103,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     }
   }
 
-  // Phase 48 + Phase 50 — sidebar geometry (active when `columns`
+  // + sidebar geometry (active when `columns`
   // prop is non-empty). `sidebarBaseWidth` is the natural sum of
   // per-column widths and sizes the sidebar *table*; `effectiveSidebarWidth`
   // swaps in the user-dragged override if set and drives the grid track
@@ -2097,7 +2133,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       style={{
         borderCollapse: 'collapse',
         tableLayout: 'fixed',
-        width: `${sidebarBaseWidth}px`,
+        // b: fill the pane content area; columns compress to fit
+        // when the sidebar's vertical scrollbar appears.
+        width: '100%',
         height: `${totalHeaderBandHeight}px`,
       }}
       cellPadding={0}
@@ -2146,7 +2184,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       style={{
         borderCollapse: 'collapse',
         tableLayout: 'fixed',
-        width: `${sidebarBaseWidth}px`,
+        width: '100%',
       }}
       cellPadding={0}
       cellSpacing={0}
@@ -2212,7 +2250,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   // (column 1 = sidebar at its current effective width, column 2 =
   // sidebar-divider drag handle at fixed SIDEBAR_DIVIDER_WIDTH,
   // column 3 = chart at `auto` so horizontal overflow scrolls inside
-  // the chart pane). Phase 50 adds the divider column.
+  // the chart pane). adds the divider column.
   // Pin row 1 to the canonical header-band height so the sidebar header's
   // 1px bottom-divider border (and any table-content slack) is absorbed
   // inside the fixed track instead of leaking into an `auto` row — matches
@@ -2222,7 +2260,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   const wrapperGridStyle: CSSProperties = hasSidebar
     ? {
         display: 'grid',
-        gridTemplateColumns: `${sidebarWidth}px ${SIDEBAR_DIVIDER_WIDTH}px auto`,
+        gridTemplateColumns: `${sidebarWidth}px ${sidebarDividerWidth ?? SIDEBAR_DIVIDER_WIDTH}px auto`,
         gridTemplateRows: headerBandRow,
       }
     : { display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: headerBandRow };
@@ -2233,17 +2271,22 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
         <div
           className="cx-gantt-sidebar-header-pane"
           style={{
+            // overflow: hidden clips the header inner and shows no
+            // scrollbar of its own. scrollbar-gutter: stable still
+            // reserves the body's scrollbar gutter so header columns
+            // align with body columns.
             overflow: 'hidden',
+            scrollbarGutter: 'stable',
             minWidth: 0,
             gridColumn: 1,
             gridRow: 1,
             // Divider lives on the pane (a grid item whose height = the
             // header-band row), not on the inner header element: the inner
             // header's own height is driven by its table content, so a
-            // border on it is clipped by this pane's `overflow: hidden`
-            // whenever the chart header is shorter, and floats mid-band
-            // whenever it is taller. On the pane the line always sits at
-            // the band's bottom edge, aligned with the chart header.
+            // border on it is clipped by this pane's overflow-x whenever
+            // the chart header is shorter, and floats mid-band whenever it
+            // is taller. On the pane the line always sits at the band's
+            // bottom edge, aligned with the chart header.
             borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
             boxSizing: 'border-box',
           }}
@@ -2310,7 +2353,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 const rowY = rowIdx * hrh;
                 const bandIndex = rowIdx + 1;
                 return row.cells.map((cell, cellIdx) => {
-                  // Phase 41 — derive per-cell day meta + invoke
+                  // derive per-cell day meta + invoke
                   // headerCellClassNamesCallback so extras can append
                   // onto the rect className (or slot args).
                   const { date, dayMeta } = deriveBandCellMeta(cell);
@@ -2399,7 +2442,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
             ) : null}
             <g className="cx-gantt-axis" transform={`translate(0, ${headerRowsHeight})`}>
               {axis.ticks.map((tick, tickIdx) => {
-                // Phase 41 — derive per-tick day meta + invoke the
+                // derive per-tick day meta + invoke the
                 // headerCellClassNamesCallback so extras append onto
                 // the tick label className (or slot args). Tick row
                 // uses bandIndex = 0 by convention.
@@ -2492,7 +2535,17 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           ref={sidebarPaneRef}
           className="cx-gantt-sidebar-pane"
           style={{
-            overflow: 'auto',
+            // overflow-y: auto — the sidebar owns the vertical scrollbar
+            // (it sits on the sidebar/chart boundary — the resource area).
+            // The chart-pane is overflow-y: hidden; its body SVG is
+            // translated to follow this pane's scrollTop (the useEffect
+            // above). overflow-x auto so a narrowed sidebar can still
+            // scroll its columns. scrollbar-gutter: stable keeps content
+            // width constant whether or not the scrollbar shows →
+            // header/body columns stay aligned.
+            overflowX: 'auto',
+            overflowY: 'auto',
+            scrollbarGutter: 'stable',
             minWidth: 0,
             gridColumn: 1,
             gridRow: 2,
@@ -2508,7 +2561,11 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
         ref={chartPaneRef}
         className="cx-gantt-chart-pane"
         style={{
-          overflow: 'auto',
+          // overflow-y: hidden — the chart owns no vertical scrollbar (the
+          // sidebar does; the body SVG is translated to follow the sidebar's
+          // scrollTop). overflow-x auto for the wide timeline.
+          overflowX: 'auto',
+          overflowY: 'hidden',
           gridColumn: hasSidebar ? 3 : 1,
           gridRow: 2,
           ...(maxBodyHeight !== undefined ? { maxHeight: maxBodyHeight } : {}),
@@ -2520,7 +2577,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           width={totalWidth}
           height={bodyHeight}
           xmlns={SVG_NS}
-          style={{ display: 'block', touchAction: 'none' }}
+          style={{ display: 'block', touchAction: 'none', willChange: 'transform' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -2604,20 +2661,20 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               const dotSize = t.barResizerDotSize;
               const dotY = renderY + (bar.height - dotSize) / 2;
 
-              // Phase 32.4 + Phase 44 D.6 — base classes + state-modifier
+              // + D.6 — base classes + state-modifier
               // classes + callback-supplied class names. Order matters:
               // built-in + modifiers + callback classes — consumer CSS
               // can use `.priority-high.cx-gantt-bar { ... }` descendants
               // without specificity surprises.
               //
-              // Phase 44 state-modifier classes mirror the parity
+              // state-modifier classes mirror the parity
               // reference's wrapper-group classes so consumer CSS hooks
               // like `.cx-gantt-bar--dragging { opacity: 0.8 }` work.
               // `--dragging` / `--resizing` fire when the active txn's
               // kind + barId match this bar. `--start` / `--end` come
               // from `bar.isStart` / `bar.isEnd`. `--draggable` /
               // `--resizable` follow the single-knob `editable` prop.
-              // Phase 54 — split gating so consumers can style drag-only
+              // split gating so consumers can style drag-only
               // / resize-only bars distinctly.
               const startGate = eventStartEditable !== false; // default true
               const durationGate = eventDurationEditable !== false;
@@ -2644,9 +2701,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               ].join(' ');
 
               // Default-render bar `<rect>` OR slot template's ReactNode. Slot
-              // templates take the same `BarSlotArgs` shape as vue3 — Phase 20
+              // templates take the same `BarSlotArgs` shape as vue3 —
               // cascade fields (`resolvedBackgroundColor` etc.) now flow from
-              // the cascade resolver output (Phase 32.3 had theme defaults).
+              // the cascade resolver output (had theme defaults).
               let barNode: ReactNode;
               if (barTemplate && sourceBar) {
                 const slotArgs: BarSlotArgs = {
@@ -2682,10 +2739,10 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 );
               }
 
-              // Phase 53 — progress-fill overlay (early-paint, BEFORE
+              // progress-fill overlay (early-paint, BEFORE
               // continuation triangles + title text so the translucent
               // overlay doesn't wash them out). Mirrors chronix-vue3
-              // Phase 44 D.5 paint-order verbatim. Bar must declare both
+              // D.5 paint-order verbatim. Bar must declare both
               // `progress.value` + `pointerOverlayId`; the fill spans 0..
               // value% of bar.width. During a progress-handle drag on
               // THIS bar, the displayed value follows the in-flight
@@ -2719,11 +2776,11 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 );
               }
 
-              // Phase 32.5.1 — viewport-clipping derivation. Pure helper
+              // viewport-clipping derivation. Pure helper
               // returns per-edge clip flags + viewport-locked apex coords
               // in content-coord space. Both flags short-circuit to false
               // when `clientWidth === 0` (pre-mount frame) so existing
-              // SFC tests stay pixel-identical to Phase 32.4 output.
+              // SFC tests stay pixel-identical output.
               const viewportClip = deriveViewportClipping(
                 renderX,
                 renderWidth,
@@ -2732,9 +2789,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 TRIANGLE_MARGIN,
               );
 
-              // Phase 32.4 / 32.5.1 — continuation triangles. Apex 1 px
-              // inside the bar edge for axis-clipped (Phase 27); 1 px
-              // inside the viewport edge for viewport-clipped (Phase 27.1)
+              // continuation triangles. Apex 1 px
+              // inside the bar edge for axis-clipped; 1 px
+              // inside the viewport edge for viewport-clipped
               // — viewport-clipped wins precedence. `data-axis-clipped` +
               // `data-viewport-clipped` data attrs record which sub-case
               // fired so cross-demo parity assertions can distinguish.
@@ -2776,13 +2833,13 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 />
               ) : null;
 
-              // Phase 32.4 / 32.5.1 — bar title auto-render. Char-count
+              // bar title auto-render. Char-count
               // truncation via `truncateBarText`; empty truncation output
               // suppresses the node. Title-start / -end x via
               // `deriveEdgePaddedX` 3-branch (viewport-clipped wins over
               // axis-clipped wins over default).
               //
-              // Phase 47.3 — title-side viewport-locking fires ONLY on the
+              // title-side viewport-locking fires ONLY on the
               // left side (when the bar's left edge is past the viewport's
               // left boundary). The right side keeps default positioning
               // so the title naturally appears at the bar's left edge,
@@ -2791,7 +2848,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
               // indicators that should appear at the viewport edge whenever
               // the bar extends past it). This simplified behavior avoids
               // the negative `availableWidth` (titleEndX < titleStartX) issue
-              // from Phase 47.2's bilateral span check.
+              // 's bilateral span check.
               const titleHasAxisOverlap = renderX < axis.totalWidth && renderX + renderWidth > 0;
               const title = sourceBar?.title;
               let titleNode: ReactNode = null;
@@ -2864,7 +2921,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                 }
               }
 
-              // Phase 53 — progress-handle (LATE-paint — after continuation
+              // progress-handle (LATE-paint — after continuation
               // triangles + title text so the handle remains on top).
               // Upward-pointing triangle below bar edge (tip touching bar bottom),
               // only visible when the handle itself is hovered or during active drag.
@@ -2925,7 +2982,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                       pointerEvents="none"
                     />
                   )}
-                  {/* Phase 54 — gate resizer rects on eventDurationEditable. */}
+                  {/* gate resizer rects on eventDurationEditable. */}
                   {selectionHasAxisOverlap && editable && durationGate && (
                     <>
                       <rect
@@ -3007,7 +3064,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     </div>
   );
 
-  // Phase 34 — conditional root wrapper. When a toolbar model is
+  // conditional root wrapper. When a toolbar model is
   // present, prepend the toolbar inside a `cx-gantt-root` wrapper;
   // otherwise return the chart wrapper directly (pre-Phase-34
   // DOM-shape preserved). Mirrors vue3:3237-3246.
@@ -3023,11 +3080,11 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
 });
 
 // =====================================================================
-// Phase 34 — header toolbar render helpers (module-scope per Decision B.1).
+// header toolbar render helpers (module-scope per Decision B.1).
 // Ported from vue3 chronix-gantt.ts:3253-3393 with `h()` → JSX idiom
 // translation. 5 helpers: icon → button → widget-group → section →
 // toolbar. Click delegates back to the FC body's `onToolbarWidgetClick`
-// which routes through Phase 33's `emit('update:axisInput', ...)`
+// which routes through `emit('update:axisInput', ...)`
 // helper so view/nav clicks fire `onAxisInputChange` + iterate
 // `update:axisInput` subscribers (mirrors vue3's `emitToBoth`).
 // =====================================================================
@@ -3159,11 +3216,11 @@ function renderToolbarSection(
 }
 
 /**
- * Render the Phase 22 / Phase 34 toolbar above the chart. Three
+ * Render the toolbar above the chart. Three
  * sections (`start`, `center`, `end`); chronix `cx-*` class names so
  * the parity extractor can pair them across vue3/vue2/react. Click
  * delegates back to `onClick` — the FC body's `onToolbarWidgetClick`
- * translates each widget to an emit through Phase 33's
+ * translates each widget to an emit through
  * `emit('update:axisInput', ...)` helper via
  * `prev/next/today/changeView` math.
  */

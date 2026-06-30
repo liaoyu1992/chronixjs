@@ -5,7 +5,7 @@ import type { DividerProps } from './divider-spec.js';
  * Divider's root element. Pure function — same algorithm across vue3
  * / vue2 / react adapters.
  *
- * Phase 13 (2026-06-02).
+ * .
  *
  * Class structure:
  *

@@ -44,7 +44,7 @@ function link(id: string, fromBarId: string, toBarId: string): LinkSpec {
   return { id, fromBarId, toBarId, routing: 'square', marker: 'arrow' };
 }
 
-describe('<ChronixGantt> link slot — Phase 28.3', () => {
+describe('<ChronixGantt> link slot', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

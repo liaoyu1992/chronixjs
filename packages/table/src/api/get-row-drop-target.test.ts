@@ -6,7 +6,7 @@ import type { RowRect } from './get-row-drop-target.js';
 
 const rect = (top: number, bottom: number): RowRect => ({ top, bottom });
 
-describe('getRowDropTarget (Phase 44)', () => {
+describe('getRowDropTarget ', () => {
   it('returns null when pointer is above all row rects', () => {
     const rects = new Map<string, RowRect>([
       ['r1', rect(100, 130)],

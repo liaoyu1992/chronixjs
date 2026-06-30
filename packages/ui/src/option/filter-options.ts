@@ -1,5 +1,5 @@
 /**
- * Case-insensitive substring filter for `OptionListItem[]`. Phase 31
+ * Case-insensitive substring filter for `OptionListItem[]`.
  * (2026-06-04). Ancestry-preserving: a group is kept when at least
  * one of its children matches; an unmatched group is dropped.
  *

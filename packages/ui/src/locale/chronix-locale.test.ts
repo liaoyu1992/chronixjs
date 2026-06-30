@@ -37,7 +37,7 @@ const COMMON_KEYS: readonly (keyof ChronixLocaleCommon)[] = [
 ];
 
 describe('ChronixLocale presets', () => {
-  it('all 3 presets have `name` + `common` slice (Phase 3 baseline shape)', () => {
+  it('all 3 presets have `name` + `common` slice (baseline shape)', () => {
     for (const { name, locale } of ALL_PRESETS) {
       expect(locale.name, name).toBe(name);
       expect(locale.common, `${name}.common`).toBeDefined();

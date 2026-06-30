@@ -6,7 +6,7 @@ import type { FieldError } from './form-spec.js';
  * (`withFieldValue`, `withFieldTouched`, etc.) which return new
  * `FieldState` objects.
  *
- * Phase 6 (2026-06-02).
+ * .
  *
  * Fields:
  *

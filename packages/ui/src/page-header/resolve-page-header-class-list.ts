@@ -25,7 +25,7 @@ export interface PageHeaderClassListInput {
 /**
  * Compute class set for the PageHeader root element.
  *
- * Phase 19 (2026-06-02).
+ * .
  *
  * Class structure:
  *

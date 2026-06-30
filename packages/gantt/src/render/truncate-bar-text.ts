@@ -1,5 +1,5 @@
 /**
- * Phase 28.2 / Phase 32.6: char-count + ellipsis truncation for bar
+ * char-count + ellipsis truncation for bar
  * titles. Pure function — no DOM, no framework reactivity. Returns
  * the unmodified string when it already fits; an empty string when
  * even four characters cannot fit (cutoff at `maxChars <= 3`);
@@ -18,10 +18,10 @@
  * width than the single-glyph Unicode `'…'` and matches the
  * reference's appearance.
  *
- * Phase 32.6 relocation note: prior to Phase 32.6, each chronix
- * adapter shipped its own inline copy of this helper. Phase 32.4's
+ * relocation note: prior, each chronix
+ * adapter shipped its own inline copy of this helper.
  * chronix-react port introduced a silent drift (cutoff = 1 +
- * single-glyph `'…'` ellipsis); Phase 32.6 reconciled react to the
+ * single-glyph `'…'` ellipsis); reconciled react to the
  * canonical variant here. All 3 adapters now consume this canonical
  * implementation directly.
  */

@@ -6,7 +6,7 @@ import type { DescriptionsProps } from './descriptions-spec.js';
  * Bundles the IR props with the adapter-derived `hasTitle`
  * boolean (computed from
  * `(titleSlot ? titleSlotNodes.length > 0 : false) || props.title
- * !== undefined`). The bag shape parallels Phase 19
+ * !== undefined`). The bag shape parallels
  * `PageHeaderClassListInput` — the adapter computes its booleans
  * once + hands them to the pure helper for class-list
  * derivation.
@@ -19,7 +19,7 @@ export interface DescriptionsClassListInput {
 /**
  * Compute class set for the Descriptions root element.
  *
- * Phase 21 (2026-06-03).
+ * .
  *
  * Class structure:
  *

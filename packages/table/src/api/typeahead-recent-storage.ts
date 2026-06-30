@@ -1,6 +1,6 @@
 /**
- * Phase 112 (2026-06-01): pluggable persistence backend for the
- * advanced-filter typeahead recent rings (Phase 100.2.5).
+ * pluggable persistence backend for the
+ * advanced-filter typeahead recent rings .
  *
  * The adapter holds one `TypeaheadRecentStorage` per SFC instance.
  * On mount it `read`s each slot's ring into the in-memory map; on
@@ -9,7 +9,7 @@
  * Two factory functions cover v1:
  *
  * - `createMemoryRecentStorage()` — no-op read (returns `[]`) + no-op
- *   write. Matches the Phase 100.2.5 chronix-first NO-storage
+ *   write. Matches the chronix-first NO-storage
  *   precedent. This is the default when the SFC prop
  *   `typeaheadRecentStorage` is `'memory'` or unset.
  *

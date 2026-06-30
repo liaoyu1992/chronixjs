@@ -8,7 +8,7 @@ import type { ColumnSpec } from '../ir/column-spec.js';
 import type { RowSpec } from '../ir/row-spec.js';
 
 /**
- * Phase 21 (2026-05-27): map a drag-fill source envelope's values into
+ * map a drag-fill source envelope's values into
  * the fill envelope's extension cells, producing a write-ready list of
  * mutations.
  *
@@ -33,7 +33,7 @@ import type { RowSpec } from '../ir/row-spec.js';
  * (fill-right beyond source.colIds), the target column's type takes
  * precedence; coercion-rejected cells (e.g., text source into number
  * column where coerce fails) are silently SKIPPED from the mutations
- * array — same Phase 12.1 / Phase 20 reject-and-skip semantic.
+ * array — same reject-and-skip semantic.
  *
  * **No-op dedup**: if the resolved fill value === current cell value
  * (via `Object.is` for NaN-safety), the cell is excluded from the
@@ -52,7 +52,7 @@ export function computeDragFillMutations(
   rows: readonly RowSpec[],
   columns: readonly ColumnSpec[],
   /**
-   * Phase 115 (2026-06-02): optional validator gate. When provided,
+   * optional validator gate. When provided,
    * each coerced cell value is passed through `runValidator(column,
    * value, row)`; non-null return → cell is silently SKIPPED. Same
    * shape as `computePasteMutations`. Defaults to `undefined`.
@@ -120,11 +120,11 @@ export function computeDragFillMutations(
       // down within the same column the target type equals the source
       // type → passthrough. For cross-column fills the target's type
       // takes precedence; rejections silently skip (Decision B.1
-      // fallthrough — mirrors Phase 20 Decision C.1).
+      // fallthrough — mirrors Decision C.1).
       const coerced = coerceEditDraftValue(targetColumn, sourceValue);
       if (!coerced.ok) continue;
 
-      // Phase 115: validator-gate skip parallels coerce-reject skip.
+      // validator-gate skip parallels coerce-reject skip.
       if (runValidator != null) {
         const validationError = runValidator(targetColumn, coerced.value, targetRow);
         if (validationError != null) continue;

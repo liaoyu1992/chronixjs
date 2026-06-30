@@ -4,10 +4,10 @@ import type { StepItem, StepStatus } from './steps-spec.js';
  * Pure helper — compute the derived status for a single step,
  * combining the per-item override + the root-level `current` index.
  *
- * Phase 20 (2026-06-03). Single source of truth for the 3 adapters
+ * . Single source of truth for the 3 adapters
  * + the root-level `--has-error` aggregation.
  *
- * Contract (Phase 20 Decision B.1):
+ * Contract (Decision B.1):
  *
  * - `item.status !== undefined` → that value wins verbatim. Lets
  *   consumers mark an arbitrary step as `'error'` while another

@@ -1,5 +1,5 @@
 /**
- * Upload IR — Phase 35. File upload with trigger button
+ * Upload IR. File upload with trigger button
  * and file list with status tracking.
  */
 

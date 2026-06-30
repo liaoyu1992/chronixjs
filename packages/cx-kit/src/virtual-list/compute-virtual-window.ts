@@ -14,8 +14,8 @@ export const DEFAULT_VIRTUAL_WINDOW_OVERSCAN = 3;
  * their own `computed` / `useMemo` to handle re-evaluation on
  * scroll / resize.
  *
- * Phase 96 ships uniform `itemHeightPx` only; variable-height
- * support is queued for Phase 96.1 as a sibling helper
+ * ships uniform `itemHeightPx` only; variable-height
+ * support is queued as a sibling helper
  * (`computeVirtualWindowVariable`) per design Decision B.1.
  */
 export interface VirtualWindowInput {

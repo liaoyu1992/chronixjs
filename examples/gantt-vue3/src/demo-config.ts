@@ -1,10 +1,10 @@
 import { ref, watch, type Ref } from 'vue';
 
 /**
- * **Phase 20.6: URL-query-driven demo config layer.**
+ * **URL-query-driven demo config layer.**
  *
  * The chronix-gantt-vue3 demo has grown 10 toggleable options
- * across Phase 4 / 17 / 19 / 20. Each one was hand-wired as
+ * across . Each one was hand-wired as
  * `ref()` + computed prop + checkbox + reset clause — about
  * ~30 LOC per toggle. With ~80 more phases ahead, naive growth
  * would put the demo at ~5000 LOC of plumbing alone.

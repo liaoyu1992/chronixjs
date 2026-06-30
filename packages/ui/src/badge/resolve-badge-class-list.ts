@@ -3,7 +3,7 @@ import type { BadgeProps } from './badge-spec.js';
 /**
  * Compute class set for the Badge ROOT element (`cx-ui-badge`).
  *
- * Phase 14 (2026-06-02).
+ * .
  *
  * Class structure:
  *
@@ -27,7 +27,7 @@ export function resolveBadgeClassList(_props: BadgeProps, standalone: boolean): 
  * Compute class set for the Badge INDICATOR element
  * (`cx-ui-badge__sup`).
  *
- * Phase 14 (2026-06-02).
+ * .
  *
  * Class structure:
  *

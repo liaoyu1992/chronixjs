@@ -1,5 +1,5 @@
 /**
- * Empty stylesheet — Phase 15 (2026-06-02).
+ * Empty stylesheet — .
  */
 export const CHRONIX_EMPTY_CSS = `
 .cx-ui-empty {
@@ -21,7 +21,7 @@ export const CHRONIX_EMPTY_CSS = `
 .cx-ui-empty--medium { padding: 24px; gap: 12px; }
 .cx-ui-empty--large { padding: 32px; gap: 16px; }
 
-/* Icon area — Phase 15 ships a Unicode placeholder; Phase 9 icon
+/* Icon area — ships a Unicode placeholder; icon
    registry will swap in an SVG once that lands. */
 .cx-ui-empty__icon {
   display: inline-flex;

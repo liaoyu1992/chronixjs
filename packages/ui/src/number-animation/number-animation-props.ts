@@ -1,5 +1,5 @@
 /**
- * NumberAnimation component IR — Phase 35 (2026-06-05).
+ * NumberAnimation component IR — .
  *
  * Props spec for an animated number display that tweens from one value
  * to another over a configurable duration. The adapter drives the

@@ -22,7 +22,7 @@ const GEOMETRY_TOKENS: readonly (keyof ChronixTableTheme)[] = [
  * Convert a `ChronixTableTheme` to a record of CSS custom properties
  * the adapter inlines on `.cx-table-wrapper`'s style attribute.
  *
- * Phase 6 (2026-05-23). Naming convention: each theme field name is
+ * . Naming convention: each theme field name is
  * kebab-cased + prefixed with `--cx-table-`. Geometry fields get a
  * `px` unit suffix; color fields pass through as raw strings.
  *

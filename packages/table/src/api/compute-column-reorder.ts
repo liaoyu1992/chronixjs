@@ -1,7 +1,7 @@
 import type { ColumnSpec } from '../ir/index.js';
 
 /**
- * Phase 14 (2026-05-26): pixel-distance threshold used by the
+ * pixel-distance threshold used by the
  * chronix-table-vue3 adapter (and future ports) to discriminate a
  * header-cell click from a column-move drag. On `pointerdown` the
  * adapter records `(startClientX, startClientY)`; the session is
@@ -10,13 +10,13 @@ import type { ColumnSpec } from '../ir/index.js';
  * the normal header-click sort cycle runs as if no drag was attempted.
  *
  * 5px matches the common slider / drag-handle convention across modern
- * data-grid libraries. Not exposed as a theme token at Phase 14 — a
+ * data-grid libraries. Not exposed as a theme token at a
  * future phase can promote it if real consumer demand surfaces.
  */
 export const DEFAULT_COLUMN_MOVE_DRAG_THRESHOLD_PX = 5;
 
 /**
- * Phase 14 (2026-05-26): pure reorder of a `readonly ColumnSpec[]`.
+ * pure reorder of a `readonly ColumnSpec[]`.
  * Moves the column identified by `movedColId` so that it appears
  * `position` (= `'before' | 'after'`) the column identified by
  * `targetColId`. Returns a NEW array preserving the rest of the

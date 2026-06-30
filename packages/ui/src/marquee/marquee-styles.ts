@@ -1,7 +1,7 @@
 import { encodeMarqueeKeyframes } from './encode-marquee-keyframes.js';
 
 /**
- * Marquee stylesheet — Phase 22 (2026-06-03).
+ * Marquee stylesheet — .
  *
  * Root `<div>` is `overflow: hidden` so the off-edge copies of
  * the duplicated content stay clipped. Inner `__track` carries

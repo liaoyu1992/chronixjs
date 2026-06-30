@@ -1,5 +1,5 @@
 /**
- * Calendar BEM class-list resolvers — Phase 32 (2026-06-05).
+ * Calendar BEM class-list resolvers — .
  */
 
 export interface ResolveCalendarRootClassListInput {

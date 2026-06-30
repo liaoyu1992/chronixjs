@@ -1,5 +1,5 @@
 /**
- * IR primitive: filter expression AST (Phase 42, 2026-05-29).
+ * IR primitive: filter expression AST (2026-05-29).
  *
  * `FilterExpression` is a discriminated union over `kind` describing
  * a whole-row boolean expression tree assembled from AND / OR / NOT
@@ -45,7 +45,7 @@ export interface ExpressionNotNode {
  *
  * - 6 binary numeric / equality: `=` / `!=` / `>` / `<` / `>=` / `<=`
  * - 3 string: `contains` / `startsWith` / `endsWith` (case-insensitive
- *   substring; mirrors Phase 9 default; consumers wanting case
+ *   substring; mirrors default; consumers wanting case
  *   sensitivity author the IR directly with a future `caseSensitive`
  *   field — out of scope at v1).
  * - `in` — value is an array of literals; true when the cell value
@@ -53,7 +53,7 @@ export interface ExpressionNotNode {
  * - `isNull` / `isNotNull` — null / undefined / missing cell tests
  *   (the compare's `value` is ignored).
  *
- * Cell-value coercion semantics mirror the existing Phase 9
+ * Cell-value coercion semantics mirror the existing
  * filter-pass behavior — `coerceToText` for the 3 string operators
  * and `coerceToNumber` for the 6 binary operators (the same helpers
  * exported from `filter-pass.ts` are reused inside the evaluator to

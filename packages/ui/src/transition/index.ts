@@ -1,5 +1,5 @@
 /**
- * chronix-ui transition module — Phase 8 (2026-06-02).
+ * chronix-ui transition module — .
  *
  * Declarative IR for component enter/leave animations. Pure-data spec +
  * pure-function builders for CSS-property transitions; adapters handle
@@ -18,7 +18,7 @@
  * - **`SlideDirection`** — `'from-top' | 'from-bottom' | 'from-left' | 'from-right'`.
  * - **`formatCssTransitionShorthand`** — `'opacity 200ms cubic-bezier(...)'` builder.
  *
- * NOT shipped in Phase 8 (deferred):
+ * NOT shipped (deferred):
  *
  * - `collapse` (height animation) — needs DOM measurement, lives in
  *   adapter composables.

@@ -32,7 +32,7 @@ export interface ChronixBreadcrumbProps extends Omit<HTMLAttributes<HTMLElement>
 }
 
 /**
- * `<ChronixBreadcrumb>` — React port of the Phase 19 Breadcrumb.
+ * `<ChronixBreadcrumb>` — React port of the Breadcrumb.
  */
 export function ChronixBreadcrumb(props: ChronixBreadcrumbProps): JSX.Element {
   const {

@@ -7,7 +7,7 @@ import { ChronixDivider } from './chronix-divider.js';
 const Divider = ChronixDivider as unknown as VueConstructor;
 
 /**
- * Phase 13 (2026-06-02) — Divider mount tests (vue2). Verbatim port
+ * — Divider mount tests (vue2). Verbatim port
  * of the vue3 Divider suite to `@vue/test-utils@1.x`.
  */
 

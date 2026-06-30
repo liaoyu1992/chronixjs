@@ -1,5 +1,5 @@
 /**
- * Slider module — Phase 33 (2026-06-05).
+ * Slider module — .
  *
  * Framework-agnostic slider IR: marks computation, BEM class
  * resolvers, CSS. Value/position math delegated to

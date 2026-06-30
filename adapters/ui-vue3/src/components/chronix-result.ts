@@ -10,7 +10,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 /**
  * `<ChronixResult>` — Vue 3 SFC wrapping the core `ResultProps` IR.
  *
- * Phase 18 (2026-06-02). Tier A terminal-state display.
+ * . Tier A terminal-state display.
  *
  * Slots:
  *

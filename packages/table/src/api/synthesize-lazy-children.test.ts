@@ -53,7 +53,7 @@ describe('synthesizeLazyChildren', () => {
     expect(result.rows[1]?.children).toBeUndefined();
   });
 
-  it('preserves sync children that are not in the map (Phase 30 behavior)', () => {
+  it('preserves sync children that are not in the map (behavior)', () => {
     const syncChildren: readonly RowSpec[] = [row('a.1'), row('a.2')];
     const rows: readonly RowSpec[] = [row('a', { children: syncChildren })];
     const result = synthesizeLazyChildren({

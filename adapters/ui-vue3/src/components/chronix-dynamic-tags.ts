@@ -8,7 +8,7 @@ import { computed, defineComponent, h, ref, type VNode } from 'vue';
 
 /**
  * `<ChronixDynamicTags>` — Vue 3 inline tag editor component.
- * Phase 35 (2026-06-05).
+ * .
  *
  * Props:
  *

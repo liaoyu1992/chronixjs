@@ -18,7 +18,7 @@ export interface ChronixWatermarkProps extends Omit<HTMLAttributes<HTMLDivElemen
 }
 
 /**
- * `<ChronixWatermark>` — React port of the Phase 22 Watermark.
+ * `<ChronixWatermark>` — React port of the Watermark.
  *
  * Root element is `<div>`. The native `content` HTML attribute is
  * shadowed by the chronix prop (`Omit<HTMLAttributes, 'content'>`);

@@ -10,7 +10,7 @@ import {
 import { defineComponent, h, onBeforeUnmount, ref, type PropType } from 'vue';
 
 /**
- * `<ChronixSplit>` — Vue 3. Phase 28 (2026-06-04). 2-pane resizable
+ * `<ChronixSplit>` — Vue 3. . 2-pane resizable
  * splitter with pointer drag. Uses `setPointerCapture` for cross-frame
  * safety (28-fr3).
  */

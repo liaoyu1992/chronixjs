@@ -1,5 +1,5 @@
 /**
- * chronix-ui tag module — Phase 13 (2026-06-02).
+ * chronix-ui tag module — .
  *
  * Core IR for the Tag component. Adapter components in
  * `@chronixjs/ui-vue3` / `ui-vue2` / `ui-react` consume these types +

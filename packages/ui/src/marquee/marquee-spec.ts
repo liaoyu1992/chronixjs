@@ -1,9 +1,9 @@
 /**
- * Marquee IR — Phase 22 (2026-06-03). Tier A auto-scrolling
+ * Marquee IR — . Tier A auto-scrolling
  * content strip for stock-tickers, sports scores, promo
  * announcements.
  *
- * Per Phase 22 Decision D.1 the scrolling animation runs as a
+ * Per Decision D.1 the scrolling animation runs as a
  * pure CSS `@keyframes` rule (no JS RAF loop). The adapter
  * duplicates the slot content TWICE within an inner `__track`
  * element so the `transform: translate(-50%)` end-state visually

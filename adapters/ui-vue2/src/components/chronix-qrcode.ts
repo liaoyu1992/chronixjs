@@ -8,7 +8,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixQrCode>` — Vue 2.7 port of the Phase 22 QrCode.
+ * `<ChronixQrCode>` — Vue 2.7 port of the QrCode.
  *
  * Renders an `<svg>` when an encoder is registered + value
  * encodes; otherwise the `--unavailable` placeholder. Vue 2's

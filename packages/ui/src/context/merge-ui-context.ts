@@ -13,7 +13,7 @@ import type { ChronixUITheme } from '../theme/chronix-ui-theme.js';
  * with the outer provider's resolved context as the `parent` and the
  * inner provider's prop bag as `overrides`.
  *
- * Phase 2 (2026-06-01) per Phase 0.3 Decision A.1.
+ * per Decision A.1.
  *
  * Merge rules per field:
  *

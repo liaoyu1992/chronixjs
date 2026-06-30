@@ -38,7 +38,7 @@ import {
 } from '@chronixjs/table-vue2';
 import { defineComponent, h } from 'vue';
 
-// Phase 41.3 (2026-05-25): status → CSS modifier class mapping for
+// status → CSS modifier class mapping for
 // the status column's cellClass function. Mirrors vue3 demo verbatim.
 const STATUS_CLASS_MAP: Record<string, string> = {
   完成: 'cx-status--done',
@@ -73,19 +73,19 @@ const NOTE_CYCLE = [
   '归档至 wiki',
 ] as const;
 
-// Phase 47 (2026-05-25): columns moved into a factory so the consumer
+// columns moved into a factory so the consumer
 // can mutate the array on `column-width-change` emit (chronix-table
 // itself is unopinionated about persistence — consumers own the
-// write-back path; matches Phase 46's `rows` conversion pattern).
+// write-back path; matches `rows` conversion pattern).
 // INITIAL_COLUMNS retains a module-scope snapshot for label-lookup
 // helpers (sortLabel / filterLabel) that don't need to follow live
 // width mutations.
 function buildInitialColumns(): ColumnSpec[] {
   return [
-    // Phase 61 (2026-05-26 — vue2 port of vue3 Phase 17): id + name
+    // (2026-05-26 — vue2 port of vue3): id + name
     // pinned left → stay glued to the body's left edge during
     // horizontal scroll.
-    // Phase 71 (2026-05-27 — vue2 port of vue3 Phase 23): id + name share
+    // (2026-05-27 — vue2 port of vue3): id + name share
     // `headerGroup: '基础信息'`; qty + price share `headerGroup: '财务'`.
     // status + note stay un-grouped so the empty-placeholder branch is
     // visible. Mirrors the vue3 demo column shape.
@@ -112,30 +112,30 @@ function buildInitialColumns(): ColumnSpec[] {
       field: 'qty',
       headerName: '数量',
       width: 100,
-      // Phase 43.1 (2026-05-25): type:'number' wires the filter input
+      // type:'number' wires the filter input
       // to the prefix-syntax parser (parsePrefixNumberFilter) so users
       // can type `5`, `>10`, `<20`, `>=5`, `<=10`, `!=3`, `5..50`.
       type: 'number',
-      // Phase 41.3: valueFormatter prepends a unit label for body
+      // valueFormatter prepends a unit label for body
       // cells AND footer cells (the SFC routes the aggregator output
       // through the same formatter).
       valueFormatter: ({ value }) =>
         typeof value === 'number' ? `${value} 件` : `${String(value ?? 0)} 件`,
-      // Phase 47 (2026-05-25): bounded resize range so the drag has
+      // bounded resize range so the drag has
       // verifiable clamp behavior (60..240).
       minWidth: 60,
       maxWidth: 240,
-      // Phase 23.1 (2026-05-27 — vue2 port): nested path form — qty +
+      // (2026-05-27 — vue2 port): nested path form — qty +
       // price under 财务 > 订单. id+name stay on string shortcut form.
       headerGroup: ['财务', '订单'],
-      // Phase 73 (2026-05-27 — vue2 port of vue3 Phase 24): sum
+      // (2026-05-27 — vue2 port of vue3): sum
       // aggregator over filtered rows. Sticky footer renders the
       // result through the same valueFormatter as body cells.
       aggregator: (rs) =>
         rs.reduce((s, r) => s + (typeof r.data['qty'] === 'number' ? r.data['qty'] : 0), 0),
-      // Phase 39.4 (2026-05-29 — vue2 demo): per-column body-cell xlsx
+      // (2026-05-29 — vue2 demo): per-column body-cell xlsx
       // style. Bold right-aligned numeric format. Header row preserves
-      // Phase 39 bold default (untouched by exportStyle).
+      // bold default (untouched by exportStyle).
       exportStyle: {
         font: { bold: true },
         alignment: { horizontal: 'right' },
@@ -143,7 +143,7 @@ function buildInitialColumns(): ColumnSpec[] {
       },
     },
     {
-      // Phase 46.1 (2026-05-25): number-typed editable column. No
+      // number-typed editable column. No
       // valueFormatter so the editor opens with the raw numeric
       // string (e.g. "9.9") — `type: 'number'` triggers `<input
       // type="number">` with `inputmode="decimal"` + coerceEditDraftValue
@@ -156,7 +156,7 @@ function buildInitialColumns(): ColumnSpec[] {
       type: 'number',
       editable: true,
       headerGroup: ['财务', '订单'],
-      // Phase 73: average-price aggregator returning a pre-formatted
+      // average-price aggregator returning a pre-formatted
       // string ("均价 X.XX"). Body cells (no valueFormatter) keep the
       // raw numeric; footer surfaces the formatted average instead.
       aggregator: (rs) => {
@@ -173,23 +173,23 @@ function buildInitialColumns(): ColumnSpec[] {
       field: 'status',
       headerName: '状态',
       width: 120,
-      // Phase 41.3: state-driven cellClass for status color-coding.
+      // state-driven cellClass for status color-coding.
       cellClass: ({ value }) => STATUS_CLASS_MAP[String(value)] ?? 'cx-status--unknown',
-      // Phase 47 (2026-05-25): opt OUT of resize so the user can
+      // opt OUT of resize so the user can
       // verify resizable:false suppresses the resizer affordance.
       resizable: false,
-      // Phase 55 (2026-05-26): opt OUT of reorder alongside resize so
+      // opt OUT of reorder alongside resize so
       // the status column stays non-interactive — the cursor stays
       // pointer (sort), no drag-to-reorder, no resizer affordance.
       reorderable: false,
-      // Phase 43 (2026-05-29 — vue2 port): opt INTO the set-filter
+      // (2026-05-29 — vue2 port): opt INTO the set-filter
       // dropdown UI. Renders a <details> checkbox list of unique
       // status values in the filter row instead of the text input.
       filterUi: 'set',
     },
-    // Phase 46 (2026-05-25): editable: true opts the column into in-cell
+    // editable: true opts the column into in-cell
     // editing (双击 → text input → Enter / Tab / Blur 提交，Esc 取消).
-    // Phase 57 (2026-05-26): autosizeable:false explicit opt-out — the
+    // autosizeable:false explicit opt-out — the
     // resizer still drag-resizes, but dbl-click does NOT autosize. This
     // exercises the opt-OUT path orthogonal to status's resizable:false.
     {
@@ -200,7 +200,7 @@ function buildInitialColumns(): ColumnSpec[] {
       minWidth: 160,
       editable: true,
       autosizeable: false,
-      // Phase 61 (2026-05-26): note pinned right → glued to the
+      // note pinned right → glued to the
       // body's right edge during horizontal scroll.
       pinned: 'right',
     },
@@ -209,9 +209,9 @@ function buildInitialColumns(): ColumnSpec[] {
 
 const INITIAL_COLUMNS: readonly ColumnSpec[] = buildInitialColumns();
 
-// Phase 45 (2026-05-25): bumped from 10 → 50 rows so pagination is
+// bumped from 10 → 50 rows so pagination is
 // visually meaningful with default pageSize=20 → 3 pages.
-// Phase 46 (2026-05-25): moved INTO `data()` so the consumer can
+// moved INTO `data()` so the consumer can
 // mutate row data on cell-value-change emit (chronix-table itself is
 // unopinionated about persistence — consumers own the write-back path).
 function buildInitialRows(): RowSpec[] {
@@ -223,9 +223,9 @@ function buildInitialRows(): RowSpec[] {
         id: idx,
         name: NAME_CYCLE[i % NAME_CYCLE.length],
         qty: (idx * 7) % 50,
-        // Phase 46.1 (2026-05-25): numeric prices spanning 0.9..99.5
+        // numeric prices spanning 0.9..99.5
         // with one decimal place so the editor exercises float
-        // coercion. Verbatim port of vue3 Phase 12.1 demo formula.
+        // coercion. Verbatim port of vue3 demo formula.
         price: Math.round(((idx * 13) % 100) * 10 + 99) / 10,
         status: STATUS_CYCLE[i % STATUS_CYCLE.length],
         note: NOTE_CYCLE[i % NOTE_CYCLE.length],
@@ -244,9 +244,9 @@ function sortLabel(sortSpec: SortChangePayload['sortSpec']): string {
   return `当前排序：${parts.join(' / ')}`;
 }
 
-// Phase 43 (2026-05-25): filter label — mirrors sortLabel format.
+// filter label — mirrors sortLabel format.
 // Multi-spec joins with " AND ". Verbatim port of vue3 demo's
-// describeFilter (commit 89b1a3e). Phase 43.1 (2026-05-25) extends
+// describeFilter (commit 89b1a3e). extends
 // with number-variant formatting: `「数量」 > 25` for simple ops
 // + `「数量」∈ [10, 30]` for inRange.
 function filterLabel(specs: readonly FilterSpec[]): string {
@@ -289,7 +289,7 @@ function filterLabel(specs: readonly FilterSpec[]): string {
   return `已过滤：${parts.join(' AND ')}`;
 }
 
-// Phase 44 (2026-05-25): selection label — mirrors filter/sort pattern.
+// selection label — mirrors filter/sort pattern.
 // Shows count + first N ids; long selections truncate with 等 suffix.
 // Verbatim port of vue3 demo's describeSelection (commit 02b1225).
 function selectionLabel(ids: readonly string[]): string {
@@ -298,7 +298,7 @@ function selectionLabel(ids: readonly string[]): string {
   return `已选 ${ids.length} 行: ${ids.slice(0, 5).join(', ')} 等`;
 }
 
-// Phase 45 (2026-05-25): pagination label — mirrors other status pills.
+// pagination label — mirrors other status pills.
 // Renders the human-friendly "第 N / M 页 — 显示 X-Y / Z 行" format
 // matching vue3 demo's describePage. The footer inside <ChronixTable>
 // renders its own controls; the pill mirrors for visibility +
@@ -311,7 +311,7 @@ function pageLabel(page: number, pageSize: number, totalRows: number): string {
 }
 
 /**
- * Phase 30.2 (vue2 port of vue3 Phase 30.1, 2026-05-28): tree-data
+ * (vue2 port of vue3 2026-05-28): tree-data
  * demo helpers. Mirrors the vue3 demo's file-tree shape (project →
  * module → folder → file).
  */
@@ -431,7 +431,7 @@ export default defineComponent({
   data() {
     const initialRows = buildInitialRows();
     return {
-      // Phase 47 (2026-05-25): columns is now mutable so the
+      // columns is now mutable so the
       // column-width-change handler can rebuild it per Decision A.1
       // (emit-only persistence — chronix-table does NOT mutate the
       // columns prop).
@@ -439,76 +439,76 @@ export default defineComponent({
       rows: initialRows as readonly RowSpec[],
       currentSortLabel: '' as string,
       currentFilterLabel: '' as string,
-      // Phase 41 (2026-05-29 — vue2 port): mirrors the current quick-find
+      // (2026-05-29 — vue2 port): mirrors the current quick-find
       // needle + match count for the on-screen status pill.
       currentQuickFindText: '' as string,
       currentQuickFindMatchCount: 0 as number,
-      // Phase 42 (2026-05-29): advanced-filter DSL state.
+      // advanced-filter DSL state.
       advancedFilterText: '' as string,
       advancedFilterErrors: [] as readonly { message: string; position: number }[],
       advancedFilterStatus: '' as string,
       currentSelectionLabel: selectionLabel([]),
       currentPageLabel: pageLabel(0, 20, initialRows.length),
-      // Phase 46 (2026-05-25): mirrors the last cell commit via
+      // mirrors the last cell commit via
       // cell-value-change emit. Empty until the first commit.
       currentEditLabel: '' as string,
-      // Phase 47 (2026-05-25): mirrors the last column-width-change
+      // mirrors the last column-width-change
       // emit. Empty until the first resize commit.
       currentResizeLabel: '' as string,
-      // Phase 55 (2026-05-26): mirrors the last column-order-change
+      // mirrors the last column-order-change
       // emit. Empty until the first reorder commit.
       currentReorderLabel: '' as string,
       currentVisibilityLabel: '' as string,
-      // Phase 59 (2026-05-26): mirrors the last cell-range envelope.
+      // mirrors the last cell-range envelope.
       // Empty until the first range gesture.
       currentRangeLabel: '' as string,
-      // Phase 63 (2026-05-27 — vue2 port of vue3 Phase 19): mirrors the
+      // (2026-05-27 — vue2 port of vue3): mirrors the
       // last cell-range-copy TSV. Empty until the first copy gesture
       // (Ctrl+C / Cmd+C on focused body OR programmatic
       // `copyCellRangeToClipboard()` button).
       currentCopiedTsv: '' as string,
-      // Phase 65 (2026-05-27 — vue2 port of vue3 Phase 20): mirrors the
+      // (2026-05-27 — vue2 port of vue3): mirrors the
       // last cell-range-paste mutation summary. Empty until the first
       // paste gesture.
       currentPasteSummary: '' as string,
-      // Phase 67 (2026-05-27 — vue2 port of vue3 Phase 21): mirrors
+      // (2026-05-27 — vue2 port of vue3): mirrors
       // the last cell-range-fill mutation summary. Empty until the
       // first drag-fill gesture (handle drag OR programmatic
       // `fillCellRange()` button).
       currentFillSummary: '' as string,
-      // Phase 69 (2026-05-27 — vue2 port of vue3 Phase 22): mirrors
+      // (2026-05-27 — vue2 port of vue3): mirrors
       // the latest mutation-history state for the on-screen pills +
       // button-disabled-state binding. Updated via `onHistoryChange`
       // emit handler.
       currentUndoHistoryState: { past: [], future: [] } as MutationHistoryState,
-      // Phase 69: tracks the most-recent history-replay summary for
+      // tracks the most-recent history-replay summary for
       // the pill. Updated via `onHistoryReplay` emit handler.
       currentHistoryReplay: '' as string,
-      // Phase 71 (2026-05-27 — vue2 port of vue3 Phase 23): last
+      // (2026-05-27 — vue2 port of vue3): last
       // `header-group-click` payload summary for the demo pill.
       currentHeaderGroupClick: '' as string,
-      // Phase 77 (2026-05-28 — vue2 port of vue3 Phase 27): opt-out
+      // (2026-05-28 — vue2 port of vue3): opt-out
       // toggle for keyboard auto-scroll. Default ON; flipping OFF lets
       // the user verify the active outline persists on a cell scrolled
       // out of view.
       enableAutoScroll: true,
-      // Phase 38 (2026-05-29 — vue2 port of vue3 Phase 38): saved-view
+      // (2026-05-29 — vue2 port of vue3): saved-view
       // status text displayed next to the Save/Load buttons.
       savedViewStatus: '',
-      // Phase 39 (2026-05-29 — vue2 port): xlsx export state.
+      // (2026-05-29 — vue2 port): xlsx export state.
       xlsxBusy: false,
       xlsxError: '',
-      // Phase 30.2 (vue2 port of vue3 Phase 30.1, 2026-05-28): tree
+      // (vue2 port of vue3 2026-05-28): tree
       // data demo state + columns. Mirrors the vue3 demo's file-tree
       // example.
       treeColumns: buildTreeColumns() as readonly ColumnSpec[],
       treeRows: makeFileTree() as readonly RowSpec[],
       treeExpandedCount: 0,
-      // Phase 31 + 32 + 33 demo (2026-05-28): pinned rows + tooltip +
+      // + 32 + 33 demo (2026-05-28): pinned rows + tooltip +
       // overlay. Verbatim port of vue3 demo.
       tier2Loading: false,
       tier2EmptyMode: false,
-      // Phase 34 demo state.
+      // demo state.
       lazyRoots: [
         { id: 'lazy-folder-a', data: { name: '📁 folder-a', size: '—' }, hasChildren: true },
         { id: 'lazy-folder-b', data: { name: '📁 folder-b', size: '—' }, hasChildren: true },
@@ -520,15 +520,15 @@ export default defineComponent({
         { id: 'size', field: 'size', headerName: '大小', width: 100 },
       ] as readonly ColumnSpec[],
       lazyLoadCounts: { start: 0, success: 0, error: 0 },
-      // Phase 45 (2026-05-29 — vue2 port): server-side row model mode.
+      // (2026-05-29 — vue2 port): server-side row model mode.
       rowModelType: 'serverSide' as 'clientSide' | 'serverSide',
-      // Phase 45.1 (2026-05-30 — vue2 port): paginationEnabled toggle.
+      // (2026-05-30 — vue2 port): paginationEnabled toggle.
       serverSidePaginationEnabled: false as boolean,
-      // Phase 46 (2026-05-30 — vue2 port): Tier 3 finale demo data.
+      // (2026-05-30 — vue2 port): Tier 3 finale demo data.
       tier3Counter: {} as Record<string, number>,
-      // Phase 80 (2026-05-30 — vue2 port): tool-panel container demo.
+      // (2026-05-30 — vue2 port): tool-panel container demo.
       toolPanelLastWidth: 280 as number,
-      // Phase 83 (2026-05-30 — vue2 port): context-menu last-action mirror.
+      // (2026-05-30 — vue2 port): context-menu last-action mirror.
       phase83LastContextAction: '—' as string,
       tier3Rows: [
         {
@@ -555,8 +555,7 @@ export default defineComponent({
           data: {
             title: '新增数据导出',
             assignee: 'Carol',
-            notes:
-              '需要支持 CSV + xlsx 双格式;遵守现有 Phase 38/39 export 流程;对接 Phase 33 loading overlay。',
+            notes: '需要支持 CSV + xlsx 双格式;遵守现有 export 流程;对接 loading overlay。',
             protected: false,
           },
         },
@@ -779,7 +778,7 @@ export default defineComponent({
     onFilterChange(payload: FilterChangePayload): void {
       this.currentFilterLabel = filterLabel(payload.filterSpec);
     },
-    // Phase 41 (2026-05-29 — vue2 port): track the current quick-find
+    // (2026-05-29 — vue2 port): track the current quick-find
     // needle + read the match count off the imperative handle once the
     // pass has settled.
     onQuickFindTextChange(payload: { quickFindText: string }): void {
@@ -799,7 +798,7 @@ export default defineComponent({
       };
       self.$refs.table?.setQuickFindText(target.value);
     },
-    // Phase 42 (vue2 port): advanced-filter DSL input handlers.
+    // (vue2 port): advanced-filter DSL input handlers.
     onAdvancedFilterInput(ev: Event): void {
       const target = ev.target as HTMLInputElement;
       this.advancedFilterText = target.value;
@@ -857,7 +856,7 @@ export default defineComponent({
     onPageChange(payload: PageChangePayload): void {
       this.currentPageLabel = pageLabel(payload.page, payload.pageSize, this.rows.length);
     },
-    // Phase 46 (2026-05-25): mirror the committed cell value back into
+    // mirror the committed cell value back into
     // `this.rows` (chronix-table doesn't mutate the rows prop on commit;
     // consumers own persistence). Re-assigns `this.rows` to a fresh
     // array so the table picks up the identity change. Also updates the
@@ -873,7 +872,7 @@ export default defineComponent({
       });
       this.currentEditLabel = `最近编辑：${payload.row.id} / ${payload.column.id}：「${String(payload.oldValue)}」→「${String(payload.newValue)}」`;
     },
-    // Phase 47 (2026-05-25): mirror the committed column width back
+    // mirror the committed column width back
     // into `this.columns` per Decision A.1 (emit-only persistence --
     // chronix-table does NOT mutate the columns prop). Per Decision
     // B.1 "拖谁谁变" -- resizing a flex column converts it to
@@ -890,10 +889,10 @@ export default defineComponent({
       });
       this.currentResizeLabel = `最近列宽：「${payload.column.headerName ?? payload.column.id}」 ${payload.oldWidth}px → ${payload.newWidth}px`;
     },
-    // Phase 55 (2026-05-26): mirror the committed column order back into
+    // mirror the committed column order back into
     // `this.columns` via `computeColumnReorder` pure helper (Decision
     // A.1 — emit-only persistence; chronix-table doesn't mutate the
-    // columns prop). Mirrors vue3 Phase 14 demo handler.
+    // columns prop). Mirrors vue3 demo handler.
     onColumnOrderChange(payload: ColumnOrderChangePayload): void {
       this.columns = computeColumnReorder(
         this.columns,
@@ -906,7 +905,7 @@ export default defineComponent({
       const positionLabel = payload.position === 'before' ? '前' : '后';
       this.currentReorderLabel = `最近列序：「${movedLabel}」→「${targetLabel}」之${positionLabel}`;
     },
-    // Phase 44 (2026-05-29 — vue2 port): row drag — emit-only persistence.
+    // (2026-05-29 — vue2 port): row drag — emit-only persistence.
     onRowOrderChange(payload: RowOrderChangePayload): void {
       this.rows = computeRowReorder(
         this.rows,
@@ -915,7 +914,7 @@ export default defineComponent({
         payload.position,
       );
     },
-    // Phase 75 (2026-05-27 — vue2 port of vue3 Phase 25): consume the
+    // (2026-05-27 — vue2 port of vue3): consume the
     // column-visibility-change emit + rebuild columns array with the
     // new `hide` value per Decision A.1 (emit-only persistence).
     onColumnVisibilityChange(payload: ColumnVisibilityChangePayload): void {
@@ -925,8 +924,8 @@ export default defineComponent({
       const label = payload.column.headerName ?? payload.column.id;
       this.currentVisibilityLabel = `最近列显隐：「${label}」→ ${payload.hidden ? '隐藏' : '显示'}`;
     },
-    // Phase 57 (2026-05-26): wire the imperative autosize TableHandle
-    // methods to demo buttons. Phase 57 dbl-click resizer triggers
+    // wire the imperative autosize TableHandle
+    // methods to demo buttons. dbl-click resizer triggers
     // autosize natively from the SFC; these buttons cover the
     // programmatic API + the autosize-all batch.
     onAutosizeAll(): void {
@@ -935,7 +934,7 @@ export default defineComponent({
     onAutosizeQty(): void {
       (this.$refs['table'] as unknown as TableHandle | undefined)?.autosizeColumn('qty');
     },
-    // Phase 59 (2026-05-26 — vue2 port of vue3 Phase 16): cell-range
+    // (2026-05-26 — vue2 port of vue3): cell-range
     // emit handlers mirror envelope into a pill, plus 2 imperative
     // buttons that exercise the setCellRange / clearCellRange handle
     // methods.
@@ -962,7 +961,7 @@ export default defineComponent({
     onClearCellRange(): void {
       (this.$refs['table'] as unknown as TableHandle | undefined)?.clearCellRange();
     },
-    // Phase 63 (2026-05-27 — vue2 port of vue3 Phase 19): show the
+    // (2026-05-27 — vue2 port of vue3): show the
     // last-copied TSV in a pill so the user can confirm the same value
     // landed in the clipboard. Visualizes `\t` as `→` and `\n` as `⏎`
     // so the pill doesn't squish into single-line illegibility.
@@ -974,7 +973,7 @@ export default defineComponent({
     async onCopyCellRange(): Promise<void> {
       await (this.$refs['table'] as unknown as TableHandle | undefined)?.copyCellRangeToClipboard();
     },
-    // Phase 65 (2026-05-27 — vue2 port of vue3 Phase 20): clipboard paste
+    // (2026-05-27 — vue2 port of vue3): clipboard paste
     // demo handlers. Mirrors mutations into rows via Map lookup.
     onCellRangePaste(payload: CellRangePastePayload): void {
       if (payload.mutations.length === 0) {
@@ -1009,9 +1008,9 @@ export default defineComponent({
         this.$refs['table'] as unknown as TableHandle | undefined
       )?.pasteCellRangeFromClipboard();
     },
-    // Phase 67 (2026-05-27 — vue2 port of vue3 Phase 21): drag-fill
+    // (2026-05-27 — vue2 port of vue3): drag-fill
     // demo handlers. Mirrors mutations into rows via Map lookup (same
-    // shape as Phase 65 paste handler).
+    // shape as paste handler).
     onCellRangeFill(payload: CellRangeFillPayload): void {
       if (payload.mutations.length === 0) {
         this.currentFillSummary = '最近 fill mutations: 0 mutations (fill 无变化 / 全 no-op)';
@@ -1048,12 +1047,12 @@ export default defineComponent({
       });
       handle.fillCellRange({ rowId: 'r10', colId: 'qty' });
     },
-    // Phase 69 (2026-05-27 — vue2 port of vue3 Phase 22): undo/redo
+    // (2026-05-27 — vue2 port of vue3): undo/redo
     // demo handlers. `onHistoryChange` mirrors the SFC's internal
     // state into a reactive field for button-disabled bindings;
     // `onHistoryReplay` applies the (already-reversed for undo /
     // original for redo) mutations to `rows` via Map-keyed batch-
-    // apply — same shape as Phase 65 paste + Phase 67 fill handlers.
+    // apply — same shape as paste + fill handlers.
     onHistoryChange(payload: HistoryChangePayload): void {
       this.currentUndoHistoryState = payload.history;
     },
@@ -1094,7 +1093,7 @@ export default defineComponent({
       const handle = this.$refs['table'] as unknown as TableHandle | undefined;
       handle?.exportToCsv('chronix-table-demo.csv', { rowSource: 'filtered' });
     },
-    // Phase 39.1 (2026-05-29 — vue2 port): multi-sheet xlsx demo.
+    // (2026-05-29 — vue2 port): multi-sheet xlsx demo.
     async onExportXlsxMultiSheet(): Promise<void> {
       if (this.xlsxBusy) return;
       this.xlsxBusy = true;
@@ -1102,7 +1101,7 @@ export default defineComponent({
       try {
         const handle = this.$refs['table'] as unknown as TableHandle | undefined;
         await handle?.exportToXlsxMultiSheet('chronix-table-multi-sheet.xlsx', [
-          // Phase 39.3 (2026-05-29 — vue2 port): demo per-sheet freeze-pane.
+          // (2026-05-29 — vue2 port): demo per-sheet freeze-pane.
           {
             sheetName: 'Filtered',
             rowSource: 'filtered',
@@ -1121,7 +1120,7 @@ export default defineComponent({
         this.xlsxBusy = false;
       }
     },
-    // Phase 39 (2026-05-29 — vue2 port): xlsx export demo handler.
+    // (2026-05-29 — vue2 port): xlsx export demo handler.
     async onExportXlsx(): Promise<void> {
       if (this.xlsxBusy) return;
       this.xlsxBusy = true;
@@ -1138,7 +1137,7 @@ export default defineComponent({
         this.xlsxBusy = false;
       }
     },
-    // Phase 38 (2026-05-29 — vue2 port of vue3 Phase 38): saved-views
+    // (2026-05-29 — vue2 port of vue3): saved-views
     // demo. localStorage round-trip + onColumnsChange atomic rebuild.
     onSaveView(): void {
       const handle = this.$refs['table'] as unknown as TableHandle | undefined;
@@ -1163,24 +1162,24 @@ export default defineComponent({
       }
     },
     onColumnsChange(payload: { columns: readonly ColumnSpec[]; reason: string }): void {
-      // Phase 38: atomic prop rebuild on applyTableView.
+      // atomic prop rebuild on applyTableView.
       this.columns = payload.columns;
     },
     onJumpFarActiveCell(): void {
-      // Phase 77: programmatic setActiveCell to a far cell — exercises
+      // programmatic setActiveCell to a far cell — exercises
       // the auto-scroll path that the keyboard nav also hits. r19 is
       // the last row on page 1 (page size = 20) so it's definitely
       // below the visible viewport; `qty` is a center (non-pinned) col.
       (this.$refs['table'] as unknown as TableHandle | undefined)?.setActiveCell('r19', 'qty');
     },
-    // Phase 71 (2026-05-27 — vue2 port of vue3 Phase 23): demo pill
+    // (2026-05-27 — vue2 port of vue3): demo pill
     // for `header-group-click`. Empty placeholder cells never fire
     // (they have no `data-group-name` attr) so this only updates on
     // labelled group cells.
     onHeaderGroupClick(payload: HeaderGroupClickPayload): void {
       this.currentHeaderGroupClick = `${payload.groupName} (${payload.colIds.length} cols: ${payload.colIds.join(', ')})`;
     },
-    // Phase 30.2 (vue2 port, 2026-05-28): tree-data handlers. Mirror
+    // (vue2 port, 2026-05-28): tree-data handlers. Mirror
     // the vue3 demo's expanded-change emit + 全展开 / 全折叠 buttons.
     onTreeExpandedChange(payload: { readonly next: readonly string[] }): void {
       this.treeExpandedCount = payload.next.length;
@@ -1203,7 +1202,7 @@ export default defineComponent({
     onTier2ToggleEmpty(): void {
       this.tier2EmptyMode = !this.tier2EmptyMode;
     },
-    // Phase 34 demo (2026-05-28 — vue2 port): lazy-load tree children.
+    // demo (2026-05-28 — vue2 port): lazy-load tree children.
     lazyChildrenLoader(args: {
       readonly parent: RowSpec;
       readonly signal: AbortSignal;
@@ -1290,7 +1289,7 @@ export default defineComponent({
   },
 });
 
-// Phase 45 (2026-05-29 — vue2 port): mock async data source for the
+// (2026-05-29 — vue2 port): mock async data source for the
 // server-side demo. 250 rows, 500ms latency per block, AbortSignal-
 // honoring cancellation.
 function buildServerSideRowVue2(i: number): RowSpec {
@@ -1339,51 +1338,51 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
     <header class="demo-page__header">
       <h1>@chronixjs/table-vue2</h1>
       <p>
-        Phase 41 → 46.1 demo — verbatim port of vue3 Phase 2 → 12.1. 50 行 × 6 列 + 左侧 checkbox 列
-        + 底部分页 footer + 备注 (文本) / 单价 (数字) 列双击编辑。 排序：点击表头 (循环 null → 升序
-        → 降序 → null)，Shift+点击 追加副排序。 过滤：在表头下方输入框中输入。 字符串列 (名称 / 状态
-        / 备注) 走 case-insensitive contains 匹配；数字列 (数量 / 单价) 走 prefix 语法 (`5` / `>10`
-        / `5..50` / `!=3`)；多列 AND 组合； filter 先于 sort。 行选择：点击行 单选 /
+        → 46.1 demo — verbatim port of vue3 → 12.1. 50 行 × 6 列 + 左侧 checkbox 列 + 底部分页
+        footer + 备注 (文本) / 单价 (数字) 列双击编辑。 排序：点击表头 (循环 null → 升序 → 降序 →
+        null)，Shift+点击 追加副排序。 过滤：在表头下方输入框中输入。 字符串列 (名称 / 状态 / 备注)
+        走 case-insensitive contains 匹配；数字列 (数量 / 单价) 走 prefix 语法 (`5` / `>10` /
+        `5..50` / `!=3`)；多列 AND 组合； filter 先于 sort。 行选择：点击行 单选 /
         替换；Ctrl/Cmd+点击 多选切换；Shift+点击 范围选择； 左侧 checkbox 列 + 表头三态 select-all。
         分页：底部 « » + **页码 bar (Notion-style，超过 7 页时 ellipsis 折叠 — 例如 `[1, 2, 3, …,
         20]`)** + 共 X 行 + 每页 select；filter / sort 变化自动 reset 回第 1 页 (Decision C.1)。
         编辑：双击 备注 (文本) / 单价 (数字) 列 cell → 输入 → Enter / Blur 提交，Esc 取消；
-        cell-value-change emit 触发 demo 把新值回写到 rows。 **Phase 46.1：单价 列走 &lt;input
-        type="number"&gt; + coerceEditDraftValue — 空输入提交为 null，非数字输入 (如 `abc`) reject
-        提交并保持编辑态。** **Phase 46.2：Tab / Shift+Tab 提交后 auto-advance 到下一个 / 上一个
-        editable cell (行内列耗尽 → 跨行；表格边界 → 关闭 editor)。** **Phase 47：列宽拖拽 —
-        鼠标移到 表头列右边缘 4px 出现 col-resize 光标，按下拖动实时调整列宽 (clampResizeWidth 走
-        min/max 边界)，松开提交 column-width-change emit 由 demo 回写 columns；status 列设了
-        resizable:false 故无 resizer。** **Phase 55：表头单元格拖拽改列序 — 阈值 5px Chebyshev
-        触发；落点 cell 左/右半边决定 before/after；松开提交 column-order-change emit + demo 走
-        computeColumnReorder 回写 columns；status 列设 reorderable:false 不响应拖拽 (header click
-        仍触发排序)。** **Phase 57：双击表头列右边缘 4px autosize 列宽 (Canvas measureText +
-        computeAutosizeWidth clamp)；或点击下方按钮触发 imperative autosizeColumn(colId) /
+        cell-value-change emit 触发 demo 把新值回写到 rows。 **单价 列走 &lt;input type="number"&gt;
+        + coerceEditDraftValue — 空输入提交为 null，非数字输入 (如 `abc`) reject
+        提交并保持编辑态。** **Tab / Shift+Tab 提交后 auto-advance 到下一个 / 上一个 editable cell
+        (行内列耗尽 → 跨行；表格边界 → 关闭 editor)。** **列宽拖拽 — 鼠标移到 表头列右边缘 4px 出现
+        col-resize 光标，按下拖动实时调整列宽 (clampResizeWidth 走 min/max 边界)，松开提交
+        column-width-change emit 由 demo 回写 columns；status 列设了 resizable:false 故无
+        resizer。** **表头单元格拖拽改列序 — 阈值 5px Chebyshev 触发；落点 cell 左/右半边决定
+        before/after；松开提交 column-order-change emit + demo 走 computeColumnReorder 回写
+        columns；status 列设 reorderable:false 不响应拖拽 (header click 仍触发排序)。**
+        **双击表头列右边缘 4px autosize 列宽 (Canvas measureText + computeAutosizeWidth
+        clamp)；或点击下方按钮触发 imperative autosizeColumn(colId) /
         autosizeAllColumns()。column-width-change emit 与拖拽 resize 同一渠道；status 列
-        resizable:false 隐式禁用；备注 列 autosizeable:false 显式 opt-out。** **Phase 59：cell 上
-        pointerdown + drag 选区 → 矩形 cell-range；shift+click 在已有 range 上延伸 focus；按钮可
+        resizable:false 隐式禁用；备注 列 autosizeable:false 显式 opt-out。** **cell 上 pointerdown
+        + drag 选区 → 矩形 cell-range；shift+click 在已有 range 上延伸 focus；按钮可
         程序化设定/清空。cellRangeSelection: 'enabled' 开启 — 默认 'none' 保留原有 cell-click /
         row-select / dblclick-edit 行为不变。矩形内的 cell 带 cx-table-cell--in-cell-range modifier
-        (淡蓝高亮)。** **Phase 61 (vue2 port of vue3 Phase 17)：`pinned: 'left'` (ID + 名称) /
-        `'right'` (备注) 把列粘在 body 的左/右边缘 — 缩窄窗口或滚动表格时保持可见。`pinnedColsPass`
-        在 columnLayoutPass 之后计算累积偏移；per-cell `position: sticky` 在已有 flat 行布局上加位，
-        无 wrapper / 无列重排。单元格交互 (cell-click / cell-range / dblclick-edit / 行选高亮) 在
+        (淡蓝高亮)。** **(vue2 port of vue3)：`pinned: 'left'` (ID + 名称) / `'right'` (备注)
+        把列粘在 body 的左/右边缘 — 缩窄窗口或滚动表格时保持可见。`pinnedColsPass` 在
+        columnLayoutPass 之后计算累积偏移；per-cell `position: sticky` 在已有 flat 行布局上加位， 无
+        wrapper / 无列重排。单元格交互 (cell-click / cell-range / dblclick-edit / 行选高亮) 在
         pinned + center 两 zone 行为完全一致 — 委托事件无视 CSS 定位。boundary cell 自带
         `--pinned-left-last` / `--pinned-right-first` modifier 供 CSS 阴影钩取；selection rail 也
-        sticky 在同一侧，与 pinned 列并排。** **Phase 63 (vue2 port of vue3 Phase 19)：cell-range
-        激活时按 Ctrl+C (Mac: Cmd+C) → 复制为 TSV → 写入 `navigator.clipboard` → 粘到 Excel / Sheets
-        / Notion / VS Code 保留单元格结构。`valueFormatter` 在复制时生效 (e.g. `数量` 列以 `N 件`
-        形式输出)。新增 `cell-range-copy` emit + `copyCellRangeToClipboard()` TableHandle
-        方法，按钮可程序化触发同一路径。** **Phase 65 (vue2 port of vue3 Phase 20)：cell-range
-        激活时按 Ctrl+V (Mac: Cmd+V) → 从 `navigator.clipboard` 读 TSV → 解析为 2D 网格 → 映射到
-        选区 (1×1 → fill-all；N×M → clamp-overflow) → 按 `column.type` coerce (数字列空 → null /
-        非法 → silently skip) → `cell-range-paste` emit 一次 carry mutations 数组；consumer 用 Map
-        批量回写 `rows`。** **Phase 67 (vue2 port of vue3 Phase 21)：cell-range 激活时其右下角出现
-        8×8 蓝色 drag-fill 小方块。drag 该 handle 向下 / 向右 → 沿主导轴 axis-lock 扩展选区 →
-        pointerup 时 constant-fill (modulo copy) → `cell-range-fill` emit carry mutations 数组 (与
-        Phase 65 paste 同形状)，consumer 同样 Map 批量回写。`fillCellRange(targetCell)` handle 方法
-        + 按钮可程序化触发同一路径。** **vue2 adapter 至此已完成 vue3 全部 phase (含 Phase 15 / 16 /
-        17 / 19 / 20 / 21) 的 verbatim port @ v0.1.0-alpha。**
+        sticky 在同一侧，与 pinned 列并排。** **(vue2 port of vue3)：cell-range 激活时按 Ctrl+C
+        (Mac: Cmd+C) → 复制为 TSV → 写入 `navigator.clipboard` → 粘到 Excel / Sheets / Notion / VS
+        Code 保留单元格结构。`valueFormatter` 在复制时生效 (e.g. `数量` 列以 `N 件` 形式输出)。新增
+        `cell-range-copy` emit + `copyCellRangeToClipboard()` TableHandle
+        方法，按钮可程序化触发同一路径。** **(vue2 port of vue3)：cell-range 激活时按 Ctrl+V (Mac:
+        Cmd+V) → 从 `navigator.clipboard` 读 TSV → 解析为 2D 网格 → 映射到 选区 (1×1 → fill-all；N×M
+        → clamp-overflow) → 按 `column.type` coerce (数字列空 → null / 非法 → silently skip) →
+        `cell-range-paste` emit 一次 carry mutations 数组；consumer 用 Map 批量回写 `rows`。**
+        **(vue2 port of vue3)：cell-range 激活时其右下角出现 8×8 蓝色 drag-fill 小方块。drag 该
+        handle 向下 / 向右 → 沿主导轴 axis-lock 扩展选区 → pointerup 时 constant-fill (modulo copy)
+        → `cell-range-fill` emit carry mutations 数组 (与 paste 同形状)，consumer 同样 Map
+        批量回写。`fillCellRange(targetCell)` handle 方法 + 按钮可程序化触发同一路径。** **vue2
+        adapter 至此已完成 vue3 全部 phase (含 / 17 / 19 / 20 / 21) 的 verbatim port @
+        v0.1.0-alpha。**
       </p>
       <p v-if="currentSortLabel" class="demo-page__sort-pill">{{ currentSortLabel }}</p>
       <p v-if="currentFilterLabel" class="demo-page__filter-pill">{{ currentFilterLabel }}</p>
@@ -1428,7 +1427,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           />
         </label>
         <label class="demo-page__inline-toggle demo-page__advanced-filter">
-          高级 filter (Phase 42 DSL):
+          高级 filter (DSL):
           <input
             type="text"
             data-testid="advanced-filter-input"
@@ -1466,7 +1465,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
         <button type="button" @click="onClearHistoryClick">clearHistory</button>
         <label class="demo-page__inline-toggle">
           <input v-model="enableAutoScroll" type="checkbox" />
-          enableKeyboardAutoScroll (Phase 77)
+          enableKeyboardAutoScroll
         </label>
         <button type="button" @click="onJumpFarActiveCell">setActiveCell r19/qty</button>
         <button type="button" data-testid="csv-export-btn" @click="onExportCsv">Export CSV</button>
@@ -1537,7 +1536,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
     </section>
     <section class="demo-page__table demo-page__tree-table">
       <header class="demo-page__tree-header">
-        <h2>Phase 30.2 — Tree data (vue2 port)</h2>
+        <h2>Tree data (vue2 port)</h2>
         <p>
           File-tree demo: ~85 行 nested 4 levels (project → module → folder → file). 单击 chevron
           切换展开 / 折叠；activeCell 在 <code>名称</code> 列时 <strong>Enter</strong> /
@@ -1565,7 +1564,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
     </section>
     <section class="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
       <header>
-        <h2>Phase 31 + 32 + 33 — Pinned rows + tooltip + overlay</h2>
+        <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
         <p>
           <strong>Pinned rows</strong>：顶端 ⭐ + 底端 合计 (RowSpec.pinned)；不参与 sort / filter /
           page / virtualization。 <strong>Tooltip</strong>：悬停 备注 列 250ms 出 popover。
@@ -1589,7 +1588,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
     </section>
     <section class="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
       <header>
-        <h2>Phase 34 — Lazy-load tree children</h2>
+        <h2>Lazy-load tree children</h2>
         <p>
           <strong>Lazy load</strong>：<code>hasChildren: true</code> → 首次展开调用
           <code>childrenLoader</code>；500ms 模拟延迟；<code>lazy-fail-1</code> 失败 + 重试。
@@ -1620,14 +1619,14 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
       data-testid="server-side-section"
     >
       <header>
-        <h2>Phase 45 — Server-side row model (vue2)</h2>
+        <h2>Server-side row model (vue2)</h2>
         <p>
           <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per request.
           <strong>Skeleton rows</strong>: unloaded indices render shimmer bars.
-          <strong>Phase 45.1 pagination</strong>: toggle ON → <code>pageSize</code> becomes block
-          size, body renders only current page slice. <strong>Phase 45.2 invalidate</strong>: block
-          0 only — preserves <code>totalRowCount</code> + other blocks. <strong>Toggle</strong>:
-          switch to <code>clientSide</code> mode to compare.
+          <strong>pagination</strong>: toggle ON → <code>pageSize</code> becomes block size, body
+          renders only current page slice. <strong>invalidate</strong>: block 0 only — preserves
+          <code>totalRowCount</code> + other blocks. <strong>Toggle</strong>: switch to
+          <code>clientSide</code> mode to compare.
         </p>
         <div class="demo-page__autosize-actions">
           <button type="button" data-testid="server-side-toggle" @click="onToggleRowModelType">
@@ -1641,14 +1640,14 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
             data-testid="server-side-pagination-toggle"
             @click="onToggleServerSidePagination"
           >
-            Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }} (Phase 45.1)
+            Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }}
           </button>
           <button
             type="button"
             data-testid="server-side-invalidate-block-0"
             @click="onInvalidateServerSideBlock0"
           >
-            invalidateServerSideBlocks([0]) (Phase 45.2)
+            invalidateServerSideBlocks([0])
           </button>
         </div>
       </header>
@@ -1669,7 +1668,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
       data-testid="tier3-finale-section"
     >
       <header>
-        <h2>Phase 46 — Tier 3 finale (vue2 — row number + actions + auto-height)</h2>
+        <h2>Tier 3 finale (vue2 — row number + actions + auto-height)</h2>
         <p>
           <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code>.
           <strong>Actions</strong>: <code>ColumnSpec.actions</code>; <code>task-2</code>'s 删除 is
@@ -1694,7 +1693,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
     </section>
     <section class="demo-page__table demo-page__tool-panel-table" data-testid="tool-panel-section">
       <header>
-        <h2>Phase 80 — Tool-panel container (vue2 — chronix-NEW)</h2>
+        <h2>Tool-panel container (vue2 — chronix-NEW)</h2>
         <p>
           <strong>chronix-NEW container</strong>: composable descriptor-array API. 2 panels +
           drag-to-resize + click-to-collapse.

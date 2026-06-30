@@ -6,7 +6,7 @@ import {
   computeDragAutoScrollVelocity,
 } from './compute-drag-auto-scroll-velocity.js';
 
-describe('computeDragAutoScrollVelocity (Phase 44.2)', () => {
+describe('computeDragAutoScrollVelocity ', () => {
   // Body occupies viewport rows 100..500 (height 400). Trigger zone 30px;
   // top zone = [100, 130), bottom zone = (470, 500].
   const baseInput = {

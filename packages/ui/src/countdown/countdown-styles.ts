@@ -1,5 +1,5 @@
 /**
- * Countdown stylesheet — Phase 18 (2026-06-02).
+ * Countdown stylesheet — .
  *
  * Same shape as Statistic — `(label, content with prefix/value/suffix)`
  * — but its own selector tree so consumers can theme the ticking

@@ -25,7 +25,7 @@ export interface ChronixDynamicTagsProps extends Omit<
 }
 
 /**
- * `<ChronixDynamicTags>` — React 18 port of the Phase 35 DynamicTags.
+ * `<ChronixDynamicTags>` — React 18 port of the DynamicTags.
  * Renders an inline tag editor with add/remove capabilities.
  */
 export function ChronixDynamicTags(props: ChronixDynamicTagsProps): JSX.Element {

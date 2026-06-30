@@ -8,7 +8,7 @@ import { computed, defineComponent, h, type VNode } from 'vue';
 
 /**
  * `<ChronixScrollbar>` — Vue 3 custom scrollbar container.
- * Phase 35 (2026-06-05).
+ * .
  *
  * Props:
  *

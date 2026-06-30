@@ -1,5 +1,5 @@
 /**
- * Thing stylesheet — Phase 23 (2026-06-03).
+ * Thing stylesheet — .
  *
  * Root flex-row layout: optional `__avatar` (flex-shrink: 0) +
  * `__main` (flex-grow: 1) column. The main column stacks:

@@ -3,7 +3,7 @@ import type { RuleItem } from 'async-validator';
 /**
  * A single validation rule applied to a form field.
  *
- * Phase 6 (2026-06-02) re-exports `async-validator`'s `RuleItem` as
+ * re-exports `async-validator`'s `RuleItem` as
  * chronix-ui's canonical rule type. chronix-ui ships no validation
  * algorithms of its own — `async-validator` is the industry standard
  * and is kept as a peer dependency (see `package.json:peerDependencies`).

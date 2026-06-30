@@ -11,7 +11,7 @@ import {
 import { computed, defineComponent, h, type PropType } from 'vue';
 
 /**
- * `<ChronixSpace>` — Vue 2.7 port of the Phase 17 Space.
+ * `<ChronixSpace>` — Vue 2.7 port of the Space.
  */
 export const ChronixSpace = defineComponent({
   name: 'ChronixSpace',

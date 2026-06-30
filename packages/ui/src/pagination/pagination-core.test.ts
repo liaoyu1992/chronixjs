@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 
 /**
- * Pagination core tests — Phase 33 (2026-06-05).
+ * Pagination core tests — .
  */
 
 import { describe, expect, it } from 'vitest';

@@ -1,5 +1,5 @@
 /**
- * Breadcrumb stylesheet — Phase 19 (2026-06-02).
+ * Breadcrumb stylesheet — .
  *
  * Layout: inline-flex row of items + separators. Items default to
  * muted color + non-decorative text; clickable items get a stronger

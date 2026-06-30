@@ -28,7 +28,7 @@ export interface EmptyAreaClickPayload {
   readonly rowId: string | null;
   readonly jsEvent: PointerEvent;
   /**
-   * Phase 54 — calendar time at the click position in chart content-
+   * calendar time at the click position in chart content-
    * coord space. Computed by the adapter via `xToTime(x, axis)`. Mirrors
    * the original `dateClick(DatePointApi)` `.date` field.
    * Approximate during DST transitions (matches the original spec's mapping).

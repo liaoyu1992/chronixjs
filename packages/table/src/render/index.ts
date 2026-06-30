@@ -1,7 +1,7 @@
 /**
  * Render-helpers barrel.
  *
- * Phase 5 (2026-05-23): cell value resolution + cell class names.
+ * cell value resolution + cell class names.
  * Subsequent phases (truncateCellText, snapColumnDividerX, etc.)
  * land in their owning feature phases.
  */

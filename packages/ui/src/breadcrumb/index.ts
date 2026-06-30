@@ -1,5 +1,5 @@
 /**
- * chronix-ui breadcrumb module — Phase 19 (2026-06-02).
+ * chronix-ui breadcrumb module — .
  */
 
 export type { BreadcrumbItem, BreadcrumbProps } from './breadcrumb-spec.js';

@@ -13,14 +13,14 @@ import {
 import { useMemo } from 'react';
 
 const DEFAULT_BAR_HEIGHT = 30;
-// Phase 43: 4 px matches the new core defaults (firstBarTopPadding 4
+// 4 px matches the new core defaults (firstBarTopPadding 4
 // + barVerticalPadding 4) so single-bar rows render with symmetric
 // 4+4 padding around the bar — matches the original spec's
 // effective 4+4 default.
 const DEFAULT_BAR_VERTICAL_PADDING = 4;
 const DEFAULT_ROW_SPACING = 1;
 const DEFAULT_ROW_HEIGHT = 38;
-// Phase 43: 5 px matches the original effective
+// 5 px matches the original effective
 // `eventSpacing` default.
 const DEFAULT_BAR_STACK_SPACING = 5;
 
@@ -51,7 +51,7 @@ export interface UseGanttLayoutInput {
   /** Default row height for rows whose computed height-hint is `undefined`. Default 38. */
   readonly defaultRowHeight?: number;
   /**
-   * Phase 30: vertical spacing in pixels between stacked bars on the same
+   * vertical spacing in pixels between stacked bars on the same
    * row (when same-row bars have overlapping time and get distributed
    * across stack levels). Must match the height-pass's spacing for
    * placement and height calculation to agree. Default 5 (matches the
@@ -79,7 +79,7 @@ export interface UseGanttLayoutOutput {
  * (axis planning → stack-height → swimlane → bar placement). The hook
  * owns no DOM and no pointer state — it outputs the same shapes the
  * core's pass methods would, ready for direct JSX consumption.
- * Interactions wire separately (Phase 32.2's pointer hook).
+ * Interactions wire separately ('s pointer hook).
  *
  * Pipeline call order must stay intact: `axis` → `stackHeightOutput`
  * (`.compute`) → `rowsWithHints` (clones each row with `heightByRowId`
@@ -102,7 +102,7 @@ export function useGanttLayout(input: UseGanttLayoutInput): UseGanttLayoutOutput
 
   const axis = useMemo(() => defaultAxisRangePlanner.plan(axisInput), [axisInput]);
 
-  // Phase 30: split the stack-height pass output into a single useMemo
+  // split the stack-height pass output into a single useMemo
   // so both heightByRowId AND levelByBarId stay reactive through one
   // computation. Pre-Phase-30 only heightByRowId was extracted; levelByBarId
   // was the discarded piece causing the same-row-overlapping-bars-at-same-Y
@@ -152,7 +152,7 @@ export function useGanttLayout(input: UseGanttLayoutInput): UseGanttLayoutOutput
         strips,
         barHeight,
         barVerticalPadding,
-        // Phase 30: thread per-bar level from the stack-height pass into
+        // thread per-bar level from the stack-height pass into
         // the placement pass so same-row overlapping bars get distributed
         // across Y. Pass barStackSpacing alongside so placement's per-level
         // offset matches the height-pass's reserved row height.

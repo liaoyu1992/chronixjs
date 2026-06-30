@@ -1,8 +1,8 @@
 /**
- * List stylesheet — Phase 21 (2026-06-03).
+ * List stylesheet — .
  *
  * Vertical sequence of `(prefix + main + suffix)` rows. The root
- * element is `<ul>` — the chronix-NEW Phase 21 friction note
+ * element is `<ul>` — the chronix-NEW friction note
  * applies: `<ul>` carries a user-agent CSS default
  * (`padding-inline-start: 40px; list-style-type: disc`) that
  * MUST be reset explicitly here, otherwise the rendered list
@@ -24,7 +24,7 @@
  */
 export const CHRONIX_LIST_CSS = `
 .cx-ui-list {
-  /* <ul> user-agent reset — Phase 21 friction note. */
+  /* <ul> user-agent reset — friction note. */
   list-style: none;
   margin: 0;
   padding: 0;

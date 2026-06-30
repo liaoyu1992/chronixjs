@@ -1,5 +1,5 @@
 /**
- * Highlight IR — Phase 24 (2026-06-03). Tier A text with substring
+ * Highlight IR — . Tier A text with substring
  * matching wrapped in <mark>. No regex (deferred to v0.2).
  */
 

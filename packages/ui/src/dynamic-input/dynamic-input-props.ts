@@ -1,5 +1,5 @@
 /**
- * DynamicInput component IR — Phase 35 (2026-06-05).
+ * DynamicInput component IR — .
  *
  * Props spec for a dynamic list of values where the user can add or
  * remove items. The adapter renders one input row per value entry plus

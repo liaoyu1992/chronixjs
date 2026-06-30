@@ -1,7 +1,7 @@
 /**
- * Badge IR — Phase 14 (2026-06-02). Tier A "wrap-a-child" component.
+ * Badge IR — . Tier A "wrap-a-child" component.
  *
- * Mirrors the Phase 11/13 pattern but introduces a new shape: Badge
+ * Mirrors the pattern but introduces a new shape: Badge
  * wraps a child element (slot / children) and renders an absolutely-
  * positioned `__sup` indicator overlay containing the badge content.
  * Standalone mode (no child) is also supported — the indicator

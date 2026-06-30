@@ -10,7 +10,7 @@ import { Teleport, computed, defineComponent, h, toRef, type PropType, type VNod
 import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
- * `<ChronixPopconfirm>` — Vue 3 confirm-before-action popup. Phase 26
+ * `<ChronixPopconfirm>` — Vue 3 confirm-before-action popup.
  * (2026-06-03). Click-driven by default (consumer wants explicit user
  * confirmation; hover would surface destructive prompts accidentally).
  *

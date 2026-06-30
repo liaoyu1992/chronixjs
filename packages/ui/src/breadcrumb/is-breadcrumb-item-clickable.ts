@@ -4,7 +4,7 @@ import type { BreadcrumbItem } from './breadcrumb-spec.js';
  * Pure predicate — `true` when the item should render as a clickable
  * element (anchor when `href` is set; `role="link"` span otherwise).
  *
- * Phase 19 (2026-06-02). Shared across 3 adapters so the
+ * . Shared across 3 adapters so the
  * `__item--clickable` modifier + click-handler attachment decision
  * is byte-identical across vue3 / vue2 / react. Consumers reading
  * this predicate get the chronix-NEW definition of "clickable" in

@@ -1,5 +1,5 @@
 /**
- * Popup z-index counter — Phase 26 (2026-06-03). Process-global
+ * Popup z-index counter — . Process-global
  * monotonic counter that mints stacking z-index values for opened
  * popups. Each call returns a new integer ≥ baseline, increasing.
  *

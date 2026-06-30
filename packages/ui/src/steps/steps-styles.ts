@@ -1,5 +1,5 @@
 /**
- * Steps stylesheet — Phase 20 (2026-06-03).
+ * Steps stylesheet — .
  *
  * Horizontal layout: row of `(indicator + content) + separator`
  * groups; separators flex to fill space between indicators.

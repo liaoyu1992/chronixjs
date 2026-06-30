@@ -3,7 +3,7 @@ import type { TimelineItem } from './timeline-spec.js';
 /**
  * Compute class set for a single Timeline item element.
  *
- * Phase 20 (2026-06-03).
+ * .
  *
  * Class structure:
  *

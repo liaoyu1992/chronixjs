@@ -1,5 +1,5 @@
 /**
- * Watermark IR — Phase 22 (2026-06-03). Tier A repeating
+ * Watermark IR — . Tier A repeating
  * overlay watermark for DRAFT / CONFIDENTIAL / user-ID
  * watermarking.
  *
@@ -13,7 +13,7 @@
  *
  * - **`WatermarkProps`** + **`defaultWatermarkProps`**.
  *
- * Per Phase 22 Decision B.1 the rendering primitive is SVG
+ * Per Decision B.1 the rendering primitive is SVG
  * data-URI; helper `encodeWatermarkSvgDataUrl(props)` is the
  * single source of truth for the data-URL content (testable in
  * isolation, framework-agnostic).

@@ -1,5 +1,5 @@
 /**
- * Phase 81 (2026-05-30 — vue2 port): pre-built columns tool panel
+ * (2026-05-30 — vue2 port): pre-built columns tool panel
  * SFC. Vue 2.7 verbatim mirror of the vue3 adapter using vnode-data
  * `attrs:` + `on:` deltas instead of vue3's flat prop bag.
  *

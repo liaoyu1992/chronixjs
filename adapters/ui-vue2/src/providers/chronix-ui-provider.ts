@@ -12,7 +12,7 @@ import { computed, defineComponent, h, inject, provide, type InjectionKey, type 
  * adapter. Components consume via `useUIContext()`; consumers wanting
  * raw access may inject this key directly.
  *
- * Phase 12 (2026-06-02) per Phase 0.3 Decision A.1. Mirrors
+ * per Decision A.1. Mirrors
  * `adapters/ui-vue3` byte-for-byte at the API level — Vue 2.7's
  * Composition API surface (`provide` / `inject` / `defineComponent`
  * / `Ref`) is identical to Vue 3's at the type signatures consumers
@@ -31,7 +31,7 @@ export const UI_CONTEXT_INJECTION_KEY: InjectionKey<Ref<ChronixUIContext>> =
  * `<div>` element via inline `style` so descendant component CSS can
  * read tokens via `var(--cx-ui-...)` fallback.
  *
- * Phase 12 (2026-06-02). Verbatim port of the Vue 3 provider; the only
+ * . Verbatim port of the Vue 3 provider; the only
  * runtime difference is Vue 2's `Vue.extend`-backed `defineComponent`
  * (transparent to consumers).
  */

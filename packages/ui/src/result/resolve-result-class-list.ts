@@ -3,7 +3,7 @@ import type { ResultProps } from './result-spec.js';
 /**
  * Compute class set for the Result root element.
  *
- * Phase 18 (2026-06-02).
+ * .
  *
  * `hasExtra` comes from the adapter — represents whether the default
  * slot / children resolved to any action-row content.

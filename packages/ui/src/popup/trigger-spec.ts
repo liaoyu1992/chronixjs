@@ -1,8 +1,8 @@
 /**
- * Popup trigger type — Phase 26 (2026-06-03). Shared across Popover /
+ * Popup trigger type — . Shared across Popover /
  * Tooltip / Popconfirm / PopSelect (this phase) and Modal / Drawer /
- * Dropdown / Menu (Phase 27) and Select family (Phase 31) and
- * DatePicker / TimePicker / Calendar (Phase 32).
+ * Dropdown / Menu and Select family and
+ * DatePicker / TimePicker / Calendar .
  *
  * Pure-data union: adapters wire DOM listeners corresponding to each
  * trigger type; the IR carries the discriminator only.

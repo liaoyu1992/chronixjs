@@ -1,15 +1,15 @@
 /**
- * Phase 82 (2026-05-30 — react port): pre-built filters tool
- * panel component the consumer drops into Phase 80's
+ * (2026-05-30 — react port): pre-built filters tool
+ * panel component the consumer drops in's
  * `ToolPanelDescriptor.renderer` slot.
  *
  * Pure UI wrapper over `TableHandle.setFilter` +
  * `TableHandle.clearFilter` + `TableHandle.setAdvancedFilter` +
  * `TableHandle.parseAndSetAdvancedFilter`.
  *
- * Phase 100.2 (2026-05-31 — react port): wires the cx-kit Phase 100
+ * (2026-05-31 — react port): wires the cx-kit
  * autocomplete helpers into the advanced-filter textarea as a column-
- * name typeahead popover. Verbatim mirror of vue3 Phase 100.2.
+ * name typeahead popover. Verbatim mirror of vue3 .
  */
 import {
   useCallback,
@@ -48,32 +48,32 @@ export interface ChronixFiltersToolPanelProps {
   readonly columns: readonly ColumnSpec[];
   readonly filterSpec: readonly FilterSpec[];
   /**
-   * Phase 100.2.2 (2026-06-01 — react port): row population for value
+   * (2026-06-01 — react port): row population for value
    * typeahead. Verbatim mirror of vue3.
    */
   readonly advancedFilterValueSourceRows?: readonly RowSpec[];
   /**
-   * Phase 100.2.2.3 (2026-06-01 — react port): consumer-supplied date
+   * (2026-06-01 — react port): consumer-supplied date
    * formatter for value typeahead. Verbatim mirror of vue3.
    */
   readonly formatTypeaheadDateValue?: (iso: string) => string;
   /**
-   * Phase 100.2.3.1 (2026-06-01 — react port): consumer operator
+   * (2026-06-01 — react port): consumer operator
    * override dictionary. Verbatim mirror of vue3.
    */
   readonly operatorsByCustomColumnType?: Readonly<Record<string, readonly string[]>>;
   /**
-   * Phase 100.2.3.2 (2026-06-01 — react port): consumer-supplied
+   * (2026-06-01 — react port): consumer-supplied
    * localized operator label dictionary. Verbatim mirror of vue3.
    */
   readonly operatorLabels?: Readonly<Record<string, string>>;
   /**
-   * Phase 100.2.5 (2026-06-01 — react port): per-slot-kind recent ring
+   * (2026-06-01 — react port): per-slot-kind recent ring
    * cap. Verbatim mirror of vue3.
    */
   readonly typeaheadRecentLimit?: number;
   /**
-   * Phase 100.2.2.1 (2026-06-01 — react port) + Phase 118
+   * (2026-06-01 — react port) +
    * (2026-06-02): consumer-supplied async value getter. Optional
    * 3rd arg `signal?: AbortSignal` for fetch-cancellation.
    */
@@ -83,13 +83,13 @@ export interface ChronixFiltersToolPanelProps {
     signal?: AbortSignal,
   ) => Promise<readonly ColumnUniqueValue[]>;
   /**
-   * Phase 112 (2026-06-01 — react port): persistence backend selector
+   * (2026-06-01 — react port): persistence backend selector
    * for typeahead recent rings. Verbatim mirror of vue3.
    */
   readonly typeaheadRecentStorage?: 'memory' | 'localStorage';
   /**
-   * Phase 118 (2026-06-02 — react port): typeahead recent scope.
-   * Verbatim mirror of vue3 Phase 118.
+   * (2026-06-02 — react port): typeahead recent scope.
+   * Verbatim mirror of vue3 .
    */
   readonly typeaheadRecentScope?: 'global' | 'per-column-value';
 }
@@ -150,7 +150,7 @@ export function formatFilterChipLabel(spec: FilterSpec, columns: readonly Column
 }
 
 /**
- * Phase 100.2 (2026-05-31 — react port): word-at-cursor extraction
+ * (2026-05-31 — react port): word-at-cursor extraction
  * for the advanced filter typeahead. Verbatim mirror of vue3.
  */
 export function extractWordAtCursor(
@@ -180,7 +180,7 @@ export function extractWordAtCursor(
 }
 
 /**
- * Phase 100.2.1 (2026-06-01 — react port): 12 advanced-filter
+ * (2026-06-01 — react port): 12 advanced-filter
  * operators. Verbatim mirror of vue3.
  */
 export const ADVANCED_FILTER_OPERATORS: readonly string[] = [
@@ -199,13 +199,13 @@ export const ADVANCED_FILTER_OPERATORS: readonly string[] = [
 ];
 
 /**
- * Phase 100.2.1 (2026-06-01 — react port): 3 conjunction / negation
+ * (2026-06-01 — react port): 3 conjunction / negation
  * keywords. Verbatim mirror of vue3.
  */
 export const ADVANCED_FILTER_KEYWORDS: readonly string[] = ['AND', 'OR', 'NOT'];
 
 /**
- * Phase 100.2.3 (2026-06-01 — react port): per-column-type allowed
+ * (2026-06-01 — react port): per-column-type allowed
  * operator subset. Verbatim mirror of vue3.
  */
 export const OPERATORS_BY_COLUMN_TYPE: Readonly<Record<string, readonly string[]>> = {
@@ -220,11 +220,11 @@ const ADVANCED_FILTER_KEYWORD_SET = new Set(['AND', 'OR', 'NOT']);
 
 export type TypeaheadSlot = 'column' | 'operator' | 'value' | 'conjunction';
 
-/** Phase 118 (2026-06-02 — react port): frozen empty ring sentinel. */
+/** (2026-06-02 — react port): frozen empty ring sentinel. */
 const EMPTY_RECENT_RING_REACT: readonly string[] = Object.freeze([]);
 
 /**
- * Phase 100.2.1 (2026-06-01 — react port): token-back slot
+ * (2026-06-01 — react port): token-back slot
  * detection. Verbatim mirror of vue3 `detectTypeaheadSlot`.
  */
 export function detectTypeaheadSlot(
@@ -247,7 +247,7 @@ export function detectTypeaheadSlot(
   const ch = text[i - 1];
   if (ch === '(' || ch === ',') return { slot: 'column', prevToken: ch };
   if (ch === '"') {
-    // Phase 100.2.2.4 (2026-06-01 — react port): disambiguate opening
+    // (2026-06-01 — react port): disambiguate opening
     // vs closing quote. Verbatim mirror of vue3.
     let quoteCountBefore = 0;
     for (let k = 0; k < i - 1; k++) {
@@ -314,7 +314,7 @@ export function detectTypeaheadSlot(
       opStart--;
     }
     const opText = text.slice(opStart, opEnd);
-    // Phase 100.2.2: also read prior identifier as prevColumn.
+    // also read prior identifier as prevColumn.
     let j = opStart;
     while (j > 0 && (text[j - 1] === ' ' || text[j - 1] === '\t' || text[j - 1] === '\n')) j--;
     const colEnd = j;
@@ -343,7 +343,7 @@ export function detectTypeaheadSlot(
     if (tokenText === 'isNull' || tokenText === 'isNotNull') {
       return { slot: 'conjunction', prevToken: tokenText };
     }
-    // Phase 100.2.2: also read prior identifier as prevColumn for
+    // also read prior identifier as prevColumn for
     // word-shaped operators.
     let j = start;
     while (j > 0 && (text[j - 1] === ' ' || text[j - 1] === '\t' || text[j - 1] === '\n')) j--;
@@ -369,7 +369,7 @@ export function detectTypeaheadSlot(
 }
 
 /**
- * Phase 100.2.1 (2026-06-01 — react port): discriminated-union
+ * (2026-06-01 — react port): discriminated-union
  * typeahead item shape.
  */
 export type TypeaheadItem =
@@ -396,7 +396,7 @@ export type TypeaheadItem =
     };
 
 /**
- * Phase 100.2.2 (2026-06-01 — react port): format a column value as
+ * (2026-06-01 — react port): format a column value as
  * its DSL representation. Verbatim mirror of vue3.
  */
 export function formatValueAsDsl(value: string | number | boolean | null): {
@@ -425,7 +425,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     typeaheadRecentScope = 'global',
   } = props;
   const effectiveTypeaheadRecentLimit = Math.max(0, Math.min(20, typeaheadRecentLimit ?? 5));
-  // Phase 112 (2026-06-01 — react port): pick storage backend per
+  // (2026-06-01 — react port): pick storage backend per
   // prop; `useMemo` keeps the storage stable across renders so the
   // hydration `useEffect` runs once on mount.
   const typeaheadRecentStorageImpl = useMemo<TypeaheadRecentStorage>(
@@ -463,7 +463,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     [filterSpec, columns],
   );
 
-  // Phase 100.2.1 + Phase 100.2.2 + Phase 100.2.3 (2026-06-01 — react
+  // + + (2026-06-01 — react
   // port): typeahead slot detection state. Verbatim mirror of vue3.
   const [typeaheadSlotDetected, setTypeaheadSlotDetected] = useState<{
     readonly slot: TypeaheadSlot;
@@ -471,7 +471,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     readonly prevColumn?: string;
   }>({ slot: 'column' });
 
-  // Phase 100.2.2 (2026-06-01 — react port): per-colId value source
+  // (2026-06-01 — react port): per-colId value source
   // cache; invalidated on prop reference change. Verbatim mirror of
   // vue3.
   const valueSourceCacheByColIdRef = useRef<Map<string, CollectUniqueColumnValuesResult>>(
@@ -481,15 +481,15 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     valueSourceCacheByColIdRef.current = new Map();
   }, [advancedFilterValueSourceRows]);
 
-  // Phase 100.2.2.4 (2026-06-01 — react port): open-string-literal flag.
+  // (2026-06-01 — react port): open-string-literal flag.
   const [typeaheadInsideStringLiteral, setTypeaheadInsideStringLiteral] = useState(false);
 
-  // Phase 100.2.5 (2026-06-01 — react port): per-slot-kind recent rings.
+  // (2026-06-01 — react port): per-slot-kind recent rings.
   //
-  // Phase 112 (2026-06-01 — react port): hydrate from storage backend
+  // (2026-06-01 — react port): hydrate from storage backend
   // on mount; write-through on every `pushToRecent`. Verbatim mirror
   // of vue3.
-  // Phase 118 (2026-06-02 — react port): key widened from
+  // (2026-06-02 — react port): key widened from
   // TypeaheadSlot to string so per-column scope can use
   // `${slot}:${colId}` keys.
   const [recentTypeaheadByKind, setRecentTypeaheadByKind] = useState<
@@ -504,7 +504,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     }
     if (hydrated.size > 0) setRecentTypeaheadByKind(hydrated);
   }, [typeaheadRecentStorageImpl]);
-  // Phase 118 (2026-06-02 — react port): per-column recent-key helper.
+  // (2026-06-02 — react port): per-column recent-key helper.
   const recentKey = useCallback(
     (slot: TypeaheadSlot, colId?: string | null): string => {
       if (
@@ -535,7 +535,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     },
     [effectiveTypeaheadRecentLimit, typeaheadRecentStorageImpl, recentKey],
   );
-  // Phase 118 (2026-06-02 — react port): readRecent with lazy storage rehydration.
+  // (2026-06-02 — react port): readRecent with lazy storage rehydration.
   const readRecent = useCallback(
     (slot: TypeaheadSlot, colId?: string | null): readonly string[] => {
       const key = recentKey(slot, colId);
@@ -554,7 +554,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     [recentTypeaheadByKind, typeaheadRecentStorageImpl, recentKey],
   );
 
-  // Phase 100.2.2.1 (2026-06-01 — react port): SSR async value getter
+  // (2026-06-01 — react port): SSR async value getter
   // cache + race-token. Verbatim mirror of vue3 (with React refs +
   // a state-bump to trigger re-render on async resolve).
   const asyncValueResultsByKeyRef = useRef<
@@ -562,13 +562,13 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
   >(new Map());
   const asyncRequestIdByKeyRef = useRef<Map<string, number>>(new Map());
   const nextAsyncRequestIdRef = useRef<number>(1);
-  // Phase 118 (2026-06-02 — react port): per-key AbortController.
+  // (2026-06-02 — react port): per-key AbortController.
   const asyncAbortControllerByKeyRef = useRef<Map<string, AbortController>>(new Map());
   const [asyncResultsVersion, setAsyncResultsVersion] = useState<number>(0);
   useEffect(() => {
     asyncValueResultsByKeyRef.current = new Map();
     asyncRequestIdByKeyRef.current = new Map();
-    // Phase 118: abort all in-flight on getter swap.
+    // abort all in-flight on getter swap.
     for (const controller of asyncAbortControllerByKeyRef.current.values()) {
       try {
         controller.abort();
@@ -588,7 +588,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
       const requestId = nextAsyncRequestIdRef.current++;
       asyncRequestIdByKeyRef.current.set(key, requestId);
       asyncValueResultsByKeyRef.current.set(key, 'loading');
-      // Phase 118: abort prior in-flight controller for this key + allocate fresh.
+      // abort prior in-flight controller for this key + allocate fresh.
       const prior = asyncAbortControllerByKeyRef.current.get(key);
       if (prior != null) {
         try {
@@ -620,7 +620,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
 
   const typeaheadMatches = useMemo<readonly AutocompleteMatch<TypeaheadItem>[]>(() => {
     if (!typeaheadOpen) return [];
-    // Phase 100.2.1: gate item source on detected slot.
+    // gate item source on detected slot.
     let items: TypeaheadItem[];
     if (typeaheadSlotDetected.slot === 'column') {
       items = columns.map((c) => ({
@@ -629,9 +629,9 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
         label: c.headerName ?? c.id,
       }));
     } else if (typeaheadSlotDetected.slot === 'operator') {
-      // Phase 100.2.3 (2026-06-01 — react port): operator subset by
+      // (2026-06-01 — react port): operator subset by
       // column type. Verbatim mirror of vue3.
-      // Phase 100.2.3.1 + 100.2.3.2 (2026-06-01 — react port): consumer
+      // + 100.2.3.2 (2026-06-01 — react port): consumer
       // override dict + localized labels. Verbatim mirror of vue3.
       const colId = typeaheadSlotDetected.prevToken;
       const column = colId != null ? columns.find((c) => c.id === colId) : undefined;
@@ -655,7 +655,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
         text: kw,
       }));
     } else {
-      // Phase 100.2.2 + 100.2.2.1 + 100.2.2.4 (2026-06-01 — react
+      // + 100.2.2.1 + 100.2.2.4 (2026-06-01 — react
       // port): value slot pipeline; async getter wins over rows
       // (Decision R.1); inside-open-literal filters to string-kind.
       // Verbatim mirror of vue3.
@@ -690,7 +690,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
         : valueSourceList;
       items = filteredValueList.map((v) => {
         const formatted = formatValueAsDsl(v.value);
-        // Phase 100.2.2.3 (2026-06-01 — react port): date formatter
+        // (2026-06-01 — react port): date formatter
         // displayText (verbatim mirror of vue3).
         let displayText: string | undefined;
         if (
@@ -701,7 +701,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
           const isoBare = formatted.text.slice(1, -1);
           displayText = `"${formatTypeaheadDateValue(isoBare)}"`;
         }
-        // Phase 100.2.2.2 (2026-06-01 — react port): histogram count
+        // (2026-06-01 — react port): histogram count
         // pass-through (verbatim mirror of vue3).
         return displayText != null
           ? {
@@ -719,8 +719,8 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
             };
       });
     }
-    // Phase 100.2.5 (2026-06-01 — react port): recent overlay.
-    // Phase 118 (2026-06-02 — react port): per-column scope routing.
+    // (2026-06-01 — react port): recent overlay.
+    // (2026-06-02 — react port): per-column scope routing.
     const recentReadColId =
       typeaheadSlotDetected.slot === 'value' && typeof typeaheadSlotDetected.prevToken === 'string'
         ? typeaheadSlotDetected.prevToken
@@ -760,7 +760,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     asyncResultsVersion,
   ]);
 
-  // Phase 100.2.2.1 (2026-06-01 — react port): async placeholder
+  // (2026-06-01 — react port): async placeholder
   // state. Verbatim mirror of vue3.
   const asyncPlaceholderState = useMemo<'loading' | 'error' | null>(() => {
     if (!typeaheadOpen) return null;
@@ -817,7 +817,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     setTypeaheadAnchorRect(ta.getBoundingClientRect());
   }, []);
 
-  // Phase 100.2.4 (2026-06-01 — react port): extracted from
+  // (2026-06-01 — react port): extracted from
   // `onTextareaChange` so the post-commit auto-trigger path (in
   // `commitTypeaheadSelection`) can re-run typeahead detection at the
   // post-insertion cursor (Decision J.1 — verbatim mirror of vue3).
@@ -829,7 +829,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
       setAdvancedFilterText(value);
       const extracted = extractWordAtCursor(value, cursorPos);
       const detected = detectTypeaheadSlot(value, cursorPos);
-      // Phase 100.2.2.4 (2026-06-01 — react port): allow value-slot
+      // (2026-06-01 — react port): allow value-slot
       // typeahead inside open string literal. Verbatim mirror of vue3.
       if (extracted.isInsideStringLiteral) {
         if (detected.slot !== 'value' || detected.prevColumn == null) {
@@ -872,7 +872,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
           text: kw,
         }));
       } else {
-        // Phase 100.2.2 + 100.2.2.1 + 100.2.2.4 value branch.
+        // + 100.2.2.1 + 100.2.2.4 value branch.
         const colId = detected.prevColumn;
         items = [];
         if (colId != null) {
@@ -945,7 +945,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
       setTypeaheadWordRange({ start: extracted.start, end: extracted.end });
       setTypeaheadOpen(true);
       refreshTypeaheadAnchor();
-      // Phase 100.2.2.1 (2026-06-01 — react port): fire async getter.
+      // (2026-06-01 — react port): fire async getter.
       if (
         detected.slot === 'value' &&
         detected.prevColumn != null &&
@@ -983,7 +983,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     if (idx < 0 || idx >= typeaheadMatches.length || wordRange == null) return;
     const active = typeaheadMatches[idx];
     if (active == null) return;
-    // Phase 100.2.1 + 100.2.2.4: column items insert `colId`; operator
+    // + 100.2.2.4: column items insert `colId`; operator
     // / keyword / value items insert their literal text. Value items
     // inside an open string literal context insert bare-value +
     // closing `"` (verbatim mirror of vue3 100.2.2.4 N.1).
@@ -1002,15 +1002,15 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
       insertText +
       advancedFilterText.slice(wordRange.end);
     const newCursorPos = wordRange.start + insertText.length;
-    // Phase 100.2.4 (2026-06-01 — react port): auto-trigger on non-value
+    // (2026-06-01 — react port): auto-trigger on non-value
     // commits. Verbatim mirror of vue3.
     const shouldAutoTrigger = active.item.kind !== 'value';
     const finalText = shouldAutoTrigger
       ? nextText.slice(0, newCursorPos) + ' ' + nextText.slice(newCursorPos)
       : nextText;
     const finalCursorPos = shouldAutoTrigger ? newCursorPos + 1 : newCursorPos;
-    // Phase 100.2.5 (2026-06-01 — react port): push to recent ring.
-    // Phase 118 (2026-06-02 — react port): per-column scope for value
+    // (2026-06-01 — react port): push to recent ring.
+    // (2026-06-02 — react port): per-column scope for value
     // commits when `typeaheadRecentScope === 'per-column-value'`.
     const slot = typeaheadSlotDetected.slot;
     const pushText = active.item.kind === 'column' ? active.item.colId : active.item.text;
@@ -1077,7 +1077,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
   // Document-level outside-click closes the popover. Registered once
   // on mount; reads latest open state via the mirror ref. Inlines
   // the close logic to avoid forward-referencing `closeTypeahead`
-  // (per Phase 99.2-fr5 lesson).
+  // (per -fr5 lesson).
   useEffect(() => {
     const onPointerDown = (e: PointerEvent): void => {
       if (!typeaheadOpenStateRef.current) return;
@@ -1097,7 +1097,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
     };
   }, []);
 
-  // Phase 100.2.6 (2026-06-01 — react port): scroll the active
+  // (2026-06-01 — react port): scroll the active
   // typeahead item into view when `typeaheadActiveIdx` changes
   // (verbatim mirror of vue3 watch).
   useEffect(() => {
@@ -1265,7 +1265,7 @@ export function ChronixFiltersToolPanel(props: ChronixFiltersToolPanelProps): Re
           ) : (
             typeaheadMatches.map((match, idx) => {
               const isActive = idx === typeaheadActiveIdx;
-              // Phase 100.2.2.3 + 100.2.3.2 (2026-06-01 — react port):
+              // + 100.2.3.2 (2026-06-01 — react port):
               // displayText override for value / operator items.
               // Verbatim mirror of vue3.
               const displayLabel =

@@ -4,7 +4,7 @@ import { nextTick } from 'vue';
 import { bool, describeConfigSchema, enumOf, num, str, useDemoConfig } from './demo-config.js';
 
 /**
- * Phase 46: port of vue3's `examples/gantt-vue3/src/demo-config.test.ts`.
+ * port of vue3's `examples/gantt-vue3/src/demo-config.test.ts`.
  * Vue 2.7's Composition API has the same `ref` / `watch` / `nextTick`
  * primitives as Vue 3 — the tests are identical.
  *
@@ -128,7 +128,7 @@ describe('useDemoConfig', () => {
     });
   });
 
-  it('Phase 21: todayLine bool schema field round-trips through URL', async () => {
+  it('todayLine bool schema field round-trips through URL', async () => {
     setUrl('?todayLine=true');
     const cfg = useDemoConfig({
       todayLine: bool(false, 'Show today-line'),

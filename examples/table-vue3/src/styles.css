@@ -44,7 +44,7 @@ body,
   padding: 2px 8px;
 }
 
-/* Phase 41 (2026-05-29): quick-find input in the demo toolbar. */
+/* quick-find input in the demo toolbar. */
 .demo-page__quick-find-input {
   width: 240px;
   padding: 4px 8px;
@@ -54,7 +54,7 @@ body,
   margin-left: 4px;
 }
 
-/* Phase 41.1 (2026-05-29): quick-find cell-level highlight wrapper. */
+/* quick-find cell-level highlight wrapper. */
 .cx-table-cell__find-match {
   background: #fff3a3;
   padding: 0 1px;
@@ -67,7 +67,7 @@ body,
   background: #fff;
   border: 1px solid #d9dde2;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  /* Phase 17 (2026-05-26): cap the demo's table width so that the
+  /* cap the demo's table width so that the
    * combined column widths overflow horizontally + the body's new
    * `overflowX: auto` exposes a horizontal scrollbar — exercising the
    * pinned-column sticky behavior. With the column minWidth clamps
@@ -84,7 +84,7 @@ body,
   flex-direction: column;
 }
 
-/* Phase 4: cap body height so the demo exercises virtualization
+/* cap body height so the demo exercises virtualization
  * (totalBodyHeight = 50 rows × 28 = 1400px; viewport ~ 320px shows
  * ~11 rows + overscan at a time). */
 .cx-table-body {
@@ -105,7 +105,7 @@ body,
   flex-direction: row;
 }
 
-/* Phase 3: body rows are absolute-positioned + can't rely on
+/* body rows are absolute-positioned + can't rely on
  * `border-bottom` (the layout would still account for the border).
  * `box-shadow: inset 0 -1px` paints the divider on top of the row
  * without affecting its computed height — keeps row Y math clean. */
@@ -128,7 +128,7 @@ body,
   border-right: 1px solid #eceff2;
 }
 
-/* Phase 13 (2026-05-25): header cell needs `position: relative` so
+/* header cell needs `position: relative` so
  * the absolute-positioned resizer (4px wide, anchored to right edge)
  * has it as the containing block. */
 .cx-table-header-cell {
@@ -170,7 +170,7 @@ body,
   border-bottom: 1px solid var(--cx-table-header-border-color, #d9dde2);
 }
 
-/* Phase 17 (2026-05-26): filter cells live inside an inner content
+/* filter cells live inside an inner content
  * row so the outer `.cx-table-filter-row` can act as a
  * horizontally-clipped scrollport whose `scrollLeft` is mirrored
  * from the body's scrollLeft. Matches the header's outer-clip /
@@ -221,7 +221,7 @@ body,
   font-weight: 500;
 }
 
-/* Phase 16 (2026-05-26): cell-range modifier — pale blue tint + thin
+/* cell-range modifier — pale blue tint + thin
  * outline overlay. Excel-like selection-rectangle visual idiom. Coexists
  * with .cx-table-row--selected (rows can be selected AND cells in range
  * — both modifiers compose visually). */
@@ -231,7 +231,7 @@ body,
   outline-offset: -1px;
 }
 
-/* Phase 21 (2026-05-27): drag-fill preview class painted on cells in
+/* drag-fill preview class painted on cells in
  * `fillEnvelope \ source` during an active drag-fill gesture. Dashed
  * outline + faint tint distinguish the preview from the committed
  * cell-range above. */
@@ -241,7 +241,7 @@ body,
   outline-offset: -1px;
 }
 
-/* Phase 21: drag-fill handle. The SFC inlines position / size / cursor
+/* drag-fill handle. The SFC inlines position / size / cursor
  * via the render style attribute so the handle works without an
  * external CSS rule; this rule adds optional hover affordance. */
 .cx-table-drag-fill-handle:hover {
@@ -249,13 +249,13 @@ body,
   transition: transform 80ms ease-out;
 }
 
-/* Phase 17 (2026-05-26): pinned-column zone visuals. The SFC sets
+/* pinned-column zone visuals. The SFC sets
  * `position: sticky` + left/right cumulative offsets on pinned cells
  * via inline style; this CSS just paints the boundary shadow + zone
  * background so center cells scrolling past don't bleed through.
  *
  * Theme tokens: `--cx-table-pinned-shadow-color` + `--cx-table-pinned-zone-bg`
- * (Phase 17 adds 2 tokens to the existing 11 — `cssVarsForTheme` emits
+ * (adds 2 tokens to the existing 11 — `cssVarsForTheme` emits
  * them automatically). Default pinned-zone-bg is `inherit`, preserving
  * the row zebra-stripe colors INSIDE the pinned cells. Demo overrides
  * are below this block; consumers can override per-instance via the
@@ -319,7 +319,7 @@ body,
   background: var(--cx-table-even-row-bg, #fafbfc);
 }
 
-/* Phase 10.1 (2026-05-24): selection column rail. The checkbox
+/* selection column rail. The checkbox
  * column is part of each row's flex layout (not a separate rail) —
  * width is `theme.selectionColumnWidth` (default 36px) and it sits
  * on the `selectionColumn.side` configured side (default 'left').
@@ -359,7 +359,7 @@ body,
   accent-color: #345d9d;
 }
 
-/* Phase 12 (2026-05-24): in-cell editor `<input>`. Sits inside the
+/* in-cell editor `<input>`. Sits inside the
  * .cx-table-cell wrapper at the same height. Border-color matches
  * the sort-indicator accent for visual continuity with other
  * "active state" UI.
@@ -386,7 +386,7 @@ body,
   box-shadow: 0 0 0 2px rgba(52, 93, 157, 0.2);
 }
 
-/* Phase 13 (2026-05-25): column-resize affordance. The resizer is a
+/* column-resize affordance. The resizer is a
  * 4px-wide strip absolute-positioned at the right edge of each
  * `resizable !== false` header cell. Decision C.1: 4px desktop hit
  * area (matches MUI DataGrid / Notion). Opacity: 0 by default so the
@@ -426,7 +426,7 @@ body,
   background: rgba(52, 93, 157, 0.05);
 }
 
-/* Phase 11 (2026-05-24): pagination footer. Two-row flex layout —
+/* pagination footer. Two-row flex layout —
  * left side hosts prev/next + page info; right side hosts total
  * rows + page-size dropdown. Sticky-bottom inside the wrapper so
  * the footer stays visible while the body scrolls.
@@ -479,8 +479,8 @@ body,
   text-align: center;
 }
 
-/* Phase 11.1 (2026-05-24): page-number bar — ellipsis-aware list
- * of clickable page buttons. Replaces the Phase 11
+/* page-number bar — ellipsis-aware list
+ * of clickable page buttons. Replaces the
  * .cx-table-pagination-info span. The bar sits between « and »
  * inside .cx-table-pagination-nav.
  */
@@ -548,7 +548,7 @@ body,
   outline: none;
 }
 
-/* Phase 5: status column color-coding via cellClass function. */
+/* status column color-coding via cellClass function. */
 .cx-table-cell.cx-status--done {
   color: #1b7a3e;
   font-weight: 600;
@@ -573,7 +573,7 @@ body,
   font-style: italic;
 }
 
-/* Phase 14 (2026-05-26): column-move drag affordances.
+/* column-move drag affordances.
  *
  * - `--reorderable` columns get a `grab` cursor that flips to
  *   `grabbing` during an active drag.
@@ -612,7 +612,7 @@ body,
   transition: left 0.08s ease-out;
 }
 
-/* Phase 30 (2026-05-28): tree-data chevron + leaf spacer. The
+/* tree-data chevron + leaf spacer. The
  * chevron sits at the start of the tree-column cell, before the
  * cell text; expansion is communicated via the `--expanded`
  * modifier which rotates the SVG triangle 90deg via CSS transform.
@@ -647,7 +647,7 @@ body,
   transform: rotate(90deg);
 }
 
-/* Phase 34 (2026-05-28): lazy-load spinner + error icon. Spinner uses
+/* lazy-load spinner + error icon. Spinner uses
    a stroke-dashoffset rotation; error icon shows on rejected load. */
 @keyframes cx-table-tree-spinner-rotate {
   from {
@@ -677,7 +677,7 @@ body,
   text-overflow: ellipsis;
 }
 
-/* Phase 30 demo: file-type cell color hints. */
+/* demo: file-type cell color hints. */
 .cx-table-cell.cx-tree-type--project {
   color: #1d4ed8;
   font-weight: 600;
@@ -716,7 +716,7 @@ body,
   margin: 0 0 12px;
 }
 
-/* Phase 40 (2026-05-29): off-screen screen-reader live region. The
+/* off-screen screen-reader live region. The
  * chronix-table SFC renders this div with `role="status" aria-live="polite"`
  * inside the wrapper subtree so NVDA / JAWS users hear keyboard-driven
  * activeCell transitions. Visually hidden via the clip-path / 1px hack. */
@@ -732,8 +732,8 @@ body,
   border: 0;
 }
 
-/* Phase 40 (2026-05-29): pinned row hover state + shadow accent.
- * Matches the Phase 17 pinned-column accent so pinned rows feel like
+/* pinned row hover state + shadow accent.
+ * Matches the pinned-column accent so pinned rows feel like
  * the row-axis equivalent. CSS-only — no new theme tokens. */
 .cx-table-row--pinned-top:hover,
 .cx-table-row--pinned-bottom:hover {
@@ -748,7 +748,7 @@ body,
   box-shadow: 0 -2px 4px var(--cx-table-pinned-shadow-color, rgba(15, 23, 42, 0.12));
 }
 
-/* Phase 42 (2026-05-29): advanced-filter DSL input + error pill. */
+/* advanced-filter DSL input + error pill. */
 .demo-page__advanced-filter {
   display: inline-flex;
   flex-wrap: wrap;
@@ -776,7 +776,7 @@ body,
   margin: 4px 0 0;
 }
 
-/* Phase 43 (2026-05-29): set-filter dropdown. Native <details> open
+/* set-filter dropdown. Native <details> open
  * state opens in-flow (pushes filter row content down). Consumers
  * wanting position:absolute overlay can override .cx-table-set-filter
  * + .cx-table-set-filter__panel. */
@@ -847,7 +847,7 @@ body,
   margin-top: 4px;
 }
 
-/* Phase 45 (2026-05-29): server-side row model skeleton row + shimmer
+/* server-side row model skeleton row + shimmer
  * bar. Synthetic placeholder rows render with a single shimmering
  * pseudo-bar per cell so users see "data is loading" feedback while
  * the virtualization-driven Y range stays accurate.
@@ -877,7 +877,7 @@ body,
   }
 }
 
-/* Phase 46 (2026-05-30): Tier 3 finale — row number + actions + auto-height. */
+/* Tier 3 finale — row number + actions + auto-height. */
 .cx-table-cell--row-number {
   justify-content: center;
   color: #94a3b8;
@@ -921,7 +921,7 @@ body,
   font-size: 13px;
 }
 
-/* Phase 80 (2026-05-30): tool-panel container styles. */
+/* tool-panel container styles. */
 .cx-table-with-tool-panel {
   display: flex;
   flex-direction: row;
@@ -1022,7 +1022,7 @@ body,
   font-size: 11px !important;
 }
 
-/* Phase 81 (2026-05-30): pre-built ChronixColumnsToolPanel styles. */
+/* pre-built ChronixColumnsToolPanel styles. */
 .cx-table-columns-tool-panel {
   display: flex;
   flex-direction: column;
@@ -1095,7 +1095,7 @@ body,
   background: #f8fafc;
 }
 
-/* Phase 82 (2026-05-30): pre-built ChronixFiltersToolPanel styles. */
+/* pre-built ChronixFiltersToolPanel styles. */
 .cx-table-filters-tool-panel {
   display: flex;
   flex-direction: column;
@@ -1215,7 +1215,7 @@ body,
   font-size: 11px;
 }
 
-/* Phase 83-A (2026-05-30): column header menu styles. */
+/* -A (2026-05-30): column header menu styles. */
 .cx-table-column-header-menu-button {
   display: inline-flex;
   align-items: center;
@@ -1272,7 +1272,7 @@ body,
   color: #94a3b8;
 }
 
-/* Phase 83-B (2026-05-30): cell context menu styles. */
+/* -B (2026-05-30): cell context menu styles. */
 .cx-table-cell-context-menu {
   min-width: 180px;
   padding: 4px 0;

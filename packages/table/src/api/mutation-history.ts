@@ -1,10 +1,10 @@
 import type { PasteMutation } from './compute-paste-mutations.js';
 
 /**
- * Phase 22 (2026-05-27): canonical mutation-batch shape recorded in
+ * canonical mutation-batch shape recorded in
  * the undo / redo history. Wraps an arbitrary list of `PasteMutation`s
- * (the unifying contract of Phase 12 cell-edit / Phase 20 paste /
- * Phase 21 fill) with metadata for consumer-side telemetry.
+ * (the unifying contract cell-edit / paste /
+ * fill) with metadata for consumer-side telemetry.
  *
  * - `id` — monotonic identifier produced by the adapter (e.g.,
  *   `'mb-{counter}'`). Stable across replays; lets consumers correlate
@@ -12,7 +12,7 @@ import type { PasteMutation } from './compute-paste-mutations.js';
  * - `source` — gesture provenance. Informational; the apply path is
  *   identical regardless of source (consumer's Map-keyed batch write-
  *   back works for all 4 values).
- * - `mutations` — the same shape Phase 20/21 paste/fill mutations use.
+ * - `mutations` — the same shape paste/fill mutations use.
  *   Empty arrays are legal (the gesture's batch slot is preserved even
  *   when no cells actually changed — e.g., a paste where every cell
  *   was no-op-deduped).
@@ -28,7 +28,7 @@ export interface MutationBatch {
 }
 
 /**
- * Phase 22: history stack shape. `past` holds undoable batches in
+ * history stack shape. `past` holds undoable batches in
  * insertion order (newest at end); `future` holds undone batches
  * available for redo (also newest at end). Both arrays are read-only;
  * mutators return a new state object.
@@ -39,7 +39,7 @@ export interface MutationHistoryState {
 }
 
 /**
- * Phase 22: identity-stable empty history. Initial state for the SFC's
+ * identity-stable empty history. Initial state for the SFC's
  * `mutationHistoryRef` + the value returned from `clearHistory()`.
  * Identity stability lets downstream `computed` derivations skip
  * re-render when history is empty.
@@ -50,7 +50,7 @@ export const EMPTY_MUTATION_HISTORY: MutationHistoryState = {
 };
 
 /**
- * Phase 22 (Decision C.1): append a freshly-recorded batch to the
+ * (Decision C.1): append a freshly-recorded batch to the
  * history stack.
  *
  * Semantics:
@@ -86,7 +86,7 @@ export function appendMutationBatch(
 }
 
 /**
- * Phase 22 (Decision C.1): pop the newest entry from `past` for undo.
+ * (Decision C.1): pop the newest entry from `past` for undo.
  *
  * - Returns `null` when `past` is empty (caller's `undo()` becomes a
  *   no-op).
@@ -113,7 +113,7 @@ export function popUndoBatch(
 }
 
 /**
- * Phase 22 (Decision C.1): pop the newest entry from `future` for redo.
+ * (Decision C.1): pop the newest entry from `future` for redo.
  *
  * - Returns `null` when `future` is empty (caller's `redo()` becomes a
  *   no-op).
@@ -140,7 +140,7 @@ export function popRedoBatch(
 }
 
 /**
- * Phase 22 (Decision B.1): swap `oldValue` ↔ `newValue` for every
+ * (Decision B.1): swap `oldValue` ↔ `newValue` for every
  * mutation in the batch, preserving `rowId` / `colId` / metadata.
  * Used by the adapter's `undo()` path to produce the payload for the
  * `history-replay` emit — consumer applies the swapped mutations via

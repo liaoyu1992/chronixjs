@@ -3,7 +3,7 @@ import { formatCellValue } from '../render/format-cell-value.js';
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Phase 35 (2026-05-28): options accepted by `exportToCsv`.
+ * options accepted by `exportToCsv`.
  */
 export interface ExportToCsvOptions {
   /** Field separator. Default `','`. Pass `'\t'` for TSV. */
@@ -31,7 +31,7 @@ export interface ExportToCsvOptions {
 }
 
 /**
- * Phase 35 (2026-05-28): input to `exportToCsv`.
+ * input to `exportToCsv`.
  */
 export interface ExportToCsvInput {
   /** Rows to export. Iteration order = output row order. */
@@ -43,7 +43,7 @@ export interface ExportToCsvInput {
 }
 
 /**
- * Phase 35 (2026-05-28): RFC 4180-compliant CSV serializer.
+ * RFC 4180-compliant CSV serializer.
  *
  * - Cell values are resolved via `formatCellValue({row, column})` so the
  *   exported text matches what the user sees on screen (consumer's

@@ -10,10 +10,10 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixList>` — Vue 3 SFC wrapping the core `ListProps` IR.
- * Phase 21 (2026-06-03). Tier A vertical settings / contact /
+ * . Tier A vertical settings / contact /
  * file-row list display.
  *
- * Root element is `<ul>` (not `<div>`) — Phase 21 friction note
+ * Root element is `<ul>` (not `<div>`) — friction note
  * about `<ul>` user-agent reset applies via the core stylesheet.
  *
  * No slots, no emits — List is a pure-visual array-driven

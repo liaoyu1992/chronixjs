@@ -164,7 +164,7 @@ const PHASE26_POP_SELECT_OPTIONS: readonly PopSelectOption[] = [
   { key: 'c', label: 'Action three (disabled)', value: 'c', disabled: true },
 ];
 
-// Phase 28 — Layout family (8 components).
+// Layout family (8 components).
 const PHASE28_TAB_ITEMS: readonly TabItem[] = [
   { key: 'overview', label: 'Overview', disabled: false, content: 'Overview tab body' },
   { key: 'details', label: 'Details', disabled: false, content: 'Details tab body' },
@@ -213,7 +213,7 @@ const PHASE30_VIRTUAL_TREE_ITEMS: readonly TreeNodeSpec<TreeNodeData>[] = Array.
 const BREADCRUMB_BASIC_ITEMS: readonly BreadcrumbItem[] = [
   { key: 'home', label: 'Home', href: '/', clickable: false },
   { key: 'docs', label: 'Docs', href: '/docs', clickable: false },
-  { key: 'current', label: 'Phase 19', href: undefined, clickable: false },
+  { key: 'current', label: '', href: undefined, clickable: false },
 ];
 
 const BREADCRUMB_CLICKABLE_ITEMS: readonly BreadcrumbItem[] = [
@@ -344,7 +344,7 @@ const TIMELINE_TIMESTAMP_ITEMS: readonly TimelineItem[] = [
 const TIMELINE_DASHED_ITEMS: readonly TimelineItem[] = [
   {
     key: 'a',
-    title: 'Phase 1',
+    title: '',
     description: undefined,
     timestamp: undefined,
     color: 'info',
@@ -352,7 +352,7 @@ const TIMELINE_DASHED_ITEMS: readonly TimelineItem[] = [
   },
   {
     key: 'b',
-    title: 'Phase 2',
+    title: '',
     description: undefined,
     timestamp: undefined,
     color: 'info',
@@ -360,7 +360,7 @@ const TIMELINE_DASHED_ITEMS: readonly TimelineItem[] = [
   },
   {
     key: 'c',
-    title: 'Phase 3',
+    title: '',
     description: undefined,
     timestamp: undefined,
     color: 'info',
@@ -439,7 +439,7 @@ export function App(): JSX.Element {
   const [tagCloseCount, setTagCloseCount] = useState(0);
   const [pageHeaderBackCount, setPageHeaderBackCount] = useState(0);
   const [breadcrumbClickCount, setBreadcrumbClickCount] = useState(0);
-  // Phase 25 — Tier B form input demo state
+  // Tier B form input demo state
   const [phase25InputText, setPhase25InputText] = useState('Hello');
   const [phase25InputTextarea, setPhase25InputTextarea] = useState('Line 1\nLine 2');
   const [phase25InputClearable, setPhase25InputClearable] = useState('Clear me');
@@ -452,15 +452,15 @@ export function App(): JSX.Element {
   const [phase25NumberValue, setPhase25NumberValue] = useState<number | null>(10);
   const [phase25AutoCompleteValue, setPhase25AutoCompleteValue] = useState('');
   const [phase26PopSelectValue, setPhase26PopSelectValue] = useState('a');
-  // Phase 27 — Popover-consuming Tier B demo state (toggle-controlled)
+  // Popover-consuming Tier B demo state (toggle-controlled)
   const [phase27ModalShow, setPhase27ModalShow] = useState(false);
   const [phase27DrawerShow, setPhase27DrawerShow] = useState(false);
-  // Phase 28 — Layout family demo state
+  // Layout family demo state
   const [phase28CollapseValue, setPhase28CollapseValue] = useState<readonly string[]>(['a']);
   const [phase28TabValue, setPhase28TabValue] = useState<string>('overview');
-  // Phase 29 — Tier B remainder demo state
+  // Tier B remainder demo state
   const [phase29CarouselValue, setPhase29CarouselValue] = useState<number>(0);
-  // Phase 30 — Tier C Tree demo state
+  // Tier C Tree demo state
   const [phase30TreeValue, setPhase30TreeValue] = useState<string | undefined>('docs/intro');
   const [phase30TreeExpandedKeys, setPhase30TreeExpandedKeys] = useState<readonly string[]>([
     'docs',
@@ -469,7 +469,7 @@ export function App(): JSX.Element {
     undefined,
   );
 
-  // Phase 31 — Select family
+  // Select family
   const PHASE31_SELECT_OPTIONS: any[] = [
     { key: 'apple', label: 'Apple', value: 'apple' },
     { key: 'banana', label: 'Banana', value: 'banana' },
@@ -520,12 +520,12 @@ export function App(): JSX.Element {
   ];
   const [phase31MentionValue, setPhase31MentionValue] = useState('');
 
-  // Phase 32 — DatePicker / TimePicker / Calendar
+  // DatePicker / TimePicker / Calendar
   const [phase32DatePickerValue, setPhase32DatePickerValue] = useState<Date | undefined>(undefined);
   const [phase32TimePickerValue, setPhase32TimePickerValue] = useState<Date | undefined>(undefined);
   const [phase32CalendarValue, setPhase32CalendarValue] = useState<Date | undefined>(undefined);
 
-  // Phase 33 — ColorPicker / Transfer / Slider / Pagination
+  // ColorPicker / Transfer / Slider / Pagination
   const [phase33ColorPickerValue, setPhase33ColorPickerValue] = useState<string | null>('#4096ff');
   const [phase33TransferValue, setPhase33TransferValue] = useState<(string | number)[]>(['a']);
   const [phase33SliderValue, setPhase33SliderValue] = useState(50);
@@ -536,7 +536,7 @@ export function App(): JSX.Element {
     email: '',
   });
 
-  // Phase 35 — DynamicInput / DynamicTags / Anchor / InfiniteScroll / NumberAnimation / Scrollbar / Upload
+  // DynamicInput / DynamicTags / Anchor / InfiniteScroll / NumberAnimation / Scrollbar / Upload
   const [phase35DynamicInputValue, setPhase35DynamicInputValue] = useState<unknown[]>([
     'Item 1',
     'Item 2',
@@ -548,7 +548,7 @@ export function App(): JSX.Element {
   const [phase35NumberAnimationTo] = useState(100);
   const [phase35UploadFiles] = useState<any[]>([]);
 
-  // Phase 37 — Carousel lazy + thumbnails
+  // Carousel lazy + thumbnails
   const PHASE37_LAZY_CAROUSEL_ITEMS = [
     { key: 'la', content: 'Lazy A', thumbnailLabel: 'A' },
     { key: 'lb', content: 'Lazy B', thumbnailLabel: 'B' },
@@ -558,7 +558,7 @@ export function App(): JSX.Element {
   ];
   const [phase37LazyCarouselValue, setPhase37LazyCarouselValue] = useState(0);
 
-  // Phase 37 — Tabs editable
+  // Tabs editable
   const PHASE37_TAB_ITEMS = [
     { key: 'p1', label: 'Tab 1', disabled: false, content: 'Content 1', closable: true },
     { key: 'p2', label: 'Tab 2', disabled: false, content: 'Content 2', closable: true },
@@ -566,7 +566,7 @@ export function App(): JSX.Element {
   ];
   const [phase37TabsValue, setPhase37TabsValue] = useState('p1');
 
-  // Phase 37 — Mention multi-source
+  // Mention multi-source
   const PHASE37_MENTION_SOURCES = [
     {
       trigger: '@',
@@ -596,7 +596,7 @@ export function App(): JSX.Element {
     <ChronixUIProvider>
       <div className="demo-page" data-testid="demo-page">
         <h1>@chronixjs/ui-react demo</h1>
-        <p>Phase 12 Button cross-adapter parity — port 8733.</p>
+        <p>Button cross-adapter parity — port 8733.</p>
 
         <section className="demo-section">
           <h2>Variants</h2>
@@ -668,7 +668,7 @@ export function App(): JSX.Element {
           </div>
         </section>
 
-        <ChronixDivider data-testid="divider-section">Phase 13 — Tag + Divider</ChronixDivider>
+        <ChronixDivider data-testid="divider-section">Tag + Divider</ChronixDivider>
 
         <section className="demo-section">
           <h2>Tag types</h2>
@@ -738,7 +738,7 @@ export function App(): JSX.Element {
           <span>after vertical divider</span>
         </section>
 
-        <ChronixDivider data-testid="divider-badge-section">Phase 14 — Badge</ChronixDivider>
+        <ChronixDivider data-testid="divider-badge-section">Badge</ChronixDivider>
 
         <section className="demo-section">
           <h2>Badge standalone (numeric + truncation + string)</h2>
@@ -784,9 +784,7 @@ export function App(): JSX.Element {
           </div>
         </section>
 
-        <ChronixDivider data-testid="divider-info-section">
-          Phase 15 — Alert + Card + Empty
-        </ChronixDivider>
+        <ChronixDivider data-testid="divider-info-section">Alert + Card + Empty</ChronixDivider>
 
         <section className="demo-section">
           <h2>Alert types</h2>
@@ -858,7 +856,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-loading-section">
-          Phase 16 — Loading states (Spin + Progress + Skeleton)
+          Loading states (Spin + Progress + Skeleton)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -919,7 +917,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-layout-section">
-          Phase 17 — Layout primitives (Space + Flex + Grid)
+          Layout primitives (Space + Flex + Grid)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1040,7 +1038,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-status-numeric-section">
-          Phase 18 — Result + Statistic + Countdown
+          Result + Statistic + Countdown
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1119,7 +1117,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-info-arch-section">
-          Phase 19 — Information architecture (PageHeader + Breadcrumb)
+          Information architecture (PageHeader + Breadcrumb)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1222,7 +1220,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-process-timeline-section">
-          Phase 20 — Steps + Timeline
+          Steps + Timeline
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1271,7 +1269,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-data-display-section">
-          Phase 21 — Data display (Descriptions + List)
+          Data display (Descriptions + List)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1335,7 +1333,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-visual-artifacts-section">
-          Phase 22 — Visual artifacts (Watermark + QrCode + Marquee)
+          Visual artifacts (Watermark + QrCode + Marquee)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1428,7 +1426,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-info-density-section">
-          Phase 23 — Information density (Ellipsis + Thing + Log)
+          Information density (Ellipsis + Thing + Log)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1529,7 +1527,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-tier-a-finale-section">
-          Phase 24 — Tier A finale (12 components)
+          Tier A finale (12 components)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1610,7 +1608,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-tier-b-form-inputs-section">
-          Phase 25 — Tier B form inputs (8 components)
+          Tier B form inputs (8 components)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1722,7 +1720,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider data-testid="divider-popover-infra-section">
-          Phase 26 — Popover infrastructure (4 components)
+          Popover infrastructure (4 components)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1782,7 +1780,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider titlePlacement="left">
-          Phase 27 — Popover-consuming Tier B (6 components)
+          Popover-consuming Tier B (6 components)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -1866,9 +1864,7 @@ export function App(): JSX.Element {
           </div>
         </section>
 
-        <ChronixDivider titlePlacement="left">
-          Phase 28 — Layout family (8 components)
-        </ChronixDivider>
+        <ChronixDivider titlePlacement="left">Layout family (8 components)</ChronixDivider>
 
         <section className="demo-section">
           <h2>Layout shell (header + sider + content + footer)</h2>
@@ -1950,9 +1946,7 @@ export function App(): JSX.Element {
           </div>
         </section>
 
-        <ChronixDivider titlePlacement="left">
-          Phase 29 — Tier B remainder (3 components)
-        </ChronixDivider>
+        <ChronixDivider titlePlacement="left">Tier B remainder (3 components)</ChronixDivider>
 
         <section className="demo-section">
           <h2>Carousel</h2>
@@ -1979,7 +1973,7 @@ export function App(): JSX.Element {
           </ChronixFocusDetector>
         </section>
 
-        <ChronixDivider titlePlacement="left">Phase 30 — Tier C Tree (1 component)</ChronixDivider>
+        <ChronixDivider titlePlacement="left">Tier C Tree (1 component)</ChronixDivider>
 
         <section className="demo-section">
           <h2>Tree (single-select, one branch expanded)</h2>
@@ -2006,9 +2000,7 @@ export function App(): JSX.Element {
           />
         </section>
 
-        <ChronixDivider titlePlacement="left">
-          Phase 31 — Tier C Select family (4 components)
-        </ChronixDivider>
+        <ChronixDivider titlePlacement="left">Tier C Select family (4 components)</ChronixDivider>
 
         <section className="demo-section">
           <h2>Select (single)</h2>
@@ -2069,7 +2061,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider titlePlacement="left">
-          Phase 32 — DatePicker / TimePicker / Calendar (3 components)
+          DatePicker / TimePicker / Calendar (3 components)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -2104,7 +2096,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider titlePlacement="left">
-          Phase 33 — ColorPicker / Transfer / Slider / Pagination (4 components)
+          ColorPicker / Transfer / Slider / Pagination (4 components)
         </ChronixDivider>
 
         <section className="demo-section">
@@ -2155,7 +2147,7 @@ export function App(): JSX.Element {
         </section>
 
         <section className="demo-section">
-          <h2>Phase 34 — Form</h2>
+          <h2>Form</h2>
           <ChronixForm
             model={phase34Model}
             rules={{
@@ -2196,7 +2188,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider titlePlacement="left">
-          Phase 35 — DynamicInput / DynamicTags / Anchor / NumberAnimation / Scrollbar / Upload
+          DynamicInput / DynamicTags / Anchor / NumberAnimation / Scrollbar / Upload
         </ChronixDivider>
 
         <section className="demo-section">
@@ -2251,7 +2243,7 @@ export function App(): JSX.Element {
         </section>
 
         <ChronixDivider titlePlacement="left">
-          Phase 37 — Carousel lazy + thumbnails / Tabs editable / Mention multi-source
+          Carousel lazy + thumbnails / Tabs editable / Mention multi-source
         </ChronixDivider>
 
         <section className="demo-section">

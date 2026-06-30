@@ -23,7 +23,7 @@ import { computed, defineComponent, h, ref, toRef, type PropType, type VNode } f
 import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
- * `<ChronixSelect>` — Vue 2 full-featured select. Phase 31 (2026-06-04).
+ * `<ChronixSelect>` — Vue 2 full-featured select. .
  * Vue 2: no Teleport → inline render with position: fixed.
  */
 export const ChronixSelect = defineComponent({

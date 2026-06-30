@@ -1,5 +1,5 @@
 /**
- * chronix-ui context module — Phase 2 (2026-06-01).
+ * chronix-ui context module — .
  *
  * Pure-data interface for app-wide configuration propagation. Adapters
  * (`@chronixjs/ui-vue3`, `@chronixjs/ui-vue2`, `@chronixjs/ui-react`)
@@ -8,7 +8,7 @@
  *
  * Public surface:
  *
- * - `ChronixUIContext` — pure-data app-wide config (Phase 0.3 Decision A.1).
+ * - `ChronixUIContext` — pure-data app-wide config (Decision A.1).
  * - `ChronixUIContextOverrides` — partial overlay for `mergeUIContext`.
  * - `ChronixUIComponentOverrides` — per-component default-prop bag.
  * - `createDefaultUIContext()` — factory producing baseline context.

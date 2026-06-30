@@ -9,7 +9,7 @@ import type { PopupPlacementInput, PopupPlacementResult } from './popup-spec.js'
  * viewport rect, and placement spec. Pure function — no DOM access, no
  * side effects.
  *
- * Phase 4 (2026-06-02) per Phase 0.2 Decision A.1.
+ * per Decision A.1.
  *
  * Pipeline:
  *

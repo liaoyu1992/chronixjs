@@ -28,7 +28,7 @@ export interface ChronixAlertProps extends Omit<
 }
 
 /**
- * `<ChronixAlert>` — React 18 port of the Phase 15 Alert.
+ * `<ChronixAlert>` — React 18 port of the Alert.
  */
 export function ChronixAlert(props: ChronixAlertProps): JSX.Element {
   const {

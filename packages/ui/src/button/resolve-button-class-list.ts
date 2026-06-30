@@ -6,7 +6,7 @@ import type { ButtonProps } from './button-spec.js';
  * across vue3 / vue2 / react adapters, so the rendered class set is
  * identical (parity-by-construction).
  *
- * Phase 11 (2026-06-02).
+ * .
  *
  * Class structure:
  *

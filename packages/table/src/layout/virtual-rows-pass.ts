@@ -16,7 +16,7 @@ const DEFAULT_OVERSCAN = 3;
  * `[viewportScrollTop, viewportScrollTop + viewportHeight)` plus an
  * `overscan` row buffer above + below.
  *
- * Phase 4 design: kept independent of `rowLayoutPass` (rather than
+ * design: kept independent of `rowLayoutPass` (rather than
  * composed into a single combined pass) so consumers can re-window
  * on scroll without re-running the layout pass — `rowLayoutPass`
  * changes only when `rows` / `defaultRowHeight` / `heightHint`

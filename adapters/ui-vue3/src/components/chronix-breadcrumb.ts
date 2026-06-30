@@ -10,7 +10,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixBreadcrumb>` — Vue 3 SFC wrapping the core `BreadcrumbProps`
- * IR. Phase 19 (2026-06-02). Tier A navigation primitive.
+ * IR. . Tier A navigation primitive.
  *
  * Slots:
  *

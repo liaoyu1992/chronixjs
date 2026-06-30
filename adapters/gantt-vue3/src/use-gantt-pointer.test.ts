@@ -576,7 +576,7 @@ describe('useGanttPointer — abort', () => {
   });
 });
 
-describe('useGanttPointer — cross-row drag (Phase 9)', () => {
+describe('useGanttPointer — cross-row drag ', () => {
   // r1 at y∈[0,40), r2 at y∈[40,80). Bar 'b1' lives in r1 (y=8), bar 'b2'
   // lives in r2 (y=48). Strip-divider gap omitted for simpler arithmetic
   // (rowSpacing=0 in this fixture; the resolver test file covers gap math).
@@ -674,7 +674,7 @@ describe('useGanttPointer — cross-row drag (Phase 9)', () => {
   });
 });
 
-describe('useGanttPointer — drag/resize lifecycle emits (Phase 16)', () => {
+describe('useGanttPointer — drag/resize lifecycle emits ', () => {
   const mockDragStart = (): ReturnType<typeof vi.fn<(p: BarDragStartCallback) => void>> =>
     vi.fn<(p: BarDragStartCallback) => void>();
   const mockDragStop = (): ReturnType<typeof vi.fn<(p: BarDragStopCallback) => void>> =>
@@ -834,7 +834,7 @@ describe('useGanttPointer — drag/resize lifecycle emits (Phase 16)', () => {
   });
 });
 
-describe('useGanttPointer — Phase 25 drag-distance gate', () => {
+describe('useGanttPointer — drag-distance gate', () => {
   it('default pointerMinDistance=5: 3-px Pythagorean advance leaves dragDistanceSurpassed=false', () => {
     const ptr = useGanttPointer({
       placedBars: () => placedBars,
@@ -899,7 +899,7 @@ describe('useGanttPointer — Phase 25 drag-distance gate', () => {
     expect(ptr.dragDistanceSurpassed.value).toBe(true);
   });
 
-  it('Phase 16 onBarDragStart now gates on threshold (sub-threshold advances do NOT fire start)', () => {
+  it('onBarDragStart now gates on threshold (sub-threshold advances do NOT fire start)', () => {
     const onBarDragStart = vi.fn<(p: BarDragStartCallback) => void>();
     const ptr = useGanttPointer({
       placedBars: () => placedBars,
@@ -910,8 +910,8 @@ describe('useGanttPointer — Phase 25 drag-distance gate', () => {
       onBarDragStart,
     });
     ptr.begin(600, 20);
-    // Sub-threshold advance — Phase 16 dragStartFired stays false because
-    // Phase 25 dragDistanceSurpassed never flipped.
+    // Sub-threshold advance — dragStartFired stays false because
+    // dragDistanceSurpassed never flipped.
     ptr.advance(602, 20);
     expect(onBarDragStart).not.toHaveBeenCalled();
     // Above-threshold advance flips both flags + fires start.

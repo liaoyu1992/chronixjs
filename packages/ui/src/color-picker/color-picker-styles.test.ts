@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 
 /**
- * ColorPicker core tests — Phase 33 (2026-06-05).
+ * ColorPicker core tests — .
  */
 
 import { describe, expect, it } from 'vitest';

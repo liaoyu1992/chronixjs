@@ -1,5 +1,5 @@
 /**
- * Result stylesheet — Phase 18 (2026-06-02).
+ * Result stylesheet — .
  *
  * Layout: centered column with icon (large), title (medium-bold),
  * description (muted), then optional extra row (actions). HTTP-code

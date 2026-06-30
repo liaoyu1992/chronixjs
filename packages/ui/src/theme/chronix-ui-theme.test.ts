@@ -11,7 +11,7 @@ describe('defaultChronixUITheme', () => {
     expect(Object.keys(defaultChronixUITheme).sort()).toEqual(['button', 'common']);
   });
 
-  it('common slice has the expected token surface (Phase 1 baseline)', () => {
+  it('common slice has the expected token surface (baseline)', () => {
     const keys = Object.keys(defaultChronixUITheme.common).sort();
     expect(keys).toEqual(
       [
@@ -61,7 +61,7 @@ describe('defaultChronixUITheme', () => {
     );
   });
 
-  it('button slice has the expected token surface (Phase 1 example)', () => {
+  it('button slice has the expected token surface (example)', () => {
     const keys = Object.keys(defaultChronixUITheme.button).sort();
     expect(keys).toEqual(
       [

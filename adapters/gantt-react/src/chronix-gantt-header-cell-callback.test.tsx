@@ -15,7 +15,7 @@ const weekAxis: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> headerCellClassNamesCallback (Phase 41 — mirrors vue3 Phase 29)', () => {
+describe('<ChronixGantt> headerCellClassNamesCallback (mirrors vue3)', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

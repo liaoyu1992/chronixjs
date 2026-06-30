@@ -6,7 +6,7 @@ import type { BreadcrumbItem } from './breadcrumb-spec.js';
  * Compute class set for a single Breadcrumb item element (`<a>` or
  * `<span>`).
  *
- * Phase 19 (2026-06-02).
+ * .
  *
  * Class structure:
  *

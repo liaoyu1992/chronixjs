@@ -1,5 +1,5 @@
 /**
- * chronix-ui input module — Phase 7 (2026-06-02).
+ * chronix-ui input module — .
  *
  * Pure-function helpers for user-input coercion and navigation. No DOM
  * access, no framework dependency. Adapters wire DOM events to these
@@ -44,7 +44,7 @@ export {
 } from './ime-composition-state.js';
 
 /**
- * Phase 25 (2026-06-03) — Input component IR (Tier B form input).
+ * — Input component IR (Tier B form input).
  * Single export with `type: 'text' | 'textarea'` variant
  * discriminator. See `./input-props.ts` for props + `getInputInnerTag`
  * helper, `./resolve-input-class-list.ts` for class-list resolution,
