@@ -1,5 +1,5 @@
 /**
- * PageHeader stylesheet — Phase 19 (2026-06-02).
+ * PageHeader stylesheet — .
  *
  * Layout: main row (back? + avatar? + heading + extra?) + optional
  * content + optional footer. Heading is a column of title (medium-

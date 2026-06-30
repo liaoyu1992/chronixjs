@@ -1,5 +1,5 @@
 /**
- * chronix-ui option module — Phase 31 (2026-06-04).
+ * chronix-ui option module — .
  *
  * Framework-agnostic Option IR used by Select, TreeSelect (partial —
  * Tree IR drives its panel), Cascader (flat-only, plus its own

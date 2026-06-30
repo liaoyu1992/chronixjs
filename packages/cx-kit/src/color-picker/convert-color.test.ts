@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from './convert-color.js';
 
-describe('rgbToHsv — Phase 99', () => {
+describe('rgbToHsv', () => {
   it('pure red → h=0 s=1 v=1', () => {
     expect(rgbToHsv({ r: 255, g: 0, b: 0 })).toEqual({ h: 0, s: 1, v: 1 });
   });
@@ -38,7 +38,7 @@ describe('rgbToHsv — Phase 99', () => {
   });
 });
 
-describe('hsvToRgb — Phase 99', () => {
+describe('hsvToRgb', () => {
   it('hue=0 s=1 v=1 → pure red', () => {
     expect(hsvToRgb({ h: 0, s: 1, v: 1 })).toEqual({ r: 255, g: 0, b: 0 });
   });
@@ -80,7 +80,7 @@ describe('hsvToRgb — Phase 99', () => {
   });
 });
 
-describe('rgbToHex — Phase 99', () => {
+describe('rgbToHex', () => {
   it('pure red → #ff0000', () => {
     expect(rgbToHex({ r: 255, g: 0, b: 0 })).toBe('#ff0000');
   });
@@ -113,7 +113,7 @@ describe('rgbToHex — Phase 99', () => {
   });
 });
 
-describe('hexToRgb — Phase 99', () => {
+describe('hexToRgb', () => {
   it('parses 6-char #rrggbb', () => {
     expect(hexToRgb('#ff0000')).toEqual({ r: 255, g: 0, b: 0 });
   });

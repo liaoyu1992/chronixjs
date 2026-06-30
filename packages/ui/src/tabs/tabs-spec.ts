@@ -1,6 +1,6 @@
 /**
- * Tabs component IR — Phase 28 (2026-06-04). Tier B items-array tabs
- * mirroring the Phase 25 Radio / Phase 27 Menu + Dropdown precedent.
+ * Tabs component IR — . Tier B items-array tabs
+ * mirroring the Radio / Menu + Dropdown precedent.
  *
  * Out-of-scope (v0.2):
  * - Lazy mount (currently active-only render).

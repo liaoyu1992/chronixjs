@@ -7,9 +7,9 @@
  * spreads it over `defaultChronixTableTheme` so undefined fields
  * fall back to defaults.
  *
- * Phase 1 (2026-05-23) ships geometry tokens (column width
+ * ships geometry tokens (column width
  * defaults, header + row height, cell padding).
- * Phase 6 (2026-05-23) extends with 5 color tokens (headerBg /
+ * extends with 5 color tokens (headerBg /
  * headerBorderColor / rowDividerColor / evenRowBg / oddRowBg) +
  * CSS-var injection via `cssVarsForTheme(theme)`: the adapter
  * writes the theme as `--cx-table-*` custom properties on
@@ -28,71 +28,71 @@
 export interface ChronixTableTheme {
   /**
    * Width used for columns that declare neither `width` nor
-   * `flex`. Phase 1 default: `100`.
+   * `flex`. default: `100`.
    */
   readonly defaultColumnWidth: number;
 
   /**
    * Lower clamp for column widths when a column omits its own
-   * `minWidth`. Phase 1 default: `40`.
+   * `minWidth`. default: `40`.
    */
   readonly defaultMinColumnWidth: number;
 
   /**
-   * Header row height in pixels. Phase 1 default: `32`. Used by
-   * Phase 2's adapter to size the header strip. Phase 6 also
+   * Header row height in pixels. default: `32`. Used by
+   * adapter to size the header strip. also
    * emits as `--cx-table-header-height` CSS var.
    */
   readonly headerHeight: number;
 
   /**
-   * Body row height in pixels. Phase 1 default: `28`. Used by
-   * Phase 3's `rowLayoutPass` as the per-row Y stride. Phase 6
+   * Body row height in pixels. default: `28`. Used by
+   * `rowLayoutPass` as the per-row Y stride.
    * also emits as `--cx-table-row-height` CSS var.
    */
   readonly rowHeight: number;
 
   /**
-   * Horizontal padding inside each cell (left + right). Phase 1
-   * default: `8`. Used by Phase 2's cell renderer. Phase 6 also
+   * Horizontal padding inside each cell (left + right).
+   * default: `8`. Used 's cell renderer. also
    * emits as `--cx-table-cell-padding-x` CSS var.
    */
   readonly cellPaddingX: number;
 
   /**
-   * Phase 6: header background color. Default `'#f1f3f5'`. Emitted
+   * header background color. Default `'#f1f3f5'`. Emitted
    * as `--cx-table-header-bg`; example CSS reads via
    * `var(--cx-table-header-bg, ...)`.
    */
   readonly headerBg: string;
 
   /**
-   * Phase 6: header section bottom border color. Default
+   * header section bottom border color. Default
    * `'#d9dde2'`. Emitted as `--cx-table-header-border-color`.
    */
   readonly headerBorderColor: string;
 
   /**
-   * Phase 6: per-row bottom divider color (painted via box-shadow
+   * per-row bottom divider color (painted via box-shadow
    * inset so it doesn't affect row layout box). Default
    * `'#eceff2'`. Emitted as `--cx-table-row-divider-color`.
    */
   readonly rowDividerColor: string;
 
   /**
-   * Phase 6: even-row zebra-stripe background. Default `'#fafbfc'`.
+   * even-row zebra-stripe background. Default `'#fafbfc'`.
    * Emitted as `--cx-table-even-row-bg`.
    */
   readonly evenRowBg: string;
 
   /**
-   * Phase 6: odd-row zebra-stripe background. Default `'#ffffff'`.
+   * odd-row zebra-stripe background. Default `'#ffffff'`.
    * Emitted as `--cx-table-odd-row-bg`.
    */
   readonly oddRowBg: string;
 
   /**
-   * Phase 10.1 (2026-05-24): width of the optional selection (checkbox)
+   * width of the optional selection (checkbox)
    * column rail in pixels. Default `36`. The rail sits OUTSIDE the
    * consumer's column layout — it does not participate in
    * `columnLayoutPass` math. Emitted as
@@ -103,7 +103,7 @@ export interface ChronixTableTheme {
   readonly selectionColumnWidth: number;
 
   /**
-   * Phase 17 (2026-05-26): box-shadow color painted between the
+   * box-shadow color painted between the
    * left/right pinned zones and the center scrollable zone. Default
    * `'rgba(15, 23, 42, 0.12)'` (a subtle slate). Emitted as
    * `--cx-table-pinned-shadow-color`; CSS applies it via
@@ -114,7 +114,7 @@ export interface ChronixTableTheme {
   readonly pinnedShadowColor: string;
 
   /**
-   * Phase 17 (2026-05-26): background color applied to pinned cells
+   * background color applied to pinned cells
    * so center cells scrolling past don't bleed through the
    * `position: sticky` overlay. Default `'inherit'` — preserves the
    * existing row-stripe behavior. Consumers can override to e.g.
@@ -125,7 +125,7 @@ export interface ChronixTableTheme {
   readonly pinnedZoneBg: string;
 
   /**
-   * Phase 21 (2026-05-27): background color of the drag-fill handle
+   * background color of the drag-fill handle
    * — the small (8×8 px) square overlay rendered at the bottom-right
    * corner of an active cell-range envelope when
    * `cellRangeSelection === 'enabled'`. Default `'#2563eb'` (primary
@@ -136,7 +136,7 @@ export interface ChronixTableTheme {
   readonly dragFillHandleColor: string;
 
   /**
-   * Phase 23 (2026-05-27): height in pixels of the optional group
+   * height in pixels of the optional group
    * header row rendered ABOVE the existing leaf header row when ANY
    * visible column declares `headerGroup`. When no column declares
    * `headerGroup`, the SFC renders only the existing single header row
@@ -146,7 +146,7 @@ export interface ChronixTableTheme {
   readonly headerGroupHeight: number;
 
   /**
-   * Phase 23 (2026-05-27): background color of the group header row
+   * background color of the group header row
    * cells. Subtly darker than `headerBg` so the multi-row header reads
    * as two distinct strips. Default `'#e8ecf0'`. Emitted as
    * `--cx-table-header-group-bg`.
@@ -154,7 +154,7 @@ export interface ChronixTableTheme {
   readonly headerGroupBg: string;
 
   /**
-   * Phase 24 (2026-05-27): height in pixels of the optional sticky
+   * height in pixels of the optional sticky
    * footer aggregate row rendered BELOW the body when `showFooterRow:
    * true`. When the footer is suppressed (default), this token is
    * unused. Default `32`. Emitted as `--cx-table-footer-height`.
@@ -162,7 +162,7 @@ export interface ChronixTableTheme {
   readonly footerHeight: number;
 
   /**
-   * Phase 24 (2026-05-27): background color of the footer row cells.
+   * background color of the footer row cells.
    * Slightly lighter than `headerBg` so the footer reads as the row
    * beneath the body, not a second header. Default `'#f8f9fa'`.
    * Emitted as `--cx-table-footer-bg`.
@@ -170,7 +170,7 @@ export interface ChronixTableTheme {
   readonly footerBg: string;
 
   /**
-   * Phase 30 (2026-05-28): per-depth indent applied to the tree-column's
+   * per-depth indent applied to the tree-column's
    * cell content in pixels. A row at `depth = N` gets
    * `paddingLeft = N * treeIndentPx + chevronGutter`, where
    * `chevronGutter` is the fixed 16px reserved for the chevron / leaf
@@ -182,7 +182,7 @@ export interface ChronixTableTheme {
   readonly treeIndentPx: number;
 
   /**
-   * Phase 30 (2026-05-28): color of the expand/collapse chevron SVG +
+   * color of the expand/collapse chevron SVG +
    * the leaf-row spacer's `currentColor`. Default `'#5a6675'` (neutral
    * mid-gray, matches sort-indicator + filter-icon colors). Emitted as
    * `--cx-table-tree-chevron-color`. Consumers can theme to brand
@@ -191,7 +191,7 @@ export interface ChronixTableTheme {
   readonly treeChevronColor: string;
 
   /**
-   * Phase 30.1.1 (2026-05-28): color used by CSS theming hooks when a
+   * color used by CSS theming hooks when a
    * tree-data parent row's checkbox is in the indeterminate state
    * (some-but-not-all descendants selected). Default `'#5a6675'`
    * matches `treeChevronColor` for visual cohesion. Emitted as
@@ -203,7 +203,7 @@ export interface ChronixTableTheme {
   readonly rowCheckboxIndeterminateColor: string;
 
   /**
-   * Phase 31 (2026-05-28): z-index applied to `position: sticky`
+   * z-index applied to `position: sticky`
    * pinned-row strips (top + bottom regions). Default `2` — matches
    * pinned-column z-index so pinned-cols × pinned-rows intersection
    * cells can lift to z-index 4 (Decision J.1). Emitted as
@@ -214,7 +214,7 @@ export interface ChronixTableTheme {
   readonly pinnedRowZIndex: number;
 
   /**
-   * Phase 32 (2026-05-28): delay in milliseconds before a cell-hover
+   * delay in milliseconds before a cell-hover
    * tooltip appears. Default `400` — long enough to suppress accidental
    * triggers during pointer transit, short enough to feel responsive.
    * Pointermove between cells resets the timer to a fresh interval.
@@ -224,7 +224,7 @@ export interface ChronixTableTheme {
   readonly tooltipDelayMs: number;
 
   /**
-   * Phase 32 (2026-05-28): tooltip popover background color. Default
+   * tooltip popover background color. Default
    * `'#2a2f36'` (dark slate). Emitted as `--cx-table-tooltip-bg`;
    * default popover styles read it via
    * `background: var(--cx-table-tooltip-bg, ...)`.
@@ -232,14 +232,14 @@ export interface ChronixTableTheme {
   readonly tooltipBg: string;
 
   /**
-   * Phase 32 (2026-05-28): tooltip popover text color. Default
+   * tooltip popover text color. Default
    * `'#ffffff'`. Emitted as `--cx-table-tooltip-color`; pairs with
    * `tooltipBg` for contrast against the dark default.
    */
   readonly tooltipColor: string;
 
   /**
-   * Phase 33 (2026-05-28): background color of the loading / no-rows
+   * background color of the loading / no-rows
    * overlay rendered over the body region. Default
    * `'rgba(255, 255, 255, 0.85)'` (translucent white) so the body
    * remains faintly visible behind the overlay. Emitted as
@@ -249,7 +249,7 @@ export interface ChronixTableTheme {
   readonly overlayBg: string;
 
   /**
-   * Phase 34 (2026-05-28): color of the inline spinner SVG rendered in
+   * color of the inline spinner SVG rendered in
    * a lazy-loading parent row's chevron position. Default `'#5a6675'`
    * (matches `treeChevronColor`). Emitted as
    * `--cx-table-tree-spinner-color`. Consumers can theme to brand
@@ -258,7 +258,7 @@ export interface ChronixTableTheme {
   readonly treeSpinnerColor: string;
 
   /**
-   * Phase 34 (2026-05-28): color of the inline ⚠ error icon SVG
+   * color of the inline ⚠ error icon SVG
    * rendered in a lazy-loading parent row's chevron position when
    * `childrenLoader` rejected. Default `'#dc2626'` (red-600). Emitted
    * as `--cx-table-tree-error-color`. Consumers can override for a
@@ -267,7 +267,7 @@ export interface ChronixTableTheme {
   readonly treeErrorColor: string;
 
   /**
-   * Phase 36 (2026-05-28): height in pixels of the optional status
+   * height in pixels of the optional status
    * bar rendered between the body and the pagination footer when
    * `showStatusBar: true`. Default `28`. Emitted as
    * `--cx-table-status-bar-height`. When `showStatusBar: false`
@@ -276,7 +276,7 @@ export interface ChronixTableTheme {
   readonly statusBarHeight: number;
 
   /**
-   * Phase 36 (2026-05-28): background color of the status bar strip.
+   * background color of the status bar strip.
    * Default `'#f4f6f8'` — slightly lighter than `footerBg` (`'#f8f9fa'`)
    * so the status strip reads as a distinct sibling beneath the
    * footer. Emitted as `--cx-table-status-bar-bg`. Consumers using

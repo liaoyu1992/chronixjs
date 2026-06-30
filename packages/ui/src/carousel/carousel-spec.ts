@@ -1,11 +1,11 @@
 /**
- * Carousel component IR — Phase 29 (2026-06-04). Tier B items-array
+ * Carousel component IR — . Tier B items-array
  * slide carousel with optional autoplay + indicator dots + prev/next
  * arrows.
  *
- * First real component-level consumer of Phase 8
+ * First real component-level consumer
  * `buildSlideTransitionStyles` for slide-from-left/right transitions
- * (Phase 28 shipped `buildHeightCollapseTransitionStyles`; Phase 29
+ * (shipped `buildHeightCollapseTransitionStyles`;
  * ships slide animation to a real component).
  *
  * Out-of-scope (v0.2):
@@ -110,7 +110,7 @@ export function findCarouselItemByIndex(
 }
 
 /**
- * Resolve the Phase 8 `SlideDirection` for a transition from
+ * Resolve the `SlideDirection` for a transition from
  * `prevIndex` to `nextIndex`. Forward index movement → slide enters
  * from the trailing edge (right / bottom); backward movement → from
  * the leading edge (left / top).

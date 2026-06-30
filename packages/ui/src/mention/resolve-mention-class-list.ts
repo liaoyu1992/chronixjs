@@ -1,5 +1,5 @@
 /**
- * Mention class-list resolver — Phase 31 (2026-06-04).
+ * Mention class-list resolver — .
  */
 
 export interface ResolveMentionRootClassListInput {

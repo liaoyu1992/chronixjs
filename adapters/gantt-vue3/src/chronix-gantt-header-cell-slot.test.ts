@@ -23,7 +23,7 @@ const weekAxis: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> "header-cell" slot — Phase 29', () => {
+describe('<ChronixGantt> "header-cell" slot', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

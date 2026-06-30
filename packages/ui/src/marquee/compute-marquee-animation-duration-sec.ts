@@ -2,7 +2,7 @@
  * Compute the CSS animation duration (in seconds) for a Marquee
  * given the measured content width and the configured speed.
  *
- * Phase 22 (2026-06-03).
+ * .
  *
  * The Marquee `__track` contains TWO copies of the slot content
  * (for seamless looping); the animation moves the track by `-50%`

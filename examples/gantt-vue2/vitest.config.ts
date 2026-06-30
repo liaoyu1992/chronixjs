@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 
 /**
- * Phase 31.1: the vue2 demo currently has no in-process tests. Vitest is
+ * the vue2 demo currently has no in-process tests. Vitest is
  * wired so the package matches the workspace test-script contract;
  * `--passWithNoTests` in package.json keeps the run green until a
  * `src/*.test.ts` lands.

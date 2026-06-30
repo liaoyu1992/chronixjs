@@ -51,7 +51,7 @@ const twoBars: readonly BarSpec[] = [bar('b1', 'r1', 1, 4), bar('b2', 'r2', 8, 1
  * Run the same layout pipeline `<ChronixGantt>` runs internally so a
  * test can independently compute the expected router output without
  * hand-mocking strip / bar Y. Mirrors the default prop values used by
- * the component (Phase 43: barHeight=30, barVerticalPadding=4,
+ * the component (barHeight=30, barVerticalPadding=4,
  * rowSpacing=1, defaultRowHeight=38).
  */
 function runLayout(bars: readonly BarSpec[]) {
@@ -277,7 +277,7 @@ describe('<ChronixGantt> link rendering — Commit 2: markers + colorOverride', 
     });
     expect(wrapper1.find('path.cx-gantt-link').attributes('stroke')).toBe('#3788d8');
 
-    // Phase 10: defaultLinkColor moved onto theme. Verify a theme
+    // defaultLinkColor moved onto theme. Verify a theme
     // override propagates to the path stroke and the matching <defs>
     // marker color id.
     const wrapper2 = mount(ChronixGantt, {

@@ -1,7 +1,7 @@
 /**
- * CollapseTransition component IR — Phase 28 (2026-06-04). Tier B
+ * CollapseTransition component IR — . Tier B
  * primitive: wraps arbitrary content in a height transition driven by
- * Phase 8 `buildHeightCollapseTransitionStyles`. The adapter measures
+ * `buildHeightCollapseTransitionStyles`. The adapter measures
  * `element.scrollHeight` after mount + applies the 6-phase styles.
  *
  * Consumed internally by `ChronixCollapse` for each item body; also

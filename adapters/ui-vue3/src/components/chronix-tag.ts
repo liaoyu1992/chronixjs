@@ -13,7 +13,7 @@ import { useUIContext } from '../composables/use-ui-context.js';
 /**
  * `<ChronixTag>` — Vue 3 SFC wrapping the core `TagProps` IR.
  *
- * Phase 13 (2026-06-02). Second Tier A component through the full
+ * . Second Tier A component through the full
  * pipeline; mirrors `<ChronixButton>` at the wiring level. Theme
  * tokens applied via CSS-var fallback in the core's
  * `CHRONIX_TAG_CSS`.
@@ -23,7 +23,7 @@ import { useUIContext } from '../composables/use-ui-context.js';
  * - `type` (`'default' | 'primary' | 'info' | 'success' | 'warning'
  *   | 'error'`) — semantic visual variant. Default `'default'`.
  * - `size` (`'small' | 'medium' | 'large'`) — sizing token; defaults
- *   to the active `ChronixUIContext.size` (Phase 0.3 Decision A.1
+ *   to the active `ChronixUIContext.size` (Decision A.1
  *   default-merge precedence).
  * - `bordered` (`boolean`) — visible border. Default `true`.
  * - `round` (`boolean`) — full-pill border-radius. Default `false`.

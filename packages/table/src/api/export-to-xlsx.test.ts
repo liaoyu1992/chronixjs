@@ -84,7 +84,7 @@ describe('exportToXlsx', () => {
     expect(buffer.byteLength).toBeLessThanOrEqual(withHeaders.byteLength);
   });
 
-  describe('Phase 39.1: multi-sheet input', () => {
+  describe('multi-sheet input', () => {
     it('produces a valid XLSX with N sheets when passed {sheets: [...]}', async () => {
       const buffer = await exportToXlsx({
         sheets: [
@@ -130,7 +130,7 @@ describe('exportToXlsx', () => {
     });
   });
 
-  describe('Phase 39.3: freeze-pane', () => {
+  describe('freeze-pane', () => {
     it('produces a valid XLSX when freezePane is unset (backwards-compatible)', async () => {
       const buffer = await exportToXlsx({
         rows,
@@ -196,9 +196,9 @@ describe('exportToXlsx', () => {
     });
   });
 
-  // ────────────────────── Phase 39.4 (2026-05-29) ──────────────────────
+  // ────────────────────── ──────────────────────
 
-  describe('Phase 39.4: per-column body-cell styling', () => {
+  describe('per-column body-cell styling', () => {
     it('produces a valid XLSX when a column carries exportStyle', async () => {
       const styledColumns: readonly ColumnSpec[] = [
         { id: 'name', field: 'name', headerName: 'Name' },

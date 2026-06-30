@@ -6,7 +6,7 @@ import type { FieldError, FormSpec, FormValidationResult } from './form-spec.js'
  * Validate an entire form's values against its declared field rules.
  * Pure-async helper — no DOM access, no state mutation.
  *
- * Phase 6 (2026-06-02). Aggregates per-field results into a single
+ * . Aggregates per-field results into a single
  * `FormValidationResult`:
  *
  * - `valid: true` + `fieldErrors: {}` when every field passes (or has

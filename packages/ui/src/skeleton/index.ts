@@ -1,5 +1,5 @@
 /**
- * chronix-ui skeleton module — Phase 16 (2026-06-02).
+ * chronix-ui skeleton module — .
  *
  * Core IR for the Skeleton placeholder. Adapter components consume
  * these types + pure helpers to render framework-specific placeholder

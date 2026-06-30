@@ -23,7 +23,7 @@ export interface ChronixDescriptionsProps extends Omit<HTMLAttributes<HTMLDivEle
 }
 
 /**
- * `<ChronixDescriptions>` — React port of the Phase 21 Descriptions.
+ * `<ChronixDescriptions>` — React port of the Descriptions.
  *
  * Root element is `<div>`. The native `title` HTML attribute is
  * shadowed by the chronix prop (`Omit<HTMLAttributes, 'title'>`);

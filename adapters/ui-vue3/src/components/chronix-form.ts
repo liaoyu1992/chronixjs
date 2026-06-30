@@ -1,9 +1,9 @@
 /**
- * chronix-ui Vue 3 ChronixForm + ChronixFormItem — Phase 34 (2026-06-05).
+ * chronix-ui Vue 3 ChronixForm + ChronixFormItem — .
  *
  * ChronixForm wraps model + rules, provides registration context via
  * inject/provide. ChronixFormItem registers itself, handles validation
- * display. Uses Phase 6 validateField/validateForm IR.
+ * display. Uses validateField/validateForm IR.
  */
 
 import {

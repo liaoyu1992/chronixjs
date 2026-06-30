@@ -1,6 +1,6 @@
 /**
- * Badge stylesheet — Phase 14 (2026-06-02). Mirrors the Phase 11
- * Button + Phase 13 Tag/Divider injection pattern.
+ * Badge stylesheet — . Mirrors the
+ * Button + Tag/Divider injection pattern.
  *
  * Layout strategy:
  *

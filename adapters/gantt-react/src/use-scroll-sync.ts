@@ -1,7 +1,7 @@
 import { useEffect, useRef, type RefObject } from 'react';
 
 /**
- * Phase 48 — bidirectional vertical scroll sync between two DOM
+ * bidirectional vertical scroll sync between two DOM
  * elements (React port of `adapters/gantt-vue3/src/use-scroll-sync.ts`).
  * Reads each element's scroll event and writes the other's
  * `scrollTop` in lockstep, guarded by a source-tracking ref so the

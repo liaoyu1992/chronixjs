@@ -7,7 +7,7 @@ import { computed, defineComponent, h } from 'vue';
 
 /**
  * `<ChronixEllipsis>` — Vue 3 SFC wrapping the core `EllipsisProps`
- * IR. Phase 23 (2026-06-03). Tier A text-truncation primitive.
+ * IR. . Tier A text-truncation primitive.
  *
  * Root element is `<span>` (NOT `<div>`) — 23-fr2: inline element
  * so it composes within inline flows without forcing block layout.

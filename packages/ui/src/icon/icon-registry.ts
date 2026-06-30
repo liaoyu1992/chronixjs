@@ -3,8 +3,8 @@ import { DEFAULT_ICONS } from './default-icons.js';
 import type { IconSpec } from './icon-spec.js';
 
 /**
- * Process-global icon registry keyed by `IconSpec.name`. Phase 9
- * (2026-06-02). Mirrors the `localeRegistry` pattern (Phase 3):
+ * Process-global icon registry keyed by `IconSpec.name`.
+ * (2026-06-02). Mirrors the `localeRegistry` pattern
  * append-only, no delete API, pre-registered with chronix-NEW defaults
  * at module load.
  *

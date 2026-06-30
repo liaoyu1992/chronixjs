@@ -3,7 +3,7 @@ import type { SpinProps } from './spin-spec.js';
 /**
  * Compute class set for the Spin root element.
  *
- * Phase 16 (2026-06-02).
+ * .
  *
  * Class structure:
  *

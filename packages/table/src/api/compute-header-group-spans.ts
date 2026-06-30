@@ -1,7 +1,7 @@
 import type { ColumnSpec } from '../ir/column-spec.js';
 
 /**
- * Phase 23 (2026-05-27) / Phase 23.1 (2026-05-27): a single column-group
+ * / a single column-group
  * span over a contiguous run of visible columns that share the same
  * group label at a given nesting level (or a singleton run of an
  * un-grouped column / a column whose path is shorter than this level
@@ -33,7 +33,7 @@ export interface HeaderGroupSpan {
 }
 
 /**
- * Phase 23 (single-level) / Phase 23.1 (2026-05-27, nested-level):
+ * (single-level) / (2026-05-27, nested-level):
  * walk `visibleColumns` left-to-right and produce one row of
  * `HeaderGroupSpan[]` per nesting level (outermost level at index 0).
  *
@@ -66,7 +66,7 @@ export interface HeaderGroupSpan {
  * Empty placeholder cells (`groupName === null`) are NEVER merged;
  * each leaf column produces its own singleton-width placeholder so
  * the leaf row beneath stays vertically aligned with grouped siblings
- * (Phase 23 Decision B.1).
+ * (Decision B.1).
  *
  * **`maxDepth` parameter** (Decision B.1):
  *
@@ -82,7 +82,7 @@ export interface HeaderGroupSpan {
  * When provided BUT smaller than the auto-detected depth (defensive),
  * the auto-detected depth wins; the helper never truncates.
  *
- * **Zone-split is the caller's responsibility.** Per Phase 23 Decision
+ * **Zone-split is the caller's responsibility.** Per Decision
  * A.1, groups never span pinned-zone boundaries — the adapter calls
  * `computeHeaderGroupSpans` SEPARATELY for each zone's column list,
  * passing the table-wide max depth as `maxDepth` to keep zone rows

@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixScrollbar } from './chronix-scrollbar.js';
 
 /**
- * Phase 35 (2026-06-05) — Scrollbar mount tests (vue3).
+ * — Scrollbar mount tests (vue3).
  */
 describe('ChronixScrollbar', () => {
   it('renders a div with base class and data-testid', () => {

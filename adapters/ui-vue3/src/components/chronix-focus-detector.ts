@@ -7,7 +7,7 @@ import {
 import { defineComponent, h, ref } from 'vue';
 
 /**
- * `<ChronixFocusDetector>` — Vue 3. Phase 29 (2026-06-04). Transparent
+ * `<ChronixFocusDetector>` — Vue 3. . Transparent
  * wrapper that emits `focus(event)` when focus enters the wrapper from
  * outside, and `blur(event)` when focus leaves entirely. Uses bubbling
  * `focusin` / `focusout` events with `relatedTarget` boundary check.

@@ -17,7 +17,7 @@ import { defaultTransitionSpec, type TransitionSpec } from './transition-spec.js
  * Adapters consume these by setting inline `style` (per-framework
  * mechanism) and listening for `transitionend` to advance phases.
  *
- * Phase 8 (2026-06-02).
+ * .
  */
 export interface TransitionPhaseStyles {
   readonly enterFromStyle: Record<string, string>;
@@ -135,7 +135,7 @@ function slideFromTransform(direction: SlideDirection, distancePx: number): stri
  * Build per-phase styles for a height-collapse transition (height 0
  * ↔ measured `scrollHeight`).
  *
- * Phase 28 (2026-06-04). Phase 8 deferred this builder because height
+ * . deferred this builder because height
  * animation requires DOM measurement at adapter scope — the IR can
  * still ship the pure-data styles once the adapter has resolved
  * `scrollHeightPx`. Adapter consumes by:

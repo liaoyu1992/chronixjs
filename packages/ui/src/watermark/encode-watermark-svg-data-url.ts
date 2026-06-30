@@ -18,7 +18,7 @@ function escapeXmlText(text: string): string {
  * Encode the Watermark props into a CSS-ready
  * `data:image/svg+xml,…` URL string.
  *
- * Phase 22 (2026-06-03). Decision B.1 — SVG data-URI is the
+ * . Decision B.1 — SVG data-URI is the
  * lightweight primitive for repeating overlays;
  * browser tiles natively via `background-repeat`.
  *
@@ -28,7 +28,7 @@ function escapeXmlText(text: string): string {
  * can be assigned directly to `style.backgroundImage` /
  * `style.background-image` without further processing.
  *
- * Browser-serialization note (Phase 22 22-fr1): on read-back via
+ * Browser-serialization note (22-fr1): on read-back via
  * `element.style.backgroundImage` the browser preserves the
  * URL-encoded form but adds wrapping quotes / `url(...)`
  * decoration. Playwright assertions use

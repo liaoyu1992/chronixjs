@@ -29,7 +29,7 @@ const axisInput: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> barClassNamesCallback — Phase 28.3', () => {
+describe('<ChronixGantt> barClassNamesCallback', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -46,7 +46,7 @@ describe('<ChronixGantt> barClassNamesCallback — Phase 28.3', () => {
     });
     const rect = wrapper.find('rect[data-bar-id="a"].cx-gantt-bar');
     expect(rect.exists()).toBe(true);
-    // Class list should contain the built-in class + Phase 44 state
+    // Class list should contain the built-in class + state
     // modifiers (--start + --end for a fully-in-axis bar). No
     // callback-supplied classes.
     expect(rect.classes().sort()).toEqual([
@@ -131,7 +131,7 @@ describe('<ChronixGantt> barClassNamesCallback — Phase 28.3', () => {
   });
 
   it('does NOT propagate custom classes to selection-border / resize-zone / dot rects', () => {
-    // Selection visuals (Phase 28.1) emit as separate sibling rects
+    // Selection visuals emit as separate sibling rects
     // with their own stable cx-gantt-bar-* modifier classes. The
     // callback's return applies ONLY to the main `.cx-gantt-bar`.
     const wrapper = mount(ChronixGantt, {

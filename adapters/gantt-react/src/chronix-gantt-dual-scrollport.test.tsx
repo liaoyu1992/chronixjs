@@ -25,7 +25,7 @@ const baseAxisInput = (): AxisRangePlanInput => ({
   weekendsVisible: true,
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — dual-scrollport (Phase 32.5)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — dual-scrollport ', () => {
   const sampleBars = (): readonly BarSpec[] => [
     makeBar('b1', 'r1', '2026-05-19T00:00', '2026-05-20T00:00'),
   ];
@@ -60,7 +60,8 @@ describe('@chronixjs/gantt-react ChronixGantt — dual-scrollport (Phase 32.5)',
     );
     const pane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-pane')!;
     const headerPane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-header-pane')!;
-    expect(pane.style.overflow).toBe('auto');
+    expect(pane.style.overflowX).toBe('auto');
+    expect(pane.style.overflowY).toBe('hidden');
     expect(headerPane.style.overflow).toBe('hidden');
   });
 

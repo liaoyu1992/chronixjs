@@ -1,13 +1,13 @@
 import type { ColumnSpec, EditValidationError, RowSpec } from '../ir/index.js';
 
 /**
- * Phase 111 (2026-06-01): run a `ColumnSpec.validatorAsync` against a
+ * run a `ColumnSpec.validatorAsync` against a
  * post-coerce typed value and normalise the resolved or rejected
  * promise into a `Promise<EditValidationError | null>` shape the
  * adapter can dispatch on.
  *
- * Extends Phase 101 `runCellValidator` (sync) with the async tier
- * that Phase 101 Decision B.2 explicitly parked. The execution order
+ * Extends `runCellValidator` (sync) with the async tier
+ * that Decision B.2 explicitly parked. The execution order
  * remains locked at the adapter layer (`coerceEditDraftValue` →
  * `validator` (sync) → `validatorAsync` (async)); this helper is a
  * single-stage normaliser, not a pipeline runner.
@@ -21,7 +21,7 @@ import type { ColumnSpec, EditValidationError, RowSpec } from '../ir/index.js';
  * - Promise resolves to `string` → return `{ reason: <string> }`.
  * - Promise resolves to `EditValidationError` → return verbatim.
  *
- * Promise REJECTION handling (per Phase 111 Decision E.1):
+ * Promise REJECTION handling (per Decision E.1):
  * synthesize `{ reason: error.message ?? String(error), code:
  * 'async-error' }` AND `console.error(error)` so the original error
  * chain stays visible to consumer devtools / Sentry hooks. The

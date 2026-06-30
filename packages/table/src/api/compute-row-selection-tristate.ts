@@ -3,7 +3,7 @@ import { collectDescendantRowIds } from './collect-descendant-row-ids.js';
 import type { RowSpec } from '../ir/index.js';
 
 /**
- * Phase 30.1.1 (2026-05-28): tristate row-selection state for parent
+ * tristate row-selection state for parent
  * rows with `children`. Returns:
  *
  * - `'all'`: every descendant row is in `selectedRowIds`.

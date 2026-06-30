@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 
 /**
- * Phase 46: the react demo needs happy-dom for the
+ * the react demo needs happy-dom for the
  * `demo-config.test.ts` unit tests covering the URL-query
  * persistence layer (mirrors `examples/gantt-vue3/vitest.config.ts`).
  * Tests target the framework-agnostic field-factory layer

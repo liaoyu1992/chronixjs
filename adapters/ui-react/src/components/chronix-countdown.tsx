@@ -22,7 +22,7 @@ export interface ChronixCountdownProps extends Omit<
 }
 
 /**
- * `<ChronixCountdown>` — React port of the Phase 18 Countdown.
+ * `<ChronixCountdown>` — React port of the Countdown.
  *
  * Timer lives in a single `useEffect` keyed on `[active, duration,
  * precision]`. When any of those change, the effect tears down the

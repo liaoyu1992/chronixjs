@@ -1,5 +1,5 @@
 /**
- * Cascader class-list resolver — Phase 31 (2026-06-04).
+ * Cascader class-list resolver — .
  */
 
 export interface ResolveCascaderRootClassListInput {

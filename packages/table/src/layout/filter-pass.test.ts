@@ -223,10 +223,10 @@ describe('filterPass', () => {
   });
 
   // ============================================================
-  // Phase 9.1 (2026-05-24): number filter variant
+  // number filter variant
   // ============================================================
 
-  it('Phase 9.1: NumberFilterSpec "=" matches exact numeric value', () => {
+  it('NumberFilterSpec "=" matches exact numeric value', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { qty: 10 }),
       row('r2', { qty: 20 }),
@@ -241,7 +241,7 @@ describe('filterPass', () => {
     expect(out.filteredRows.map((r) => r.id)).toEqual(['r1', 'r3']);
   });
 
-  it('Phase 9.1: "!=" excludes only the exact value', () => {
+  it('"!=" excludes only the exact value', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { qty: 10 }),
       row('r2', { qty: 20 }),
@@ -255,7 +255,7 @@ describe('filterPass', () => {
     expect(out.filteredRows.map((r) => r.id)).toEqual(['r2']);
   });
 
-  it('Phase 9.1: ">" and "<" are half-open exclusive', () => {
+  it('">" and "<" are half-open exclusive', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { qty: 5 }),
       row('r2', { qty: 10 }),
@@ -276,7 +276,7 @@ describe('filterPass', () => {
     expect(lt.filteredRows.map((r) => r.id)).toEqual(['r1']);
   });
 
-  it('Phase 9.1: ">=" and "<=" are half-open inclusive', () => {
+  it('">=" and "<=" are half-open inclusive', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { qty: 5 }),
       row('r2', { qty: 10 }),
@@ -296,7 +296,7 @@ describe('filterPass', () => {
     expect(lte.filteredRows.map((r) => r.id)).toEqual(['r1', 'r2']);
   });
 
-  it('Phase 9.1: "inRange" includes both endpoints', () => {
+  it('"inRange" includes both endpoints', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { qty: 5 }),
       row('r2', { qty: 10 }),
@@ -312,7 +312,7 @@ describe('filterPass', () => {
     expect(out.filteredRows.map((r) => r.id)).toEqual(['r2', 'r3', 'r4']);
   });
 
-  it('Phase 9.1: "inRange" auto-normalizes swapped endpoints (value > valueTo)', () => {
+  it('"inRange" auto-normalizes swapped endpoints (value > valueTo)', () => {
     // Defensive: consumer passing { value: 30, valueTo: 10 } should
     // be treated the same as { value: 10, valueTo: 30 }.
     const rows: readonly RowSpec[] = [row('r1', { qty: 15 }), row('r2', { qty: 100 })];
@@ -324,7 +324,7 @@ describe('filterPass', () => {
     expect(out.filteredRows.map((r) => r.id)).toEqual(['r1']);
   });
 
-  it('Phase 9.1: cell value of "10" (string) does NOT match number filter (type-strict)', () => {
+  it('cell value of "10" (string) does NOT match number filter (type-strict)', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { qty: 10 }),
       row('r2', { qty: '10' }),
@@ -338,7 +338,7 @@ describe('filterPass', () => {
     expect(out.filteredRows.map((r) => r.id)).toEqual(['r1']);
   });
 
-  it('Phase 9.1: NaN / Infinity / null / undefined cell values never match', () => {
+  it('NaN / Infinity / null / undefined cell values never match', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { qty: 10 }),
       row('r2', { qty: NaN }),
@@ -354,7 +354,7 @@ describe('filterPass', () => {
     expect(out.filteredRows.map((r) => r.id)).toEqual(['r1']);
   });
 
-  it('Phase 9.1: mixed text + number multi-spec AND across types', () => {
+  it('mixed text + number multi-spec AND across types', () => {
     const rows: readonly RowSpec[] = [
       row('r1', { name: 'alpha', qty: 10 }),
       row('r2', { name: 'alpha', qty: 50 }),
@@ -373,7 +373,7 @@ describe('filterPass', () => {
     expect(out.filteredRows.map((r) => r.id)).toEqual(['r2', 'r4']);
   });
 
-  // Phase 30 (2026-05-28): tree-recursive filter walks `children` and
+  // tree-recursive filter walks `children` and
   // preserves ancestors of matching descendants per Decision F.1.
 
   it('returns empty filterForceExpandedRowIds when no filter active', () => {
@@ -450,7 +450,7 @@ describe('filterPass', () => {
     expect(out.filterForceExpandedRowIds).toEqual([]);
   });
 
-  describe('Phase 42 ExpressionFilterSpec variant', () => {
+  describe('ExpressionFilterSpec variant', () => {
     it('matches a single retained row via expression spec', () => {
       const rows: readonly RowSpec[] = [
         row('r1', { qty: 5 }),
@@ -574,7 +574,7 @@ describe('filterPass', () => {
     });
   });
 
-  describe('Phase 43 SetFilterSpec variant', () => {
+  describe('SetFilterSpec variant', () => {
     it('selectedValues: null → identity (no filter applied)', () => {
       const rows: readonly RowSpec[] = [
         row('r1', { status: 'done' }),
@@ -686,7 +686,7 @@ describe('filterPass', () => {
     });
   });
 
-  describe('Phase 102 MultiFilterSpec variant', () => {
+  describe('MultiFilterSpec variant', () => {
     const phaseRows: readonly RowSpec[] = [
       row('r1', { status: 'pending-urgent', qty: 10 }),
       row('r2', { status: 'pending-blocked', qty: 50 }),
@@ -694,7 +694,7 @@ describe('filterPass', () => {
       row('r4', { status: 'complete', qty: 60 }),
     ];
 
-    it('Phase 102: empty filters array → identity (returns input by reference)', () => {
+    it('empty filters array → identity (returns input by reference)', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -706,7 +706,7 @@ describe('filterPass', () => {
       expect(out.filteredRows).toBe(phaseRows);
     });
 
-    it('Phase 102: single child reduces to that child predicate', () => {
+    it('single child reduces to that child predicate', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -717,7 +717,7 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r1']);
     });
 
-    it('Phase 102: 2-child AND mode requires both predicates to match', () => {
+    it('2-child AND mode requires both predicates to match', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -731,7 +731,7 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r2']);
     });
 
-    it('Phase 102: 2-child OR mode passes rows matching either predicate', () => {
+    it('2-child OR mode passes rows matching either predicate', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -745,7 +745,7 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r1', 'r2']);
     });
 
-    it('Phase 102: mixed-type children (text + number) compose correctly under AND', () => {
+    it('mixed-type children (text + number) compose correctly under AND', () => {
       // status contains "pending" AND qty > 20 → r2 + r3 (not r1's qty=10).
       // r1 qty=10 fails number predicate; r4 'complete' fails text predicate.
       const spec: FilterSpec = {
@@ -764,8 +764,8 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r2', 'r3']);
     });
 
-    // Phase 116 (2026-06-02): set-child variant.
-    it('Phase 116: set-child with selectedValues includes matching rows', () => {
+    // set-child variant.
+    it('set-child with selectedValues includes matching rows', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -776,7 +776,7 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r1', 'r4']);
     });
 
-    it('Phase 116: set-child with selectedValues: [] is vacuous-false (no rows pass)', () => {
+    it('set-child with selectedValues: [] is vacuous-false (no rows pass)', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -787,7 +787,7 @@ describe('filterPass', () => {
       expect(out.filteredRows).toHaveLength(0);
     });
 
-    it('Phase 116: set-child with selectedValues: null is identity (slot inactive)', () => {
+    it('set-child with selectedValues: null is identity (slot inactive)', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -799,7 +799,7 @@ describe('filterPass', () => {
       expect(out.filteredRows).toBe(phaseRows);
     });
 
-    it('Phase 116: set-child composes with text-child under AND (set narrows, text filters)', () => {
+    it('set-child composes with text-child under AND (set narrows, text filters)', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -813,8 +813,8 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r1']);
     });
 
-    // Phase 117 (2026-06-02): nested groups.
-    it('Phase 117: depth-1 group inside multi-filter behaves like a sub-predicate', () => {
+    // nested groups.
+    it('depth-1 group inside multi-filter behaves like a sub-predicate', () => {
       // (status contains "urgent" OR status contains "blocked") — same as flat
       // 2-child OR, but here wrapped in a group at root.
       const spec: FilterSpec = {
@@ -836,7 +836,7 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r1', 'r2']);
     });
 
-    it('Phase 117: AND-of-OR vs OR-of-AND yield distinct results', () => {
+    it('AND-of-OR vs OR-of-AND yield distinct results', () => {
       // AND-of-OR: (contains "pending") AND (contains "urgent" OR contains "blocked")
       // → r1 (pending-urgent) + r2 (pending-blocked); not r3 (pending-normal), not r4
       const andOfOr: FilterSpec = {
@@ -879,7 +879,7 @@ describe('filterPass', () => {
       expect(out2.filteredRows.map((r) => r.id)).toEqual(['r1', 'r4']);
     });
 
-    it('Phase 117: depth-2 nested groups compose correctly', () => {
+    it('depth-2 nested groups compose correctly', () => {
       // status contains "pending" AND (qty > 20 OR (status contains "urgent"))
       // → r1 (urgent, qty=10 fails > 20 but inner OR catches via urgent)
       //   r2 (blocked, qty=50 > 20)
@@ -906,7 +906,7 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r2', 'r3']);
     });
 
-    it('Phase 117: empty group is identity (does not exclude any rows)', () => {
+    it('empty group is identity (does not exclude any rows)', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -918,7 +918,7 @@ describe('filterPass', () => {
       expect(out.filteredRows).toBe(phaseRows);
     });
 
-    it('Phase 117: all-empty-children group propagates identity', () => {
+    it('all-empty-children group propagates identity', () => {
       const spec: FilterSpec = {
         type: 'multi',
         colId: 'status',
@@ -939,7 +939,7 @@ describe('filterPass', () => {
       expect(out.filteredRows).toBe(phaseRows);
     });
 
-    it('Phase 117: deeply-nested group (depth-3) still evaluates correctly', () => {
+    it('deeply-nested group (depth-3) still evaluates correctly', () => {
       // status contains "urgent" wrapped 3 levels deep.
       const spec: FilterSpec = {
         type: 'multi',
@@ -969,7 +969,7 @@ describe('filterPass', () => {
       expect(out.filteredRows.map((r) => r.id)).toEqual(['r1']);
     });
 
-    it('Phase 117: mixed leaf + group at same level under AND combine', () => {
+    it('mixed leaf + group at same level under AND combine', () => {
       // status contains "pending" AND (qty > 0 OR qty < 0)  — group OR matches all positives.
       const spec: FilterSpec = {
         type: 'multi',

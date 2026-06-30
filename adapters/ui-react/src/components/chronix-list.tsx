@@ -17,11 +17,11 @@ export interface ChronixListProps extends Omit<HTMLAttributes<HTMLUListElement>,
 }
 
 /**
- * `<ChronixList>` — React port of the Phase 21 List.
+ * `<ChronixList>` — React port of the List.
  *
  * Root element is `<ul>` (not `<div>`); items are `<li>`. The
  * props extend `Omit<HTMLAttributes<HTMLUListElement>, 'children'>`
- * — NEW for Phase 21 (Breadcrumb's `HTMLElement` precedent for
+ * — NEW (Breadcrumb's `HTMLElement` precedent for
  * `<nav>` is the closest sibling).
  */
 export function ChronixList(props: ChronixListProps): JSX.Element {

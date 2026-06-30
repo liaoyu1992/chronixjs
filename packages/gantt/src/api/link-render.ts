@@ -2,7 +2,7 @@ import type { CustomLinkMarker, LinkMarker, LinkSpec } from '../ir/index.js';
 import type { PlacedBar, RoutedLink } from '../layout/types.js';
 
 /**
- * Argument bag passed to `onLineCallback` (Phase 28.3). Chronix-
+ * Argument bag passed to `onLineCallback` . Chronix-
  * native shape; carries the routed geometry plus the resolved
  * defaults the callback would render with if it returned
  * `undefined`. Mirror of the original `DependencyLine`
@@ -47,7 +47,7 @@ export interface LinkRenderOverride {
 }
 
 /**
- * Per-link render callback (Phase 28.3). One callback registered per
+ * Per-link render callback . One callback registered per
  * chart via the `onLineCallback` component prop; consumers chaining
  * rules call multiple helpers inside one function (the parity
  * reference accepts an array, but chronix v0 prefers a single

@@ -1,5 +1,5 @@
 /**
- * Calendar navigation helper — Phase 32 (2026-06-05).
+ * Calendar navigation helper — .
  *
  * Pure functions for month/year navigation in calendar panels.
  */

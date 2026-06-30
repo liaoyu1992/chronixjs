@@ -3,9 +3,9 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import type { RowSpec } from '@chronixjs/table';
 
 /**
- * Phase 30.2 (react port, 2026-05-28): React hook for tree-data
+ * (react port, 2026-05-28): React hook for tree-data
  * expand state. Mirrors the vue3 `useTreeExpandState` composable's
- * hybrid controlled / uncontrolled posture (Phase 30 Decision B.1).
+ * hybrid controlled / uncontrolled posture (Decision B.1).
  *
  * - When `controlled` is non-undefined → controlled mode. Source of
  *   truth is the prop; toggle / expand / collapse fire `onChange`

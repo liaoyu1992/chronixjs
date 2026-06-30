@@ -1,5 +1,5 @@
 /**
- * Tooltip component IR — Phase 26 (2026-06-03). Tier B text-only popup
+ * Tooltip component IR — . Tier B text-only popup
  * surface. Thin styling variant of `<ChronixPopover>` with simpler API
  * (`content: string` prop instead of slot) and dark default theme.
  *

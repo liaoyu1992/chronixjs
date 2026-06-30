@@ -1,5 +1,5 @@
 /**
- * Body scroll-lock helpers — Phase 27 (2026-06-03). Counter-based
+ * Body scroll-lock helpers — . Counter-based
  * + stack-aware so multiple modals/drawers open simultaneously only
  * restore the original `document.body.style.overflow` value when the
  * **last** one closes.

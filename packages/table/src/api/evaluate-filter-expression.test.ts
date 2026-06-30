@@ -21,7 +21,7 @@ function row(id: string, data: Record<string, unknown>): RowSpec {
   return { id, data };
 }
 
-describe('buildExpressionPredicate (Phase 42)', () => {
+describe('buildExpressionPredicate ', () => {
   it('matches single text equality', () => {
     const expr: FilterExpression = {
       kind: 'compare',

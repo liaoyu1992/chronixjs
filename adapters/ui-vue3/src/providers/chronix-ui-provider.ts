@@ -12,7 +12,7 @@ import { computed, defineComponent, h, inject, provide, type InjectionKey, type 
  * Components consume via `useUIContext()`; consumers wanting raw access
  * may inject this key directly.
  *
- * Phase 11 (2026-06-02) per Phase 0.3 Decision A.1.
+ * per Decision A.1.
  */
 export const UI_CONTEXT_INJECTION_KEY: InjectionKey<Ref<ChronixUIContext>> =
   Symbol('ChronixUIContext');
@@ -27,7 +27,7 @@ export const UI_CONTEXT_INJECTION_KEY: InjectionKey<Ref<ChronixUIContext>> =
  * on its own root `<div>` element via inline `style`, so descendants'
  * static CSS can read tokens via `var(--cx-ui-...)` fallback.
  *
- * Phase 11 (2026-06-02). Props mirror `ChronixUIContextOverrides`
+ * . Props mirror `ChronixUIContextOverrides`
  * (every field optional); when no parent provider exists, defaults
  * from `createDefaultUIContext` apply.
  */

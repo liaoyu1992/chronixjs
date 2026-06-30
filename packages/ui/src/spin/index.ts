@@ -1,5 +1,5 @@
 /**
- * chronix-ui spin module — Phase 16 (2026-06-02).
+ * chronix-ui spin module — .
  *
  * Core IR for the Spin component. Adapter components consume these
  * types + pure helpers to render framework-specific spinner elements

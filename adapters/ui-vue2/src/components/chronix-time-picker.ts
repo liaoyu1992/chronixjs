@@ -17,7 +17,7 @@ import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
  * `<ChronixTimePicker>` — Vue 2 time picker with scrollable columns.
- * Phase 32 (2026-06-05). Vue 2: no Teleport → inline popup.
+ * . Vue 2: no Teleport → inline popup.
  */
 export const ChronixTimePicker = defineComponent({
   name: 'ChronixTimePicker',

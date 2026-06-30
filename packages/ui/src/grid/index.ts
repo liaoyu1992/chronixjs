@@ -1,5 +1,5 @@
 /**
- * chronix-ui grid module — Phase 17 (2026-06-02).
+ * chronix-ui grid module — .
  *
  * Core IR for the Grid 2D layout primitive. Adapter components
  * consume these types + pure helpers to render framework-specific

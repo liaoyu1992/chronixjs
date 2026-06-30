@@ -27,7 +27,7 @@ export interface ChronixCardProps extends Omit<
 }
 
 /**
- * `<ChronixCard>` — React 18 port of the Phase 15 Card. The "footer"
+ * `<ChronixCard>` — React 18 port of the Card. The "footer"
  * region is exposed as a named React prop rather than `children` to
  * mirror the Vue `footer` named slot semantically.
  */

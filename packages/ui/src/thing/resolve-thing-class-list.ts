@@ -6,7 +6,7 @@ import type { ThingProps } from './thing-spec.js';
  * the declarative props AND the resolved slot state so the BEM
  * `--with-*` modifiers are stable across the 3 adapters.
  *
- * Mirrors Phase 19 PageHeader's `PageHeaderClassListInput`
+ * Mirrors PageHeader's `PageHeaderClassListInput`
  * convention.
  */
 export interface ThingClassListInput {
@@ -30,7 +30,7 @@ export interface ThingClassListInput {
 /**
  * Compute class set for the Thing root element.
  *
- * Phase 23 (2026-06-03).
+ * .
  *
  * Class structure:
  *

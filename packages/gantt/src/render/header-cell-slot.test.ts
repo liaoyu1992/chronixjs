@@ -15,7 +15,7 @@ function startOfDay(d: Date): Date {
   return x;
 }
 
-describe('Phase 29 — HEADER_CELL_SLOT_NAME + HeaderCellSlotArgs', () => {
+describe('HEADER_CELL_SLOT_NAME + HeaderCellSlotArgs', () => {
   it('exports HEADER_CELL_SLOT_NAME as the literal "header-cell" constant', () => {
     expect(HEADER_CELL_SLOT_NAME).toBe('header-cell');
   });

@@ -1,5 +1,5 @@
 /**
- * chronix-ui form module — Phase 6 (2026-06-02), extended Phase 34 (2026-06-05).
+ * chronix-ui form module —, extended .
  *
  * Framework-agnostic form validation IR. Wraps `async-validator` (peer
  * dependency, optional — consumers using Form must install it) with
@@ -9,7 +9,7 @@
  *
  * Public surface:
  *
- * Phase 6 — validation foundation:
+ * validation foundation:
  * - `ValidationRule` — re-export of `async-validator`'s `RuleItem`.
  * - `FieldSpec<T>` / `FormSpec` — declarative field + form definitions.
  * - `FieldError` / `FormValidationResult` — validation output shapes.
@@ -17,7 +17,7 @@
  * - `validateField` — single-field async validation.
  * - `validateForm` — full-form async validation.
  *
- * Phase 34 — component-level IR:
+ * component-level IR:
  * - `FormProps` / `FormItemProps` — component prop interfaces.
  * - `defaultFormProps` / `defaultFormItemProps` — default prop values.
  * - `getNestedValue` — dot-path model accessor.
@@ -26,7 +26,7 @@
  * - `CHRONIX_FORM_CSS` + `ensureChronixFormStyles`.
  */
 
-// Phase 6 — validation foundation
+// validation foundation
 export type { ValidationRule } from './validation-rule.js';
 export type { FieldError, FieldSpec, FormSpec, FormValidationResult } from './form-spec.js';
 export type { FieldState } from './field-state.js';
@@ -41,7 +41,7 @@ export {
 export { validateField } from './validate-field.js';
 export { validateForm } from './validate-form.js';
 
-// Phase 34 — component-level IR
+// component-level IR
 export type {
   FormItemProps,
   FormLabelAlign,

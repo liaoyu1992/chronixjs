@@ -2,9 +2,9 @@
  * IR primitives barrel — the type vocabulary every chronix-table
  * pass / render helper / adapter consumes.
  *
- * Phase 1 (2026-05-23): `ColumnSpec`, `RowSpec`, `HeaderCell`.
- * Phase 8 (2026-05-24): `SortSpec`, `CellComparatorArgs`.
- * Phase 9 (2026-05-24): `FilterSpec` (discriminated union;
+ * `ColumnSpec`, `RowSpec`, `HeaderCell`.
+ * `SortSpec`, `CellComparatorArgs`.
+ * `FilterSpec` (discriminated union;
  * `TextFilterSpec` first variant) + `TextFilterOperator`.
  * Additional primitives (`CellSpec`, `CellRange`, `EditProposal`,
  * `ColumnGroupSpec`) land in their owning feature phases.

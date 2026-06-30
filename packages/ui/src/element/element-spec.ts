@@ -1,5 +1,5 @@
 /**
- * Element IR — Phase 24 (2026-06-03). Tier A generic chronix-themed
+ * Element IR — . Tier A generic chronix-themed
  * HTML element wrapper.
  */
 

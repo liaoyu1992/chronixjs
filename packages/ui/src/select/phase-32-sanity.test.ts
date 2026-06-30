@@ -1,6 +1,6 @@
 /**
- * Phase 32 sanity check — verifies Select IR ready for DatePicker.
- * Phase 31 (2026-06-04).
+ * sanity check — verifies Select IR ready for DatePicker.
+ * .
  */
 import { describe, expect, it } from 'vitest';
 
@@ -13,7 +13,7 @@ import {
 
 import type { SelectOption } from './option-spec.js';
 
-describe('Phase 32 sanity checks', () => {
+describe('sanity checks', () => {
   it('flattenSelectOptions handles DatePicker-style year/month groups', () => {
     const options: SelectOption[] = [
       {

@@ -9,7 +9,7 @@ import type { FilterSpec, RowSpec, SortSpec } from '../ir/index.js';
  * comfortably inside one block, small enough that off-screen blocks
  * are not over-fetched.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export const DEFAULT_CACHE_BLOCK_SIZE = 100;
 
@@ -20,7 +20,7 @@ export const DEFAULT_CACHE_BLOCK_SIZE = 100;
  * default block size of 100, this bounds memory at ~1000 rows per
  * session.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export const DEFAULT_SERVER_SIDE_MAX_BLOCKS_IN_CACHE = 10;
 
@@ -35,14 +35,14 @@ export const DEFAULT_SERVER_SIDE_MAX_BLOCKS_IN_CACHE = 10;
  * so they are unique across blocks + row positions; the indices are
  * incidental and consumers should not depend on them.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export const SERVER_SIDE_SKELETON_ID_PREFIX = '__chx_skel__';
 
 /**
  * Test whether a row id is a server-side skeleton placeholder.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export function isServerSideSkeletonRowId(rowId: string): boolean {
   return rowId.startsWith(SERVER_SIDE_SKELETON_ID_PREFIX);
@@ -57,7 +57,7 @@ export function isServerSideSkeletonRowId(rowId: string): boolean {
  * the consumer's `getRows` impl should wire it through to its
  * underlying `fetch` call (or check `signal.aborted` before returning).
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export interface GetRowsParams {
   /** Inclusive lower bound. `0`-based displayed-row index. */
@@ -83,7 +83,7 @@ export interface GetRowsParams {
  * return a true total should supply an over-estimate (chronix clips
  * visible-row rendering to what blocks actually return).
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export interface GetRowsResult {
   /**
@@ -104,7 +104,7 @@ export interface GetRowsResult {
  * The optional `destroy` hook fires on SFC unmount + when the SFC
  * swaps the source identity.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export interface ServerSideDataSource {
   getRows(params: GetRowsParams): Promise<GetRowsResult>;
@@ -114,7 +114,7 @@ export interface ServerSideDataSource {
 /**
  * Constructor-time options for `createServerSideRowSource`.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export interface CreateServerSideRowSourceOptions {
   /** Per-block size. Defaults to `DEFAULT_CACHE_BLOCK_SIZE` (100). */
@@ -139,7 +139,7 @@ export const BLOCK_KIND_ERROR = 'error';
 /**
  * Discriminated union of per-block states tracked inside the session.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export type BlockState =
   | { readonly kind: typeof BLOCK_KIND_IDLE }
@@ -152,7 +152,7 @@ export type BlockState =
  * changes sort or filter; the session aborts in-flight blocks, clears
  * the cache, and resets to the new view.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export interface ServerSideViewParams {
   readonly sortModel: readonly SortSpec[];
@@ -168,13 +168,13 @@ export interface ServerSideViewParams {
  * caller to render as a skeleton row. Subscribers are notified
  * whenever a block resolves (loaded OR error) so the SFC re-renders.
  *
- * Phase 45 (2026-05-29).
+ * .
  */
 export interface ServerSideRowSource {
   /** O(1) lookup by displayed index. `null` = not loaded; dispatches if idle. */
   getRowAt(displayedIndex: number): RowSpec | null;
   /**
-   * Phase 45.3 (2026-05-31): no-side-effect read variant of `getRowAt`.
+   * no-side-effect read variant of `getRowAt`.
    * Returns the cached row if the containing block is `LOADED`;
    * returns `null` for `IDLE` / `LOADING` / `ERROR` blocks WITHOUT
    * dispatching a fresh fetch + WITHOUT touching the LRU
@@ -198,7 +198,7 @@ export interface ServerSideRowSource {
   /** Whole-cache invalidation. Aborts in-flight + clears cache; no auto-dispatch. */
   refresh(): void;
   /**
-   * Phase 45.2 (2026-05-30): partial invalidation. For each input
+   * partial invalidation. For each input
    * blockIndex: LOADING blocks have their `AbortController.abort()`
    * called + the entry is removed from the cache (the next `getRowAt`
    * into that block dispatches anew); LOADED + ERROR blocks have the
@@ -227,7 +227,7 @@ interface InternalBlockEntry {
  * `destroy()` MUST be called on unmount or when swapping the
  * underlying source identity.
  *
- * Phase 45 (2026-05-29).
+ * .
  *
  * Block addressing: a row at displayed index `i` lives in block
  * `floor(i / cacheBlockSize)`. The first read of an idle block

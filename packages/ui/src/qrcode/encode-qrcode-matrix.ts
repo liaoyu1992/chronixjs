@@ -20,7 +20,7 @@ export type QrCodeFactory = (
  * `undefined` until the consumer calls
  * `registerQrCodeEncoder(qrcode)` once at app boot.
  *
- * Phase 22 (2026-06-03). Decision C.1 — registration pattern is
+ * . Decision C.1 — registration pattern is
  * the chronix-NEW idiom for optional peer-deps that need a
  * synchronous API + tree-shakeable bundle posture. Consumers who
  * never call `registerQrCodeEncoder` never pull
@@ -62,7 +62,7 @@ export function getRegisteredQrCodeEncoder(): QrCodeFactory | undefined {
  * Encode a QR code value into an N×N boolean matrix (true = dark
  * module).
  *
- * Phase 22 (2026-06-03). Decision C.1.
+ * . Decision C.1.
  *
  * Returns:
  *

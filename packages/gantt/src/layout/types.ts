@@ -126,7 +126,7 @@ export interface PlacedBar {
   /** Logical-pixel height — strip height minus vertical padding (top + bottom). */
   readonly height: number;
   /**
-   * Phase 27: `true` when the bar's `range.start` falls AT OR AFTER
+   * `true` when the bar's `range.start` falls AT OR AFTER
    * the axis's first tick time. `false` when the bar started before
    * the axis range — render layer emits a left-pointing continuation
    * triangle in that case.
@@ -138,7 +138,7 @@ export interface PlacedBar {
    */
   readonly isStart: boolean;
   /**
-   * Phase 27: `true` when the bar's `range.end` falls AT OR BEFORE
+   * `true` when the bar's `range.end` falls AT OR BEFORE
    * the axis end (`axis.ticks[0].time + axis.slotCount × axis.slotDurationMs`).
    * `false` when the bar extends past the axis range — render layer
    * emits a right-pointing continuation triangle in that case.
@@ -161,7 +161,7 @@ export interface BarStackHeightPassOutput {
   /** Same data as `heightsPerRow`, keyed by `RowSpec.id` for direct lookup. */
   readonly heightByRowId: ReadonlyMap<string, number>;
   /**
-   * Phase 30: per-bar stacking level (0 = top track, 1 = second track,
+   * per-bar stacking level (0 = top track, 1 = second track,
    * etc.). Populated for every bar that intersects the axis range; bars
    * outside the axis range are absent from the map.
    *
@@ -227,11 +227,11 @@ export interface BarPlacementPassInput {
    * and stacks strips taller than that to fit multiple bars per row.
    * Chronix v1 exposes the same knob; the bar-row stacking that derives
    * strip heights from event collisions is a separate concern, owned by
-   * the caller until a Phase 2.x pass lands.
+   * the caller until a pass lands.
    */
   readonly barHeight?: number;
   /**
-   * Phase 30: per-bar stacking level from `BarStackHeightPass.compute`'s
+   * per-bar stacking level from `BarStackHeightPass.compute`'s
    * output. When present, bar Y =
    * `strip.y + barVerticalPadding + level * (barHeight + barStackSpacing)`.
    * Bars absent from the map (or when the map itself is undefined)
@@ -240,7 +240,7 @@ export interface BarPlacementPassInput {
    */
   readonly levelByBarId?: ReadonlyMap<string, number>;
   /**
-   * Phase 30: vertical spacing in pixels between stacked bars on the same
+   * vertical spacing in pixels between stacked bars on the same
    * row. Must match `BarStackHeightPassInput.barStackSpacing` so the placed
    * bars fit within the row height the height-pass reserved. Default 5
    * (matches the height-pass default for symmetry; mirrors the parity

@@ -3,7 +3,7 @@ import type { StatisticProps } from './statistic-spec.js';
 /**
  * Compute class set for the Statistic root element.
  *
- * Phase 18 (2026-06-02).
+ * .
  *
  * `hasPrefix` + `hasSuffix` come from the adapter (whether the
  * respective slot / prop resolved to content).

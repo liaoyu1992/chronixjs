@@ -1,5 +1,5 @@
 /**
- * chronix-ui notification module — Phase 36 (2026-06-05).
+ * chronix-ui notification module — .
  */
 
 export type {

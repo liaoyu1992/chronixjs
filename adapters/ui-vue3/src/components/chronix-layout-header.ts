@@ -2,7 +2,7 @@ import { ensureChronixLayoutStyles, resolveLayoutHeaderClassList } from '@chroni
 import { defineComponent, h } from 'vue';
 
 /**
- * `<ChronixLayoutHeader>` — Vue 3. Phase 28 (2026-06-04). Pure CSS-class
+ * `<ChronixLayoutHeader>` — Vue 3. . Pure CSS-class
  * wrapper; consumes the Layout stylesheet on first mount. Self-contained
  * (no parent context lookup).
  */

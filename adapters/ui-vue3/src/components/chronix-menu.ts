@@ -12,7 +12,7 @@ import {
 import { computed, defineComponent, h, ref, watch, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixMenu>` — Vue 3 inline hierarchical menu. Phase 27
+ * `<ChronixMenu>` — Vue 3 inline hierarchical menu.
  * (2026-06-03). NOT portal-mounted; sub-menus expand/collapse inline.
  *
  * Adapter owns the `expandedKeys: Set<string>` ref (initialized from

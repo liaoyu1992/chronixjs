@@ -7,7 +7,7 @@ import {
 import { ref, type Ref } from 'vue';
 
 /**
- * Vue 3 imperative Notification queue composable — Phase 36 (2026-06-05).
+ * Vue 3 imperative Notification queue composable — .
  *
  * Manages a reactive list of `NotificationItem`s and exposes an API with
  * `create()`, `info()`, `success()`, `warning()`, `error()`, and

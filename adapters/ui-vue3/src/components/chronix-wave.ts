@@ -2,7 +2,7 @@ import { defaultWaveProps, ensureChronixWaveStyles, resolveWaveClassList } from 
 import { defineComponent, h, onBeforeUnmount, ref, type PropType } from 'vue';
 
 /**
- * `<ChronixWave>` — Vue 3. Phase 29 (2026-06-04). Wraps a child and
+ * `<ChronixWave>` — Vue 3. . Wraps a child and
  * triggers a CSS ripple animation on `pointerdown`. Adapter manages
  * a boolean `rippling` state cleared by a `setTimeout(duration)`.
  */

@@ -20,7 +20,7 @@ import type {
 } from '../ir/index.js';
 
 /**
- * Input to `filterPass` (Phase 9, 2026-05-24).
+ * Input to `filterPass` (2026-05-24).
  *
  * `filterSpec` is `readonly FilterSpec[]` with multi-column AND
  * semantics — a row must pass EVERY entry to be included. Empty
@@ -46,10 +46,10 @@ export interface FilterPassInput {
  *
  * `rejected` is `true` when ANY entry references a non-existent
  * `colId` OR a column with `filterable === false`. Atomic rejection
- * matches Phase 8.1 `sortPass` semantics — either the whole filter
+ * matches `sortPass` semantics — either the whole filter
  * applies or nothing does.
  *
- * `filterForceExpandedRowIds` (Phase 30, 2026-05-28): row IDs of
+ * `filterForceExpandedRowIds` (2026-05-28): row IDs of
  * ancestors whose children matched the filter while the ancestors
  * themselves did NOT match. Empty when no filter is active or when
  * no row carries `children`. Adapters union this set with the user's
@@ -80,7 +80,7 @@ type FilterPredicate = (row: RowSpec) => boolean;
  *    array; for each entry resolve the matching column. When ANY
  *    entry's `colId` is unknown OR the column has `filterable ===
  *    false`, return `{filteredRows: rows, rejected: true}` (atomic
- *    rejection — matches Phase 8.1 sortPass).
+ *    rejection — matches sortPass).
  *    Empty-value entries (`value === ''`) compile to a tautology
  *    predicate (`() => true`) so the user can render an always-on
  *    filter input row without blank inputs hiding rows.
@@ -139,7 +139,7 @@ export function filterPass(input: FilterPassInput): FilterPassResult {
     return true;
   };
 
-  // Phase 30 (2026-05-28): when ANY row has `children`, walk
+  // when ANY row has `children`, walk
   // recursively so ancestors of matching descendants are preserved.
   // Decision F.1 of `TABLE_PHASE_30_TREE_DATA_DESIGN.md`.
   if (hasAnyChildren(rows)) {
@@ -153,7 +153,7 @@ export function filterPass(input: FilterPassInput): FilterPassResult {
 }
 
 /**
- * Phase 30: tree-aware filter walk. Returns the pruned tree where
+ * tree-aware filter walk. Returns the pruned tree where
  * every retained ancestor either matches the filter OR has at least
  * one matching descendant. Ancestors retained ONLY because of a
  * descendant match are pushed into `forceExpanded` (the caller
@@ -234,12 +234,12 @@ function buildPredicate(
     return buildMultiPredicate(spec, column);
   }
   // Defensive default for future-variant case: an unhandled `type`
-  // lets every row through. Phase 9.2+ will widen the union.
+  // lets every row through. + will widen the union.
   return null;
 }
 
 /**
- * Phase 102 (2026-06-01): build a per-row predicate for the
+ * build a per-row predicate for the
  * multi-filter container. Recursively constructs child predicates
  * via the existing text + number predicate factories (re-used by
  * synthesizing a "headless-child → full-spec" shim with the parent's
@@ -248,12 +248,12 @@ function buildPredicate(
  * Empty `filters` array OR all-empty-value children → returns `null`
  * (the caller's `anyActive` short-circuit keeps the input array
  * identity, matching the per-spec empty-text-value pattern from
- * Phase 9).
+ *).
  *
  * Combination semantics:
  *
  * - `'AND'` mode: every active child predicate must accept the row.
- *   Empty-child predicates (which Phase 9 / 9.1 represent as a
+ *   Empty-child predicates (which represent as a
  *   null factory result) are dropped from the combine — they're
  *   tautologies and contribute nothing.
  * - `'OR'` mode: at least one active child predicate must accept.
@@ -265,8 +265,8 @@ function buildPredicate(
  * O(haystack), number comparison is O(1), etc.).
  */
 function buildMultiPredicate(spec: MultiFilterSpec, column: ColumnSpec): FilterPredicate | null {
-  // Phase 102 + 117: build predicates over the (possibly recursive)
-  // `MultiFilterEntry[]`. Leaf children synthesize per Phase 102/116;
+  // + 117: build predicates over the (possibly recursive)
+  // `MultiFilterEntry[]`. Leaf children synthesize per;
   // nested groups recurse via `buildMultiEntryPredicate` and combine
   // their own children's predicates per the group's `mode`.
   const childPredicates: FilterPredicate[] = [];
@@ -279,8 +279,8 @@ function buildMultiPredicate(spec: MultiFilterSpec, column: ColumnSpec): FilterP
 }
 
 /**
- * Phase 117 (2026-06-02): combine an array of predicates per a
- * group/spec `mode`. Factored from Phase 102's inline AND/OR loop so
+ * combine an array of predicates per a
+ * group/spec `mode`. Factored 's inline AND/OR loop so
  * the root-level multi-filter combine and every nested-group combine
  * share one implementation.
  */
@@ -305,8 +305,8 @@ function combineByMode(
 }
 
 /**
- * Phase 102 + 117: synthesize a predicate from a single
- * `MultiFilterEntry`. Leaf children re-use the Phase 9 / 9.1 / 43
+ * + 117: synthesize a predicate from a single
+ * `MultiFilterEntry`. Leaf children re-use the
  * factories via "headless-child → full-spec" synthesis. Group entries
  * recurse — their own children's predicates combine per the group's
  * `mode`.
@@ -333,8 +333,8 @@ function buildMultiEntryPredicate(
 }
 
 /**
- * Phase 102 helper: synthesize a full single-column predicate from a
- * headless `MultiFilterChild`. Reuses the Phase 9 / 9.1 factories by
+ * helper: synthesize a full single-column predicate from a
+ * headless `MultiFilterChild`. Reuses the factories by
  * re-attaching the parent's `colId` (the factories accept the full
  * spec shape — text needs `colId`, number ditto). The synthetic
  * full-shape spec is allocated once per filterPass call, not per row.
@@ -354,9 +354,9 @@ function buildMultiChildPredicate(
     return buildTextPredicate(fullSpec, column);
   }
   if (child.type === 'set') {
-    // Phase 116 (2026-06-02): set-child synthesizes a full SetFilterSpec
+    // set-child synthesizes a full SetFilterSpec
     // by re-attaching the parent's colId, then dispatches to the existing
-    // Phase 43 buildSetPredicate. selectedValues: null → identity (slot
+    // buildSetPredicate. selectedValues: null → identity (slot
     // inactive; multi-filter's anyActive counter doesn't trip since
     // buildSetPredicate returns null on the identity case).
     const fullSpec: SetFilterSpec = {
@@ -378,7 +378,7 @@ function buildMultiChildPredicate(
 }
 
 /**
- * Phase 43 (2026-05-29): build a per-row predicate for a set-filter
+ * build a per-row predicate for a set-filter
  * spec. `selectedValues: null` is the identity case (handled by the
  * factory returning null so the pass's `anyActive` counter doesn't
  * trip — same shape as empty-text-value). `selectedValues: []` is the
@@ -458,7 +458,7 @@ function buildTextPredicate(spec: TextFilterSpec, column: ColumnSpec): FilterPre
 }
 
 /**
- * Phase 9: narrow a cell value into a string for filter matching.
+ * narrow a cell value into a string for filter matching.
  * Returns `null` (predicate fails) for values that can't be cleanly
  * stringified — objects, functions, symbols. Matches the spirit of
  * `defaultFormatCellValue` (which surfaces `'[object]'` placeholder
@@ -476,7 +476,7 @@ function coerceToText(raw: unknown): string | null {
 }
 
 /**
- * Phase 9 text operators. Single allocation per filter spec (the
+ * text operators. Single allocation per filter spec (the
  * predicate factory caches it); not per-row.
  */
 function textOperatorFn(
@@ -495,7 +495,7 @@ function textOperatorFn(
 }
 
 /**
- * Phase 9.1 (2026-05-24): build a per-row predicate for a number-
+ * build a per-row predicate for a number-
  * filter spec. Coerces cell value to finite number; predicate fails
  * for non-numeric / NaN / Infinity cell values (consumers with
  * mixed-type columns should supply `valueGetter` to return a number).
@@ -516,7 +516,7 @@ function buildNumberPredicate(spec: NumberFilterSpec, column: ColumnSpec): Filte
 }
 
 /**
- * Phase 9.1: narrow a cell value to a finite number. Returns `null`
+ * narrow a cell value to a finite number. Returns `null`
  * for any non-number (string / boolean / null / undefined / object)
  * and for NaN / Infinity / -Infinity. Symmetric to `coerceToText`.
  */
@@ -527,7 +527,7 @@ function coerceToNumber(raw: unknown): number | null {
 }
 
 /**
- * Phase 9.1: build the per-value comparison function for a number
+ * build the per-value comparison function for a number
  * operator. The `value` (and `valueTo` for inRange) are captured
  * once in the closure — single allocation per filter spec, not per
  * row comparison.

@@ -1,9 +1,9 @@
 /**
  * Data-source barrel.
  *
- * Phase 1 (2026-05-23): `ColumnTable` + `RowDataSource` interfaces +
+ * `ColumnTable` + `RowDataSource` interfaces +
  * `createColumnTable` / `createClientSideRowSource` factories.
- * Phase 45 (2026-05-29) adds `createServerSideRowSource` + the
+ * adds `createServerSideRowSource` + the
  * `ServerSideDataSource` consumer contract + block-cache state types.
  */
 

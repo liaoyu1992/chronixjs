@@ -4,7 +4,7 @@ import type { ChronixUITheme } from './chronix-ui-theme.js';
  * Convert a `ChronixUITheme` to a record of CSS custom properties the
  * adapter inlines on the `<ChronixUIProvider>` root element's `style`.
  *
- * Phase 1 (2026-06-01) per Phase 0.1 Decision A.1.
+ * per Decision A.1.
  *
  * Naming convention:
  *

@@ -1,8 +1,8 @@
 /**
- * chronix-ui countdown module — Phase 18 (2026-06-02).
+ * chronix-ui countdown module — .
  *
  * Public surface: pure data + pure helpers. Adapter packages own the
- * `setInterval` lifecycle per Phase 18 Decision D.1.
+ * `setInterval` lifecycle per Decision D.1.
  */
 
 export type { CountdownPrecision, CountdownProps } from './countdown-spec.js';

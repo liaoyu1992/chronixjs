@@ -1,6 +1,6 @@
 /**
- * Phase 20 (2026-05-27): pure TSV parser — Ctrl+V counterpart to
- * Phase 19's `formatCellRangeForClipboard`.
+ * pure TSV parser — Ctrl+V counterpart to
+ * `formatCellRangeForClipboard`.
  *
  * Splits a tab-separated-values string into a 2D `string[][]` grid:
  *
@@ -15,7 +15,7 @@
  * **Pure function.** No DOM, no clipboard I/O — that is the adapter's
  * job (read `navigator.clipboard.readText()` then pass to this
  * parser). No coercion — every cell stays a raw string; type coercion
- * happens downstream in `computePasteMutations` via Phase 12's
+ * happens downstream in `computePasteMutations` 's
  * `coerceEditDraftValue` per column type.
  */
 export function parseClipboardTsv(text: string): readonly (readonly string[])[] {

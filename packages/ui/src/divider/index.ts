@@ -1,5 +1,5 @@
 /**
- * chronix-ui divider module — Phase 13 (2026-06-02).
+ * chronix-ui divider module — .
  *
  * Core IR for the Divider component. Adapter components consume
  * these types + pure helpers to render framework-specific divider

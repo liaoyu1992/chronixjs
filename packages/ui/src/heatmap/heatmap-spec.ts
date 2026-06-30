@@ -1,5 +1,5 @@
 /**
- * Heatmap IR — Phase 24 (2026-06-03). Tier A SVG cell grid with
+ * Heatmap IR — . Tier A SVG cell grid with
  * linear color interpolation between two endpoint colors.
  */
 

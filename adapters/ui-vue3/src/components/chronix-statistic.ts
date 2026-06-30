@@ -8,7 +8,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixStatistic>` — Vue 3 SFC wrapping the core `StatisticProps`
- * IR. Phase 18 (2026-06-02). Tier A numeric display.
+ * IR. . Tier A numeric display.
  *
  * Slots:
  *

@@ -1,5 +1,5 @@
 /**
- * Option IR — Phase 31 (2026-06-04). Pure-data types used by Select,
+ * Option IR — . Pure-data types used by Select,
  * TreeSelect, Cascader, Mention, and any future option-bearing
  * component. chronix-NEW surface.
  *
@@ -18,7 +18,7 @@ export interface OptionSpec {
   readonly label: string;
   readonly value: string;
   readonly disabled?: boolean;
-  /** Phase 9 IconRegistry name. */
+  /** IconRegistry name. */
   readonly icon?: string | undefined;
 }
 

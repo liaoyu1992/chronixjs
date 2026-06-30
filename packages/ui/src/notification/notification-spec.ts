@@ -1,5 +1,5 @@
 /**
- * Notification IR — Phase 36 (2026-06-05). Imperative notification API.
+ * Notification IR — . Imperative notification API.
  *
  * Card-like notifications rendered at fixed corner positions on the
  * viewport. Richer than Message (has title + optional description).

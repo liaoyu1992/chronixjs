@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { CHRONIX_BUTTON_CSS, ensureChronixButtonStyles } from './button-styles.js';
 
 /**
- * Button-stylesheet injection unit tests — Phase 12 (2026-06-02).
+ * Button-stylesheet injection unit tests — .
  *
  * Verifies the framework-agnostic `ensureChronixButtonStyles()` helper
  * that all 3 adapter packages share. Adapter-level mount tests cover

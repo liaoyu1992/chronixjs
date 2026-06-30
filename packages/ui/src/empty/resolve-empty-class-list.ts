@@ -3,7 +3,7 @@ import type { EmptyProps } from './empty-spec.js';
 /**
  * Compute class set for the Empty root element.
  *
- * Phase 15 (2026-06-02).
+ * .
  *
  * `hasExtra` comes from the adapter — represents whether the default
  * slot / children resolved to any action-row content (typically

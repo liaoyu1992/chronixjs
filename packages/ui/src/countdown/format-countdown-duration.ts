@@ -2,7 +2,7 @@ import type { CountdownPrecision } from './countdown-spec.js';
 
 /**
  * Pure helper — format a remaining-duration in milliseconds as the
- * display string `HH:mm:ss[.S/.SS/.SSS]`. Phase 18 (2026-06-02).
+ * display string `HH:mm:ss[.S/.SS/.SSS]`. .
  *
  * Contract:
  *

@@ -1,5 +1,5 @@
 /**
- * DatePicker CSS — Phase 32 (2026-06-05).
+ * DatePicker CSS — .
  *
  * BEM styles for cx-ui-date-picker + all sub-elements.
  * CSS var tokens with fallbacks for theme customization.

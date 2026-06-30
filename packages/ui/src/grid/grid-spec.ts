@@ -1,11 +1,11 @@
 /**
- * Grid IR — Phase 17 (2026-06-02). Tier A 2D layout primitive.
+ * Grid IR — . Tier A 2D layout primitive.
  *
  * CSS Grid container with simplified prop bag: `cols` (uniform N
  * via `repeat(N, 1fr)` OR verbatim string for arbitrary track
  * templates) + `xGap` + `yGap` (numeric, separate axes). Named
  * areas / auto-flow / `<ChronixGridItem>` wrapper are out of scope
- * for Phase 17 (see audit/UI_PHASE_17_LAYOUT_DESIGN.md
+ * (see audit/UI_PHASE_17_LAYOUT_DESIGN.md
  * § Out-of-scope).
  *
  * Public surface:

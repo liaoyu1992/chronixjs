@@ -26,10 +26,10 @@ import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
  * `<ChronixDropdown>` — Vue 3 popup-style dropdown with flat options
- * + ArrowUp/Down/Enter keyboard navigation. Phase 27 (2026-06-03).
+ * + ArrowUp/Down/Enter keyboard navigation. .
  *
- * Composes Phase 26 `usePopupLifecycle` (anchor + portal + trigger +
- * click-outside + Escape) with Phase 7 `composeKeyboardSelection`.
+ * Composes `usePopupLifecycle` (anchor + portal + trigger +
+ * click-outside + Escape) with `composeKeyboardSelection`.
  *
  * Emits:
  * - `update:show(show: boolean)`.

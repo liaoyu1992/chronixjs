@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 /**
- * Phase 4: tracks the body scrollport element's `clientHeight` +
+ * tracks the body scrollport element's `clientHeight` +
  * `scrollTop` so the virtual-rows pass can pick the visible row
  * window when the body's content height exceeds its viewport.
  *

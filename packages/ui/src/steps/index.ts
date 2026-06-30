@@ -1,5 +1,5 @@
 /**
- * chronix-ui steps module — Phase 20 (2026-06-03).
+ * chronix-ui steps module — .
  */
 
 export type { StepItem, StepStatus, StepsDirection, StepsProps } from './steps-spec.js';

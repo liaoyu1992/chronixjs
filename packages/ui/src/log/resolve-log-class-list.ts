@@ -3,7 +3,7 @@ import type { LogProps } from './log-spec.js';
 /**
  * Compute class set for the Log root element.
  *
- * Phase 23 (2026-06-03).
+ * .
  *
  * Class structure:
  *

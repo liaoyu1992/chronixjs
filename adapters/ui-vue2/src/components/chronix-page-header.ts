@@ -7,7 +7,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixPageHeader>` — Vue 2.7 port of the Phase 19 PageHeader.
+ * `<ChronixPageHeader>` — Vue 2.7 port of the PageHeader.
  *
  * Runtime differences from the vue3 sibling: `h()` second-arg data
  * object uses nested `attrs:` for HTML attributes (`type`,

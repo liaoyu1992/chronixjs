@@ -13,7 +13,7 @@ function startOfDay(d: Date): Date {
   return x;
 }
 
-describe('Phase 29 — DAY_IDS', () => {
+describe('DAY_IDS', () => {
   it('exports the Sun-anchored 7-element literal matching the original spec', () => {
     // Verbatim from the original `datelib/marker.ts` DAY_IDS
     // — consumers porting CSS selectors map 1:1 (`.gantt-day-sat` →
@@ -31,7 +31,7 @@ describe('Phase 29 — DAY_IDS', () => {
   });
 });
 
-describe('Phase 29 — computeCellStateMeta', () => {
+describe('computeCellStateMeta', () => {
   it('returns the correct dayId for a known date (2026-05-13 = Wednesday)', () => {
     const today = startOfDay(new Date('2026-05-13T08:00:00'));
     const meta = computeCellStateMeta(new Date('2026-05-13T08:00:00'), today);
@@ -72,7 +72,7 @@ describe('Phase 29 — computeCellStateMeta', () => {
   });
 });
 
-describe('Phase 29 — getDayClassNames', () => {
+describe('getDayClassNames', () => {
   it('returns base + dayId class as the minimum set', () => {
     const today = startOfDay(new Date('2026-05-13T00:00:00'));
     const futureMeta = computeCellStateMeta(new Date('2026-06-01T00:00:00'), today);
@@ -110,7 +110,7 @@ describe('Phase 29 — getDayClassNames', () => {
   });
 });
 
-describe('Phase 29 — getSlotClassNames', () => {
+describe('getSlotClassNames', () => {
   it('returns base + dayId class as the minimum set', () => {
     const today = startOfDay(new Date('2026-05-13T00:00:00'));
     // 2026-05-13 = Wednesday.

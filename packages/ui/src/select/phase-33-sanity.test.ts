@@ -1,6 +1,6 @@
 /**
- * Phase 32 sanity — de-risks Phase 33 (ColorPicker / Transfer / Slider / Pagination).
- * Validates that all Phase 32 core exports are importable and functional.
+ * sanity — de-risks (ColorPicker / Transfer / Slider / Pagination).
+ * Validates that all core exports are importable and functional.
  */
 import { describe, expect, it } from 'vitest';
 
@@ -11,7 +11,7 @@ import { formatTimeValue } from '../time-picker/format-time-value.js';
 import { generateTimeUnits, findNearestTimeValue } from '../time-picker/generate-time-units.js';
 import { parseTimeString } from '../time-picker/parse-time-string.js';
 
-describe('Phase 32 sanity (de-risk Phase 33)', () => {
+describe('sanity (de-risk)', () => {
   it('date-picker core exports work', () => {
     const grid = generateCalendarGrid({ year: 2026, month: 5, firstDayOfWeek: 0 });
     expect(grid).toHaveLength(42);

@@ -1,6 +1,6 @@
 /**
- * Divider IR — Phase 13 (2026-06-02). Tier A pure-visual primitive.
- * Mirrors the Phase 11 Button + Phase 13 Tag pattern: adapter
+ * Divider IR — . Tier A pure-visual primitive.
+ * Mirrors the Button + Tag pattern: adapter
  * component → `resolveDividerClassList` pure helper → static CSS
  * via `ensureChronixDividerStyles` → theme tokens via CSS-var
  * fallback.

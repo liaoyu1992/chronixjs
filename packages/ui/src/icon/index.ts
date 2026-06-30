@@ -1,5 +1,5 @@
 /**
- * chronix-ui icon module — Phase 9 (2026-06-02).
+ * chronix-ui icon module — .
  *
  * Pure-data SVG icon descriptors + process-global registry. Adapters
  * render via `<svg>` + `<path>`; the IR ships only the data.

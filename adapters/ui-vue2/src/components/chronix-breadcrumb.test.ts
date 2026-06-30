@@ -11,7 +11,7 @@ const Breadcrumb = ChronixBreadcrumb as unknown as VueConstructor;
 const SAMPLE_ITEMS: BreadcrumbItem[] = [
   { key: 'home', label: 'Home', href: '/', clickable: false },
   { key: 'docs', label: 'Docs', href: '/docs', clickable: false },
-  { key: 'current', label: 'Phase 19', href: undefined, clickable: false },
+  { key: 'current', label: '', href: undefined, clickable: false },
 ];
 
 describe('ChronixBreadcrumb (vue2) — root rendering', () => {
@@ -68,7 +68,7 @@ describe('ChronixBreadcrumb (vue2) — items rendering', () => {
     const items = wrapper.findAll('.cx-ui-breadcrumb__item');
     expect(items.at(0).text()).toBe('Home');
     expect(items.at(1).text()).toBe('Docs');
-    expect(items.at(2).text()).toBe('Phase 19');
+    expect(items.at(2).text()).toBe('');
   });
 });
 

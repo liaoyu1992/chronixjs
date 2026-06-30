@@ -1,5 +1,5 @@
 /**
- * Cascader component IR — Phase 31 (2026-06-04).
+ * Cascader component IR — .
  *
  * Multi-level cascading selector. Each level is an option list.
  * Options are nested `OptionSpec` with `children` for sub-levels.

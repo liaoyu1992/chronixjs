@@ -1,5 +1,5 @@
 /**
- * chronix-ui thing module — Phase 23 (2026-06-03).
+ * chronix-ui thing module — .
  */
 
 export type { ThingProps } from './thing-spec.js';

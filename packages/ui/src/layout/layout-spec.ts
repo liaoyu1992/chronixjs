@@ -1,12 +1,12 @@
 /**
- * Layout component IR — Phase 28 (2026-06-04). Tier B layout shell.
+ * Layout component IR — . Tier B layout shell.
  * Ships the props for `ChronixLayout` and its 4 sub-components
  * (`ChronixLayoutHeader` / `ChronixLayoutSider` /
  * `ChronixLayoutContent` / `ChronixLayoutFooter`) + a pure helper
  * for resolving sider width from the `collapsed` state.
  *
  * Sub-components are self-contained — no parent context coordination
- * (per Phase 28 design F1.D). `ChronixLayout` introspects its slot /
+ * (per design F1.D). `ChronixLayout` introspects its slot /
  * children at adapter scope to determine `hasSider`.
  *
  * Out-of-scope (v0.2):
@@ -49,7 +49,7 @@ export type LayoutSiderPlacement = 'left' | 'right';
  * `breakpoint` is defined; auto-collapses on match.
  *
  * Values mirror the common SPA tier (Bootstrap / Ant). Consumers
- * wanting custom px values can substitute via Phase 0.3
+ * wanting custom px values can substitute
  * `componentOverrides` field once that surface is opened (deferred).
  */
 export type LayoutSiderBreakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';

@@ -8,7 +8,7 @@ import {
 import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, type PropType } from 'vue';
 
 /**
- * `<ChronixNumberAnimation>` — Vue 2.7 port of the Phase 35 NumberAnimation.
+ * `<ChronixNumberAnimation>` — Vue 2.7 port of the NumberAnimation.
  * Verbatim surface mirror of the vue3 sibling; runtime differences are
  * Vue 2's `attrs:` data-object for HTML attributes and `on:` for events.
  * Uses requestAnimationFrame in onMounted, cancel in onBeforeUnmount.

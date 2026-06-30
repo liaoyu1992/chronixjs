@@ -25,7 +25,7 @@ import {
 } from 'vue';
 
 /**
- * `<ChronixCarousel>` — Vue 3. Phase 29 (2026-06-04). Items-array
+ * `<ChronixCarousel>` — Vue 3. . Items-array
  * slide carousel with optional autoplay + indicator dots + prev/next
  * arrows.
  */

@@ -1,5 +1,5 @@
 /**
- * Pagination component IR — Phase 33 (2026-06-05).
+ * Pagination component IR — .
  *
  * Page navigation with ellipsis, page size picker, quick jumper.
  * Value is the current page number (1-based).

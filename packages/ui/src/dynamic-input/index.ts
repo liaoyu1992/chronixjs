@@ -1,5 +1,5 @@
 /**
- * chronix-ui dynamic-input module — Phase 35 (2026-06-05).
+ * chronix-ui dynamic-input module — .
  *
  * Pure-function helpers for a dynamic value-list component where items
  * can be added and removed. No DOM access, no framework dependency.

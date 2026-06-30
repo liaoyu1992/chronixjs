@@ -1,7 +1,7 @@
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 /**
- * Phase 31.5.2 (Phase 23 in chronix-vue3): tracks the chart-pane's
+ * (in chronix-vue3): tracks the chart-pane's
  * `scrollLeft` + `clientWidth` so downstream render code can react to
  * user scroll and container resize. Returned values are Vue refs that
  * update reactively.
@@ -9,13 +9,13 @@ import { onMounted, onUnmounted, ref, type Ref } from 'vue';
  * Designed as a consumer-facing hook for follow-up phases that need
  * the chart-pane viewport state:
  *
- *   - **Phase 27.1 (port deferred)** — `PlacedBar.isClippedStart` /
- *     `isClippedEnd` viewport-clipping flags (vs Phase 27's axis-range
+ *   - **(port deferred)** — `PlacedBar.isClippedStart` /
+ *     `isClippedEnd` viewport-clipping flags (vs axis-range
  *     flags) need scrollLeft + clientWidth to decide whether a bar's
  *     start/end extends past the visible viewport. chronix-vue2
  *     currently emits `data-viewport-clipped="false"` placeholder
  *     pending this port.
- *   - **Phase 28.2.1 / 28.2.2 (port deferred)** — bar title truncation
+ *   - **(port deferred)** — bar title truncation
  *     can shrink the available text width to the visible viewport
  *     intersection, not the full bar width, when the bar extends past
  *     either viewport edge.
@@ -51,7 +51,7 @@ export function useChartScrollState(paneRef: Ref<HTMLElement | null>): ChartScro
   // nullifies template refs before `onUnmounted` fires, so reading
   // `paneRef.value` in cleanup would always see `null`. Capturing the
   // resolved element at mount time + cleaning up via the captured
-  // reference is the same pattern used across chronix-vue3's Phase 23
+  // reference is the same pattern used across chronix-vue3's
   // composables (use-scroll-sync, useHeaderHorizontalSync inline).
   let capturedPane: HTMLElement | null = null;
 

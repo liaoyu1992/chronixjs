@@ -3,10 +3,10 @@ import { formatCellValue } from '../render/format-cell-value.js';
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Phase 40 (2026-05-29): input to `formatActiveCellAnnouncement`.
+ * input to `formatActiveCellAnnouncement`.
  *
  * `rowIndex` and `colIndex` are 1-based to match the ARIA
- * `aria-rowindex` / `aria-colindex` semantics adopted by Phase 40's
+ * `aria-rowindex` / `aria-colindex` semantics adopted 's
  * adapter wiring (Decision A.1). `rowCount` / `colCount` mirror
  * `aria-rowcount` / `aria-colcount`. The helper is independent of any
  * particular adapter — feed the resolved counts in directly.
@@ -25,13 +25,13 @@ export interface FormatActiveCellAnnouncementInput {
 }
 
 /**
- * Phase 40 (2026-05-29): produce the live-region announcement text for
+ * produce the live-region announcement text for
  * an active-cell transition.
  *
  * Pure function. No DOM, no I/O. Adapters render the returned string
  * into an off-screen `<div role="status" aria-live="polite">` so screen
  * readers announce "Column Name (col 3 of 6), Row Alpha (row 2 of 50):
- * 10 件" when keyboard nav (Phase 26) moves the activeCell. The
+ * 10 件" when keyboard nav moves the activeCell. The
  * announcement is delayed-debounced at the adapter layer to avoid
  * spamming the live region during fast arrow-key sequences.
  *

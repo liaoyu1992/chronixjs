@@ -1,5 +1,5 @@
 /**
- * Tag stylesheet — Phase 13 (2026-06-02). Mirrors the Phase 11
+ * Tag stylesheet — . Mirrors the
  * Button styles hoist (`packages/ui/src/button/button-styles.ts`):
  * single source of CSS shared by all 3 adapters; per-instance theming
  * comes from `--cx-ui-*` CSS custom properties on the

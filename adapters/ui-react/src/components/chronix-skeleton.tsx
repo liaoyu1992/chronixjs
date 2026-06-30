@@ -23,7 +23,7 @@ export interface ChronixSkeletonProps extends Omit<
 }
 
 /**
- * `<ChronixSkeleton>` — React port of the Phase 16 Skeleton.
+ * `<ChronixSkeleton>` — React port of the Skeleton.
  * Verbatim surface mirror of the Vue adapters.
  */
 export function ChronixSkeleton(props: ChronixSkeletonProps): JSX.Element {

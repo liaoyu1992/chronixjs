@@ -8,7 +8,7 @@ import { defineComponent, h, type PropType } from 'vue';
 import { ChronixLayoutSider } from './chronix-layout-sider.js';
 
 /**
- * `<ChronixLayout>` — Vue 3. Phase 28 (2026-06-04). Top-level layout
+ * `<ChronixLayout>` — Vue 3. . Top-level layout
  * shell. Auto-detects `hasSider` by inspecting default-slot VNodes for
  * any `ChronixLayoutSider` instance. Consumer may also force the
  * detection explicitly via the `hasSider` prop.

@@ -23,7 +23,7 @@ export interface ChronixBadgeProps extends Omit<HTMLAttributes<HTMLSpanElement>,
 }
 
 /**
- * `<ChronixBadge>` — React 18 port of the Phase 14 Badge pilot.
+ * `<ChronixBadge>` — React 18 port of the Badge pilot.
  * Verbatim surface mirror of the Vue adapters. The standalone vs
  * wrapped mode resolution uses React's `Children.count` to mirror
  * the Vue slot-presence detection.

@@ -1,8 +1,8 @@
 /**
- * AutoComplete component IR — Phase 25 (2026-06-03). Tier B text-entry
+ * AutoComplete component IR — . Tier B text-entry
  * with consumer-supplied options + chronix-internal substring filter.
  *
- * NOTE on positioning: AutoComplete ships **without** Phase 4 PopupSpec
+ * NOTE on positioning: AutoComplete ships **without** PopupSpec
  * dependency for v0.1.0-alpha — the suggestion list is rendered inline
  * via `position: absolute` inside a `position: relative` wrapper. Phase
  * 26+ may retrofit to portal-rendered Popover in v0.2 once the Popover

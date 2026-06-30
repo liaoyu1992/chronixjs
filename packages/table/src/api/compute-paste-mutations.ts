@@ -8,11 +8,11 @@ import type { EditValidationError } from '../ir/edit-validation-error.js';
 import type { RowSpec } from '../ir/row-spec.js';
 
 /**
- * Phase 115 (2026-06-02): optional per-cell validator gate signature
+ * optional per-cell validator gate signature
  * accepted by `computePasteMutations` + `computeDragFillMutations`.
  * Receives the post-coerce typed value plus the row context; non-null
  * return → cell is silently SKIPPED from the mutations (parallels
- * the coerce-reject skip from Phase 20 Decision C.1).
+ * the coerce-reject skip Decision C.1).
  *
  * Adapter wires this to `runCellValidator` when `pasteValidatorPolicy`
  * is `'skip-rejected'`; passes `undefined` for `'allow-invalid'`.
@@ -24,10 +24,10 @@ export type PasteValidatorGate = (
 ) => EditValidationError | null;
 
 /**
- * Phase 20 (2026-05-27): mutation entry produced by
+ * mutation entry produced by
  * `computePasteMutations`. Mirrors `CellValueChangePayload`'s shape
  * (rowId / colId / oldValue / newValue) so consumers can reuse their
- * Phase 12 write-back code for paste batches.
+ * write-back code for paste batches.
  */
 export interface PasteMutation {
   readonly rowId: string;
@@ -37,7 +37,7 @@ export interface PasteMutation {
 }
 
 /**
- * Phase 20: map a parsed clipboard TSV grid against an active
+ * map a parsed clipboard TSV grid against an active
  * cell-range envelope into a write-ready list of mutations.
  *
  * **Semantics** (Decision A.1):
@@ -54,9 +54,9 @@ export interface PasteMutation {
  * `coerceEditDraftValue(column, rawString)` — number columns coerce
  * via `Number(...)` (empty → null; non-numeric → reject). Rejected
  * cells are silently SKIPPED from the mutations array (Excel
- * convention; matches Phase 12.1's reject-and-keep semantic).
+ * convention; matches reject-and-keep semantic).
  *
- * **No-op dedup** (matches Phase 12's `cell-value-change` rule): if
+ * **No-op dedup** (matches `cell-value-change` rule): if
  * the coerced `newValue` === current `oldValue` (read via
  * `getCellValue` — post-`valueGetter`, pre-`valueFormatter`), the
  * cell is excluded from the mutations array. Consumers therefore
@@ -72,11 +72,11 @@ export function computePasteMutations(
   rows: readonly RowSpec[],
   columns: readonly ColumnSpec[],
   /**
-   * Phase 115 (2026-06-02): optional validator gate. When provided,
+   * optional validator gate. When provided,
    * each coerced cell value is passed through `runValidator(column,
    * value, row)`; non-null return → cell is silently SKIPPED (same
    * shape as coerce-reject skip). Defaults to `undefined` → legacy
-   * Phase 20 behavior preserved (validator gate is opt-in).
+   * behavior preserved (validator gate is opt-in).
    */
   runValidator?: PasteValidatorGate,
 ): readonly PasteMutation[] {
@@ -120,7 +120,7 @@ export function computePasteMutations(
       const coerced = coerceEditDraftValue(column, rawString);
       if (!coerced.ok) continue; // Decision C.1: silently skip rejected cells.
 
-      // Phase 115: validator-gate skip parallels coerce-reject skip.
+      // validator-gate skip parallels coerce-reject skip.
       if (runValidator != null) {
         const validationError = runValidator(column, coerced.value, row);
         if (validationError != null) continue;

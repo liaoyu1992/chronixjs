@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixDynamicTags } from './chronix-dynamic-tags.js';
 
 /**
- * Phase 35 (2026-06-05) — DynamicTags mount tests (vue3).
+ * — DynamicTags mount tests (vue3).
  */
 describe('ChronixDynamicTags', () => {
   it('renders a div with base class and data-testid', () => {

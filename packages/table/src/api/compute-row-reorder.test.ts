@@ -8,7 +8,7 @@ function row(id: string): RowSpec {
   return { id, data: { id } };
 }
 
-describe('computeRowReorder (Phase 44)', () => {
+describe('computeRowReorder ', () => {
   it('exports DEFAULT_ROW_DRAG_THRESHOLD_PX = 5', () => {
     expect(DEFAULT_ROW_DRAG_THRESHOLD_PX).toBe(5);
   });

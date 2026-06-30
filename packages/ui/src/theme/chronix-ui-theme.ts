@@ -3,7 +3,7 @@
  *
  * Top-level `ChronixUITheme` is a nested object: a shared `common`
  * slice (primitives like primaryColor / borderRadius / fontFamily)
- * plus per-component slices (Phase 1 ships `button` as the example;
+ * plus per-component slices (ships `button` as the example;
  * future phases add `tree`, `select`, `dialog`, …, one per component).
  *
  * The adapter writes the resolved theme as CSS custom properties on
@@ -15,9 +15,9 @@
  * Component CSS modules read tokens via `var(--cx-ui-..., fallback)`,
  * so components also work when no provider is mounted (fallback applies).
  *
- * Per Phase 0.1 Decision A.1: CSS-var distribution (no runtime CSS-in-JS).
- * Per Phase 0.1 Decision B.1: nested per-component slices over flat bag.
- * Per Phase 0.1 Decision C.1: light + dark presets + deep-merge composition.
+ * Per Decision A.1: CSS-var distribution (no runtime CSS-in-JS).
+ * Per Decision B.1: nested per-component slices over flat bag.
+ * Per Decision C.1: light + dark presets + deep-merge composition.
  *
  * Value-typing convention: length-bearing tokens are STRINGS with explicit
  * units (`'8px'`, `'0.5rem'`), not bare numbers — this keeps the converter
@@ -27,7 +27,7 @@
 
 /**
  * Shared theme primitives consumed by every component slice.
- * Per Phase 0.1 Decision B.1, this slice exists so consumers can change
+ * Per Decision B.1, this slice exists so consumers can change
  * one token (e.g. `primaryColor`) and have it propagate across every
  * component instead of overriding 50 per-component fields.
  */
@@ -132,7 +132,7 @@ export interface ChronixUIThemeCommon {
 }
 
 /**
- * Button-specific theme tokens. Phase 1 ships this slice as the example
+ * Button-specific theme tokens. ships this slice as the example
  * pattern; consumers override via `theme.button` to restyle buttons
  * without touching other components.
  *
@@ -185,7 +185,7 @@ export interface ChronixButtonTheme {
 }
 
 /**
- * Top-level chronix-ui theme. Phase 1 ships `common` + `button`; each
+ * Top-level chronix-ui theme. ships `common` + `button`; each
  * subsequent component phase appends its slice (`tree`, `select`,
  * `dialog`, …).
  *

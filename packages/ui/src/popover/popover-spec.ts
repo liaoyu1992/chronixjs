@@ -1,9 +1,9 @@
 /**
- * Popover component IR — Phase 26 (2026-06-03). Tier B base popup
+ * Popover component IR — . Tier B base popup
  * surface with rich content slot, 4 trigger types, 12 placements +
  * flip, controlled + uncontrolled visibility, portal-mounted overlay.
  *
- * Shared core helpers (Phase 4 `resolvePopupPlacement`, Phase 26
+ * Shared core helpers (`resolvePopupPlacement`,
  * `PopupTrigger` + `nextPopupZIndex`) are imported by adapters; this
  * file ships only the prop IR + class-list resolver shape.
  */

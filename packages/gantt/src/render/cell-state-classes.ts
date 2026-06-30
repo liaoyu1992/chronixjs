@@ -1,9 +1,9 @@
 /**
- * Phase 29 — per-day / per-slot CSS class derivation.
+ * per-day / per-slot CSS class derivation.
  *
  * Pure render-time helpers; no axis-shape extension. Adapter callers
  * pass a `Date` (from `AxisTick.time` or `AxisHeaderCell` derived
- * date) plus the same start-of-today reference Phase 21 / 22.2 already
+ * date) plus the same start-of-today reference already
  * derive, and read back the class set to attach to header / body
  * cells.
  *

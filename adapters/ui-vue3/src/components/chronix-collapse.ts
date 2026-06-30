@@ -14,7 +14,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 import { ChronixCollapseTransition } from './chronix-collapse-transition.js';
 
 /**
- * `<ChronixCollapse>` — Vue 3. Phase 28 (2026-06-04). Accordion / multi
+ * `<ChronixCollapse>` — Vue 3. . Accordion / multi
  * expand panel list. Each item's body is wrapped in
  * `<ChronixCollapseTransition>` for height animation.
  */

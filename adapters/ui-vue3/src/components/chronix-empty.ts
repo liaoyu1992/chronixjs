@@ -9,7 +9,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 /**
  * `<ChronixEmpty>` — Vue 3 SFC wrapping the core `EmptyProps` IR.
  *
- * Phase 15 (2026-06-02).
+ * .
  *
  * Props:
  *
@@ -21,7 +21,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
  * - `default` — optional action row (typically buttons) below the
  *   description. When present, `--with-extra` modifier is applied.
  * - `icon` — optional custom icon content; defaults to a Unicode
- *   📦 placeholder until the Phase 9 icon registry lands.
+ *   📦 placeholder until the icon registry lands.
  */
 export const ChronixEmpty = defineComponent({
   name: 'ChronixEmpty',

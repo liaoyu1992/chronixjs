@@ -1,5 +1,5 @@
 /**
- * chronix-ui space module — Phase 17 (2026-06-02).
+ * chronix-ui space module — .
  *
  * Core IR for the Space 1D layout primitive. Adapter components
  * consume these types + pure helpers to render framework-specific

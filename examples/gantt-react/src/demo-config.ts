@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
- * **Phase 46: URL-query-driven demo config layer for the chronix-react
+ * **URL-query-driven demo config layer for the chronix-react
  * demo.**
  *
  * React adaptation of `examples/gantt-vue3/src/demo-config.ts`. The

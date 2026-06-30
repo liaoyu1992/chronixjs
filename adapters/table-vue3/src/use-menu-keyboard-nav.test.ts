@@ -41,7 +41,7 @@ function key(name: string): KeyboardEvent {
   return new KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true });
 }
 
-describe('useMenuKeyboardNav (Phase 84 — vue3)', () => {
+describe('useMenuKeyboardNav (vue3)', () => {
   it('isOpen: false → handleKeydown is no-op and activeIndex is -1', async () => {
     const { root } = makeMenuDom(['a', 'b', 'c']);
     const menuRef = ref<HTMLElement | null>(root);

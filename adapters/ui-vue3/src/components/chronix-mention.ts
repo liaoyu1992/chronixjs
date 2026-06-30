@@ -30,7 +30,7 @@ import {
 import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
- * `<ChronixMention>` — Vue 3 @mention textarea. Phase 31 (2026-06-04).
+ * `<ChronixMention>` — Vue 3 @mention textarea. .
  */
 export const ChronixMention = defineComponent({
   name: 'ChronixMention',

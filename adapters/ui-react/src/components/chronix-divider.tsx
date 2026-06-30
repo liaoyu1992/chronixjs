@@ -18,7 +18,7 @@ export interface ChronixDividerProps extends Omit<HTMLAttributes<HTMLDivElement>
 }
 
 /**
- * `<ChronixDivider>` — React 18 port of the Phase 13 Divider pilot.
+ * `<ChronixDivider>` — React 18 port of the Divider pilot.
  * Verbatim surface mirror of the Vue adapters. The `hasTitle`
  * resolution uses React's `Children.count` to mirror Vue's
  * "did the default slot resolve to any nodes?" semantic.

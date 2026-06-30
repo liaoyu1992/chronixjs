@@ -1,7 +1,7 @@
 import type { RowSpec } from '../ir/index.js';
 
 /**
- * Phase 44 (2026-05-29): pixel-distance threshold used by the
+ * pixel-distance threshold used by the
  * chronix-table adapters to discriminate a tap / cell-click from a
  * row-drag-reorder gesture on the dedicated drag-handle column. On
  * `pointerdown` on a grip cell the adapter records
@@ -11,22 +11,22 @@ import type { RowSpec } from '../ir/index.js';
  * click on the grip (which is a silent no-op — the grip cell has no
  * other affordance).
  *
- * 5px matches the convention established by Phase 14 column-move +
+ * 5px matches the convention established column-move +
  * common drag handles across modern data-grid libraries. Not exposed
- * as a theme token at Phase 44 — a future phase can promote it if real
+ * as a theme token at a future phase can promote it if real
  * consumer demand surfaces.
  */
 export const DEFAULT_ROW_DRAG_THRESHOLD_PX = 5;
 
 /**
- * Phase 44 (2026-05-29): pure reorder of a `readonly RowSpec[]`. Moves
+ * pure reorder of a `readonly RowSpec[]`. Moves
  * the row identified by `movedRowId` so it appears `position` (= `'above'
  * | 'below'`) the row identified by `targetRowId`. Returns a NEW array
  * preserving the rest of the row order; row object references for
  * non-moved rows are preserved identity-stable (the helper does NOT
  * clone).
  *
- * Mirrors `computeColumnReorder` (Phase 14) on the Y-axis. Used by the
+ * Mirrors `computeColumnReorder` on the Y-axis. Used by the
  * chronix-table adapters inside the consumer's `row-order-change`
  * handler:
  *

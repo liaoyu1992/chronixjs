@@ -11,7 +11,7 @@ import {
 import { defineComponent, h, onBeforeUnmount, onMounted, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixLayoutSider>` — Vue 2. Phase 28 (2026-06-04). Same prop /
+ * `<ChronixLayoutSider>` — Vue 2. . Same prop /
  * emit surface as Vue 3; renders via Vue 2 `attrs:` + `on:` keys.
  */
 export const ChronixLayoutSider = defineComponent({

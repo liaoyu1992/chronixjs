@@ -8,7 +8,7 @@ function row(id: string, children?: readonly RowSpec[]): RowSpec {
   return children == null ? { id, data: {} } : { id, data: {}, children };
 }
 
-describe('collectDescendantRowIds (Phase 30.1.1)', () => {
+describe('collectDescendantRowIds ', () => {
   it('returns [] when the parent row is not found', () => {
     const rows: readonly RowSpec[] = [row('a'), row('b')];
     expect(collectDescendantRowIds('nonexistent', rows)).toEqual([]);

@@ -1,5 +1,5 @@
 /**
- * TimePicker BEM class-list resolvers — Phase 32 (2026-06-05).
+ * TimePicker BEM class-list resolvers — .
  */
 
 export interface ResolveTimePickerRootClassListInput {

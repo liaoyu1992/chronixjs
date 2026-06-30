@@ -1,9 +1,9 @@
 /**
- * Dropdown component IR — Phase 27 (2026-06-03). Tier B popup-style
+ * Dropdown component IR — . Tier B popup-style
  * trigger that opens a flat list of options with keyboard navigation.
  *
- * Consumes Phase 26 `usePopupLifecycle` (anchor + portal + trigger +
- * click-outside + Escape) at adapter scope. Adds Phase 7
+ * Consumes `usePopupLifecycle` (anchor + portal + trigger +
+ * click-outside + Escape) at adapter scope. Adds
  * `composeKeyboardSelection` for ArrowUp/Down navigation + Enter to
  * select.
  *
@@ -25,7 +25,7 @@ export interface DropdownOption {
   /** Value emitted on `select` — typically distinct from the React-stable `key`. */
   readonly value: string;
   readonly disabled: boolean;
-  /** Phase 9 IconRegistry name; `undefined` = no icon. */
+  /** IconRegistry name; `undefined` = no icon. */
   readonly icon: string | undefined;
 }
 

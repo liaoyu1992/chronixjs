@@ -1,5 +1,5 @@
 /**
- * Statistic stylesheet — Phase 18 (2026-06-02).
+ * Statistic stylesheet — .
  */
 export const CHRONIX_STATISTIC_CSS = `
 .cx-ui-statistic {

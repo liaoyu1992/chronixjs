@@ -1,5 +1,5 @@
 /**
- * Select value normalization — Phase 31 (2026-06-04).
+ * Select value normalization — .
  *
  * Pure helper: normalizes the `value` prop (single string or string
  * array) into a canonical `string[]` depending on `multiple` mode.

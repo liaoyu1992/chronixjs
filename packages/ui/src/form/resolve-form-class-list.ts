@@ -1,5 +1,5 @@
 /**
- * chronix-ui form BEM class-list resolvers — Phase 34 (2026-06-05).
+ * chronix-ui form BEM class-list resolvers — .
  *
  * Pure functions returning `string[]` of BEM class names. Each resolver
  * is deterministic — same inputs always produce the same class list.

@@ -53,14 +53,14 @@ export interface BarStyleArg {
   /** Resolved text color after layers 1-3. */
   readonly defaultTextColor: string;
   /**
-   * Phase 28.2: resolved font size (px) after the theme layer. No
+   * resolved font size (px) after the theme layer. No
    * per-prop / per-spec font layers in v0 — only theme default and
    * callback override; this field carries the theme floor that the
    * callback can compare against.
    */
   readonly defaultFontSize: number;
   /**
-   * Phase 28.2: resolved font weight after the theme layer. Accepts
+   * resolved font weight after the theme layer. Accepts
    * either numeric (400 / 600 / etc.) or CSS keyword (`'normal'` /
    * `'bold'`) — both render through the SVG `font-weight` attribute
    * identically. Same v0 cascade scope as `defaultFontSize`. Phase
@@ -78,14 +78,14 @@ export interface BarStyleArg {
 export type BarColorFunc = (arg: BarStyleArg) => string | undefined;
 
 /**
- * Phase 28.2: per-bar font-size callback. Returns a pixel number or
+ * per-bar font-size callback. Returns a pixel number or
  * `undefined` to defer to the theme default. Same `BarStyleArg`
  * shape as the color callbacks; same cascade-slot semantics.
  */
 export type BarFontSizeFunc = (arg: BarStyleArg) => number | undefined;
 
 /**
- * Phase 28.2: per-bar font-weight callback. Returns a numeric
+ * per-bar font-weight callback. Returns a numeric
  * weight (400 / 600 / 700) OR a CSS keyword string (`'normal'` /
  * `'bold'`) OR `undefined` to defer to the theme default. The
  * adapter casts the resolved value to a string at the `<text>`
@@ -94,7 +94,7 @@ export type BarFontSizeFunc = (arg: BarStyleArg) => number | undefined;
 export type BarFontWeightFunc = (arg: BarStyleArg) => number | string | undefined;
 
 /**
- * Phase 28.3: per-bar class-names callback. Returns a CSS class
+ * per-bar class-names callback. Returns a CSS class
  * string, an array of class strings, or `undefined` to add no extra
  * classes. Returned classes append to the `.cx-gantt-bar` rect's
  * existing class list (`cx-gantt-bar` + optionally
@@ -122,18 +122,18 @@ export interface ResolvedBarStyle {
   readonly borderColor: string;
   readonly textColor: string;
   /**
-   * Phase 28.2: resolved font size in pixels for bar-title rendering.
+   * resolved font size in pixels for bar-title rendering.
    * Theme default OR callback override.
    */
   readonly fontSize: number;
   /**
-   * Phase 28.2: resolved font weight for bar-title rendering. Either
+   * resolved font weight for bar-title rendering. Either
    * numeric (`400`) or a CSS keyword string (`'normal'`); the adapter
    * casts to string when setting the SVG attribute.
    */
   readonly fontWeight: number | string;
   /**
-   * Phase 28.3: extra CSS class names from `barClassNamesCallback`.
+   * extra CSS class names from `barClassNamesCallback`.
    * Empty array when no callback set or the callback returned
    * `undefined`. Normalized form — a string return is wrapped to a
    * single-entry array. Whitespace inside individual class strings is
@@ -168,13 +168,13 @@ export interface ResolveBarStyleInput {
   readonly barBackgroundColorCallback?: BarColorFunc;
   readonly barBorderColorCallback?: BarColorFunc;
   readonly barTextColorCallback?: BarColorFunc;
-  // Phase 28.2: font cascade (theme + callback only; no prop / spec
+  // font cascade (theme + callback only; no prop / spec
   // layer in v0 — add when a consumer asks).
   readonly themeFontSize: number;
   readonly themeFontWeight: number | string;
   readonly barFontSizeCallback?: BarFontSizeFunc;
   readonly barFontWeightCallback?: BarFontWeightFunc;
-  // Phase 28.3: class-names callback. No theme / prop / spec layer
+  // class-names callback. No theme / prop / spec layer
   // for class names — classes are pure-additive consumer hooks, not a
   // cascaded style. Theme tokens cover visual defaults; classes cover
   // semantic state (priority, overdue, warning, etc.).
@@ -227,7 +227,7 @@ export function resolveBarStyle(input: ResolveBarStyleInput): ResolvedBarStyle {
     textColor = style.textColor;
   }
 
-  // Phase 28.2: font cascade. Theme floor; callback override.
+  // font cascade. Theme floor; callback override.
   let fontSize = input.themeFontSize;
   let fontWeight: number | string = input.themeFontWeight;
 

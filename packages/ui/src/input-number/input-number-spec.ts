@@ -1,6 +1,6 @@
 /**
- * InputNumber component IR — Phase 25 (2026-06-03). Tier B numeric
- * input + stepper surface. Reuses Phase 7 number-input helpers
+ * InputNumber component IR — . Tier B numeric
+ * input + stepper surface. Reuses number-input helpers
  * (`parseNumberInput` / `clampNumberInput` / `formatNumberInput`) for
  * keystroke parsing, bound + step snapping, and display formatting.
  *

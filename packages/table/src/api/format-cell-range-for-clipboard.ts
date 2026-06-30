@@ -5,7 +5,7 @@ import type { ColumnSpec } from '../ir/column-spec.js';
 import type { RowSpec } from '../ir/row-spec.js';
 
 /**
- * Phase 19 (2026-05-27): options for `formatCellRangeForClipboard`.
+ * options for `formatCellRangeForClipboard`.
  *
  * `lineSeparator` controls how individual row strings are joined.
  * Default `'\n'` (Unix-style) — both Excel-on-Windows and
@@ -18,8 +18,8 @@ export interface FormatCellRangeForClipboardOptions {
 }
 
 /**
- * Phase 19 (2026-05-27): TSV synthesis over a resolved
- * `CellRangeEnvelope`. First downstream consumer of Phase 16's
+ * TSV synthesis over a resolved
+ * `CellRangeEnvelope`. First downstream consumer 's
  * envelope primitive.
  *
  * Walks `envelope.rowIds × envelope.colIds` in nested order, looking

@@ -1,5 +1,5 @@
 /**
- * Phase 44.2 (2026-05-31): pure scroll-velocity helper for the
+ * pure scroll-velocity helper for the
  * during-drag auto-scroll feature. Feed in the cursor's `clientY`
  * during a row-drag pointermove + the body scrollport's top + bottom
  * edges (`getBoundingClientRect().top` / `.bottom`) + the trigger-zone
@@ -41,7 +41,7 @@
  *
  * chronix-NEW (original grids ship auto-scroll bundled with their
  * drag pipeline; the pure-function shape + adapter-side rAF wiring is
- * chronix's own — matches the Phase 27 `computeScrollIntoView` split).
+ * chronix's own — matches the `computeScrollIntoView` split).
  */
 
 export const DEFAULT_DRAG_AUTO_SCROLL_TRIGGER_ZONE_PX = 30;

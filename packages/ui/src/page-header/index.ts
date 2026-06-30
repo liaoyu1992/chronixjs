@@ -1,5 +1,5 @@
 /**
- * chronix-ui page-header module — Phase 19 (2026-06-02).
+ * chronix-ui page-header module — .
  */
 
 export type { PageHeaderProps } from './page-header-spec.js';

@@ -1,5 +1,5 @@
 /**
- * Grid stylesheet — Phase 17 (2026-06-02).
+ * Grid stylesheet — .
  *
  * Single-element CSS Grid container. Track template + column-gap +
  * row-gap come from inline `style` set by the adapter via

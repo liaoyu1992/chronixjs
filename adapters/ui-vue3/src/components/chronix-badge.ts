@@ -12,7 +12,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 /**
  * `<ChronixBadge>` — Vue 3 SFC wrapping the core `BadgeProps` IR.
  *
- * Phase 14 (2026-06-02). First Tier A "wrap-a-child" component:
+ * . First Tier A "wrap-a-child" component:
  * renders an absolutely-positioned `__sup` indicator at the
  * top-right corner of its default slot content, or inline when no
  * child is supplied (standalone mode).

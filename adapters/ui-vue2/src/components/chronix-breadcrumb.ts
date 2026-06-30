@@ -9,7 +9,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixBreadcrumb>` — Vue 2.7 port of the Phase 19 Breadcrumb.
+ * `<ChronixBreadcrumb>` — Vue 2.7 port of the Breadcrumb.
  *
  * Runtime differences from the vue3 sibling: `h()` second-arg uses
  * nested `attrs:` for HTML attributes (`href`, `role`, `tabindex`,

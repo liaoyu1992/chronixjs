@@ -13,7 +13,7 @@ export interface DescriptionItemSpanStyle {
  * Description item, if any. Returns `undefined` when the CSS
  * default (`span: 1`) is sufficient.
  *
- * Phase 21 (2026-06-03). Per-item mirror of Phase 17 Grid's
+ * . Per-item mirror Grid's
  * `cols: number` decision (Decision B.1 of this phase). The
  * returned value is consumed by adapters as
  * `style.gridColumn = 'span N'` on the `__item` element.

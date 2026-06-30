@@ -1,5 +1,5 @@
 /**
- * Phase 15 (2026-05-26): options bag for `computeAutosizeWidth`. The
+ * options bag for `computeAutosizeWidth`. The
  * adapter pre-measures cell text widths (via `Canvas.measureText` or
  * an equivalent DOM-dependent primitive) and passes them in alongside
  * the layout-constraint inputs.
@@ -9,11 +9,11 @@
  *   inner geometry.
  * - `minWidth` — lower clamp bound. Adapter typically passes
  *   `column.minWidth ?? theme.defaultMinColumnWidth` so autosize
- *   respects the same minimums as `columnLayoutPass` + Phase 13
+ *   respects the same minimums as `columnLayoutPass` +
  *   drag-resize.
  * - `maxWidth` — optional upper clamp bound. When set (typically from
  *   `column.maxWidth`), autosize never exceeds it.
- * - `headerWidth` — optional header label width. Phase 15 Decision B.1
+ * - `headerWidth` — optional header label width. Decision B.1
  *   includes the header in the max calculation so a narrow-data /
  *   long-header column doesn't truncate the header.
  */
@@ -25,7 +25,7 @@ export interface ComputeAutosizeWidthOptions {
 }
 
 /**
- * Phase 15 (2026-05-26): pure clamp + max helper for column autosize.
+ * pure clamp + max helper for column autosize.
  * Takes the per-cell measured text widths + the header label width
  * (both produced by the adapter's DOM-dependent measurement layer)
  * and returns the resulting clamped column width in pixels.

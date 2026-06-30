@@ -3,7 +3,7 @@ import type { NotificationType } from './notification-spec.js';
 /**
  * Input for `resolveNotificationClassList`.
  *
- * Phase 36 (2026-06-05).
+ * .
  */
 export interface ResolveNotificationClassListInput {
   readonly type: NotificationType;

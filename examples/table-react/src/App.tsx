@@ -53,10 +53,10 @@ const STATUS_CLASS_MAP: Readonly<Record<string, string>> = {
 };
 
 const initialColumns: readonly ColumnSpec[] = [
-  // Phase 62 (2026-05-26 — react port of vue3 Phase 17): id + name
+  // (2026-05-26 — react port of vue3): id + name
   // pinned left → stay glued to the body's left edge during
   // horizontal scroll.
-  // Phase 72 (2026-05-27 — react port of vue3 Phase 23): id + name
+  // (2026-05-27 — react port of vue3): id + name
   // share `headerGroup: '基础信息'`; qty + price share `headerGroup:
   // '财务'`. status + note stay un-grouped so the empty-placeholder
   // branch is visible. Mirrors the vue3 demo column shape.
@@ -75,27 +75,27 @@ const initialColumns: readonly ColumnSpec[] = [
     field: 'qty',
     headerName: '数量',
     width: 100,
-    // Phase 50.1 (vue3 Phase 9.1): type:'number' wires the filter
+    // (vue3): type:'number' wires the filter
     // input to parsePrefixNumberFilter for prefix syntax (`>10`,
     // `5..50`, `!=3`, etc).
     type: 'number',
-    // Phase 48.1 (vue3 Phase 5): valueFormatter prepends a unit label
+    // (vue3): valueFormatter prepends a unit label
     // for body cells AND footer cells (the SFC routes aggregator
     // output through the same formatter).
     valueFormatter: ({ value }) => `${typeof value === 'number' ? value : 0} 件`,
-    // Phase 23.1 (2026-05-27 — react port): nested path form — qty +
+    // (2026-05-27 — react port): nested path form — qty +
     // price under 财务 > 订单 (level 0 = 财务 spans both; level 1 =
     // 订单 spans both). id+name stay on string shortcut form.
     headerGroup: ['财务', '订单'],
-    // Phase 74 (2026-05-27 — react port of vue3 Phase 24): sum
+    // (2026-05-27 — react port of vue3): sum
     // aggregator over filtered rows; the sticky footer renders the
     // sum through the same valueFormatter as body cells (reads
     // "N 件").
     aggregator: (rs) =>
       rs.reduce((s, r) => s + (typeof r.data['qty'] === 'number' ? r.data['qty'] : 0), 0),
-    // Phase 39.4 (2026-05-29 — react demo): per-column body-cell xlsx
+    // (2026-05-29 — react demo): per-column body-cell xlsx
     // style. Bold right-aligned numeric format with thousands
-    // separator. Header preserves Phase 39 bold default.
+    // separator. Header preserves bold default.
     exportStyle: {
       font: { bold: true },
       alignment: { horizontal: 'right' },
@@ -107,13 +107,13 @@ const initialColumns: readonly ColumnSpec[] = [
     field: 'price',
     headerName: '单价',
     width: 110,
-    // Phase 53.1 (vue3 Phase 12.1): type:'number' + editable:true wires
+    // (vue3): type:'number' + editable:true wires
     // the in-cell editor to <input type="number"> + coerceEditDraftValue
     // so commits produce typed `number | null` values.
     type: 'number',
     editable: true,
     headerGroup: ['财务', '订单'],
-    // Phase 74: average-price aggregator returning a pre-formatted
+    // average-price aggregator returning a pre-formatted
     // string ("均价 X.XX"). Body cells (no valueFormatter) keep the
     // raw numeric; footer surfaces the formatted average instead.
     aggregator: (rs) => {
@@ -128,17 +128,17 @@ const initialColumns: readonly ColumnSpec[] = [
     field: 'status',
     headerName: '状态',
     width: 120,
-    // Phase 48.1 (vue3 Phase 5): state-driven cellClass for color coding.
+    // (vue3): state-driven cellClass for color coding.
     cellClass: ({ value }) => STATUS_CLASS_MAP[String(value)] ?? 'cx-status--unknown',
-    // Phase 54 (vue3 Phase 13): resizable:false omits the drag-resize
+    // (vue3): resizable:false omits the drag-resize
     // affordance; the status column stays a fixed 120px to give
     // affordance verification in the demo.
     resizable: false,
-    // Phase 56 (2026-05-26 — react port of vue3 Phase 14): reorderable
+    // (2026-05-26 — react port of vue3): reorderable
     // :false alongside resizable:false to keep the status column
     // non-interactive (cursor: pointer for sort, no drag-to-reorder).
     reorderable: false,
-    // Phase 43 (2026-05-29 — react port): opt INTO the set-filter
+    // (2026-05-29 — react port): opt INTO the set-filter
     // dropdown UI. Renders a <details> checkbox list of unique status
     // values in the filter row instead of the text input.
     filterUi: 'set',
@@ -149,15 +149,15 @@ const initialColumns: readonly ColumnSpec[] = [
     headerName: '备注',
     flex: 2,
     minWidth: 160,
-    // Phase 53 (vue3 Phase 12): editable:true opt-in unlocks dblclick
+    // (vue3): editable:true opt-in unlocks dblclick
     // → text editor on this column.
     editable: true,
-    // Phase 58 (2026-05-26 — react port of vue3 Phase 15): autosizeable:false
+    // (2026-05-26 — react port of vue3): autosizeable:false
     // explicit opt-out — the resizer still drag-resizes, but dbl-click does
     // NOT autosize. This exercises the opt-OUT path orthogonal to status's
     // resizable:false.
     autosizeable: false,
-    // Phase 62 (2026-05-26): note pinned right → glued to the body's
+    // note pinned right → glued to the body's
     // right edge during horizontal scroll.
     pinned: 'right',
   },
@@ -189,12 +189,12 @@ const NOTE_CYCLE = [
   '归档至 wiki',
 ] as const;
 
-// Phase 48.1 (vue3 Phase 4): 50 rows so virtualization actually
+// (vue3): 50 rows so virtualization actually
 // exercises in the demo (totalBodyHeight = 50 × 28 = 1400px;
 // viewport ~320px shows ~11 rows + overscan at a time).
-// Phase 52 (vue3 Phase 11): paginationEnabled + initialPageSize=20
+// (vue3): paginationEnabled + initialPageSize=20
 // reshapes the 50-row dataset into 3 pages × 20 rows + last partial.
-// Phase 53.1: each row carries a `price` field in 0.9..99.5 range
+// each row carries a `price` field in 0.9..99.5 range
 // so the number editor exercises float coercion.
 const initialRows: readonly RowSpec[] = Array.from({ length: 50 }, (_, i) => {
   const idx = i + 1;
@@ -212,7 +212,7 @@ const initialRows: readonly RowSpec[] = Array.from({ length: 50 }, (_, i) => {
 });
 
 /**
- * Phase 30.2 (react port of vue3 Phase 30.1, 2026-05-28): tree-data
+ * (react port of vue3 2026-05-28): tree-data
  * demo helpers. Mirrors the vue3 demo's file-tree shape.
  */
 interface FileRow extends RowSpec {
@@ -325,7 +325,7 @@ function collectParentIds(rows: readonly RowSpec[]): readonly string[] {
 const treeRowsInitial: readonly RowSpec[] = makeFileTree();
 
 export function App(): ReactElement {
-  // Phase 48.1 (vue3 Phase 5.1 / 7): demo state for 4 representative
+  // (vue3): demo state for 4 representative
   // callback handlers — cell-click + header-click + row-dblclick +
   // empty-area-click. Each pill displays the last fired payload so
   // the user can verify all 8 callback props wire correctly.
@@ -333,46 +333,46 @@ export function App(): ReactElement {
   const [lastHeaderClick, setLastHeaderClick] = useState<string>('');
   const [lastRowDblclick, setLastRowDblclick] = useState<string>('');
   const [lastEmptyAreaClick, setLastEmptyAreaClick] = useState<string>('');
-  // Phase 49 + 49.1 (vue3 Phase 8 + 8.1): track the current sort
+  // + 49.1 (vue3 + 8.1): track the current sort
   // state as an array for multi-column display.
   const [currentSort, setCurrentSort] = useState<readonly SortSpec[]>([]);
-  // Phase 50 (vue3 Phase 9): track the current filter state.
+  // (vue3): track the current filter state.
   const [currentFilter, setCurrentFilter] = useState<readonly FilterSpec[]>([]);
-  // Phase 41 (2026-05-29 — react port of vue3 Phase 41): track the
+  // (2026-05-29 — react port of vue3): track the
   // current quick-find needle + match count for the on-screen status pill.
   const [currentQuickFindText, setCurrentQuickFindText] = useState<string>('');
   const [currentQuickFindMatchCount, setCurrentQuickFindMatchCount] = useState<number>(0);
-  // Phase 42 (2026-05-29): advanced-filter DSL state.
+  // advanced-filter DSL state.
   const [advancedFilterText, setAdvancedFilterText] = useState<string>('');
   const [advancedFilterErrors, setAdvancedFilterErrors] = useState<
     readonly ParseFilterExpressionError[]
   >([]);
   const [advancedFilterStatus, setAdvancedFilterStatus] = useState<string>('');
-  // Phase 51 (vue3 Phase 10): track the current selection.
+  // (vue3): track the current selection.
   const [currentSelection, setCurrentSelection] = useState<readonly string[]>([]);
-  // Phase 52 (vue3 Phase 11): track the current (page, pageSize)
+  // (vue3): track the current (page, pageSize)
   // tuple. Useful for the "X / Y" pill below the table.
   const [currentPage, setCurrentPage] = useState<PageChangePayload>({ page: 0, pageSize: 20 });
-  // Phase 53 (vue3 Phase 12): mirror committed cell values back into
+  // (vue3): mirror committed cell values back into
   // a stateful row array so the next render shows the persisted
   // edit. Mirrors vue3 demo's onCellValueChange pattern.
   const [rows, setRows] = useState<readonly RowSpec[]>(initialRows);
   const [lastEdit, setLastEdit] = useState<string>('');
-  // Phase 54 (vue3 Phase 13): mirror committed column widths back
+  // (vue3): mirror committed column widths back
   // into a stateful columns array so the next render shows the
   // persisted resize. Decision B.1 — when a flex column is resized,
   // the consumer rebuilds the column omitting `flex` so other flex
   // columns continue to share the remaining space proportionally.
   const [columns, setColumns] = useState<readonly ColumnSpec[]>(initialColumns);
   const [lastResize, setLastResize] = useState<string>('');
-  // Phase 56 (2026-05-26 — react port of vue3 Phase 14): mirror
+  // (2026-05-26 — react port of vue3): mirror
   // committed column reorders back into the stateful columns array
   // via the pure `computeColumnReorder` helper. Decision A.1 — emit-
   // only persistence; chronix-table-react doesn't mutate the columns
   // prop.
   const [lastReorder, setLastReorder] = useState<string>('');
-  // Phase 58 (2026-05-26 — react port of vue3 Phase 15): TableHandle ref
-  // for the imperative autosize API. Phase 58 dbl-click resizer triggers
+  // (2026-05-26 — react port of vue3): TableHandle ref
+  // for the imperative autosize API. dbl-click resizer triggers
   // autosize natively from the SFC; the demo buttons cover the programmatic
   // single-column + autosize-all paths.
   const tableRef = useRef<TableHandle>(null);
@@ -382,7 +382,7 @@ export function App(): ReactElement {
   function onAutosizeQty(): void {
     tableRef.current?.autosizeColumn('qty');
   }
-  // Phase 60 (2026-05-26 — react port of vue3 Phase 16): cell-range state
+  // (2026-05-26 — react port of vue3): cell-range state
   // for the demo pill + 2 imperative buttons.
   const [lastRange, setLastRange] = useState<string>('');
   function onCellRangeStart(payload: CellRangeStartPayload): void {
@@ -418,7 +418,7 @@ export function App(): ReactElement {
       : `最近 cell-range: ${s}`;
   }
 
-  // Phase 64 (2026-05-27 — react port of vue3 Phase 19): clipboard copy
+  // (2026-05-27 — react port of vue3): clipboard copy
   // demo state. Shows the first 80 chars of the most-recently-copied
   // TSV; visualizes `\t` as `→` and `\n` as `⏎` so the pill renders
   // legibly without wrapping. Both the Ctrl+C keyboard path AND the
@@ -439,7 +439,7 @@ export function App(): ReactElement {
     void tableRef.current?.copyCellRangeToClipboard();
   }
 
-  // Phase 66 (2026-05-27 — react port of vue3 Phase 20): clipboard paste
+  // (2026-05-27 — react port of vue3): clipboard paste
   // demo state. Mutations applied to rows via Map-keyed lookup over
   // visible columns. Pill shows count + first 3 mutations.
   const [lastPasteSummary, setLastPasteSummary] = useState<string>('');
@@ -481,8 +481,8 @@ export function App(): ReactElement {
     void tableRef.current?.pasteCellRangeFromClipboard();
   }
 
-  // Phase 68 (2026-05-27 — react port of vue3 Phase 21): drag-fill
-  // demo state. Same shape as Phase 66 paste handler — mutations are
+  // (2026-05-27 — react port of vue3): drag-fill
+  // demo state. Same shape as paste handler — mutations are
   // applied via Map-keyed lookup; pill shows count + first 3.
   const [lastFillSummary, setLastFillSummary] = useState<string>('');
   function describeFillSummary(s: string): string {
@@ -529,12 +529,12 @@ export function App(): ReactElement {
     handle.fillCellRange({ rowId: 'r10', colId: 'qty' });
   }
 
-  // Phase 70 (2026-05-27 — react port of vue3 Phase 22): undo/redo
+  // (2026-05-27 — react port of vue3): undo/redo
   // demo state. Mirrors the SFC's internal mutation-history state into
   // a useState (driven by onHistoryChange) so the Undo/Redo button
   // disabled state stays current. onHistoryReplay applies the
   // (already-reversed for undo / original for redo) mutations via
-  // Map-keyed batch-apply — same shape as Phase 66 paste + Phase 68
+  // Map-keyed batch-apply — same shape as paste +
   // fill handlers.
   const [undoHistoryState, setUndoHistoryState] = useState<MutationHistoryState>({
     past: [],
@@ -590,7 +590,7 @@ export function App(): ReactElement {
     tableRef.current?.clearHistory();
   }
 
-  // Phase 77 (2026-05-28 — react port of vue3 Phase 27): opt-out toggle
+  // (2026-05-28 — react port of vue3): opt-out toggle
   // for keyboard auto-scroll. Default ON; flipping OFF lets the user
   // verify the active outline persists on a cell scrolled out of view.
   const [enableAutoScroll, setEnableAutoScroll] = useState<boolean>(true);
@@ -598,7 +598,7 @@ export function App(): ReactElement {
     tableRef.current?.exportToCsv('chronix-table-demo.csv', { rowSource: 'filtered' });
   }
 
-  // Phase 39 (2026-05-29 — react port): xlsx export demo handler.
+  // (2026-05-29 — react port): xlsx export demo handler.
   const [xlsxBusy, setXlsxBusy] = useState<boolean>(false);
   const [xlsxError, setXlsxError] = useState<string>('');
   async function onExportXlsx(): Promise<void> {
@@ -617,14 +617,14 @@ export function App(): ReactElement {
     }
   }
 
-  // Phase 39.1 (2026-05-29 — react port): multi-sheet xlsx demo.
+  // (2026-05-29 — react port): multi-sheet xlsx demo.
   async function onExportXlsxMultiSheet(): Promise<void> {
     if (xlsxBusy) return;
     setXlsxBusy(true);
     setXlsxError('');
     try {
       await tableRef.current?.exportToXlsxMultiSheet('chronix-table-multi-sheet.xlsx', [
-        // Phase 39.3 (2026-05-29 — react port): demo per-sheet freeze-pane.
+        // (2026-05-29 — react port): demo per-sheet freeze-pane.
         {
           sheetName: 'Filtered',
           rowSource: 'filtered',
@@ -644,7 +644,7 @@ export function App(): ReactElement {
     }
   }
 
-  // Phase 38 (2026-05-29 — react port of vue3 Phase 38): saved-views
+  // (2026-05-29 — react port of vue3): saved-views
   // demo. localStorage round-trip + onColumnsChange atomic rebuild.
   const SAVED_VIEW_KEY = 'chronix-table-react-demo-saved-view';
   const [savedViewStatus, setSavedViewStatus] = useState<string>('');
@@ -671,17 +671,17 @@ export function App(): ReactElement {
     }
   }
   function onColumnsChange(payload: { columns: readonly ColumnSpec[]; reason: string }): void {
-    // Phase 38: atomic prop rebuild on applyTableView.
+    // atomic prop rebuild on applyTableView.
     setColumns(payload.columns);
   }
   function onJumpFarActiveCell(): void {
-    // Phase 77: r19 is the last row on page 1 (page size = 20) so it's
+    // r19 is the last row on page 1 (page size = 20) so it's
     // definitely below the visible viewport; `qty` is a center (non-
     // pinned) column.
     tableRef.current?.setActiveCell('r19', 'qty');
   }
 
-  // Phase 30.2 (react port, 2026-05-28): tree-data demo state +
+  // (react port, 2026-05-28): tree-data demo state +
   // handlers. Mirrors the vue3 demo's file-tree section.
   const treeTableRef = useRef<TableHandle>(null);
   const [treeExpandedCount, setTreeExpandedCount] = useState<number>(0);
@@ -697,7 +697,7 @@ export function App(): ReactElement {
     for (const id of parents) treeTableRef.current?.collapseRow(id);
   }
 
-  // Phase 31 + 32 + 33 demo (2026-05-28): pinned rows + tooltip + overlay.
+  // + 32 + 33 demo (2026-05-28): pinned rows + tooltip + overlay.
   const [tier2Loading, setTier2Loading] = useState(false);
   const [tier2EmptyMode, setTier2EmptyMode] = useState(false);
   const tier2Columns = useMemo<readonly ColumnSpec[]>(
@@ -710,7 +710,7 @@ export function App(): ReactElement {
     ],
     [],
   );
-  // Phase 34 demo (2026-05-28 — react port): lazy-load tree children.
+  // demo (2026-05-28 — react port): lazy-load tree children.
   const lazyRoots = useMemo<readonly RowSpec[]>(
     () => [
       { id: 'lazy-folder-a', data: { name: '📁 folder-a', size: '—' }, hasChildren: true },
@@ -775,7 +775,7 @@ export function App(): ReactElement {
     lazyTableRef.current?.invalidateLazyChildren();
   };
 
-  // Phase 45 (2026-05-29 — react port): server-side row model demo.
+  // (2026-05-29 — react port): server-side row model demo.
   const [rowModelType, setRowModelType] = useState<'clientSide' | 'serverSide'>('serverSide');
   const serverSideTableRef = useRef<TableHandle | null>(null);
   const serverSideColumns = useMemo<readonly ColumnSpec[]>(
@@ -828,17 +828,17 @@ export function App(): ReactElement {
   const onRefreshServerSide = (): void => {
     serverSideTableRef.current?.refreshServerSideRows();
   };
-  // Phase 45.1 (2026-05-30 — react port) demo wiring: paginationEnabled toggle.
+  // (2026-05-30 — react port) demo wiring: paginationEnabled toggle.
   const [serverSidePaginationEnabled, setServerSidePaginationEnabled] = useState(false);
   const onToggleServerSidePagination = (): void => {
     setServerSidePaginationEnabled((prev) => !prev);
   };
-  // Phase 45.2 (2026-05-30 — react port) demo wiring: invalidate block 0 only.
+  // (2026-05-30 — react port) demo wiring: invalidate block 0 only.
   const onInvalidateServerSideBlock0 = (): void => {
     serverSideTableRef.current?.invalidateServerSideBlocks([0]);
   };
 
-  // Phase 46 (2026-05-30 — react port): Tier 3 finale demo data + handlers.
+  // (2026-05-30 — react port): Tier 3 finale demo data + handlers.
   const [tier3Counter, setTier3Counter] = useState<Record<string, number>>({});
   const tier3Rows = useMemo<readonly RowSpec[]>(
     () => [
@@ -866,8 +866,7 @@ export function App(): ReactElement {
         data: {
           title: '新增数据导出',
           assignee: 'Carol',
-          notes:
-            '需要支持 CSV + xlsx 双格式;遵守现有 Phase 38/39 export 流程;对接 Phase 33 loading overlay。',
+          notes: '需要支持 CSV + xlsx 双格式;遵守现有 export 流程;对接 loading overlay。',
           protected: false,
         },
       },
@@ -919,7 +918,7 @@ export function App(): ReactElement {
     .filter(([k]) => k.endsWith('/delete'))
     .reduce((s, [, v]) => s + v, 0);
 
-  // Phase 80 (2026-05-30 — react port): Tool-panel container demo.
+  // (2026-05-30 — react port): Tool-panel container demo.
   const [toolPanelLastWidth, setToolPanelLastWidth] = useState(280);
   const toolPanelConfig = useMemo<ToolPanelConfig>(
     () => ({
@@ -984,7 +983,7 @@ export function App(): ReactElement {
     setToolPanelLastWidth(payload.width);
   };
 
-  // Phase 83 (2026-05-30 — react port): context menu + header menu wiring.
+  // (2026-05-30 — react port): context menu + header menu wiring.
   const [phase83LastContextAction, setPhase83LastContextAction] = useState('—');
   const phase83ContextMenuConfig: ContextMenuConfig = useMemo(
     () => ({
@@ -1064,7 +1063,7 @@ export function App(): ReactElement {
     return out;
   }, [rows, tier2EmptyMode]);
 
-  // Phase 72 (2026-05-27 — react port of vue3 Phase 23): demo state +
+  // (2026-05-27 — react port of vue3): demo state +
   // handler for `onHeaderGroupClick`. Empty placeholder cells never
   // fire (no `data-group-name` attr to resolve) — this only updates
   // on labelled group cells.
@@ -1096,7 +1095,7 @@ export function App(): ReactElement {
   function onFilterChange(payload: FilterChangePayload): void {
     setCurrentFilter(payload.filterSpec);
   }
-  // Phase 41 (2026-05-29 — react port): track the current quick-find
+  // (2026-05-29 — react port): track the current quick-find
   // needle + read the match count off the imperative handle once the
   // pass has settled.
   function onQuickFindTextChange(payload: { quickFindText: string }): void {
@@ -1108,7 +1107,7 @@ export function App(): ReactElement {
   function onQuickFindInput(ev: ChangeEvent<HTMLInputElement>): void {
     tableRef.current?.setQuickFindText(ev.target.value);
   }
-  // Phase 42 (react port): advanced-filter DSL input handlers.
+  // (react port): advanced-filter DSL input handlers.
   function onAdvancedFilterInput(ev: ChangeEvent<HTMLInputElement>): void {
     setAdvancedFilterText(ev.target.value);
   }
@@ -1172,13 +1171,13 @@ export function App(): ReactElement {
     const positionLabel = payload.position === 'before' ? '前' : '后';
     setLastReorder(`${movedLabel} → ${targetLabel} 之${positionLabel}`);
   }
-  // Phase 44 (2026-05-29 — react port): row drag emit-only persistence.
+  // (2026-05-29 — react port): row drag emit-only persistence.
   function onRowOrderChange(payload: RowOrderChangePayload): void {
     setRows((prev) =>
       computeRowReorder(prev, payload.movedRow.id, payload.targetRow.id, payload.position),
     );
   }
-  // Phase 76 (2026-05-27 — react port of vue3 Phase 25): consume the
+  // (2026-05-27 — react port of vue3): consume the
   // column-visibility callback + rebuild columns with the new `hide`
   // value per Decision A.1 (emit-only persistence).
   const [lastVisibilityChange, setLastVisibilityChange] = useState<string>('');
@@ -1191,7 +1190,7 @@ export function App(): ReactElement {
   }
   void lastVisibilityChange;
   function onColumnWidthChange(payload: ColumnWidthChangePayload): void {
-    // Phase 54 Decision B.1: mirror committed widths back into the
+    // Decision B.1: mirror committed widths back into the
     // stateful columns array; destructure-omit `flex` on the resized
     // column so it converts from flex-share to explicit-width and
     // other flex columns continue sharing the remainder proportionally.
@@ -1300,54 +1299,53 @@ export function App(): ReactElement {
       <header className="demo-page__header">
         <h1>@chronixjs/table-react</h1>
         <p>
-          Phase 48-54 demo (FEATURE-COMPLETE 17/17 vue3 phases ported) — 50 行 × 6 列 + 滚动虚拟化 +
-          cell args + 8 交互回调 + 主题 CSS 变量 + 表头排序 (Shift+点击 追加多列) + filter row
-          (数字列 prefix syntax: &gt;10 / 5..50 / !=3) + 行选择 (多选 + Ctrl/Cmd 切换 + Shift 范围)
-          + 复选框栏 + 3-state select-all + 分页 (每页 20 / 50 / 100 + 页码 bar with ellipsis) +
+          -54 demo (FEATURE-COMPLETE 17/17 vue3 phases ported) — 50 行 × 6 列 + 滚动虚拟化 + cell
+          args + 8 交互回调 + 主题 CSS 变量 + 表头排序 (Shift+点击 追加多列) + filter row (数字列
+          prefix syntax: &gt;10 / 5..50 / !=3) + 行选择 (多选 + Ctrl/Cmd 切换 + Shift 范围) +
+          复选框栏 + 3-state select-all + 分页 (每页 20 / 50 / 100 + 页码 bar with ellipsis) +
           双击编辑 (备注 文本 / 单价 number; Tab 自动跳到下一个 editable 单元格 + 跨行; Shift+Tab
           反向; Esc 取消; 非法数字 reject-and-keep) + 拖拽列宽 (4px 表头右边缘; 状态 列 resizable:
           false 不可拖拽) + 拖拽列序 (表头单元格拖拽 ≥ 5px Chebyshev 触发；状态 列 reorderable:
           false 不可拖拽)。{' '}
           <strong>
-            Phase 58：双击表头列右边缘 4px autosize 列宽 (Canvas measureText + computeAutosizeWidth
+            双击表头列右边缘 4px autosize 列宽 (Canvas measureText + computeAutosizeWidth
             clamp)；或点击下方按钮触发 imperative autosizeColumn(colId) / autosizeAllColumns()。
             column-width-change 回调与拖拽 resize 同一渠道；状态 列 resizable:false 隐式禁用；备注
             列 autosizeable:false 显式 opt-out。
           </strong>{' '}
           <strong>
-            Phase 60：cell 上 pointerdown + drag 选区 → 矩形 cell-range；shift+click 在已有 range
-            上延伸 focus；按钮可程序化设定/清空。cellRangeSelection=&quot;enabled&quot; 开启 — 默认
+            cell 上 pointerdown + drag 选区 → 矩形 cell-range；shift+click 在已有 range 上延伸
+            focus；按钮可程序化设定/清空。cellRangeSelection=&quot;enabled&quot; 开启 — 默认
             &quot;none&quot; 保留原有 cell-click / row-select / dblclick-edit 行为不变。矩形内的
             cell 带 cx-table-cell--in-cell-range modifier (淡蓝高亮)。
           </strong>{' '}
           <strong>
-            Phase 62 (react port of vue3 Phase 17)：pinned=&quot;left&quot; (ID + 名称) /
-            &quot;right&quot; (备注) 把列粘在 body 的左/右边缘 — 缩窄窗口或滚动表格时保持可见。
-            pinnedColsPass 在 columnLayoutPass 之后计算累积偏移；per-cell position: sticky 在已有
-            flat 行布局上加位，无 wrapper / 无列重排。单元格交互 (cell-click / cell-range /
-            dblclick-edit / 行选高亮) 在 pinned + center 两 zone 行为完全一致 — 委托事件无视 CSS
-            定位。boundary cell 自带 --pinned-left-last / --pinned-right-first modifier 供 CSS
-            阴影钩取；selection rail 也 sticky 在同一侧，与 pinned 列并排。
+            (react port of vue3)：pinned=&quot;left&quot; (ID + 名称) / &quot;right&quot; (备注)
+            把列粘在 body 的左/右边缘 — 缩窄窗口或滚动表格时保持可见。 pinnedColsPass 在
+            columnLayoutPass 之后计算累积偏移；per-cell position: sticky 在已有 flat
+            行布局上加位，无 wrapper / 无列重排。单元格交互 (cell-click / cell-range / dblclick-edit
+            / 行选高亮) 在 pinned + center 两 zone 行为完全一致 — 委托事件无视 CSS 定位。boundary
+            cell 自带 --pinned-left-last / --pinned-right-first modifier 供 CSS 阴影钩取；selection
+            rail 也 sticky 在同一侧，与 pinned 列并排。
           </strong>{' '}
           <strong>
-            Phase 64 (react port of vue3 Phase 19)：cell-range 激活时按 Ctrl+C (Mac: Cmd+C) → 复制为
-            TSV → 写入 navigator.clipboard → 粘到 Excel / Sheets / Notion / VS Code
+            (react port of vue3)：cell-range 激活时按 Ctrl+C (Mac: Cmd+C) → 复制为 TSV → 写入
+            navigator.clipboard → 粘到 Excel / Sheets / Notion / VS Code
             保留单元格结构。valueFormatter 在复制时生效 (e.g. 数量 列以 N 件 形式输出)。 新增
             onCellRangeCopy 回调 + copyCellRangeToClipboard() TableHandle
             方法，按钮可程序化触发同一路径。
           </strong>{' '}
           <strong>
-            Phase 66 (react port of vue3 Phase 20)：cell-range 激活时按 Ctrl+V (Mac: Cmd+V) → 从
-            navigator.clipboard 读 TSV → 解析为 2D 网格 → 映射到选区 (1×1 → fill-all；N×M →
-            clamp-overflow) → 按 column.type coerce (数字列空 → null / 非法 → silently skip) →
-            onCellRangePaste 回调一次 carry mutations 数组；consumer 用 Map 批量回写 rows。
+            (react port of vue3)：cell-range 激活时按 Ctrl+V (Mac: Cmd+V) → 从 navigator.clipboard
+            读 TSV → 解析为 2D 网格 → 映射到选区 (1×1 → fill-all；N×M → clamp-overflow) → 按
+            column.type coerce (数字列空 → null / 非法 → silently skip) → onCellRangePaste 回调一次
+            carry mutations 数组；consumer 用 Map 批量回写 rows。
           </strong>{' '}
           <strong>
-            Phase 68 (react port of vue3 Phase 21)：cell-range 激活时其右下角出现 8×8 蓝色 drag-fill
-            小方块。drag 该 handle 向下 / 向右 → 沿主导轴 axis-lock 扩展选区 → pointerup 时
-            constant-fill (modulo copy) → onCellRangeFill 回调 carry mutations 数组 (与 Phase 66
-            paste 同形状)，consumer 同样 Map 批量回写。fillCellRange(targetCell) handle 方法 +
-            按钮可程序化触发同一路径。
+            (react port of vue3)：cell-range 激活时其右下角出现 8×8 蓝色 drag-fill 小方块。drag 该
+            handle 向下 / 向右 → 沿主导轴 axis-lock 扩展选区 → pointerup 时 constant-fill (modulo
+            copy) → onCellRangeFill 回调 carry mutations 数组 (与 paste 同形状)，consumer 同样 Map
+            批量回写。fillCellRange(targetCell) handle 方法 + 按钮可程序化触发同一路径。
           </strong>
         </p>
         <p className="demo-page__sort-state">当前排序: {describeSort(currentSort)}</p>
@@ -1386,7 +1384,7 @@ export function App(): ReactElement {
             />
           </label>
           <label className="demo-page__inline-toggle demo-page__advanced-filter">
-            高级 filter (Phase 42 DSL):
+            高级 filter (DSL):
             <input
               type="text"
               data-testid="advanced-filter-input"
@@ -1454,7 +1452,7 @@ export function App(): ReactElement {
               checked={enableAutoScroll}
               onChange={(e) => setEnableAutoScroll(e.target.checked)}
             />
-            enableKeyboardAutoScroll (Phase 77)
+            enableKeyboardAutoScroll
           </label>
           <button type="button" onClick={onJumpFarActiveCell}>
             setActiveCell r19/qty
@@ -1541,7 +1539,7 @@ export function App(): ReactElement {
       </section>
       <section className="demo-page__table demo-page__tree-table">
         <header className="demo-page__tree-header">
-          <h2>Phase 30.2 — Tree data (react port)</h2>
+          <h2>Tree data (react port)</h2>
           <p>
             File-tree demo: ~85 行 nested 4 levels (project → module → folder → file). 单击 chevron
             切换展开 / 折叠；activeCell 在 <code>名称</code> 列时 <strong>Enter</strong> /{' '}
@@ -1571,7 +1569,7 @@ export function App(): ReactElement {
       </section>
       <section className="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
         <header>
-          <h2>Phase 31 + 32 + 33 — Pinned rows + tooltip + overlay</h2>
+          <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
           <p>
             <strong>Pinned rows</strong>: ⭐ top + 合计 bottom (RowSpec.pinned), never
             sort/filter/paginate.
@@ -1608,7 +1606,7 @@ export function App(): ReactElement {
       </section>
       <section className="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
         <header>
-          <h2>Phase 34 — Lazy-load tree children</h2>
+          <h2>Lazy-load tree children</h2>
           <p>
             <strong>Lazy load</strong>: <code>hasChildren: true</code> → first expand calls
             <code>childrenLoader</code>; 500ms simulated latency; <code>lazy-fail-1</code>
@@ -1640,15 +1638,15 @@ export function App(): ReactElement {
         data-testid="server-side-section"
       >
         <header>
-          <h2>Phase 45 — Server-side row model (react)</h2>
+          <h2>Server-side row model (react)</h2>
           <p>
             <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per request.
             <strong>Skeleton rows</strong>: unloaded indices render shimmer bars.
-            <strong>Phase 45.1 pagination</strong>: toggle ON → <code>pageSize</code> (25) becomes
-            block size, body renders only current page slice. <strong>Phase 45.2 invalidate</strong>
-            : block 0 only — preserves <code>totalRowCount</code> + other blocks (contrast with
-            whole-cache <code>Refresh</code>). <strong>Toggle</strong>: switch to{' '}
-            <code>clientSide</code> mode to compare.
+            <strong>pagination</strong>: toggle ON → <code>pageSize</code> (25) becomes block size,
+            body renders only current page slice. <strong>invalidate</strong>: block 0 only —
+            preserves <code>totalRowCount</code> + other blocks (contrast with whole-cache{' '}
+            <code>Refresh</code>). <strong>Toggle</strong>: switch to <code>clientSide</code> mode
+            to compare.
           </p>
           <div className="demo-page__autosize-actions">
             <button type="button" data-testid="server-side-toggle" onClick={onToggleRowModelType}>
@@ -1662,14 +1660,14 @@ export function App(): ReactElement {
               data-testid="server-side-pagination-toggle"
               onClick={onToggleServerSidePagination}
             >
-              Pagination: {serverSidePaginationEnabled ? 'ON' : 'OFF'} (Phase 45.1)
+              Pagination: {serverSidePaginationEnabled ? 'ON' : 'OFF'}
             </button>
             <button
               type="button"
               data-testid="server-side-invalidate-block-0"
               onClick={onInvalidateServerSideBlock0}
             >
-              invalidateServerSideBlocks([0]) (Phase 45.2)
+              invalidateServerSideBlocks([0])
             </button>
           </div>
         </header>
@@ -1690,7 +1688,7 @@ export function App(): ReactElement {
         data-testid="tier3-finale-section"
       >
         <header>
-          <h2>Phase 46 — Tier 3 finale (react — row number + actions + auto-height)</h2>
+          <h2>Tier 3 finale (react — row number + actions + auto-height)</h2>
           <p>
             <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code>.
             <strong>Actions</strong>: <code>ColumnSpec.actions</code>; <code>task-2</code>&apos;s
@@ -1718,7 +1716,7 @@ export function App(): ReactElement {
         data-testid="tool-panel-section"
       >
         <header>
-          <h2>Phase 80 — Tool-panel container (react — chronix-NEW)</h2>
+          <h2>Tool-panel container (react — chronix-NEW)</h2>
           <p>
             <strong>chronix-NEW container</strong>: composable descriptor-array API. 2 panels +
             drag-to-resize + click-to-collapse.

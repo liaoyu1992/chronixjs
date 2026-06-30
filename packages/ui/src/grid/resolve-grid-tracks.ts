@@ -1,7 +1,7 @@
 /**
  * Pure helper — convert a Grid `cols` prop into a CSS
  * `grid-template-columns` value string OR `undefined` (caller omits
- * the inline-style declaration). Phase 17 (2026-06-02).
+ * the inline-style declaration). .
  *
  * Contract:
  *

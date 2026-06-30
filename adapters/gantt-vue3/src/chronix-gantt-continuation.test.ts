@@ -33,7 +33,7 @@ const axisInput: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> continuation indicators — Phase 27', () => {
+describe('<ChronixGantt> continuation indicators', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

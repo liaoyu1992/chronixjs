@@ -48,7 +48,7 @@ function makeAxisInput(viewId: AxisRangePlanInput['viewId']): AxisRangePlanInput
   };
 }
 
-describe('<ChronixGantt> body grid lines — Phase 26', () => {
+describe('<ChronixGantt> body grid lines', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

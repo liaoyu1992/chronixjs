@@ -22,7 +22,7 @@ describe('DEFAULT_ICONS', () => {
     expect(DEFAULT_ICONS).toHaveLength(12);
   });
 
-  it('exposes the expected icon names (Phase 9 baseline)', () => {
+  it('exposes the expected icon names (baseline)', () => {
     expect(DEFAULT_ICONS.map((i) => i.name).sort()).toEqual(EXPECTED_DEFAULT_NAMES);
   });
 

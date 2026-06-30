@@ -14,7 +14,7 @@ import { useUIContext } from '../composables/use-ui-context.js';
 /**
  * `<ChronixButton>` — Vue 3 SFC wrapping the core `ButtonProps` IR.
  *
- * Phase 11 (2026-06-02). First Tier A component through the full
+ * . First Tier A component through the full
  * pipeline: core IR → adapter SFC → CSS injection → mount test.
  *
  * Props:
@@ -25,7 +25,7 @@ import { useUIContext } from '../composables/use-ui-context.js';
  *   `'medium'` when no provider is mounted).
  * - `disabled` (`boolean`) — non-interactive + muted. Either an own
  *   prop OR the context's `disabled: true` causes the button to render
- *   as disabled (per Phase 0.3 Decision A.1 default-merge precedence:
+ *   as disabled (per Decision A.1 default-merge precedence:
  *   own-prop is strict, falls back to context, falls back to interface
  *   default).
  * - `block` (`boolean`) — full-width display.

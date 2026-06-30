@@ -1,5 +1,5 @@
 /**
- * chronix-ui descriptions module — Phase 21 (2026-06-03).
+ * chronix-ui descriptions module — .
  */
 
 export type {

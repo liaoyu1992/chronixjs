@@ -32,7 +32,7 @@ import {
 import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
- * `<ChronixCascader>` — Vue 3 cascading selector. Phase 31 (2026-06-04).
+ * `<ChronixCascader>` — Vue 3 cascading selector. .
  */
 export const ChronixCascader = defineComponent({
   name: 'ChronixCascader',

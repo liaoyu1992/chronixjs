@@ -1,10 +1,10 @@
 /**
- * Ellipsis IR — Phase 23 (2026-06-03). Tier A text-truncation
+ * Ellipsis IR — . Tier A text-truncation
  * primitive with native HTML `title` attribute tooltip.
  *
- * Per Phase 23 Decision B.1 the full-text tooltip is the browser-
+ * Per Decision B.1 the full-text tooltip is the browser-
  * native `title` HTML attribute; rich-content Popover-rendered
- * tooltips are deferred to Phase 23.x once Tier B Popover lands.
+ * tooltips are deferred once Tier B Popover lands.
  * Per Decision C.1 the multi-line truncation uses
  * `-webkit-line-clamp` for `lineClamp >= 2` and the classic
  * `text-overflow: ellipsis` three-piece for `lineClamp === 1`.
@@ -23,9 +23,9 @@ export interface EllipsisProps {
    * attribute on the root `<span>`. When `false`, no tooltip
    * surface is emitted.
    *
-   * Phase 23 ships the native `title` attribute only; rich-content
-   * Popover-rendered tooltips are deferred to Phase 23.x per
-   * Decision B.1 (depends on Phase 29 Tier B Popover).
+   * ships the native `title` attribute only; rich-content
+   * Popover-rendered tooltips are deferred per
+   * Decision B.1 (depends on Tier B Popover).
    */
   readonly tooltip: boolean;
   /**

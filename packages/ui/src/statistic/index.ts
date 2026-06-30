@@ -1,5 +1,5 @@
 /**
- * chronix-ui statistic module — Phase 18 (2026-06-02).
+ * chronix-ui statistic module — .
  */
 
 export type { StatisticProps } from './statistic-spec.js';

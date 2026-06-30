@@ -3,12 +3,12 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixThing>` — Vue 3 SFC wrapping the core `ThingProps`
- * IR. Phase 23 (2026-06-03). Tier A composition card.
+ * IR. . Tier A composition card.
  *
  * Slots (all optional):
  *
  * - `avatar` — left-of-main illustration / icon / avatar.
- * - `header` — overrides `props.title` when supplied (Phase 19 B.1
+ * - `header` — overrides `props.title` when supplied (B.1
  *   prop-or-slot idiom).
  * - `header-extra` — right-aligned content within the header row.
  * - `description` — overrides `props.description` when supplied.

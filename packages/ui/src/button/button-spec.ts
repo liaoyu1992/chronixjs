@@ -1,8 +1,8 @@
 /**
- * Button IR — Phase 11 (2026-06-02). First Tier A component through the
+ * Button IR — . First Tier A component through the
  * full chronix-ui pipeline (IR → adapter SFC → mount test).
  *
- * Per UI_MIGRATION_PLAN.md Phase 11, Button is the pilot vertical that
+ * Per UI_MIGRATION_PLAN.md Button is the pilot vertical that
  * proves the IR + ChronixUIContext + theme + adapter pattern works
  * end-to-end. Subsequent Tier A components batch off this template.
  *
@@ -14,7 +14,7 @@
  *   the vue3 / vue2 / react adapters all derive the same class set.
  *
  * Theme tokens live in `theme/chronix-ui-theme.ts` as the `button` slice
- * (Phase 1) — the adapter's per-instance styles read those via
+ * — the adapter's per-instance styles read those via
  * CSS-var fallback (`var(--cx-ui-button-bg-color, fallback)`).
  */
 
@@ -36,7 +36,7 @@ export interface ButtonProps {
   /** Visual variant. Default `'default'`. */
   readonly variant: ButtonVariant;
   /**
-   * Sizing token. Default falls back to `ctx.size` (Phase 2
+   * Sizing token. Default falls back to `ctx.size` (
    * `ChronixUIContext.size`); when context is unavailable, defaults
    * to `'medium'`. The default-prop constant uses `'medium'`.
    */

@@ -1,7 +1,7 @@
 /**
- * TreeSelect component IR — Phase 31 (2026-06-04).
+ * TreeSelect component IR — .
  *
- * Select trigger + dropdown shell + nested Phase 30 Tree rows.
+ * Select trigger + dropdown shell + nested Tree rows.
  * Combines Select's trigger UX with Tree's expandable hierarchy.
  */
 
@@ -12,7 +12,7 @@ import type { TreeNodeSpec } from '../tree/tree-spec.js';
 export interface TreeSelectProps {
   /** Current value: single string or string[] (when multiple). */
   readonly value: string | readonly string[] | undefined;
-  /** Tree data (reuses Phase 30 TreeNodeSpec). */
+  /** Tree data (reuses TreeNodeSpec). */
   readonly data: readonly TreeNodeSpec<TreeNodeData>[];
   readonly multiple: boolean;
   readonly clearable: boolean;
