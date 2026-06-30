@@ -64,6 +64,7 @@
           :columns="COLUMNS"
           :links="initialLinks"
           max-body-height="70vh"
+          :sidebar-divider-width="cfg.dividerWidth.value"
           :selected-bar-ids="sel.selectedBarIds.value"
           :editable="cfg.editable.value"
           :selectable="cfg.selectable.value"
@@ -176,7 +177,7 @@
 import { ChronixGantt, useGanttSelection, type ColumnSpec } from '@chronixjs/gantt-vue2';
 import { computed, defineComponent, ref } from 'vue';
 
-import { bool, describeConfigSchema, enumOf, useDemoConfig } from './demo-config.js';
+import { bool, describeConfigSchema, enumOf, num, useDemoConfig } from './demo-config.js';
 import {
   PARITY_REFERENCE_COLOR,
   THEMED_BAR_BACKGROUND,
@@ -235,6 +236,8 @@ const DEMO_SCHEMA = {
     'Swap demo data to the original spec Vue 2 dataset (11 resources × 9 events)',
   ),
   weekendsVisible: bool(true, 'Render Saturday + Sunday cells'),
+  // Sidebar/chart divider gap (px). 0 removes the gap (and the resize handle).
+  dividerWidth: num(4, 'Sidebar↔timeline divider width in px (0 = no gap)'),
   // Phase 19 validators
   eventOverlap: bool(false, 'Reject cross-row time-intersecting drops'),
   eventConstraint: bool(false, 'Constrain drag/resize destination to today 08:00–20:00'),

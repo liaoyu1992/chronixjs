@@ -32,7 +32,7 @@ import {
 } from '@chronixjs/gantt-react';
 import { useMemo, useRef, useState, type FC } from 'react';
 
-import { bool, describeConfigSchema, enumOf, useDemoConfig } from './demo-config.js';
+import { bool, describeConfigSchema, enumOf, num, useDemoConfig } from './demo-config.js';
 import {
   PARITY_REFERENCE_COLOR,
   THEMED_BAR_BACKGROUND,
@@ -62,6 +62,7 @@ const DEMO_SCHEMA = {
   selectable: bool(true, 'Enable calendar range-select on empty rows'),
   parity: bool(false, 'Swap demo data to the original spec dataset (32 resources × 25 events)'),
   weekendsVisible: bool(true, 'Render Saturday + Sunday cells'),
+  dividerWidth: num(4, 'Sidebar↔timeline divider width in px (0 = no gap)'),
   eventOverlap: bool(false, 'Reject cross-row time-intersecting drops'),
   eventConstraint: bool(false, 'Constrain drag/resize destination to today 08:00–20:00'),
   eventAllow: bool(false, 'Reject drops/resizes whose start is before 08:00'),
@@ -461,6 +462,7 @@ export const DemoApp: FC = () => {
             todayLine={activeTodayLine}
             todayCellBg={activeTodayCellBg}
             useLineEventColor={cfg.values.useLineEventColor}
+            sidebarDividerWidth={cfg.values.dividerWidth}
             headerToolbar={HEADER_TOOLBAR}
             onAxisInputChange={onAxisInputChange}
             onBarDrop={onBarDrop}

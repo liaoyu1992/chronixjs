@@ -85,7 +85,7 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
       fireEvent.pointerDown(divider, { clientX: 240, button: 0, pointerId: 1 });
       fireEvent.pointerMove(divider, { clientX: 320, button: 0, pointerId: 1 });
     });
-    expect(wrapperEl.style.gridTemplateColumns).toBe('320px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('320px 4px auto');
   });
 
   it('pointermove clamps to MIN_SIDEBAR_AREA_WIDTH (40) when proposed is below floor', () => {
@@ -99,7 +99,7 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
       fireEvent.pointerDown(divider, { clientX: 240, button: 0, pointerId: 1 });
       fireEvent.pointerMove(divider, { clientX: -500, button: 0, pointerId: 1 });
     });
-    expect(wrapperEl.style.gridTemplateColumns).toBe('40px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('40px 4px auto');
   });
 
   it('pointermove clamps to (wrapperWidth - MIN) when proposed exceeds ceiling', () => {
@@ -113,7 +113,7 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
       fireEvent.pointerDown(divider, { clientX: 240, button: 0, pointerId: 1 });
       fireEvent.pointerMove(divider, { clientX: 9999, button: 0, pointerId: 1 });
     });
-    expect(wrapperEl.style.gridTemplateColumns).toBe('460px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('460px 4px auto');
   });
 
   it('pointermove without prior pointerdown is a no-op', () => {
@@ -125,7 +125,7 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
     act(() => {
       fireEvent.pointerMove(divider, { clientX: 600, button: 0, pointerId: 1 });
     });
-    expect(wrapperEl.style.gridTemplateColumns).toBe('240px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('240px 4px auto');
   });
 
   it('pointerup clears drag-snapshot but preserves override', () => {
@@ -140,12 +140,12 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
       fireEvent.pointerMove(divider, { clientX: 320, button: 0, pointerId: 1 });
       fireEvent.pointerUp(divider, { clientX: 320, button: 0, pointerId: 1 });
     });
-    expect(wrapperEl.style.gridTemplateColumns).toBe('320px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('320px 4px auto');
     // Subsequent pointermove without a new pointerdown is a no-op.
     act(() => {
       fireEvent.pointerMove(divider, { clientX: 600, button: 0, pointerId: 1 });
     });
-    expect(wrapperEl.style.gridTemplateColumns).toBe('320px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('320px 4px auto');
   });
 
   it('pointercancel preserves the in-flight override + clears drag-snapshot', () => {
@@ -160,7 +160,7 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
       fireEvent.pointerMove(divider, { clientX: 300, button: 0, pointerId: 1 });
       fireEvent.pointerCancel(divider, { clientX: 300, button: 0, pointerId: 1 });
     });
-    expect(wrapperEl.style.gridTemplateColumns).toBe('300px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('300px 4px auto');
   });
 
   it('non-left mouse button (right click) does NOT initiate drag', () => {
@@ -174,7 +174,7 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
       fireEvent.pointerDown(divider, { clientX: 240, button: 2, pointerId: 1 });
       fireEvent.pointerMove(divider, { clientX: 320, button: 2, pointerId: 1 });
     });
-    expect(wrapperEl.style.gridTemplateColumns).toBe('240px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('240px 4px auto');
   });
 
   it('sidebar <col> widths stay fixed during drag (columns do not scale)', () => {
@@ -185,7 +185,10 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
     const divider = container.querySelector<HTMLDivElement>('div.cx-gantt-sidebar-divider')!;
     const wrapperEl = container.querySelector<HTMLElement>('div.cx-gantt-wrapper')!;
     // Drag from base 240 to 480 (wider). Columns keep their declared
-    // widths (60/100/80); the table stays at the column sum (240px).
+    // widths (60/100/80); the table now fills the pane (`width: 100%`)
+    // so widening leaves no empty sidebar-background gap, while its
+    // `minWidth` holds the column sum (240px) so narrowing still
+    // overflows + scrolls.
     act(() => {
       fireEvent.pointerDown(divider, { clientX: 240, button: 0, pointerId: 1 });
       fireEvent.pointerMove(divider, { clientX: 480, button: 0, pointerId: 1 });
@@ -194,10 +197,11 @@ describe('<ChronixGantt> sidebar-divider drag (Phase 50)', () => {
     expect(cols[0]!.style.width).toBe('60px');
     expect(cols[1]!.style.width).toBe('100px');
     expect(cols[2]!.style.width).toBe('80px');
-    // Table keeps the natural column-sum width (240px), not the dragged 480px.
+    // Table fills the pane (width:100%, no minWidth).
     const bodyTable = container.querySelector<HTMLElement>('div.cx-gantt-sidebar-body table')!;
-    expect(bodyTable.style.width).toBe('240px');
+    expect(bodyTable.style.width).toBe('100%');
+    expect(bodyTable.style.minWidth).toBe('');
     // The grid track (pane width) follows the drag → wider pane.
-    expect(wrapperEl.style.gridTemplateColumns).toBe('480px 8px auto');
+    expect(wrapperEl.style.gridTemplateColumns).toBe('480px 4px auto');
   });
 });

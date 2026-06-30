@@ -98,7 +98,8 @@ describe('<ChronixGantt>', () => {
     expect(root.style.display).toBe('grid');
     expect(root.style.overflow).toBe('');
     const chartPane = wrapper.find('div.cx-gantt-chart-pane').element as HTMLElement;
-    expect(chartPane.style.overflow).toBe('auto');
+    expect(chartPane.style.overflowX).toBe('auto');
+    expect(chartPane.style.overflowY).toBe('hidden');
   });
 
   it('Phase 23: header SVG sits inside cx-gantt-chart-header-pane (overflow: hidden) and is no longer sticky', () => {
@@ -1565,7 +1566,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
     // sidebarWidth = 80 + 120 = 200; middle track is the 8-px divider
     // (Phase 14); right track is `auto` so the grid's intrinsic width
     // grows with the chart and overflow:auto engages horizontal scroll.
-    expect(root.style.gridTemplateColumns).toBe('200px 8px auto');
+    expect(root.style.gridTemplateColumns).toBe('200px 4px auto');
   });
 
   it('Phase 23: wrapper is a 1-column grid when `columns` is omitted (chart-only layout)', () => {
@@ -1629,7 +1630,8 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
       },
     });
     const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
-    expect(sidebarPane.style.overflow).toBe('auto');
+    expect(sidebarPane.style.overflowX).toBe('auto');
+    expect(sidebarPane.style.overflowY).toBe('auto');
     const body = wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement;
     expect(body.style.position).toBe('');
     expect(body.style.left).toBe('');
@@ -1805,7 +1807,8 @@ describe('<ChronixGantt> sidebar vGrouping (rowspan merge)', () => {
       props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
     });
     const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
-    expect(sidebarPane.style.overflow).toBe('auto');
+    expect(sidebarPane.style.overflowX).toBe('auto');
+    expect(sidebarPane.style.overflowY).toBe('auto');
     const body = wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement;
     expect(body.style.position).toBe('');
     expect(body.style.left).toBe('');
@@ -2274,7 +2277,7 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
     await divider.trigger('pointerup', { clientX: 250, pointerId: 1 });
 
     const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
-    expect(root.style.gridTemplateColumns).toBe('250px 8px auto');
+    expect(root.style.gridTemplateColumns).toBe('250px 4px auto');
   });
 
   it('MIN clamp prevents the sidebar from shrinking below 40px (chronix MIN)', async () => {
@@ -2310,7 +2313,7 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
     await divider.trigger('pointermove', { clientX: -300, pointerId: 1 });
 
     const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
-    expect(root.style.gridTemplateColumns).toBe('40px 8px auto');
+    expect(root.style.gridTemplateColumns).toBe('40px 4px auto');
   });
 
   it('MAX clamp prevents the sidebar from growing past `wrapperWidth − MIN`', async () => {
@@ -2347,10 +2350,10 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
     await divider.trigger('pointermove', { clientX: 5200, pointerId: 1 });
 
     const root = wrapper.find('div.cx-gantt-wrapper').element as HTMLElement;
-    expect(root.style.gridTemplateColumns).toBe('960px 8px auto');
+    expect(root.style.gridTemplateColumns).toBe('960px 4px auto');
   });
 
-  it('column widths stay fixed during drag — narrower pane overflows instead of compressing', async () => {
+  it('colgroup col widths stay declared during drag — narrowed pane compresses the table to fit (no overflow)', async () => {
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [],
@@ -2378,10 +2381,10 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
     });
 
     // Drag the sidebar from baseSum=200 down to override=100 (narrower
-    // than the columns). Columns keep their declared widths (region=80,
-    // vehicle=120); the sidebar table stays at the natural column sum
-    // (200px) so the pane overflows and reveals a horizontal scrollbar
-    // rather than scaling/compressing the cols.
+    // than the columns). The colgroup cols keep their declared widths
+    // (region=80, vehicle=120) as the proportional base; the table fills
+    // the pane (`width: 100%`) so the rendered columns compress to fit
+    // rather than overflowing + showing a horizontal scrollbar.
     const divider = wrapper.find('.cx-gantt-sidebar-divider');
     await divider.trigger('pointerdown', { clientX: 200, button: 0, pointerId: 1 });
     await divider.trigger('pointermove', { clientX: 100, pointerId: 1 });
@@ -2393,12 +2396,13 @@ describe('<ChronixGantt> sidebar resize divider (Phase 14)', () => {
     expect((cols[1]!.element as HTMLElement).style.width).toBe('120px');
     expect((cols[2]!.element as HTMLElement).style.width).toBe('80px');
     expect((cols[3]!.element as HTMLElement).style.width).toBe('120px');
-    // The sidebar body table keeps the natural column-sum width (200px),
-    // independent of the dragged pane width (100px).
+    // The sidebar body table fills the pane (width:100%, no minWidth) so a
+    // narrowed pane compresses the columns instead of overflowing.
     const bodyTable = wrapper.find('.cx-gantt-sidebar-body table').element as HTMLElement;
-    expect(bodyTable.style.width).toBe('200px');
+    expect(bodyTable.style.width).toBe('100%');
+    expect(bodyTable.style.minWidth).toBe('');
     // The grid track (pane width) does follow the drag → narrower pane.
-    expect((wrapperEl as HTMLElement).style.gridTemplateColumns).toBe('100px 8px auto');
+    expect((wrapperEl as HTMLElement).style.gridTemplateColumns).toBe('100px 4px auto');
     // minWidth:0 lets the pane shrink below the table's natural width.
     const sidebarPane = wrapper.find('.cx-gantt-sidebar-pane').element as HTMLElement;
     expect(sidebarPane.style.minWidth).toBe('0');

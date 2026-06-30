@@ -62,7 +62,8 @@ describe('<ChronixGantt> dual-scrollport architecture (Phase 31.5.2)', () => {
     });
     const chartPane = wrapper.find('div.cx-gantt-chart-pane').element as HTMLElement;
     const chartHeaderPane = wrapper.find('div.cx-gantt-chart-header-pane').element as HTMLElement;
-    expect(chartPane.style.overflow).toBe('auto');
+    expect(chartPane.style.overflowX).toBe('auto');
+    expect(chartPane.style.overflowY).toBe('hidden');
     expect(chartHeaderPane.style.overflow).toBe('hidden');
   });
 

@@ -111,6 +111,15 @@ export const sampleRows: readonly RowSpec[] = [
   // parity-vue2.spec.ts phase30-stacking tests can query the same
   // selectors verbatim.
   { id: 'r13', columns: { region: '南区', base: '基建基地', name: '待排 Stack' } },
+  // Extra rows to force vertical overflow so the sidebar/chart vertical
+  // sync (transform on sidebar-body) is testable in the demo.
+  ...Array.from({ length: 20 }, (_, i) => {
+    const n = i + 1;
+    return {
+      id: `extra-${n}`,
+      columns: { region: '扩展区', base: `扩展基地 ${((n - 1) % 4) + 1}`, name: `扩展 ${n}` },
+    };
+  }),
 ];
 
 /**
@@ -200,6 +209,13 @@ export function initialSampleBars(): BarSpec[] {
     multiDayBar('multi-d3', 'r3', 14, 18, '月内中期 - 设备升级'),
     multiDayBar('multi-d4', 'r4', 25, 35, '跨月任务 - 系统迁移', 15),
     multiDayBar('multi-d5', 'r5', 60, 30, '下季度规划 - 年度大修'),
+
+    // Bars for the extra rows (vertical-sync testing).
+    ...Array.from({ length: 20 }, (_, i) => {
+      const n = i + 1;
+      const start = (n % 10) * 12;
+      return bar(`extra-bar-${n}`, `extra-${n}`, start, start + 24, `扩展任务 ${n}`);
+    }),
   ];
 }
 

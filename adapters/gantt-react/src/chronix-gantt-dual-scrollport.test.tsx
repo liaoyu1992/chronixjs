@@ -60,7 +60,8 @@ describe('@chronixjs/gantt-react ChronixGantt — dual-scrollport (Phase 32.5)',
     );
     const pane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-pane')!;
     const headerPane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-header-pane')!;
-    expect(pane.style.overflow).toBe('auto');
+    expect(pane.style.overflowX).toBe('auto');
+    expect(pane.style.overflowY).toBe('hidden');
     expect(headerPane.style.overflow).toBe('hidden');
   });
 

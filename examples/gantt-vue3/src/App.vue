@@ -30,7 +30,7 @@ import type {
 } from '@chronixjs/gantt-vue3';
 import { computed, ref } from 'vue';
 
-import { bool, describeConfigSchema, enumOf, useDemoConfig } from './demo-config';
+import { bool, describeConfigSchema, enumOf, num, useDemoConfig } from './demo-config';
 import { sampleBars, sampleLinks, sampleRows, todayLocalMidnight } from './sample-data';
 import { sampleBarsParity, sampleLinksParity, sampleRowsParity } from './sample-data-parity';
 import {
@@ -86,6 +86,8 @@ const DEMO_SCHEMA = {
   todayCellBg: bool(true, 'Show today-column background tint (rgba(255, 220, 40, .15))'),
   // Phase 28.3 link rendering
   useLineEventColor: bool(false, 'Color dependency lines by source bar (Phase 28.3)'),
+  // Sidebar/chart divider gap (px). 0 removes the gap (and the resize handle).
+  dividerWidth: num(4, 'Sidebar↔timeline divider width in px (0 = no gap)'),
 } as const;
 
 const cfg = useDemoConfig(DEMO_SCHEMA);
@@ -452,6 +454,7 @@ function resetBars(): void {
           :today-line="activeTodayLine"
           :today-cell-bg="activeTodayCellBg"
           :use-line-event-color="cfg.useLineEventColor.value"
+          :sidebar-divider-width="cfg.dividerWidth.value"
           :header-toolbar="HEADER_TOOLBAR"
           @update:axis-input="onUpdateAxisInput"
           @bar-drop="onBarDrop"

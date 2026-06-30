@@ -7,8 +7,8 @@ import {
 } from './sidebar-divider.js';
 
 describe('sidebar-divider constants', () => {
-  it('SIDEBAR_DIVIDER_WIDTH = 8 (grab-target track width)', () => {
-    expect(SIDEBAR_DIVIDER_WIDTH).toBe(8);
+  it('SIDEBAR_DIVIDER_WIDTH = 4 (grab-target track width)', () => {
+    expect(SIDEBAR_DIVIDER_WIDTH).toBe(4);
   });
 
   it('MIN_SIDEBAR_AREA_WIDTH = 40 (per-pane minimum)', () => {

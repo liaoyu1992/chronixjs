@@ -103,7 +103,6 @@ import {
   type SelectPayload,
   type SelectRejectedPayload,
 } from './use-gantt-pointer.js';
-import { useScrollSync } from './use-scroll-sync.js';
 
 import type { BarClickPayload, EmptyAreaClickPayload } from './use-gantt-selection.js';
 
@@ -497,6 +496,12 @@ export interface ChronixGanttProps {
   // visual output. When set (e.g. `'400px'`), row 2 caps + vertical
   // scrollbar engages on overflow.
   readonly maxBodyHeight?: string;
+  // Width (px) of the draggable divider between the resource sidebar and
+  // the timeline (the grid track between them). Defaults to 4
+  // (`SIDEBAR_DIVIDER_WIDTH`). Set smaller for a thinner grab handle, or 0
+  // to remove the gap (at 0 the divider is no longer a usable resize
+  // handle).
+  readonly sidebarDividerWidth?: number;
   // Phase 41 — Phase 22.2 todayCellBg parity prop. `false` or omitted =
   // hide (default); `true` = enable with theme default
   // (`theme.todayCellBgColor`); an object literal with `color` overrides
@@ -632,6 +637,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
     onLinkOrphan,
     todayLine,
     maxBodyHeight,
+    sidebarDividerWidth,
     todayCellBg,
     headerCellClassNamesCallback,
     pointerMinDistance,
@@ -1073,9 +1079,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   // `sidebarHeaderInnerRef` wraps the sidebar's header `<table>` inside
   // `cx-gantt-sidebar-header-pane` (overflow:hidden) and takes a
   // translateX on horizontal sidebar scroll, mirroring how the chart-
-  // header pane tracks its body. Refs stay null in no-sidebar mode —
-  // `useScrollSync` no-ops, and the sidebar-header useEffect short-
-  // circuits at the null guard.
+  // header pane tracks its body. Refs stay null in no-sidebar mode — the
+  // inline chart-body vertical sync + sidebar-header useEffect both short-
+  // circuit at their null guards.
   const sidebarPaneRef = useRef<HTMLDivElement | null>(null);
   const sidebarHeaderInnerRef = useRef<HTMLDivElement | null>(null);
 
@@ -1103,11 +1109,41 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   // tracks horizontal sidebar scroll independently of the chart pane.
   const sidebarScroll = useChartScrollState(sidebarPaneRef);
 
-  // Phase 48 — bidirectional vertical scroll sync between sidebar +
-  // chart panes (rAF-source-tracking lockstep). When sidebar isn't
-  // rendered, sidebarPaneRef.current === null and the hook silently
-  // no-ops.
-  useScrollSync(sidebarPaneRef, chartPaneRef);
+  // Phase 49b (vertical-scroll ownership): vertical sync from the sidebar-
+  // pane to the chart body SVG via transform: translateY(). The sidebar
+  // owns the vertical scrollbar (boundary); the chart-pane is overflow-y:
+  // hidden, so its body SVG is translated to follow the sidebar-pane's
+  // scrollTop, mirroring the header's horizontal translateX sync one axis
+  // over. A wheel over the chart is forwarded to the sidebar (the chart
+  // can't scroll vertically on its own), keeping wheel-over-chart working.
+  // Bar hit-testing stays correct: `svg.getBoundingClientRect()` reflects
+  // the transform, so the existing `clientY - bodyRect.top` math already
+  // accounts for it. Deps are the stable refs (run-once idiom).
+  useEffect(() => {
+    const sidebarPane = sidebarPaneRef.current;
+    const chart = chartPaneRef.current;
+    const bodySvg = bodySvgRef.current;
+    if (!sidebarPane || !chart || !bodySvg) return;
+    const sync = (): void => {
+      bodySvg.style.transform = `translateY(-${sidebarPane.scrollTop}px)`;
+    };
+    const onWheel = (e: WheelEvent): void => {
+      // Only forward vertical wheel; horizontal wheel (shift / trackpad
+      // deltaX) is left to scroll the chart-pane's own overflow-x.
+      if (e.deltaY === 0) return;
+      sidebarPane.scrollTop += e.deltaY;
+      e.preventDefault();
+      sync();
+    };
+    sidebarPane.addEventListener('scroll', sync, { passive: true });
+    // non-passive so preventDefault can stop the page from scrolling
+    chart.addEventListener('wheel', onWheel, { passive: false });
+    sync();
+    return () => {
+      sidebarPane.removeEventListener('scroll', sync);
+      chart.removeEventListener('wheel', onWheel);
+    };
+  }, [sidebarPaneRef, chartPaneRef, bodySvgRef]);
 
   // Phase 50 — sidebar-divider pointer handlers. Mirror of
   // chronix-vue3:1165-1202 with React event-type signatures. The
@@ -2097,7 +2133,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       style={{
         borderCollapse: 'collapse',
         tableLayout: 'fixed',
-        width: `${sidebarBaseWidth}px`,
+        // Phase 49b: fill the pane content area; columns compress to fit
+        // when the sidebar's vertical scrollbar appears.
+        width: '100%',
         height: `${totalHeaderBandHeight}px`,
       }}
       cellPadding={0}
@@ -2146,7 +2184,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
       style={{
         borderCollapse: 'collapse',
         tableLayout: 'fixed',
-        width: `${sidebarBaseWidth}px`,
+        width: '100%',
       }}
       cellPadding={0}
       cellSpacing={0}
@@ -2222,7 +2260,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
   const wrapperGridStyle: CSSProperties = hasSidebar
     ? {
         display: 'grid',
-        gridTemplateColumns: `${sidebarWidth}px ${SIDEBAR_DIVIDER_WIDTH}px auto`,
+        gridTemplateColumns: `${sidebarWidth}px ${sidebarDividerWidth ?? SIDEBAR_DIVIDER_WIDTH}px auto`,
         gridTemplateRows: headerBandRow,
       }
     : { display: 'grid', gridTemplateColumns: '1fr', gridTemplateRows: headerBandRow };
@@ -2233,17 +2271,22 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
         <div
           className="cx-gantt-sidebar-header-pane"
           style={{
+            // overflow: hidden clips the header inner and shows no
+            // scrollbar of its own. scrollbar-gutter: stable still
+            // reserves the body's scrollbar gutter so header columns
+            // align with body columns.
             overflow: 'hidden',
+            scrollbarGutter: 'stable',
             minWidth: 0,
             gridColumn: 1,
             gridRow: 1,
             // Divider lives on the pane (a grid item whose height = the
             // header-band row), not on the inner header element: the inner
             // header's own height is driven by its table content, so a
-            // border on it is clipped by this pane's `overflow: hidden`
-            // whenever the chart header is shorter, and floats mid-band
-            // whenever it is taller. On the pane the line always sits at
-            // the band's bottom edge, aligned with the chart header.
+            // border on it is clipped by this pane's overflow-x whenever
+            // the chart header is shorter, and floats mid-band whenever it
+            // is taller. On the pane the line always sits at the band's
+            // bottom edge, aligned with the chart header.
             borderBottom: `1px solid ${t.sidebarHeaderDivider}`,
             boxSizing: 'border-box',
           }}
@@ -2492,7 +2535,17 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           ref={sidebarPaneRef}
           className="cx-gantt-sidebar-pane"
           style={{
-            overflow: 'auto',
+            // overflow-y: auto — the sidebar owns the vertical scrollbar
+            // (it sits on the sidebar/chart boundary — the resource area).
+            // The chart-pane is overflow-y: hidden; its body SVG is
+            // translated to follow this pane's scrollTop (the useEffect
+            // above). overflow-x auto so a narrowed sidebar can still
+            // scroll its columns. scrollbar-gutter: stable keeps content
+            // width constant whether or not the scrollbar shows →
+            // header/body columns stay aligned.
+            overflowX: 'auto',
+            overflowY: 'auto',
+            scrollbarGutter: 'stable',
             minWidth: 0,
             gridColumn: 1,
             gridRow: 2,
@@ -2508,7 +2561,11 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
         ref={chartPaneRef}
         className="cx-gantt-chart-pane"
         style={{
-          overflow: 'auto',
+          // overflow-y: hidden — the chart owns no vertical scrollbar (the
+          // sidebar does; the body SVG is translated to follow the sidebar's
+          // scrollTop). overflow-x auto for the wide timeline.
+          overflowX: 'auto',
+          overflowY: 'hidden',
           gridColumn: hasSidebar ? 3 : 1,
           gridRow: 2,
           ...(maxBodyHeight !== undefined ? { maxHeight: maxBodyHeight } : {}),
@@ -2520,7 +2577,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
           width={totalWidth}
           height={bodyHeight}
           xmlns={SVG_NS}
-          style={{ display: 'block', touchAction: 'none' }}
+          style={{ display: 'block', touchAction: 'none', willChange: 'transform' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}

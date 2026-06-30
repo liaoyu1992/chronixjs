@@ -64,25 +64,37 @@ describe('<ChronixGantt> dual-scrollport architecture — Phase 23', () => {
     expect(wrapper.find('div.cx-gantt-sidebar-header-pane').exists()).toBe(false);
   });
 
-  it('chart-pane has overflow: auto; chart-header-pane has overflow: hidden', () => {
+  it('chart-pane has overflow-x: auto / overflow-y: hidden; chart-header-pane has overflow: hidden', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput, columns: sidebarColumns },
     });
     const chartPane = wrapper.find('div.cx-gantt-chart-pane').element as HTMLElement;
     const chartHeaderPane = wrapper.find('div.cx-gantt-chart-header-pane').element as HTMLElement;
-    expect(chartPane.style.overflow).toBe('auto');
+    // overflow-y: hidden — the chart owns no vertical scrollbar (the
+    // sidebar does; the body SVG is translated to follow it). overflow-x
+    // auto for the wide timeline's horizontal scrollbar.
+    expect(chartPane.style.overflowX).toBe('auto');
+    expect(chartPane.style.overflowY).toBe('hidden');
     expect(chartHeaderPane.style.overflow).toBe('hidden');
   });
 
-  it('sidebar-pane has overflow: auto; sidebar-header-pane has overflow: hidden', () => {
+  it('sidebar-pane has overflow-x: auto / overflow-y: auto; sidebar-header-pane has overflow: hidden', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput, columns: sidebarColumns },
     });
     const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
     const sidebarHeaderPane = wrapper.find('div.cx-gantt-sidebar-header-pane')
       .element as HTMLElement;
-    expect(sidebarPane.style.overflow).toBe('auto');
+    // overflow-y: auto — the sidebar owns the vertical scrollbar (it sits
+    // on the sidebar/chart boundary — the resource area). overflow-x auto
+    // so a narrowed sidebar can still scroll its columns.
+    expect(sidebarPane.style.overflowX).toBe('auto');
+    expect(sidebarPane.style.overflowY).toBe('auto');
+    // overflow: hidden — the header shows no scrollbar of its own;
+    // scrollbar-gutter: stable still reserves the body's scrollbar
+    // gutter so header columns align with body columns.
     expect(sidebarHeaderPane.style.overflow).toBe('hidden');
+    expect(sidebarHeaderPane.style.scrollbarGutter).toBe('stable');
   });
 
   it('wrapper is a CSS grid; grid-template-rows includes maxBodyHeight when set', () => {
@@ -140,19 +152,29 @@ describe('<ChronixGantt> dual-scrollport architecture — Phase 23', () => {
     expect(sidebarInner.style.transform).toBe('translateX(-30px)');
   });
 
-  it('vertical scroll on chart-pane syncs sidebar-pane scrollTop via useScrollSync', async () => {
+  it('vertical scroll on sidebar-pane translates the chart body SVG (transform sync — chart owns no vertical scrollbar)', () => {
+    const wrapper = mount(ChronixGantt, {
+      props: { bars: [], rows, axisInput, columns: sidebarColumns },
+    });
+    const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
+    const bodySvg = wrapper.find('svg.cx-gantt-body').element as HTMLElement;
+    // On mount the sync writes the initial transform (scrollTop = 0).
+    expect(bodySvg.style.transform).toBe('translateY(-0px)');
+    sidebarPane.scrollTop = 50;
+    sidebarPane.dispatchEvent(new Event('scroll'));
+    // The body SVG tracks the sidebar's scrollTop via translateY (the
+    // chart-pane is overflow-y: hidden so it has no scrollbar).
+    expect(bodySvg.style.transform).toBe('translateY(-50px)');
+  });
+
+  it('wheel over the chart forwards to the sidebar-pane scrollTop (chart is overflow-y: hidden)', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput, columns: sidebarColumns },
     });
     const chartPane = wrapper.find('div.cx-gantt-chart-pane').element as HTMLElement;
     const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
-    chartPane.scrollTop = 50;
-    chartPane.dispatchEvent(new Event('scroll'));
-    expect(sidebarPane.scrollTop).toBe(50);
-    // Reverse direction also syncs after rAF reset.
-    await new Promise<void>((r) => requestAnimationFrame(() => r()));
-    sidebarPane.scrollTop = 25;
-    sidebarPane.dispatchEvent(new Event('scroll'));
-    expect(chartPane.scrollTop).toBe(25);
+    expect(sidebarPane.scrollTop).toBe(0);
+    chartPane.dispatchEvent(new WheelEvent('wheel', { deltaY: 60 }));
+    expect(sidebarPane.scrollTop).toBe(60);
   });
 });

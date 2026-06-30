@@ -19,7 +19,7 @@
  * prop is non-empty). Wide enough to be a comfortable grab target
  * for pointer drag without visually competing with chart content.
  */
-export const SIDEBAR_DIVIDER_WIDTH = 8;
+export const SIDEBAR_DIVIDER_WIDTH = 4;
 
 /**
  * Minimum pixel width allotted to BOTH the sidebar pane AND the

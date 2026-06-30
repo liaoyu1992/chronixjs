@@ -84,6 +84,19 @@ export const sampleRows: readonly RowSpec[] = [
   // Y (one rendered, others hidden). After: each gets its own stack level
   // and renders at a distinct Y within the row.
   { id: 'workshop-stack', columns: { region: '三亚', base: '三亚基地', name: '待排' } },
+  // Extra rows to force vertical overflow so the sidebar/chart vertical
+  // sync (transform on sidebar-body) is testable in the demo.
+  ...Array.from({ length: 24 }, (_, i) => {
+    const n = i + 1;
+    return {
+      id: `extra-${n}`,
+      columns: {
+        region: '扩展区',
+        base: `扩展基地 ${((n - 1) % 4) + 1}`,
+        name: `扩展车间 ${n}`,
+      },
+    };
+  }),
 ];
 
 // Phase 20: a few bars get `extendedProps.priority` so the demo's
@@ -146,6 +159,12 @@ export const sampleBars: readonly BarSpec[] = [
   barAt('bar-stack-1', 'workshop-stack', 0, 10, '待排任务 A'),
   barAt('bar-stack-2', 'workshop-stack', 5, 15, '待排任务 B'),
   barAt('bar-stack-3', 'workshop-stack', 8, 18, '待排任务 C'),
+  // Bars for the extra rows (vertical-sync testing).
+  ...Array.from({ length: 24 }, (_, i) => {
+    const n = i + 1;
+    const start = (n % 12) * 2;
+    return barAt(`extra-bar-${n}`, `extra-${n}`, start, start + 4, `扩展任务 ${n}`);
+  }),
 ];
 
 /**
