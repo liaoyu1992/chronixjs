@@ -20,14 +20,14 @@
     "@chronixjs/table": "workspace:*",
     "@chronixjs/table-react": "workspace:*",
     "exceljs": "^4.4.0",
-    "react": "^18.3.1",
+    "react": "^19.2.7",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@chronixjs/eslint-config": "workspace:*",
     "@testing-library/react": "^16.0.1",
     "@types/node": "^26.0.1",
-    "@types/react": "^18.3.5",
+    "@types/react": "^19.2.17",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^6.0.2",
     "rimraf": "^6.0.1",
