@@ -66,7 +66,7 @@ describe('useGanttLayout (react hook port)', () => {
     const placed = result.current.placedBars[0]!;
     expect(placed.width).toBeCloseTo(240, 5);
     expect(placed.x).toBeCloseTo(8 * 60, 5); // bar starts at hour 8
-    // Phase 43 defaults: barHeight=30, barVerticalPadding=4,
+    // defaults: barHeight=30, barVerticalPadding=4,
     // rowSpacing=1 → strip 0 starts at y=0, bar y = 0 + 4 = 4.
     expect(placed.y).toBe(4);
     expect(placed.height).toBe(30);
@@ -131,8 +131,8 @@ describe('useGanttLayout (react hook port)', () => {
     expect(result.current.placedBars[0]?.x).not.toBe(dayX);
   });
 
-  it('Phase 30 stacking: same-row overlapping bars distribute across stack levels with 10px spacing', () => {
-    // Phase 43: two bars on r1 with overlapping ranges → level 0 (y=4) and level 1
+  it('stacking: same-row overlapping bars distribute across stack levels with 10px spacing', () => {
+    // two bars on r1 with overlapping ranges → level 0 (y=4) and level 1
     // (y=4 + barHeight=30 + barStackSpacing=5 = 39).
     const bars: readonly BarSpec[] = [bar('b1', 'r1', 8, 12), bar('b2', 'r1', 10, 14)];
     const { result } = renderHook(() =>
@@ -141,9 +141,9 @@ describe('useGanttLayout (react hook port)', () => {
 
     const [first, second] = result.current.placedBars;
     expect(first?.barId).toBe('b1');
-    expect(first?.y).toBe(4); // Phase 43: level 0 with new barVerticalPadding default
+    expect(first?.y).toBe(4); // level 0 with new barVerticalPadding default
     expect(second?.barId).toBe('b2');
-    expect(second?.y).toBe(39); // Phase 43: 4 + 30 + 5
+    expect(second?.y).toBe(39); // 4 + 30 + 5
   });
 
   it('contentSize.width equals axis.totalWidth and height equals last-strip bottom', () => {

@@ -3,7 +3,7 @@ import type { MessageType } from './message-spec.js';
 /**
  * Input for `resolveMessageClassList`.
  *
- * Phase 36 (2026-06-05).
+ * .
  */
 export interface ResolveMessageClassListInput {
   readonly type: MessageType;

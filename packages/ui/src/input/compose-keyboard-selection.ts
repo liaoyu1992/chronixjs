@@ -4,7 +4,7 @@
  * Cascader / Dropdown / Menu / AutoComplete / Mention dropdowns for
  * arrow-key + Home/End navigation.
  *
- * Phase 7 (2026-06-02).
+ * .
  *
  * Direction semantics:
  *

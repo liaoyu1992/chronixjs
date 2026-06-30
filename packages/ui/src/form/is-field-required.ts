@@ -1,5 +1,5 @@
 /**
- * chronix-ui `isFieldRequired` — Phase 34 (2026-06-05).
+ * chronix-ui `isFieldRequired` — .
  *
  * Pure helper that returns `true` when any rule in the array has
  * `required: true`. Used by FormItem to decide whether to show the

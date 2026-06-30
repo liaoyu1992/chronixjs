@@ -11,7 +11,7 @@ import { computed, defineComponent, h, type CSSProperties, type PropType, type V
 
 /**
  * `<ChronixProgress>` — Vue 3 SFC wrapping the core `ProgressProps`
- * IR. Line variant only (per Phase 16 Decision B.1).
+ * IR. Line variant only (per Decision B.1).
  *
  * Props:
  *
@@ -25,7 +25,7 @@ import { computed, defineComponent, h, type CSSProperties, type PropType, type V
  * - `indicatorPlacement` — `'inside' | 'outside'`. Default `'outside'`.
  *
  * No context inheritance — Progress sizing is numeric, not a discrete
- * size token (per Phase 16 Decision C.1).
+ * size token (per Decision C.1).
  */
 export const ChronixProgress = defineComponent({
   name: 'ChronixProgress',

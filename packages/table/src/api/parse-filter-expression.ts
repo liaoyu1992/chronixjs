@@ -6,7 +6,7 @@ import type {
 } from '../ir/index.js';
 
 /**
- * Parser options (Phase 42, 2026-05-29).
+ * Parser options (2026-05-29).
  *
  * - `columns` provides the universe of valid column identifiers
  *   referenced by `ident` tokens. Unknown identifiers and identifiers
@@ -77,13 +77,13 @@ const KEYWORDS = new Set([
 
 /**
  * Parse a filter-expression DSL string into a `FilterExpression` IR
- * tree (Phase 42, 2026-05-29).
+ * tree (2026-05-29).
  *
  * Empty / whitespace-only input → `{ok: true, expression: null}` —
  * the canonical "no filter" identity case. Single or multiple parse
  * errors → `{ok: false, errors: [...]}` (up to `maxErrors`).
  *
- * Grammar (per Phase 42 design doc Decision B.1, SQL-style
+ * Grammar (per design doc Decision B.1, SQL-style
  * precedence `NOT > AND > OR`):
  *
  * ```ebnf

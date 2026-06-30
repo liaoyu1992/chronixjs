@@ -1,13 +1,13 @@
 import type { RowSpec } from '../ir/index.js';
 
 /**
- * Input to `pinnedRowsPass` (Phase 31, 2026-05-28).
+ * Input to `pinnedRowsPass` (2026-05-28).
  *
  * `rows` is the tree-flattened or flat row list — the pass scans
  * shallowly, so callers that have already run `treeFlattenPass` should
  * pass that pass's `flatRows`. Callers with flat input can pass it
  * directly. The pass does NOT recurse into `children` — pinned rows
- * are leaves in v1 per Phase 31 Decision (out-of-scope).
+ * are leaves in v1 per Decision (out-of-scope).
  */
 export interface PinnedRowsInput {
   /** Input rows in display order (post-`treeFlattenPass` or flat). */
@@ -53,7 +53,7 @@ export interface PinnedRowsResult {
 const EMPTY_PINNED_ROWS_FROZEN: readonly RowSpec[] = Object.freeze([]);
 
 /**
- * Phase 31 (2026-05-28): partition the input row list into top-pinned,
+ * partition the input row list into top-pinned,
  * regular, and bottom-pinned subsets BEFORE the filter / sort / page
  * pipeline runs.
  *

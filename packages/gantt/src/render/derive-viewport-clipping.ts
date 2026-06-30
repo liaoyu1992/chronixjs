@@ -1,5 +1,5 @@
 /**
- * Phase 27.1 / Phase 32.6: derives viewport-clipping flags +
+ * derives viewport-clipping flags +
  * viewport-locked triangle apex positions for a single bar. Pure
  * function — no framework reactivity, no DOM. The adapter pulls
  * reactive `scrollLeft` + `clientWidth` from its `useChartScrollState`
@@ -10,11 +10,11 @@
  * viewport AND its left edge is to the LEFT of the viewport — i.e.
  * the user has scrolled right past the bar's start but the bar
  * still has visible width inside the viewport. Independent of
- * Phase 27's axis-clipping flag (`bar.isStart`): a bar can be
+ * axis-clipping flag (`bar.isStart`): a bar can be
  * inside the axis (`bar.isStart === true`) but partially scrolled
  * out of view (`isViewportClippedStart === true`).
  *
- * Phase 28.2.2 correctness guard: bars that fall ENTIRELY outside
+ * correctness guard: bars that fall ENTIRELY outside
  * the visible viewport (both edges past the same viewport boundary)
  * yield BOTH flags `false`. Without this guard, an offscreen bar's
  * non-overlapping edge would still trip the per-edge flag (e.g. a
@@ -74,7 +74,7 @@ export function deriveViewportClipping(
     };
   }
   const viewportRight = scrollLeft + clientWidth;
-  // Phase 28.2.2: bar must actually OVERLAP the viewport before
+  // bar must actually OVERLAP the viewport before
   // either viewport-clipped flag fires. A bar entirely offscreen
   // (renderX + renderWidth <= scrollLeft, i.e. fully left of
   // viewport, OR renderX >= viewportRight, fully right of viewport)

@@ -14,7 +14,7 @@ describe('computeHeaderGroupSpans', () => {
     expect(computeHeaderGroupSpans(cols)).toEqual([]);
   });
 
-  it('Phase 23: 3 contiguous columns share same string headerGroup → 1-level / 1-span output', () => {
+  it('3 contiguous columns share same string headerGroup → 1-level / 1-span output', () => {
     const cols: ColumnSpec[] = [
       { id: 'a', headerGroup: 'X' },
       { id: 'b', headerGroup: 'X' },
@@ -32,7 +32,7 @@ describe('computeHeaderGroupSpans', () => {
     ]);
   });
 
-  it('Phase 23: mixed grouped + un-grouped columns at level 0 produces 1 level with mixed spans', () => {
+  it('mixed grouped + un-grouped columns at level 0 produces 1 level with mixed spans', () => {
     const cols: ColumnSpec[] = [
       { id: 'a', headerGroup: 'X' },
       { id: 'b', headerGroup: 'X' },
@@ -49,7 +49,7 @@ describe('computeHeaderGroupSpans', () => {
     ]);
   });
 
-  it('Phase 23: non-contiguous columns with the same string headerGroup → 3 spans (no auto-merge)', () => {
+  it('non-contiguous columns with the same string headerGroup → 3 spans (no auto-merge)', () => {
     const cols: ColumnSpec[] = [
       { id: 'a', headerGroup: 'X' },
       { id: 'b', headerGroup: 'Y' },
@@ -64,7 +64,7 @@ describe('computeHeaderGroupSpans', () => {
     ]);
   });
 
-  it('Phase 23: single column with headerGroup → 1-level / 1-col span', () => {
+  it('single column with headerGroup → 1-level / 1-col span', () => {
     const cols: ColumnSpec[] = [{ id: 'a' }, { id: 'b', headerGroup: 'X' }, { id: 'c' }];
     expect(computeHeaderGroupSpans(cols)).toEqual([
       [
@@ -75,7 +75,7 @@ describe('computeHeaderGroupSpans', () => {
     ]);
   });
 
-  it('Phase 23.1: 2 cols share path `["财务", "订单"]` → 2 levels; level 0 财务 span; level 1 订单 span', () => {
+  it('2 cols share path `["财务", "订单"]` → 2 levels; level 0 财务 span; level 1 订单 span', () => {
     const cols: ColumnSpec[] = [
       { id: 'a', headerGroup: ['财务', '订单'] },
       { id: 'b', headerGroup: ['财务', '订单'] },
@@ -86,7 +86,7 @@ describe('computeHeaderGroupSpans', () => {
     ]);
   });
 
-  it('Phase 23.1: mixed string + array headerGroup → un-nested cols get level-1 empty placeholders', () => {
+  it('mixed string + array headerGroup → un-nested cols get level-1 empty placeholders', () => {
     const cols: ColumnSpec[] = [
       { id: 'id', headerGroup: '基础信息' },
       { id: 'name', headerGroup: '基础信息' },
@@ -106,7 +106,7 @@ describe('computeHeaderGroupSpans', () => {
     ]);
   });
 
-  it('Phase 23.1: two columns share level-0 parent but different level-1 names → 1 level-0 span + 2 level-1 spans', () => {
+  it('two columns share level-0 parent but different level-1 names → 1 level-0 span + 2 level-1 spans', () => {
     const cols: ColumnSpec[] = [
       { id: 'a', headerGroup: ['财务', '订单'] },
       { id: 'b', headerGroup: ['财务', '收入'] },
@@ -120,7 +120,7 @@ describe('computeHeaderGroupSpans', () => {
     ]);
   });
 
-  it('Phase 23.1: adjacent columns with same level-1 name but different level-0 parent → 2 separate level-1 spans', () => {
+  it('adjacent columns with same level-1 name but different level-0 parent → 2 separate level-1 spans', () => {
     // Parent-path discriminator: cols a + b share '订单' at level 1
     // but level 0 differs (财务 vs 人事). They MUST NOT merge at
     // level 1 — visually the '订单' label means two different things.
@@ -140,7 +140,7 @@ describe('computeHeaderGroupSpans', () => {
     ]);
   });
 
-  it('Phase 23.1: explicit maxDepth larger than auto-detected → top rows padded with all-empty placeholders', () => {
+  it('explicit maxDepth larger than auto-detected → top rows padded with all-empty placeholders', () => {
     // Use case: zone A has 2-level depth, zone B has 1-level depth.
     // The adapter passes maxDepth = 2 to both zones' helper calls so
     // their row counts align. Zone B's level 0 must be all-empty

@@ -20,7 +20,7 @@ export interface ChronixSpaceProps extends Omit<HTMLAttributes<HTMLDivElement>, 
 }
 
 /**
- * `<ChronixSpace>` — React port of the Phase 17 Space.
+ * `<ChronixSpace>` — React port of the Space.
  */
 export function ChronixSpace(props: ChronixSpaceProps): JSX.Element {
   const {

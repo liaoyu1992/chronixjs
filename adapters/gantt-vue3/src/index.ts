@@ -5,9 +5,9 @@ export {
   type BarResizeStartPayload,
   type BarResizeStopPayload,
 } from './chronix-gantt.js';
-// Phase 49 — `ColumnSpec` + `computeRowSpans` migrated to core
+// `ColumnSpec` + `computeRowSpans` migrated to core
 // (`@chronixjs/gantt`). Re-exported here so existing consumers of
-// `@chronixjs/gantt-vue3` keep working (Phase 38 re-export idiom).
+// `@chronixjs/gantt-vue3` keep working (re-export idiom).
 export type { ColumnSpec } from '@chronixjs/gantt';
 export { computeRowSpans } from '@chronixjs/gantt';
 export type { UseGanttLayoutInput, UseGanttLayoutOutput } from './use-gantt-layout.js';

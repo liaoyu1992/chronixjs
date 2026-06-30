@@ -6,7 +6,7 @@ import type { FieldError, FieldSpec } from './form-spec.js';
  * Validate a single field's value against its rules. Pure-async helper —
  * no DOM access, no state mutation; just rules + value → errors.
  *
- * Phase 6 (2026-06-02) wraps the async-validator `Schema` class behind
+ * wraps the async-validator `Schema` class behind
  * a chronix-NEW Promise-returning function. Returns `[]` when the field
  * has no rules, or when all rules pass; returns one or more `FieldError`s
  * when any rule fails.
@@ -16,7 +16,7 @@ import type { FieldError, FieldSpec } from './form-spec.js';
  * - Rules that throw synchronously or return rejected promises produce
  *   one `FieldError` per failing rule.
  * - The rule's own `message` field is the error message; chronix-ui
- *   does not template or transform messages in Phase 6 (a future
+ *   does not template or transform messages (a future
  *   locale-aware message-template layer can be added by reading
  *   `ctx.locale.form` and substituting placeholders).
  * - Unexpected throws from the validator (not from rules — from

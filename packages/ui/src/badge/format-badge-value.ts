@@ -2,7 +2,7 @@
  * Pure helper — convert a Badge `value` + optional `max` into the
  * display string the adapter renders into `cx-ui-badge__sup`.
  *
- * Phase 14 (2026-06-02). Used by all 3 adapters so the truncation
+ * . Used by all 3 adapters so the truncation
  * semantics match exactly across vue3 / vue2 / react.
  *
  * Contract:

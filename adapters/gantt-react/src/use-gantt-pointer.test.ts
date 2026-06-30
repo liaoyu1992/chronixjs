@@ -702,7 +702,7 @@ describe('useGanttPointer — abort', () => {
   });
 });
 
-describe('useGanttPointer — cross-row drag (Phase 9)', () => {
+describe('useGanttPointer — cross-row drag ', () => {
   const stripsForCrossRow: readonly SwimlaneStrip[] = [
     { rowId: 'r1', y: 0, height: 40 },
     { rowId: 'r2', y: 40, height: 40 },
@@ -823,7 +823,7 @@ describe('useGanttPointer — cross-row drag (Phase 9)', () => {
   });
 });
 
-describe('useGanttPointer — drag/resize lifecycle emits (Phase 16)', () => {
+describe('useGanttPointer — drag/resize lifecycle emits ', () => {
   const mockDragStart = (): ReturnType<typeof vi.fn<(p: BarDragStartCallback) => void>> =>
     vi.fn<(p: BarDragStartCallback) => void>();
   const mockDragStop = (): ReturnType<typeof vi.fn<(p: BarDragStopCallback) => void>> =>
@@ -1024,7 +1024,7 @@ describe('useGanttPointer — drag/resize lifecycle emits (Phase 16)', () => {
   });
 });
 
-describe('useGanttPointer — Phase 25 drag-distance gate', () => {
+describe('useGanttPointer — drag-distance gate', () => {
   it('default pointerMinDistance=5: 3-px Pythagorean advance leaves dragDistanceSurpassed=false', () => {
     const { result } = renderHook(() =>
       useGanttPointer({
@@ -1108,7 +1108,7 @@ describe('useGanttPointer — Phase 25 drag-distance gate', () => {
     expect(result.current.dragDistanceSurpassed).toBe(true);
   });
 
-  it('Phase 16 onBarDragStart now gates on threshold (sub-threshold advances do NOT fire start)', () => {
+  it('onBarDragStart now gates on threshold (sub-threshold advances do NOT fire start)', () => {
     const onBarDragStart = vi.fn<(p: BarDragStartCallback) => void>();
     const { result } = renderHook(() =>
       useGanttPointer({

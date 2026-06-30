@@ -1,7 +1,7 @@
 /**
  * IR primitive: tool-panel container descriptor.
  *
- * Phase 80 (2026-05-30): the chronix-NEW alternative to reference's
+ * the chronix-NEW alternative to reference's
  * monolithic sidebar component. chronix-table's `toolPanel` SFC prop
  * accepts a `ToolPanelConfig` with an array of `ToolPanelDescriptor`
  * entries; each descriptor describes one tool panel the consumer
@@ -15,7 +15,7 @@
  * ReactNode (react) into the content area.
  *
  * Pre-built `<ChronixColumnsToolPanel>` + `<ChronixFiltersToolPanel>`
- * components land in Phase 81 + 82 follow-up phases; consumers can
+ * components land + 82 follow-up phases; consumers can
  * either drop those into a renderer or supply fully-custom panel
  * components in v1.
  */
@@ -26,7 +26,7 @@
  * is the identity case — the SFC renders no container, no rail, no
  * resizer; the wrapper layout falls back to its pre-Phase-80 shape.
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export interface ToolPanelConfig {
   /** Master switch. When `false` (or omitted), the container is hidden entirely. */
@@ -77,7 +77,7 @@ export interface ToolPanelConfig {
  * `renderer` is the consumer-supplied callback whose return value
  * is embedded into the content area when this panel is active.
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export interface ToolPanelDescriptor {
   /**
@@ -131,7 +131,7 @@ export interface ToolPanelDescriptor {
  * Tool-panel content renderer. Returns framework-specific VNode /
  * ReactNode. Core uses `unknown`; adapter types narrow per framework.
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export type ToolPanelRenderer = () => unknown;
 
@@ -139,7 +139,7 @@ export type ToolPanelRenderer = () => unknown;
  * Emit payload for `tool-panel-change` — fires whenever the active
  * panel id changes (icon click + open / close / panel switch).
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export interface ToolPanelChangePayload {
   /** New active panel id; `null` when the content area collapsed. */
@@ -152,7 +152,7 @@ export interface ToolPanelChangePayload {
  * width in pixels (icon rail + content area combined), clamped to
  * `[minWidth, maxWidth]`.
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export interface ToolPanelWidthChangePayload {
   /** New container width in pixels (post-clamp). */
@@ -164,7 +164,7 @@ export interface ToolPanelWidthChangePayload {
  * — only the content area resizes. Exposed as a constant so adapter
  * code + theme overrides can reference one source of truth.
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export const TOOL_PANEL_ICON_RAIL_WIDTH_PX = 40;
 
@@ -172,7 +172,7 @@ export const TOOL_PANEL_ICON_RAIL_WIDTH_PX = 40;
  * Default initial container width when `ToolPanelConfig.initialWidth`
  * is omitted.
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export const DEFAULT_TOOL_PANEL_WIDTH_PX = 250;
 
@@ -181,7 +181,7 @@ export const DEFAULT_TOOL_PANEL_WIDTH_PX = 250;
  * `ToolPanelConfig.minWidth` is omitted. Equals the icon rail width
  * + 140px content area floor.
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export const DEFAULT_TOOL_PANEL_MIN_WIDTH_PX = 180;
 
@@ -189,6 +189,6 @@ export const DEFAULT_TOOL_PANEL_MIN_WIDTH_PX = 180;
  * Default upper clamp for container width when
  * `ToolPanelConfig.maxWidth` is omitted.
  *
- * Phase 80 (2026-05-30).
+ * .
  */
 export const DEFAULT_TOOL_PANEL_MAX_WIDTH_PX = 600;

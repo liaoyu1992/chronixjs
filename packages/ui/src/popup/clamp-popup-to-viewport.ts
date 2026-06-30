@@ -5,7 +5,7 @@ import type { DOMRectLike } from './popup-spec.js';
  * stays inside `viewportRect` shrunk by `paddingPx` on all four sides.
  * Pure function.
  *
- * Phase 4 (2026-06-02).
+ * .
  *
  * Behavior:
  *

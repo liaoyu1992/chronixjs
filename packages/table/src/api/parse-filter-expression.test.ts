@@ -12,7 +12,7 @@ const columns: readonly ColumnSpec[] = [
   { id: 'secret', headerName: 'Secret', type: 'text', filterable: false },
 ];
 
-describe('parseFilterExpression (Phase 42)', () => {
+describe('parseFilterExpression ', () => {
   it('returns null expression for empty input', () => {
     const result = parseFilterExpression('', { columns });
     expect(result).toEqual({ ok: true, expression: null });

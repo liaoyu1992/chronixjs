@@ -1,5 +1,5 @@
 /**
- * Calendar module — Phase 32 (2026-06-05).
+ * Calendar module — .
  *
  * Framework-agnostic standalone calendar IR. Reuses
  * `generateCalendarGrid` from the DatePicker module.

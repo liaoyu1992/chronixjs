@@ -28,7 +28,7 @@ export interface EmptyAreaClickPayload {
   readonly rowId: string | null;
   readonly jsEvent: ReactPointerEvent<SVGSVGElement>;
   /**
-   * Phase 54 — calendar time at the click position in chart content-
+   * calendar time at the click position in chart content-
    * coord space. Computed by the adapter via `xToTime(x, axis)`. Mirrors
    * the original `dateClick(DatePointApi)` `.date` field.
    * Approximate during DST transitions (matches the original spec's mapping).
@@ -97,7 +97,7 @@ export interface UseGanttSelectionOutput {
  * state; a `useReducer` counter forces re-render on mutation. The
  * output's `selectedBarIds` is a getter that reads a cached
  * `Array.from(set)` snapshot updated atomically with each write. This
- * matches the Phase 32.2 `useGanttPointer` pattern so consumers can
+ * matches the `useGanttPointer` pattern so consumers can
  * `sel.select('b1'); console.log(sel.selectedBarIds);` inside the same
  * handler and observe the just-written state.
  */

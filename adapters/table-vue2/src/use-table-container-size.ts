@@ -1,22 +1,22 @@
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 /**
- * Phase 41 (2026-05-25): tracks the table wrapper element's
+ * tracks the table wrapper element's
  * `clientWidth` so the column-layout pass can re-distribute flex
  * weights when the parent container resizes. Returned value is a
  * Vue ref that updates reactively.
  *
  * Verbatim port of chronix-table-vue3's `use-table-container-size.ts`
- * (Phase 2 form) — Vue 2.7's `onMounted` / `onUnmounted` / `ref` /
+ * (form) — Vue 2.7's `onMounted` / `onUnmounted` / `ref` /
  * `Ref` are identical to Vue 3's so no compat shim is needed.
  *
  * Designed as a primitive that downstream phases can reuse:
  *
- *   - **Phase 41.2 (port of vue3 Phase 4)** — `virtualRowsPass` will
+ *   - **(port of vue3)** — `virtualRowsPass` will
  *     need the body element's `clientHeight` for the visible-row
  *     window; a sibling `useTableContainerHeight` (or extended
  *     shape) lands then.
- *   - **Phase 41.7+ (vue3 Phase 10+)** — pinned columns split into
+ *   - **+ (vue3 +)** — pinned columns split into
  *     left / center / right scroll zones; each zone observes its
  *     own element via a separate `useTableContainerSize` instance.
  *

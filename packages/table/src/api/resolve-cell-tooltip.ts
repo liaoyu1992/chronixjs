@@ -1,7 +1,7 @@
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Args to `resolveCellTooltip` (Phase 32, 2026-05-28).
+ * Args to `resolveCellTooltip` (2026-05-28).
  *
  * Same shape as `CellValueArgs` — the tooltip resolver is logically a
  * sibling resolver to `valueGetter`, just one with a separate
@@ -13,7 +13,7 @@ export interface ResolveCellTooltipInput {
 }
 
 /**
- * Phase 32 (2026-05-28): resolve the tooltip text for a single body
+ * resolve the tooltip text for a single body
  * cell.
  *
  * Precedence cascade (chronix-NEW helper):
@@ -25,7 +25,7 @@ export interface ResolveCellTooltipInput {
  * 2. `column.tooltipField` — when set, read `row.data[tooltipField]`
  *    and coerce to string via `String(value)` for primitives; objects
  *    return `null` (caller should suppress tooltip — rich content is
- *    out of scope for v1 per Phase 32 Decision G.1).
+ *    out of scope for v1 per Decision G.1).
  *
  * 3. Neither set → `null` (no tooltip).
  *

@@ -16,7 +16,7 @@ import {
 import { computed, defineComponent, h, ref, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixTabs>` — Vue 3. Phase 28 (2026-06-04). Items-array tabs
+ * `<ChronixTabs>` — Vue 3. . Items-array tabs
  * (no sub-component for panes). Keyboard navigation switches direction
  * based on placement (horizontal → Left/Right; vertical → Up/Down).
  */

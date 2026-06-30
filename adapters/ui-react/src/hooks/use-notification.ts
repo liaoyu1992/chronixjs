@@ -7,7 +7,7 @@ import {
 import { useCallback, useRef, useState } from 'react';
 
 /**
- * React imperative Notification queue hook — Phase 36 (2026-06-05).
+ * React imperative Notification queue hook — .
  * Same surface as Vue 3 / Vue 2 `useNotification()` composables.
  *
  * Usage:

@@ -3,7 +3,7 @@ import { getCellValue } from '../render/format-cell-value.js';
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Input to `quickFindPass` (Phase 41, 2026-05-29).
+ * Input to `quickFindPass` (2026-05-29).
  *
  * `quickFindText` is the user's search input. Empty / null / undefined /
  * whitespace-only text is the identity case (no rows excluded). Other
@@ -13,7 +13,7 @@ import type { ColumnSpec, RowSpec } from '../ir/index.js';
  *
  * The pass needs the `columns` array so it can honor each column's
  * `filterable` flag + `valueGetter` and stay consistent with `filterPass`
- * (Phase 9). Cell-value coercion mirrors `filterPass.coerceToText`:
+ * . Cell-value coercion mirrors `filterPass.coerceToText`:
  * string / number / boolean / bigint / `Date.toISOString()` → string;
  * object / function / symbol / null / undefined → contributes nothing to
  * the OR (those columns can't match).

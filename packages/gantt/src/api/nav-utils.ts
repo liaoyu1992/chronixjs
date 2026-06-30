@@ -39,7 +39,7 @@ export function nextAnchor(viewId: ViewId, current: Date): Date {
 /**
  * Return the local-midnight `Date` for today. Matches
  * `examples/gantt-vue3/src/sample-data.ts`'s `todayLocalMidnight`
- * shape so toolbar `today` navigation aligns with Phase 21
+ * shape so toolbar `today` navigation aligns with
  * todayLine's cross-demo x-coordinate.
  */
 export function todayAnchor(): Date {
@@ -49,7 +49,7 @@ export function todayAnchor(): Date {
 
 /**
  * Apply a calendar-unit delta to an anchor date. Used by the imperative
- * `GanttHandle.incrementDate` method (Phase 24) and any caller that
+ * `GanttHandle.incrementDate` method and any caller that
  * needs the original `incrementDate`-equivalent semantics
  * without the broader `DurationInput` string grammar.
  *

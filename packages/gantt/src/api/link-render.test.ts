@@ -36,7 +36,7 @@ const routedLink: RoutedLink = {
   marker: { x: 400, y: 65, angleDeg: 0 },
 };
 
-describe('LinkRenderArg / LinkRenderOverride / LinkRenderFunc — Phase 28.3', () => {
+describe('LinkRenderArg / LinkRenderOverride / LinkRenderFunc', () => {
   it('LinkRenderArg shape carries routedLink + linkSpec + bars + defaults', () => {
     const arg: LinkRenderArg = {
       routedLink,

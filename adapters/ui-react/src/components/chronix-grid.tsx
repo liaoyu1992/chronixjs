@@ -16,7 +16,7 @@ export interface ChronixGridProps extends Omit<HTMLAttributes<HTMLDivElement>, '
 }
 
 /**
- * `<ChronixGrid>` — React port of the Phase 17 Grid.
+ * `<ChronixGrid>` — React port of the Grid.
  */
 export function ChronixGrid(props: ChronixGridProps): JSX.Element {
   const {

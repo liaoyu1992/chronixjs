@@ -2,7 +2,7 @@ export { ChronixGantt } from './chronix-gantt.js';
 export type { ColumnSpec, HeaderCellArg, HeaderCellClassNamesFunc } from '@chronixjs/gantt';
 export { computeRowSpans } from '@chronixjs/gantt';
 export { useScrollSync } from './use-scroll-sync.js';
-// Phase 53 — re-export `useChartScrollState` + `ChartScrollState` for
+// re-export `useChartScrollState` + `ChartScrollState` for
 // consumer parity with `@chronixjs/gantt-vue3`. Used by custom overlays
 // that need to react to chart-pane scroll position.
 export type { ChartScrollState } from './use-chart-scroll-state.js';

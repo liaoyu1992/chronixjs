@@ -24,7 +24,7 @@ const tree: TreeNodeSpec<TreeNodeData>[] = [
   { key: 'b', data: { label: 'B', isLeaf: true } },
 ];
 
-describe('Phase 31 sanity checks', () => {
+describe('sanity checks', () => {
   it('resolveVisibleTreeRows with empty expandedKeys returns only root rows', () => {
     const rows = resolveVisibleTreeRows({ items: tree, expandedKeys: new Set() });
     const keys = rows.map((r) => String(r.node.key));

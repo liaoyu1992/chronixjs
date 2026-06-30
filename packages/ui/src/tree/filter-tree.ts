@@ -17,7 +17,7 @@ export type TreeFilterPredicate<T> = (
  * Filter a tree to nodes matching `predicate`, **preserving ancestors**
  * so every match remains reachable through its parent chain.
  *
- * Phase 5 (2026-06-02) — ancestry-preserving semantics (the convention
+ * — ancestry-preserving semantics (the convention
  * used by Tree search UIs: searching "foo" shows "foo" along with its
  * folder chain so it stays clickable).
  *

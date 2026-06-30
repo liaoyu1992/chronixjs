@@ -113,7 +113,7 @@ export function computeRangeClosestHandle(input: RangeClosestHandleInput): Range
  * Algorithm:
  *
  * 1. Delegate raw value derivation to `computeSliderValueAtPosition`
- *    (Phase 97): handles step snapping + position clamping +
+ * handles step snapping + position clamping +
  *    degenerate-input fallbacks.
  * 2. Apply overlap clamp per Decision B.1:
  *    - Active `'low'`: `newLow = clamp(rawValue, min, currentRange.high)`.
@@ -140,7 +140,7 @@ export function computeRangeValueAtPosition(input: RangeValueAtPositionInput): R
  * Algorithm:
  *
  * 1. Delegate single-handle key resolution to `computeSliderValueOnKey`
- *    (Phase 97) with the active handle's current value as
+ * with the active handle's current value as
  *    `currentValue`.
  * 2. If the slider helper returns `null` (unrecognized key OR
  *    degenerate range), propagate `null` so the consumer's

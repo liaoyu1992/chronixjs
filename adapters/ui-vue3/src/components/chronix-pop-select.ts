@@ -11,10 +11,10 @@ import { Teleport, computed, defineComponent, h, toRef, type PropType, type VNod
 import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
- * `<ChronixPopSelect>` — Vue 3 option-list popup. Phase 26 (2026-06-03).
+ * `<ChronixPopSelect>` — Vue 3 option-list popup. .
  * Click-driven by default; renders option list inside the portal. NO
  * search/filter/multi/virtual/async in v0.1.0-alpha — use AutoComplete
- * for filter, or wait for Phase 31 Select.
+ * for filter, or wait Select.
  *
  * Emits:
  * - `update:show(show: boolean)` — visibility transitions.

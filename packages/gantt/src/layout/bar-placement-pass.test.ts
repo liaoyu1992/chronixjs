@@ -65,7 +65,7 @@ describe('defaultBarPlacementPass — happy path (day view)', () => {
     expect(placedBars[0]?.width).toBe(2.5 * dayAxis.slotWidth); // 2h30m
   });
 
-  it('y comes from the matching strip with default padding 4 (Phase 43: was 2 pre-symmetric-4+4 fix)', () => {
+  it('y comes from the matching strip with default padding 4 (was 2 pre-symmetric-4+4 fix)', () => {
     const { placedBars } = defaultBarPlacementPass.place({
       bars: [
         bar('b1', 'r1', '2026-05-13T00:00:00', '2026-05-13T01:00:00'),
@@ -81,7 +81,7 @@ describe('defaultBarPlacementPass — happy path (day view)', () => {
     expect(placedBars[2]?.y).toBe(60 + 4); // r3: y=60
   });
 
-  it('height = strip.height - 2×padding (Phase 43: 2×4 = 8 pre-bar-height inset)', () => {
+  it('height = strip.height - 2×padding (2×4 = 8 pre-bar-height inset)', () => {
     const { placedBars } = defaultBarPlacementPass.place({
       bars: [
         bar('b1', 'r1', '2026-05-13T00:00:00', '2026-05-13T01:00:00'), // r1: 30-tall
@@ -206,7 +206,7 @@ describe('defaultBarPlacementPass — month view (slot = 1 day)', () => {
   });
 });
 
-describe('defaultBarPlacementPass — stack-level Y placement (Phase 30)', () => {
+describe('defaultBarPlacementPass — stack-level Y placement ', () => {
   // Build a single tall strip so Y arithmetic isn't clipped by strip
   // height. Strip y=0, height=200 — plenty of room for 3 stacked bars
   // at barHeight=30 + stackSpacing=10 (total 110 incl. padding).
@@ -303,7 +303,7 @@ describe('defaultBarPlacementPass — stack-level Y placement (Phase 30)', () =>
   });
 });
 
-describe('defaultBarPlacementPass — Phase 27 continuation flags', () => {
+describe('defaultBarPlacementPass — continuation flags', () => {
   // Day-view axis spans 2026-05-13T00:00 → 2026-05-14T00:00 (24h).
   // Bars whose range fits inside that window get isStart=true && isEnd=true;
   // bars starting before midnight get !isStart; bars ending past next

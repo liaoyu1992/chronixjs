@@ -14,7 +14,7 @@ const baseAxisInput: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> todayCellBg (Phase 41 — mirrors vue3 Phase 22.2)', () => {
+describe('<ChronixGantt> todayCellBg (mirrors vue3)', () => {
   afterEach(() => {
     cleanup();
   });

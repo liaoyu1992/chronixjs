@@ -19,9 +19,9 @@ export interface TreeNodeLookup<T> {
  * Find the first node with the given `key` in pre-order traversal of
  * `roots`. Returns `undefined` if no node matches.
  *
- * Phase 5 (2026-06-02). Linear time (O(N) where N = total nodes).
+ * . Linear time (O(N) where N = total nodes).
  * Suitable for one-off lookups; for repeated lookups in a stable tree
- * a future Phase 5.x `createTreeIndex` helper will provide O(1) lookup
+ * a future `createTreeIndex` helper will provide O(1) lookup
  * via a key→node Map.
  *
  * If multiple nodes share the same key (which violates the tree spec

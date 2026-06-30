@@ -3,7 +3,7 @@ import type { WatermarkProps } from './watermark-spec.js';
 /**
  * Compute class set for the Watermark root element.
  *
- * Phase 22 (2026-06-03).
+ * .
  *
  * Watermark currently has no root-level modifiers — every visual
  * axis (content / color / opacity / rotate / size) is encoded

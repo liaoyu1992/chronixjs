@@ -3,7 +3,7 @@ import type { MarqueeProps } from './marquee-spec.js';
 /**
  * Compute class set for the Marquee root element.
  *
- * Phase 22 (2026-06-03).
+ * .
  *
  * Class structure:
  *

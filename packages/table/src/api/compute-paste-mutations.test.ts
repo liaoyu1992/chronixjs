@@ -151,8 +151,8 @@ describe('computePasteMutations', () => {
     ).toEqual([]);
   });
 
-  // Phase 115 (2026-06-02): validator-gate retrofit.
-  describe('Phase 115 — validator gate', () => {
+  // validator-gate retrofit.
+  describe('validator gate', () => {
     const envelope: CellRangeEnvelope = { rowIds: ['r1', 'r2'], colIds: ['qty'] };
     const grid = [['100'], ['-5']];
 

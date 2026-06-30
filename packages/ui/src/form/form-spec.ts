@@ -5,7 +5,7 @@ import type { ValidationRule } from './validation-rule.js';
  * value type `T`; consumers may use `FieldSpec` (= `FieldSpec<unknown>`)
  * for heterogeneous-field forms.
  *
- * Phase 6 (2026-06-02). The spec is consumed by:
+ * . The spec is consumed by:
  *
  * - `validateField` — runs the field's rules against a candidate value.
  * - `validateForm` — collects all field specs to build a form-level descriptor.
@@ -43,7 +43,7 @@ export interface FormSpec {
 /**
  * A single validation error for a field. Shape kept minimal so the
  * adapter can display it directly (no message-template engine in
- * Phase 6 — the rule's own `message` is the source of truth).
+ * the rule's own `message` is the source of truth).
  */
 export interface FieldError {
   /** The field's `name`; useful when bubbling errors up to the form level. */

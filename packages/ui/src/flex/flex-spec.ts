@@ -1,5 +1,5 @@
 /**
- * Flex IR — Phase 17 (2026-06-02). Tier A 1D layout primitive.
+ * Flex IR — . Tier A 1D layout primitive.
  *
  * Idiomatic flexbox container with explicit CSS-aligned prop names
  * (`direction` / `wrap` / `align` / `justify` / `gap`). Same DOM

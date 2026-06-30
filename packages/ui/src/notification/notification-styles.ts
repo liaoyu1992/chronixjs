@@ -1,5 +1,5 @@
 /**
- * Notification stylesheet — Phase 36 (2026-06-05). Same pattern as
+ * Notification stylesheet — . Same pattern as
  * Alert/Button/Tag: single core CSS string, idempotent injection,
  * CSS-var token fallback.
  */

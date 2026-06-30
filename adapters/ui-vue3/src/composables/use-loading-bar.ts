@@ -6,7 +6,7 @@ import {
 import { ref, type Ref } from 'vue';
 
 /**
- * Vue 3 imperative Loading Bar composable — Phase 36 (2026-06-05).
+ * Vue 3 imperative Loading Bar composable — .
  *
  * Manages a single `LoadingBarState` ref and exposes methods: `start()`,
  * `finish()`, `error()`. The state transitions: idle -> loading ->

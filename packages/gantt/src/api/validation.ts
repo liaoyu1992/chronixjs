@@ -44,7 +44,7 @@ export type SelectAllowFunc = (proposal: DropProposal) => boolean;
  * stack layout pass handles same-row stacking visually), matching the
  * reference's same-resource shortcut.
  *
- * **Important — `movingBar` identity** (Phase 45 D.10 clarification):
+ * **Important — `movingBar` identity** (D.10 clarification):
  * the `movingBar` arg is a SYNTHETIC proposed-state object, not the
  * live bar from `ValidationContext.bars`. It carries the bar's
  * persisted fields (`id` / persisted `style` / etc.) but with `rowId`
@@ -93,7 +93,7 @@ export interface ValidationContext {
   readonly eventOverlap?: boolean | EventOverlapFunc;
   readonly eventConstraint?: EventConstraint;
   /**
-   * Phase 55: independent overlap policy for calendar-range-select.
+   * independent overlap policy for calendar-range-select.
    * Falls back to `eventOverlap` when unset (preserves the v0 "set
    * once, gates both" ergonomic contract). Set to `true` explicitly
    * to opt out of select-side overlap when `eventOverlap === false`
@@ -102,7 +102,7 @@ export interface ValidationContext {
    */
   readonly selectOverlap?: boolean | EventOverlapFunc;
   /**
-   * Phase 55: independent constraint window for calendar-range-select.
+   * independent constraint window for calendar-range-select.
    * Falls back to `eventConstraint` when unset. Lets a consumer widen
    * the drag window while narrowing the select window (or vice versa)
    * without re-implementing the validator chain.
@@ -208,7 +208,7 @@ function satisfiesSelectOverlap(
  * Validate a proposed calendar-range-select commit. Short-circuit
  * order: constraint → overlap → allow.
  *
- * Phase 55: `selectConstraint` / `selectOverlap` close the previously
+ * `selectConstraint` / `selectOverlap` close the previously
  * parked surface. Both options fall back to the `event*` sibling when
  * unset, preserving the v0 "set once, gates both" contract.
  */

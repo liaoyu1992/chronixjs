@@ -1,5 +1,5 @@
 /**
- * Compute highlight char-range spans inside an option label. Phase 31
+ * Compute highlight char-range spans inside an option label.
  * (2026-06-04). Pure helper used by Mention / Select v0.2 for inline
  * highlight rendering.
  *

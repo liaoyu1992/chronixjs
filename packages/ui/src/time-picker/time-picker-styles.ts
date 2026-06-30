@@ -1,5 +1,5 @@
 /**
- * TimePicker CSS — Phase 32 (2026-06-05).
+ * TimePicker CSS — .
  *
  * BEM styles for cx-ui-time-picker + all sub-elements.
  * CSS var tokens with fallbacks for theme customization.

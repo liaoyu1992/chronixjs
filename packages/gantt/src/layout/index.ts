@@ -16,7 +16,7 @@ export type { RowSwimlaneLayout } from './row-swimlane-layout.js';
 export { defaultRowSwimlaneLayout } from './row-swimlane-layout.js';
 export type { VirtualizedPaneLayout } from './virtualized-pane-layout.js';
 export { defaultVirtualizedPaneLayout } from './virtualized-pane-layout.js';
-// Phase 54 — chart-content-x → calendar-time pure helper, used by
+// chart-content-x → calendar-time pure helper, used by
 // adapter pointerup handlers to populate `empty-area-click` payload's
 // `time` field. Mirrors reference's `dateClick(DatePointApi)` mapping.
 export { xToTime } from './x-to-time.js';

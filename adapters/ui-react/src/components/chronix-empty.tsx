@@ -11,7 +11,7 @@ export interface ChronixEmptyProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   readonly description?: string | undefined;
   /**
    * Optional custom icon content. When omitted, a Unicode 📦
-   * placeholder renders (until the Phase 9 icon registry lands).
+   * placeholder renders (until the icon registry lands).
    */
   readonly icon?: ReactNode;
   /**
@@ -22,7 +22,7 @@ export interface ChronixEmptyProps extends Omit<HTMLAttributes<HTMLDivElement>, 
 }
 
 /**
- * `<ChronixEmpty>` — React 18 port of the Phase 15 Empty.
+ * `<ChronixEmpty>` — React 18 port of the Empty.
  */
 export function ChronixEmpty(props: ChronixEmptyProps): JSX.Element {
   const {

@@ -1,5 +1,5 @@
 /**
- * chronix-ui qrcode module — Phase 22 (2026-06-03).
+ * chronix-ui qrcode module — .
  */
 
 export type { QrCodeErrorCorrectionLevel, QrCodeProps } from './qrcode-spec.js';

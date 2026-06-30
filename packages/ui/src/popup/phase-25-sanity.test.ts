@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 /**
- * Phase 25 (2026-06-03) sanity check on Phase 4 PopupSpec — verifies the
- * IR can drive a real anchor + popup pair in jsdom before Phase 26 ships
+ * sanity check on PopupSpec — verifies the
+ * IR can drive a real anchor + popup pair in jsdom before ships
  * the actual Popover infra. If gaps are found here they get filed into
- * the Phase 26 design doc up front.
+ * the design doc up front.
  *
- * This is a one-off; once Phase 26 ships real Popover integration this
+ * This is a one-off; once ships real Popover integration this
  * file becomes redundant and should be removed.
  */
 import { describe, expect, it } from 'vitest';
@@ -28,7 +28,7 @@ function rect(left: number, top: number, width: number, height: number): DOMRect
   };
 }
 
-describe('Phase 4 PopupSpec sanity (Phase 25 → Phase 26 de-risk)', () => {
+describe('PopupSpec sanity (→ de-risk)', () => {
   it('mounts a real anchor + popup pair in jsdom and produces placement coords', () => {
     const anchor = document.createElement('div');
     anchor.style.position = 'fixed';

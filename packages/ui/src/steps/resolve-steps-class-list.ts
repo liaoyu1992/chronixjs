@@ -5,7 +5,7 @@ import type { StepsProps } from './steps-spec.js';
 /**
  * Compute class set for the Steps root element.
  *
- * Phase 20 (2026-06-03).
+ * .
  *
  * Class structure:
  *

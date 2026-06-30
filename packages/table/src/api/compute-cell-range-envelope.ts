@@ -1,5 +1,5 @@
 /**
- * Phase 16 (2026-05-26): rectangular cell-range primitive types + pure
+ * rectangular cell-range primitive types + pure
  * envelope resolver.
  *
  * Stores a 2D cell range as the pair `{ anchor, focus }` — the two
@@ -39,14 +39,14 @@ export interface CellRangeEnvelope {
 }
 
 /**
- * Phase 16 (2026-05-26): resolve a `CellRange` against the current
+ * resolve a `CellRange` against the current
  * display order, producing the inclusive `{rowIds, colIds}` rectangle.
  *
  * Display order is the post-filter + post-sort + post-page slice
  * (`pagedRows`) on the row axis + `visibleColumns` on the column axis.
  * The range NEVER includes cells outside the displayed grid — the
  * defensive empty-on-stale-anchor branch matches `computeRangeRowIds`
- * (Phase 10.1) so that callers can treat "the range I observed last
+ * so that callers can treat "the range I observed last
  * frame may no longer be valid after a filter mutation" uniformly.
  *
  * Order-independent: if the anchor sits BELOW or to the RIGHT of the
@@ -93,7 +93,7 @@ export function computeCellRangeEnvelope(
 }
 
 /**
- * Phase 16: shared empty-envelope constant. Identity-stable so that
+ * shared empty-envelope constant. Identity-stable so that
  * downstream `computed` derivations can skip re-render when the
  * envelope is "no range" — referential equality holds.
  */

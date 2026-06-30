@@ -2,7 +2,7 @@
  * Encode the CSS `@keyframes` rules used by the Marquee
  * animation.
  *
- * Phase 22 (2026-06-03). Decision D.1 — Marquee scrolls via pure
+ * . Decision D.1 — Marquee scrolls via pure
  * CSS animation, not via a JS RAF loop. The keyframes here
  * translate the `__track` element from `0` to `-50%` (because the
  * `__track` contains TWO copies of the slot content, the
@@ -10,7 +10,7 @@
  * loop is seamless).
  *
  * Keyframe names are uniquely namespaced (`cx-ui-marquee-scroll-{direction}`)
- * to avoid collisions with consumer-page CSS (Phase 22 22-fr2
+ * to avoid collisions with consumer-page CSS (22-fr2
  * friction note). The returned string is appended to the chronix
  * stylesheet via `ensureChronixMarqueeStyles()`.
  *

@@ -8,7 +8,7 @@ import {
  * Pure helper — compute the string rendered inside the
  * `cx-ui-steps__index` indicator element for a single step.
  *
- * Phase 20 (2026-06-03). Single source of truth for the 3 adapters
+ * . Single source of truth for the 3 adapters
  * so the rendered character is byte-identical across vue3 / vue2 /
  * react (cross-demo Playwright fingerprint stays stable).
  *
@@ -18,7 +18,7 @@ import {
  * - `'error'`  → `STEP_INDICATOR_ERROR_PLACEHOLDER` (`'✕'`).
  * - `'process' | 'wait'` → 1-based index string (`String(idx + 1)`).
  *
- * Phase 9 icon registry will SVG-substitute the finish + error
+ * icon registry will SVG-substitute the finish + error
  * placeholders when geometry helpers mature.
  */
 export function getStepIndicatorContent(derivedStatus: StepStatus, idx: number): string {

@@ -6,7 +6,7 @@ import { UI_CONTEXT_INJECTION_KEY } from '../providers/chronix-ui-provider.js';
 /**
  * Vue 3 composable returning the active `ChronixUIContext` as a `Ref`.
  *
- * Phase 11 (2026-06-02) per Phase 0.3 Decision B.1.
+ * per Decision B.1.
  *
  * Resolution order:
  *

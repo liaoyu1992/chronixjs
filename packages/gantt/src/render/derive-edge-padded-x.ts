@@ -1,15 +1,15 @@
 /**
- * Phase 28.2.1 / Phase 32.6: derives the x-coordinate inside a bar
+ * derives the x-coordinate inside a bar
  * where its title text or progress-dot resize handle should anchor
  * on one side (left OR right). Three-way branch:
  *
  *   1. `isViewportClipped` → viewport-edge-locked (chronix-additive
- *      sub-case introduced by Phase 27.1; locks past the
+ *      sub-case introduced; locks past the
  *      viewport-locked triangle's base).
  *   2. `isAxisClipped` → bar-edge-locked with triangle cushion
- *      (Phase 27 sub-case; uses the original spec's
+ *      (sub-case; uses the original spec's
  *      `x + triangleMargin + triangleSize + N` formula).
- *   3. default → `renderEdge ± defaultInset` (Phase 28.2 / 28.1
+ *   3. default → `renderEdge ± defaultInset` (
  *      pre-clipping path).
  *
  * Pure function — no framework reactivity, no DOM. Consumer (the
@@ -38,7 +38,7 @@
  * constants.)
  *
  * Note on the viewport-clipped formula: `viewportLockedApex` from
- * Phase 27.1 is `scrollLeft + triangleMargin` (left) or
+ * is `scrollLeft + triangleMargin` (left) or
  * `scrollLeft + clientWidth - triangleMargin` (right). The
  * triangle's base extends `triangleSize` further inside the
  * visible area from the apex; the helper adds another

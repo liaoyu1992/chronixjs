@@ -12,10 +12,10 @@ import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
 import type Vue from 'vue';
 
 /**
- * SFC-level recording-replay for `progress-handle-drag` (Phase 51 vue2
+ * SFC-level recording-replay for `progress-handle-drag` (vue2
  * port of `adapters/gantt-vue3/src/progress-handle-replay.test.ts`).
  *
- * Phase 3 already replays the recorded numbers through the math layer
+ * already replays the recorded numbers through the math layer
  * (`pointer-capture-session.test.ts: 'reproduces the recorded ... drag
  * math'`). This file goes one layer up: replay the same recorded
  * pointer inputs through `<ChronixGantt>` end-to-end and assert the

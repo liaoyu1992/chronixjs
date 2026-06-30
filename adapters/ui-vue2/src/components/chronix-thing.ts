@@ -2,7 +2,7 @@ import { defaultThingProps, ensureChronixThingStyles, resolveThingClassList } fr
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixThing>` — Vue 2.7 port of the Phase 23 Thing.
+ * `<ChronixThing>` — Vue 2.7 port of the Thing.
  *
  * DOM shape + class list byte-identical to vue3 sibling.
  * Slot names + prop-or-slot resolution semantics match exactly

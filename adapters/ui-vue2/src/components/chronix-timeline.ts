@@ -8,7 +8,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixTimeline>` — Vue 2.7 port of the Phase 20 Timeline.
+ * `<ChronixTimeline>` — Vue 2.7 port of the Timeline.
  *
  * DOM shape, class list, last-item special-case are byte-identical
  * to the vue3 sibling.

@@ -1,5 +1,5 @@
 /**
- * Date formatting helper — Phase 32 (2026-06-05).
+ * Date formatting helper — .
  *
  * Wraps date-fns `format()` for consistent date display.
  */

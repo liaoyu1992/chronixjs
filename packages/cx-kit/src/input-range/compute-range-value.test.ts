@@ -6,7 +6,7 @@ import {
   computeRangeValueOnKey,
 } from './compute-range-value.js';
 
-describe('computeRangeClosestHandle — Phase 98', () => {
+describe('computeRangeClosestHandle', () => {
   it('position left of midpoint returns low', () => {
     // currentRange low=20, high=80 → midpoint=50 (value-space).
     // positionPx=30 / trackSizePx=100 → ratio=0.3 → valueAtPosition=30.
@@ -101,7 +101,7 @@ describe('computeRangeClosestHandle — Phase 98', () => {
   });
 });
 
-describe('computeRangeValueAtPosition — Phase 98', () => {
+describe('computeRangeValueAtPosition', () => {
   it('drag low handle to a value below current high updates low only', () => {
     // positionPx=30, trackSizePx=100, step=1 → rawValue=30; clamps within [min=0, high=80].
     const result = computeRangeValueAtPosition({
@@ -156,7 +156,7 @@ describe('computeRangeValueAtPosition — Phase 98', () => {
     expect(result).toEqual({ low: 20, high: 20 });
   });
 
-  it('applies step snap from underlying Phase 97 slider helper', () => {
+  it('applies step snap from underlying slider helper', () => {
     // step=10, position=53 → rawValue snaps to 50.
     const result = computeRangeValueAtPosition({
       positionPx: 53,
@@ -186,7 +186,7 @@ describe('computeRangeValueAtPosition — Phase 98', () => {
   });
 });
 
-describe('computeRangeValueOnKey — Phase 98', () => {
+describe('computeRangeValueOnKey', () => {
   it('ArrowRight on low handle increments low', () => {
     const result = computeRangeValueOnKey({
       key: 'ArrowRight',
@@ -325,7 +325,7 @@ describe('computeRangeValueOnKey — Phase 98', () => {
     expect(result).toEqual({ low: 25, high: 100 });
   });
 
-  it('degenerate range returns null (delegated from Phase 97)', () => {
+  it('degenerate range returns null (delegated)', () => {
     const result = computeRangeValueOnKey({
       key: 'Home',
       activeHandle: 'low',

@@ -18,7 +18,7 @@ export interface RowLayoutInput {
   readonly defaultRowHeight: number;
 
   /**
-   * Phase 46-C (2026-05-30): per-row external height override map.
+   * -C (2026-05-30): per-row external height override map.
    * When a row's id is present in this map AND the mapped value is a
    * finite number, the row's resolved height is the override value,
    * winning over both `row.heightHint` and `defaultRowHeight`.
@@ -54,7 +54,7 @@ export interface RowLayoutInput {
  * carry so absolute-positioned rows have a containing block tall
  * enough for the last row's bottom edge.
  *
- * `visibleRows` is the same array passed in (Phase 3 has no hide
+ * `visibleRows` is the same array passed in (has no hide
  * mechanism for rows — every row contributes a strip). Returned as
  * part of the result so future phases that filter rows
  * (`filterPass`, `virtualRowsPass`) preserve the same shape.
@@ -80,11 +80,11 @@ export interface RowLayoutResult {
  *
  * 1. **Iterate rows top-down** in input order.
  * 2. **Resolve each row's height** as `row.heightHint ?? defaultRowHeight`.
- *    The `heightHint` field on `RowSpec` (Phase 3 extension) lets
+ *    The `heightHint` field on `RowSpec` (extension) lets
  *    consumers vary individual row heights without affecting the
  *    uniform default.
  * 3. **Accumulate Y top-down**: row N's `y = sum of heights[0..N-1]`.
- *    Row 0 is at `y = 0`. No inter-row spacing (Phase 3 omits
+ *    Row 0 is at `y = 0`. No inter-row spacing (omits
  *    `rowSpacing` from the theme — adding it requires a downstream
  *    consumer + a theme token; deferred to a future polish phase).
  * 4. **`totalBodyHeight` = sum of all resolved heights** = the Y past
@@ -94,11 +94,11 @@ export interface RowLayoutResult {
  * the same output. Adapters call this on each layout pass + cache
  * outside the function.
  *
- * **For-of iteration.** Phase 3 uses a `for..of` loop (matches
+ * **For-of iteration.** uses a `for..of` loop (matches
  * eslint's `@typescript-eslint/prefer-for-of` rule) — the body
  * doesn't need an index. chronix-gantt's analog uses indexed
  * iteration only because it accumulates `rowSpacing` between rows
- * (skipped after the last row); chronix-table's Phase 3 has no
+ * (skipped after the last row); chronix-table's has no
  * spacing, so the loop is index-free.
  */
 export function rowLayoutPass(input: RowLayoutInput): RowLayoutResult {
@@ -107,7 +107,7 @@ export function rowLayoutPass(input: RowLayoutInput): RowLayoutResult {
   const overrides = input.rowHeightOverridesByRowId;
   let y = 0;
   for (const row of input.rows) {
-    // Phase 46-C (2026-05-30): external override wins over heightHint
+    // -C (2026-05-30): external override wins over heightHint
     // wins over defaultRowHeight. Non-finite override values (NaN /
     // Infinity / -Infinity) fall through to the next tier.
     const overrideValue = overrides?.[row.id];

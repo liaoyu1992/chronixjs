@@ -1,5 +1,5 @@
 /**
- * Look up an `OptionSpec` by key in an `OptionListItem[]`. Phase 31
+ * Look up an `OptionSpec` by key in an `OptionListItem[]`.
  * (2026-06-04). Walks groups; returns the leaf option (NOT the group
  * container). Returns `null` when no leaf matches.
  */

@@ -1,5 +1,5 @@
 /**
- * chronix-ui loading-bar module — Phase 36 (2026-06-05).
+ * chronix-ui loading-bar module — .
  */
 
 export type { LoadingBarState } from './loading-bar-spec.js';

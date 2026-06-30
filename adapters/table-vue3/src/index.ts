@@ -1,8 +1,8 @@
 /**
  * @chronixjs/table-vue3 — Vue 3 adapter for the chronix-table core.
  *
- * Phase 0 (2026-05-23): package skeleton.
- * Phase 2 (2026-05-23): first rendering surface — `<ChronixTable>`
+ * package skeleton.
+ * first rendering surface — `<ChronixTable>`
  * SFC + `useTableLayout` + `useTableContainerSize` composables.
  *
  * Subsequent phases extend per the roadmap in

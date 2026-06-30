@@ -6,7 +6,7 @@ import type { TagProps } from './tag-spec.js';
  * vue2 / react adapters, so the rendered class set is identical
  * (parity-by-construction).
  *
- * Phase 13 (2026-06-02). Mirrors Phase 11 Button's
+ * . Mirrors Button's
  * `resolveButtonClassList` contract.
  *
  * Class structure:

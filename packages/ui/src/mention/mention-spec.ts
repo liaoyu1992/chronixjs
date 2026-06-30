@@ -1,5 +1,5 @@
 /**
- * Mention component IR — Phase 31 (2026-06-04).
+ * Mention component IR — .
  *
  * Textarea with @trigger detection → Select-style dropdown.
  */

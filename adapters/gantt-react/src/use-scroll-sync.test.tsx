@@ -37,7 +37,7 @@ function nextRaf(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
-describe('useScrollSync (Phase 48) — React port of vue3 Phase 23', () => {
+describe('useScrollSync — React port of vue3 ', () => {
   it('scroll on paneA writes paneB.scrollTop (one-way forward)', async () => {
     const { getByTestId } = render(<Host />);
     const paneA = getByTestId('pane-a') as HTMLDivElement;

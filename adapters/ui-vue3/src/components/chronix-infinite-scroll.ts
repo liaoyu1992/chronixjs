@@ -7,7 +7,7 @@ import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, type VNo
 
 /**
  * `<ChronixInfiniteScroll>` — Vue 3 infinite scroll container.
- * Phase 35 (2026-06-05).
+ * .
  *
  * Props:
  *

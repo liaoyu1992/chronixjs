@@ -1,6 +1,6 @@
 /**
  * Pure helper — convert a Progress `percentage` (optionally relative
- * to `max`) into a clamped numeric ratio + a display string. Phase 16
+ * to `max`) into a clamped numeric ratio + a display string.
  * (2026-06-02). Shared across vue3 / vue2 / react adapters so the
  * `__fill` inline-style width AND the `__info` text always agree
  * (parity-by-construction).

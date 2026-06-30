@@ -3,14 +3,14 @@ import type { ListItem } from './list-spec.js';
 /**
  * Compute class set for a single List item element.
  *
- * Phase 21 (2026-06-03).
+ * .
  *
  * Conditional modifiers reflect which optional content fields
  * the item provides — adapters use the same flags to decide
  * which sub-elements to render. Centralizing the derivation
  * here keeps 3 adapters from re-deriving the
  * `item.prefix !== undefined` triple at every render call site
- * (parallel to Phase 19 PageHeader's `hasX = …` adapter idiom
+ * (parallel PageHeader's `hasX = …` adapter idiom
  * but simpler — List has no slot authoring path).
  *
  * Class structure:

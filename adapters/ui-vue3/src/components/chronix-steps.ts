@@ -12,10 +12,10 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixSteps>` — Vue 3 SFC wrapping the core `StepsProps` IR.
- * Phase 20 (2026-06-03). Tier A wizard / multi-stage progress
+ * . Tier A wizard / multi-stage progress
  * indicator.
  *
- * No emits — per Phase 20 Decision E.1 the per-step click event is
+ * No emits — per Decision E.1 the per-step click event is
  * out of scope; consumers wire `@click` on the wrapping element if
  * they need navigation.
  */

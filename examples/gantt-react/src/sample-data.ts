@@ -4,7 +4,7 @@ const MS_PER_HOUR = 60 * 60 * 1000;
 const MS_PER_DAY = 24 * MS_PER_HOUR;
 
 /**
- * Phase 46: today's local midnight, matching `examples/gantt-vue3/src/sample-data.ts`.
+ * today's local midnight, matching `examples/gantt-vue3/src/sample-data.ts`.
  * The axis planner normalizes anchorDate to local midnight, so bars
  * anchored at the same reference produce `x = startHour × pxPerHour`
  * exactly in any timezone. Replaces the prior hardcoded
@@ -76,13 +76,13 @@ function multiDayBar(
 }
 
 /**
- * Phase 32.5 / Phase 48: 12 rows × 27 bars exercise placement across
+ * 12 rows × 27 bars exercise placement across
  * day / week / month / season / halfYear / year views AND demonstrate
  * the dual-scrollport vertical scrollbar. Total content height ≈ 470 px
  * → exceeds the `maxBodyHeight: '70vh'` cap → vertical scrollbar
  * engages.
  *
- * Phase 48 adds two grouped columns (`region`, `base`) ahead of the
+ * adds two grouped columns (`region`, `base`) ahead of the
  * existing `name` leaf column so the chronix-react sidebar can
  * demonstrate vGrouping rowspan merging: consecutive rows sharing the
  * same region / base collapse to one cell. Mirror of vue3's region /
@@ -101,17 +101,26 @@ export const sampleRows: readonly RowSpec[] = [
   { id: 'r10', columns: { region: '南区', base: '数据基地', name: '客服 Support' } },
   { id: 'r11', columns: { region: '南区', base: '业务基地', name: '市场 Marketing' } },
   { id: 'r12', columns: { region: '南区', base: '业务基地', name: '法务 Legal' } },
-  // Phase 47.3: dedicated row exercising same-row time-overlap stacking
-  // (Phase 30 BarPlacementPass + BarStackHeightPass). The 3 bar-stack-*
+  // dedicated row exercising same-row time-overlap stacking
+  // (BarPlacementPass + BarStackHeightPass). The 3 bar-stack-*
   // bars below pair-wise overlap so greedy interval coloring assigns
   // levels 0 / 1 / 2 → distinct Y values + row-height expansion to fit
   // 3 stacked tracks. Mirrors vue3 demo's workshop-stack row purpose
   // with chronix-react's existing 南区 / 业务基地 vGrouping pattern.
   { id: 'r13', columns: { region: '南区', base: '业务基地', name: '待排 Stack' } },
+  // Extra rows to force vertical overflow so the sidebar/chart vertical
+  // sync (transform on sidebar-body) is testable in the demo.
+  ...Array.from({ length: 20 }, (_, i) => {
+    const n = i + 1;
+    return {
+      id: `extra-${n}`,
+      columns: { region: '扩展区', base: `扩展基地 ${((n - 1) % 4) + 1}`, name: `扩展 ${n}` },
+    };
+  }),
 ];
 
 /**
- * Phase 32.4.1 — demonstration dependency lines. Connect the design →
+ * demonstration dependency lines. Connect the design →
  * frontend → backend → QA → release vertical pipeline so the
  * continuation triangles + bar fills + cascade colors all visually
  * compose with link rendering in the demo. `routing: 'square'` for
@@ -189,7 +198,7 @@ export const sampleLinks: readonly LinkSpec[] = [
 ];
 
 /**
- * Phase 46: extendedProps.priority added to 3 bars so the
+ * extendedProps.priority added to 3 bars so the
  * `samplePriorityCallback` from `sample-callbacks.ts` has something
  * meaningful to switch on when the `priorityCallback` URL flag is set.
  */
@@ -199,7 +208,7 @@ export function initialSampleBars(): BarSpec[] {
     extendedProps: { priority },
   });
   return [
-    // `d1` starts BEFORE the anchor so Phase 32.4's continuation triangle
+    // `d1` starts BEFORE the anchor so continuation triangle
     // fires on its left edge — visible immediately when the demo loads.
     bar('d1', 'r1', -36, 60, 'Kickoff & wireframes'),
     bar('d2', 'r1', 48, 96, 'High-fidelity mocks'),
@@ -223,7 +232,7 @@ export function initialSampleBars(): BarSpec[] {
     bar('rel1', 'r5', 144, 156, 'Stage cut'),
     bar('rel2', 'r5', 192, 204, 'Prod ship'),
     bar('rel3', 'r5', 210, 258, 'Hotfix rollout'),
-    // Phase 32.5 — 12-row expansion. Additional bars across rows 6-12
+    // 12-row expansion. Additional bars across rows 6-12
     // demonstrate the dual-scrollport vertical scrollbar when
     // `maxBodyHeight` constrains the chart pane.
     bar('ops1', 'r6', 0, 24, 'CI pipeline'),
@@ -247,7 +256,7 @@ export function initialSampleBars(): BarSpec[] {
     bar('leg1', 'r12', 24, 72, 'License review'),
     bar('leg2', 'r12', 144, 192, 'TOS update'),
     bar('leg3', 'r12', 198, 270, 'Patent filing'),
-    // Phase 47.3: 3 same-row time-overlapping bars on r13. Sorted-by-start
+    // 3 same-row time-overlapping bars on r13. Sorted-by-start
     // order is bar-stack-1, bar-stack-2, bar-stack-3; all three pair-wise
     // overlap (0-10 ∩ 5-15 ∩ 8-18 are non-empty), so greedy interval
     // coloring assigns levels 0 / 1 / 2 respectively and each renders at
@@ -265,5 +274,12 @@ export function initialSampleBars(): BarSpec[] {
     multiDayBar('multi-d3', 'r3', 14, 18, '月内中期 - 设备升级'),
     multiDayBar('multi-d4', 'r4', 25, 35, '跨月任务 - 系统迁移', 15),
     multiDayBar('multi-d5', 'r5', 60, 30, '下季度规划 - 年度大修'),
+
+    // Bars for the extra rows (vertical-sync testing).
+    ...Array.from({ length: 20 }, (_, i) => {
+      const n = i + 1;
+      const start = (n % 10) * 12;
+      return bar(`extra-bar-${n}`, `extra-${n}`, start, start + 24, `扩展任务 ${n}`);
+    }),
   ];
 }

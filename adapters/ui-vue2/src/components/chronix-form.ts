@@ -1,5 +1,5 @@
 /**
- * chronix-ui Vue 2 ChronixForm + ChronixFormItem — Phase 34 (2026-06-05).
+ * chronix-ui Vue 2 ChronixForm + ChronixFormItem — .
  *
  * Vue 2 adapter for ChronixForm + ChronixFormItem. Uses provide/inject
  * for Form→FormItem registration. Vue 2 differences from Vue 3:

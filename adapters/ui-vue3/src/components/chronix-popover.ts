@@ -10,7 +10,7 @@ import { Teleport, computed, defineComponent, h, toRef, type PropType, type VNod
 import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
- * `<ChronixPopover>` — Vue 3 portal-mounted popup. Phase 26 (2026-06-03).
+ * `<ChronixPopover>` — Vue 3 portal-mounted popup. .
  *
  * Slots:
  * - `default` — trigger element(s).

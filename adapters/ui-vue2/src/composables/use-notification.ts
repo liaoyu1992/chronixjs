@@ -7,7 +7,7 @@ import {
 import { ref, type Ref } from 'vue';
 
 /**
- * Vue 2.7 imperative Notification queue composable — Phase 36 (2026-06-05).
+ * Vue 2.7 imperative Notification queue composable — .
  * Verbatim port of `adapters/ui-vue3`'s `useNotification()`.
  *
  * Usage:

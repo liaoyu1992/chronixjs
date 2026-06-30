@@ -8,7 +8,7 @@ function row(id: string, children?: readonly RowSpec[]): RowSpec {
   return children == null ? { id, data: {} } : { id, data: {}, children };
 }
 
-describe('computeRowSelectionTriState (Phase 30.1.1)', () => {
+describe('computeRowSelectionTriState ', () => {
   it("returns 'none' when the row has no children (leaf)", () => {
     const rows: readonly RowSpec[] = [row('a')];
     expect(computeRowSelectionTriState('a', rows, new Set())).toBe('none');

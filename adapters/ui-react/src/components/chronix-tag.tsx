@@ -38,7 +38,7 @@ export interface ChronixTagProps extends Omit<HTMLAttributes<HTMLSpanElement>, '
 }
 
 /**
- * `<ChronixTag>` — React 18 port of the Phase 13 Tag pilot. Verbatim
+ * `<ChronixTag>` — React 18 port of the Tag pilot. Verbatim
  * surface mirror of the Vue adapters; React idioms swapped in
  * (`onClose` callback, `children`).
  */

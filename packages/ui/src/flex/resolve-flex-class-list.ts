@@ -3,7 +3,7 @@ import type { FlexProps } from './flex-spec.js';
 /**
  * Compute class set for the Flex root element.
  *
- * Phase 17 (2026-06-02).
+ * .
  *
  * Class structure:
  *

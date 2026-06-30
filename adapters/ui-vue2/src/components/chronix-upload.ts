@@ -9,7 +9,7 @@ import {
 import { computed, defineComponent, h, ref, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixUpload>` — Vue 2.7 port of the Phase 35 Upload.
+ * `<ChronixUpload>` — Vue 2.7 port of the Upload.
  * Verbatim surface mirror of the vue3 sibling; runtime differences are
  * Vue 2's `attrs:` data-object for HTML attributes and `on:` for events.
  * Hidden file input triggered by button click.

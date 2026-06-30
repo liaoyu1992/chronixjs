@@ -1,5 +1,5 @@
 /**
- * Pagination module — Phase 33 (2026-06-05).
+ * Pagination module — .
  *
  * Framework-agnostic pagination IR: page computation, ellipsis
  * logic, BEM class resolvers, CSS.

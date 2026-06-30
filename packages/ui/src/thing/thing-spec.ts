@@ -1,11 +1,11 @@
 /**
- * Thing IR — Phase 23 (2026-06-03). Tier A composition card with
+ * Thing IR — . Tier A composition card with
  * avatar + header (title + extra) + description + content + action
  * + footer slots.
  *
- * Per Phase 23 Decision A.1 Thing is one of the three
+ * Per Decision A.1 Thing is one of the three
  * information-density Tier A primitives in this bundle. Per Phase
- * 19 PageHeader Decision B.1 + Phase 19 + 20 + 21 + 22 sub-component
+ * 19 PageHeader Decision B.1 + + 20 + 21 + 22 sub-component
  * foreclosure, Thing has no `<ChronixThingItem>` / `<ChronixThingGroup>`
  * sub-component — it's a single root component whose slots /
  * ReactNode-prop overrides drive 8 `--with-*` BEM modifiers plus

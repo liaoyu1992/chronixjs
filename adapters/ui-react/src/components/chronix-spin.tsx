@@ -19,9 +19,9 @@ export interface ChronixSpinProps extends Omit<HTMLAttributes<HTMLDivElement>, '
 }
 
 /**
- * `<ChronixSpin>` — React port of the Phase 16 Spin. Verbatim surface
+ * `<ChronixSpin>` — React port of the Spin. Verbatim surface
  * mirror of the Vue adapters; size falls back to `ChronixUIContext.size`
- * per Phase 0.3 Decision A.1.
+ * per Decision A.1.
  */
 export function ChronixSpin(props: ChronixSpinProps): JSX.Element {
   const {

@@ -13,7 +13,7 @@ import {
 import { computed, defineComponent, h, type PropType } from 'vue';
 
 /**
- * `<ChronixFlex>` — Vue 2.7 port of the Phase 17 Flex.
+ * `<ChronixFlex>` — Vue 2.7 port of the Flex.
  */
 export const ChronixFlex = defineComponent({
   name: 'ChronixFlex',

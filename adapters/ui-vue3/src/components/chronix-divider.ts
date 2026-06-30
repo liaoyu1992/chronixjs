@@ -9,7 +9,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 /**
  * `<ChronixDivider>` — Vue 3 SFC wrapping the core `DividerProps` IR.
  *
- * Phase 13 (2026-06-02). Pure-visual primitive — no
+ * . Pure-visual primitive — no
  * `ChronixUIContext` reads (size / disabled don't apply to dividers).
  *
  * Props:

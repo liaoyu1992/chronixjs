@@ -1,7 +1,7 @@
 import type { RowSpec } from '../ir/index.js';
 
 /**
- * Phase 30.1.1 (2026-05-28): collect every descendant row ID of a
+ * collect every descendant row ID of a
  * parent row, walking `children` recursively to any depth. The parent
  * row's own ID is NOT included in the output (callers can prepend it
  * if they need an inclusive set).

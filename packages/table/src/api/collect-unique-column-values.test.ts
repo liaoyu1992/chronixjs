@@ -20,7 +20,7 @@ const computedColumn: ColumnSpec = {
   },
 };
 
-describe('collectUniqueColumnValues (Phase 43)', () => {
+describe('collectUniqueColumnValues ', () => {
   it('returns empty list for empty rows', () => {
     const out = collectUniqueColumnValues({ rows: [], column: statusColumn });
     expect(out).toEqual({ values: [], truncated: false });

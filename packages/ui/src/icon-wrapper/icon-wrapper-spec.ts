@@ -1,5 +1,5 @@
 /**
- * IconWrapper IR — Phase 24 (2026-06-03). Tier A sizing + coloring
+ * IconWrapper IR — . Tier A sizing + coloring
  * wrapper for arbitrary icon content.
  */
 

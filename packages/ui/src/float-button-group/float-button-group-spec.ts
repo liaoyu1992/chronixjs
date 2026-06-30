@@ -1,10 +1,10 @@
 /**
- * FloatButtonGroup component IR — Phase 28 (2026-06-04). Tier B
+ * FloatButtonGroup component IR — . Tier B
  * cluster of FloatButtons with optional click/hover trigger that
  * expands/collapses child buttons inline (NOT a portal popup — the
  * cluster is already `position: fixed`).
  *
- * Reuses Phase 26 `PopupTrigger` for the trigger discriminator and
+ * Reuses `PopupTrigger` for the trigger discriminator and
  * the hover delay constants (`DEFAULT_HOVER_ENTER_DELAY_MS` /
  * `DEFAULT_HOVER_LEAVE_DELAY_MS`).
  *

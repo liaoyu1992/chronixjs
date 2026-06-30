@@ -1,7 +1,7 @@
 import type { ColumnSpec } from '../ir/index.js';
 
 /**
- * Phase 13 (2026-05-25): clamp a draft column-resize width to the
+ * clamp a draft column-resize width to the
  * column's `[minWidth, maxWidth]` bounds. Used by the vue3 adapter
  * (and future vue2 / react ports) on every pointermove during an
  * in-flight column-resize transaction.

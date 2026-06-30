@@ -3,7 +3,7 @@ import type { LoadingBarState } from './loading-bar-spec.js';
 /**
  * Input for `resolveLoadingBarClassList`.
  *
- * Phase 36 (2026-06-05).
+ * .
  */
 export interface ResolveLoadingBarClassListInput {
   readonly state: LoadingBarState;

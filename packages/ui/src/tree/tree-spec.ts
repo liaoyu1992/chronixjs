@@ -1,5 +1,5 @@
 /**
- * Tree-data IR — Phase 5 (2026-06-02).
+ * Tree-data IR — .
  *
  * Pure-data types + traversal helpers used by Tree, Cascader,
  * TreeSelect, Menu, Dropdown, and any future hierarchical component.

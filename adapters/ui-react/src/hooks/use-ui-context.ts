@@ -6,12 +6,12 @@ import { UIContext } from '../providers/chronix-ui-provider.js';
 /**
  * React hook returning the active `ChronixUIContext` value.
  *
- * Phase 12 (2026-06-02) per Phase 0.3 Decision B.1. Unlike the Vue
+ * per Decision B.1. Unlike the Vue
  * adapters' `useUIContext()` which returns a `Ref<ChronixUIContext>`
  * (so Vue's reactivity machinery can track reads), the React hook
  * returns the plain `ChronixUIContext` value because React Context
  * already drives re-renders on value change. This adapter-native
- * return shape is exactly what Phase 0.3 Decision B.1 prescribes.
+ * return shape is exactly what Decision B.1 prescribes.
  *
  * Resolution order:
  *

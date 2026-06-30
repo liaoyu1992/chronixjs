@@ -1,13 +1,13 @@
 /**
- * Card IR — Phase 15 (2026-06-02). Tier A info-container component.
+ * Card IR — . Tier A info-container component.
  *
  * Renders a bordered/elevated content surface with an optional title
  * row and optional footer region. 3 sizes drive padding tokens.
  *
- * Phase 15 surface intentionally minimal: only `title` (string prop)
+ * surface intentionally minimal: only `title` (string prop)
  * + default body slot/children + `footer` flag determining whether the
  * adapter renders the `__footer` element from a `footer` slot/prop.
- * Phase 17+ Tier B Card phase may widen to header-extra + action-row +
+ * + Tier B Card phase may widen to header-extra + action-row +
  * cover-image slots once consumer requirements crystallize.
  *
  * Public surface:

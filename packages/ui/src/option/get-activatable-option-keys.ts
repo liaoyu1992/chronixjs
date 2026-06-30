@@ -1,6 +1,6 @@
 /**
  * Walk an `OptionListItem[]` (flat options + groups) and return the
- * keys of all non-disabled leaf options in source order. Phase 31
+ * keys of all non-disabled leaf options in source order.
  * (2026-06-04).
  *
  * Used by adapter keyboard navigation: pair with

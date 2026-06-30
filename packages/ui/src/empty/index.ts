@@ -1,5 +1,5 @@
 /**
- * chronix-ui empty module — Phase 15 (2026-06-02).
+ * chronix-ui empty module — .
  */
 
 export type { EmptyProps, EmptySize } from './empty-spec.js';

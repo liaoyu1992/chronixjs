@@ -19,7 +19,7 @@ export interface ChronixStatisticProps extends Omit<
 }
 
 /**
- * `<ChronixStatistic>` — React port of the Phase 18 Statistic.
+ * `<ChronixStatistic>` — React port of the Statistic.
  */
 export function ChronixStatistic(props: ChronixStatisticProps): JSX.Element {
   const {

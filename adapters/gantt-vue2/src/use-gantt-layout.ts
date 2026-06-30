@@ -51,7 +51,7 @@ export interface UseGanttLayoutInput {
   /** Default row height for rows whose computed height-hint is `undefined`. Default 38. */
   readonly defaultRowHeight?: MaybeRefOrGetter<number>;
   /**
-   * Phase 30: vertical spacing in pixels between stacked bars on the same
+   * vertical spacing in pixels between stacked bars on the same
    * row (when same-row bars have overlapping time and get distributed
    * across stack levels). Must match the height-pass's spacing for
    * placement and height calculation to agree. Default 10.
@@ -77,7 +77,7 @@ export interface UseGanttLayoutOutput {
  * (axis planning → stack-height → swimlane → bar placement). Composables
  * own no DOM and no pointer state — they output the same shapes the
  * core's pass methods would, just lifted into `ComputedRef` for template
- * binding. Interactions wire separately (Phase 31.2's pointer composable).
+ * binding. Interactions wire separately ('s pointer composable).
  *
  * Pipeline call order must stay intact: `axis` → `stackHeightOutput`
  * (`.compute`) → `rowsWithHints` (clones each row with `heightByRowId`
@@ -89,7 +89,7 @@ export interface UseGanttLayoutOutput {
 export function useGanttLayout(input: UseGanttLayoutInput): UseGanttLayoutOutput {
   const axis = computed(() => defaultAxisRangePlanner.plan(toValue(input.axisInput)));
 
-  // Phase 30: split the stack-height pass output into a single ComputedRef
+  // split the stack-height pass output into a single ComputedRef
   // so both heightByRowId AND levelByBarId stay reactive through one
   // computation. Pre-Phase-30 only heightByRowId was extracted; levelByBarId
   // was the discarded piece causing the same-row-overlapping-bars-at-same-Y
@@ -132,7 +132,7 @@ export function useGanttLayout(input: UseGanttLayoutInput): UseGanttLayoutOutput
       strips: strips.value,
       barHeight: toValue(input.barHeight ?? 30),
       barVerticalPadding: toValue(input.barVerticalPadding ?? 4),
-      // Phase 30: thread per-bar level from the stack-height pass into
+      // thread per-bar level from the stack-height pass into
       // the placement pass so same-row overlapping bars get distributed
       // across Y. Pass barStackSpacing alongside so placement's per-level
       // offset matches the height-pass's reserved row height.

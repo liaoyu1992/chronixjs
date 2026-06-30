@@ -1,11 +1,11 @@
 /**
  * @chronixjs/table-react — React 18 adapter for the chronix-table core.
  *
- * Phase 0 (2026-05-23): package skeleton.
- * Phase 48 (2026-05-25): first rendering surface — `<ChronixTable>`
- * SFC + `useTableLayout` + `useTableContainerSize` hooks. vue3 Phase 2
+ * package skeleton.
+ * first rendering surface — `<ChronixTable>`
+ * SFC + `useTableLayout` + `useTableContainerSize` hooks. vue3
  * architectural equivalent.
- * Phase 48.1 (2026-05-25): mechanical-port tail — vue3 Phase 3+4+5+5.1
+ * mechanical-port tail — vue3 +4+5+5.1
  * +6+7 consolidated. Adds rowLayoutPass + virtualRowsPass to
  * useTableLayout; adds `useTableBodyScroll` hook; cell value
  * resolution via getCellValue / formatCellValue / resolveCellClassNames;

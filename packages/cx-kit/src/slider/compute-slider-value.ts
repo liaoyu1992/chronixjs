@@ -138,7 +138,7 @@ export function computeSliderPositionForValue(input: SliderPositionForValueInput
  *
  * Returns `null` for any other key — consumer's `onKeydown` handler
  * can fall through to its default behavior. This null-on-unhandled
- * pattern mirrors chronix-table Phase 84's `useMenuKeyboardNav` so
+ * pattern mirrors chronix-table `useMenuKeyboardNav` so
  * consumers can chain keyboard handlers cleanly.
  *
  * Degenerate inputs (`max <= min` OR `step <= 0`) ⇒ return `null`

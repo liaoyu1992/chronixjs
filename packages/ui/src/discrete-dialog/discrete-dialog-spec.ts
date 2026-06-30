@@ -1,8 +1,8 @@
 /**
- * Discrete Dialog IR — Phase 36 (2026-06-05). Imperative dialog API.
+ * Discrete Dialog IR — . Imperative dialog API.
  *
  * Centered overlay dialog with a semi-transparent mask. Named
- * `discrete-dialog` (not `dialog`) to avoid confusion with the Phase 27
+ * `discrete-dialog` (not `dialog`) to avoid confusion with the
  * modal-based dialog. Core IR ships the pure-data types, class-list
  * helper, CSS, and a counter-based ID generator.
  *

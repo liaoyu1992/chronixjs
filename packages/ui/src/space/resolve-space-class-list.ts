@@ -3,7 +3,7 @@ import type { SpaceProps } from './space-spec.js';
 /**
  * Compute class set for the Space root element.
  *
- * Phase 17 (2026-06-02).
+ * .
  *
  * Class structure:
  *

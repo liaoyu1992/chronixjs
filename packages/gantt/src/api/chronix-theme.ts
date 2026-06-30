@@ -88,10 +88,10 @@ export interface ChronixTheme {
   /** Font weight for the progress label. */
   readonly progressLabelFontWeight: number;
 
-  // ----- Bar fill / stroke (Phase 20) -----
+  // ----- Bar fill / stroke -----
   /**
    * Bar fill color when no component prop, `BarSpec.style`, or
-   * callback override resolves. Phase 20 moves bar fills from CSS
+   * callback override resolves. moves bar fills from CSS
    * (`.cx-gantt-bar { fill }`) to this theme token so the bar-color
    * pipeline can override the value at runtime via the cascade.
    */
@@ -107,7 +107,7 @@ export interface ChronixTheme {
    */
   readonly barTextColor: string;
 
-  // ----- Today line (Phase 21) -----
+  // ----- Today line -----
   /**
    * Default stroke color for the `todayLine` line element. Used when
    * the per-prop `TodayLineOption.color` is unset. Adapter applies as
@@ -122,7 +122,7 @@ export interface ChronixTheme {
    */
   readonly todayLineTooltipBg: string;
 
-  // ----- Today cell background (Phase 22.2) -----
+  // ----- Today cell background -----
   /**
    * Fill color for the today-column background tint. A translucent
    * rect spans the full chart height at today's day-slot position,
@@ -133,7 +133,7 @@ export interface ChronixTheme {
    */
   readonly todayCellBgColor: string;
 
-  // ----- Toolbar (Phase 22) -----
+  // ----- Toolbar -----
   /** `.cx-gantt-toolbar` background fill. */
   readonly toolbarBg: string;
   /** Resting `.cx-gantt-*-button` background. */
@@ -147,7 +147,7 @@ export interface ChronixTheme {
   /** `.cx-gantt-toolbar-title` text color. */
   readonly toolbarTitleColor: string;
 
-  // ----- Bar text (Phase 28.2) -----
+  // ----- Bar text -----
   /**
    * Font size (px) for auto-rendered bar title text
    * (`.cx-gantt-bar-text`). Default 12 — matches the parity
@@ -163,7 +163,7 @@ export interface ChronixTheme {
    * matches the original `'normal'` fontWeight default.
    * Per-bar override via `barFontWeightCallback`.
    *
-   * Phase 45 (D.11) widened from `number` to `number | string` so
+   * (D.11) widened from `number` to `number | string` so
    * the theme accepts the same shapes the cascade returns —
    * previously `theme={{ barFontWeight: 'bold' }}` failed
    * TypeScript even though `ResolvedBarStyle.fontWeight` accepts
@@ -171,7 +171,7 @@ export interface ChronixTheme {
    */
   readonly barFontWeight: number | string;
 
-  // ----- Grid lines (Phase 26) -----
+  // ----- Grid lines -----
   /**
    * Stroke / fill color for body grid lines: vertical cell-boundary
    * (`.cx-gantt-grid-vline` solid 1-px rect) AND vertical sub-slot
@@ -201,7 +201,7 @@ export interface ChronixTheme {
    */
   readonly gridLineRowRuleColor: string;
 
-  // ----- Bar selection + resize handles (Phase 28.1) -----
+  // ----- Bar selection + resize handles -----
   /**
    * Stroke color for the selection-border SVG rect rendered on top of
    * a selected bar (`.cx-gantt-bar-selection-border`). Default
@@ -294,17 +294,17 @@ export const defaultChronixTheme: ChronixTheme = {
   barBorderColor: '#1e40af',
   barTextColor: '#ffffff',
 
-  // Today line — Phase 21. Both default to the original spec's
+  // Today line. Both default to the original spec's
   // tomato red so the no-prop-override render matches.
   todayLineColor: '#ff6b6b',
   todayLineTooltipBg: '#ff6b6b',
 
-  // Today cell bg — Phase 22.2. Soft yellow matching the parity-
+  // Today cell bg. Soft yellow matching the parity-
   // reference's `--gantt-today-bg-color` so the no-prop render is
   // pixel-identical to the original demo's today-column tint.
   todayCellBgColor: 'rgba(255, 220, 40, .15)',
 
-  // Toolbar — Phase 22. Match the neutral grayscale palette the
+  // Toolbar. Match the neutral grayscale palette the
   // surrounding chrome (sidebar, header band) already uses; active
   // button picks up the bar-blue accent so the pressed view is
   // discoverable at a glance.
@@ -315,7 +315,7 @@ export const defaultChronixTheme: ChronixTheme = {
   toolbarButtonColor: '#374151',
   toolbarTitleColor: '#111827',
 
-  // Bar text — Phase 28.2. 12px / 400 mirror the original spec's
+  // Bar text. 12px / 400 mirror the original spec's
   // `<text fontSize='12px' fontWeight='normal'>` defaults on the
   // `.gantt-event-text` element. Per-bar overrides via the font
   // callbacks (no per-prop layer in v0 — theme + callback cover
@@ -323,7 +323,7 @@ export const defaultChronixTheme: ChronixTheme = {
   barFontSize: 12,
   barFontWeight: 400,
 
-  // Grid lines — Phase 26. `#ddd` is the original spec's
+  // Grid lines. `#ddd` is the original spec's
   // `--gantt-border-color` fallback used for both vertical solid cell
   // boundaries and vertical dashed sub-slot dividers + horizontal
   // row-bottom lines; `#bbb` is the week-start emphasis fallback.
@@ -333,7 +333,7 @@ export const defaultChronixTheme: ChronixTheme = {
   gridLineWeekStartColor: '#bbb',
   gridLineRowRuleColor: '#ddd',
 
-  // Bar selection + resize handles — Phase 28.1. `rgba(0,0,0,0.3)` and
+  // Bar selection + resize handles. `rgba(0,0,0,0.3)` and
   // strokeWidth 2 mirror the original hard-coded selection
   // border on `.gantt-event-selection-border`. Resizer thickness and
   // dot size both default to 8 px to match the original spec's

@@ -1,5 +1,5 @@
 /**
- * DatePicker component IR — Phase 32 (2026-06-05).
+ * DatePicker component IR — .
  *
  * Single-date picker with calendar popup panel. Uses date-fns for
  * all date math (format, parse, navigation). Value is `Date | undefined`.

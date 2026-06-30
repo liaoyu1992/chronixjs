@@ -1,5 +1,5 @@
 /**
- * Transfer list computation — Phase 33 (2026-06-05).
+ * Transfer list computation — .
  *
  * Pure helpers to split options into source/target panels,
  * filter by search pattern, and compute bulk-action sets.

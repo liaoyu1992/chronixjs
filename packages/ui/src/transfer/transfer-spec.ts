@@ -1,5 +1,5 @@
 /**
- * Transfer component IR — Phase 33 (2026-06-05).
+ * Transfer component IR — .
  *
  * Dual-panel transfer with search filter. Uses cx-kit
  * `filterAutocompleteItems` for search. Value is array of

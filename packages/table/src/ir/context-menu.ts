@@ -1,7 +1,7 @@
 /**
  * IR primitive: cell context-menu descriptor.
  *
- * Phase 83 (2026-05-30): the chronix-NEW shape for the
+ * the chronix-NEW shape for the
  * right-click cell context menu. The `contextMenu` SFC prop
  * accepts a `ContextMenuConfig` carrying a flat array of
  * `ContextMenuItem` action descriptors; each item describes
@@ -26,7 +26,7 @@
  * the identity case — the SFC ships no overlay; right-click
  * bubbles to the browser's native context menu.
  *
- * Phase 83 (2026-05-30).
+ * .
  */
 export interface ContextMenuConfig {
   /**
@@ -47,7 +47,7 @@ export interface ContextMenuConfig {
  * consumer-supplied action callback invoked when the user picks
  * this item.
  *
- * Phase 83 (2026-05-30).
+ * .
  */
 export interface ContextMenuItem {
   /**
@@ -100,7 +100,7 @@ export interface ContextMenuItem {
  * consumers can branch behavior per-row / per-cell from a
  * single SFC-level `items` array.
  *
- * Phase 83 (2026-05-30).
+ * .
  */
 export interface ContextMenuContext {
   /**
@@ -129,7 +129,7 @@ export interface ContextMenuContext {
  * the open state externally (e.g., persist last-opened-cell to
  * analytics).
  *
- * Phase 83 (2026-05-30).
+ * .
  */
 export interface ContextMenuOpenPayload {
   /** Row id of the right-clicked cell. `null` when opened programmatically with `null` rowId. */

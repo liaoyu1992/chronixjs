@@ -1,5 +1,5 @@
 /**
- * Flatten nested Select options — Phase 31 (2026-06-04).
+ * Flatten nested Select options — .
  *
  * Recursively flattens `SelectOption[]` (potentially nested groups)
  * into a flat `FlatOptionEntry[]` suitable for rendering as a list

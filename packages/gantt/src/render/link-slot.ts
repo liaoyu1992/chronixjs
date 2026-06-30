@@ -4,7 +4,7 @@ import type { PlacedBar, RoutedLink } from '../layout/types.js';
 
 /**
  * Args bag passed as `SlotContext.args` when the `'link'` slot fires
- * (Phase 28.3 — chronix-additive parallel to Phase 11's `'bar'`
+ * (chronix-additive parallel 's `'bar'`
  * slot). Each routed link gets one invocation per render pass; the
  * template's return is the framework's VNode shape for the entire
  * link's rendered output. The default `<path class="cx-gantt-link">`
@@ -41,6 +41,6 @@ export interface LinkSlotArgs {
  * Exposed as a constant so consumers don't have to remember the
  * literal string and the adapter can rename it in a future phase
  * without breaking caller code. Parallel to `BAR_SLOT_NAME` from
- * Phase 11.
+ * .
  */
 export const LINK_SLOT_NAME = 'link';

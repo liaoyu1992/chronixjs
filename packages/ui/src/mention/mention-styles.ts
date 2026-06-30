@@ -1,5 +1,5 @@
 /**
- * Mention CSS — Phase 31 (2026-06-04).
+ * Mention CSS — .
  */
 
 export const CHRONIX_MENTION_CSS = `

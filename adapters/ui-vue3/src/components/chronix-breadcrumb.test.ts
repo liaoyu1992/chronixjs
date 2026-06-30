@@ -8,7 +8,7 @@ import type { BreadcrumbItem } from '@chronixjs/ui';
 const SAMPLE_ITEMS: BreadcrumbItem[] = [
   { key: 'home', label: 'Home', href: '/', clickable: false },
   { key: 'docs', label: 'Docs', href: '/docs', clickable: false },
-  { key: 'current', label: 'Phase 19', href: undefined, clickable: false },
+  { key: 'current', label: '', href: undefined, clickable: false },
 ];
 
 describe('ChronixBreadcrumb — root rendering', () => {
@@ -66,7 +66,7 @@ describe('ChronixBreadcrumb — items rendering', () => {
     const items = wrapper.findAll('.cx-ui-breadcrumb__item');
     expect(items[0]!.text()).toBe('Home');
     expect(items[1]!.text()).toBe('Docs');
-    expect(items[2]!.text()).toBe('Phase 19');
+    expect(items[2]!.text()).toBe('');
   });
 });
 

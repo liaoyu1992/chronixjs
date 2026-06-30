@@ -13,7 +13,7 @@ import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
 /**
  * SFC-level recording-replay for `progress-handle-drag`.
  *
- * Phase 3 already replays the recorded numbers through the math layer
+ * already replays the recorded numbers through the math layer
  * (`pointer-capture-session.test.ts: 'reproduces the recorded ... drag
  * math'`). This file goes one layer up: replay the same recorded pointer
  * inputs through `<ChronixGantt>` end-to-end and assert the emitted

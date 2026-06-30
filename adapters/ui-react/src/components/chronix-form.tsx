@@ -1,5 +1,5 @@
 /**
- * chronix-ui React ChronixForm + ChronixFormItem — Phase 34 (2026-06-05).
+ * chronix-ui React ChronixForm + ChronixFormItem — .
  *
  * React adapter for ChronixForm + ChronixFormItem. Uses Context for
  * Form→FormItem registration. React differences from Vue:

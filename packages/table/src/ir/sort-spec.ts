@@ -4,7 +4,7 @@ import type { RowSpec } from './row-spec.js';
 /**
  * IR primitive: single-column sort specification.
  *
- * Phase 8 (2026-05-24) ships a single-entry shape; Phase 8.1 will
+ * ships a single-entry shape; will
  * widen the public sort surface to `readonly SortSpec[]` for
  * shift-click multi-column sort. The single-entry shape is the
  * canonical primitive — multi-column sort threads an ordered array of
@@ -29,7 +29,7 @@ export interface SortSpec {
  * + the column itself for cases where the comparator needs side data
  * (e.g., sort by a sibling field instead of the column's own value).
  *
- * Phase 8 (2026-05-24).
+ * .
  */
 export interface CellComparatorArgs {
   readonly rowA: RowSpec;

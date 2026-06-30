@@ -7,7 +7,7 @@ import {
 import { useCallback, useState } from 'react';
 
 /**
- * React imperative Discrete Dialog hook — Phase 36 (2026-06-05).
+ * React imperative Discrete Dialog hook — .
  * Same surface as Vue 3 / Vue 2 `useDiscreteDialog()` composables.
  * Dialogs are persistent (no auto-dismiss).
  *

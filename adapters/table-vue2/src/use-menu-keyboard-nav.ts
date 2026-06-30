@@ -1,11 +1,11 @@
 import { nextTick, ref, watch, type ComputedRef, type Ref } from 'vue';
 
 /**
- * Phase 84 (2026-05-31): shared menu-keyboard-nav composable —
+ * shared menu-keyboard-nav composable —
  * W3C ARIA APG menu/tablist arrow-key navigation extracted into a
  * single per-adapter helper so the 4 chronix-table menu surfaces
- * (Phase 80 tool-panel tablist + Phase 83-A column header menu +
- * Phase 83-B cell context menu + Phase 25 column-visibility menu)
+ * (tool-panel tablist + -A column header menu +
+ * -B cell context menu + column-visibility menu)
  * share identical keyboard semantics. Verbatim port of the vue3
  * composable — Vue 2.7's Composition API has the same `Ref` /
  * `ComputedRef` / `watch` / `nextTick` shape.

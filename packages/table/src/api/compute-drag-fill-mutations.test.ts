@@ -95,8 +95,8 @@ describe('computeDragFillMutations', () => {
     expect(out).toEqual([{ rowId: 'r2', colId: 'qty', oldValue: 7, newValue: 5 }]);
   });
 
-  // Phase 115 (2026-06-02): validator-gate retrofit.
-  describe('Phase 115 — validator gate', () => {
+  // validator-gate retrofit.
+  describe('validator gate', () => {
     const source: CellRangeEnvelope = { rowIds: ['r1'], colIds: ['qty'] };
     const fill: CellRangeEnvelope = { rowIds: ['r1', 'r2', 'r3'], colIds: ['qty'] };
 

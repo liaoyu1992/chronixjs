@@ -9,7 +9,7 @@ import type { ChronixLocale, ChronixLocaleOverrides } from './chronix-locale.js'
  * - `common` — `{ ...base.common, ...overrides.common }` when overlay
  *   supplies it; otherwise base reference preserved.
  *
- * Phase 3 (2026-06-02). When future phases append per-component slices
+ * . When future phases append per-component slices
  * to `ChronixLocale` (e.g. `datePicker`, `form`, …), extend this
  * function with the corresponding merge clauses — TypeScript will catch
  * missing branches because the return type requires the full shape.

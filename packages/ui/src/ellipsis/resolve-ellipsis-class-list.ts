@@ -3,7 +3,7 @@ import type { EllipsisProps } from './ellipsis-spec.js';
 /**
  * Compute class set for the Ellipsis root element.
  *
- * Phase 23 (2026-06-03).
+ * .
  *
  * Class structure:
  *

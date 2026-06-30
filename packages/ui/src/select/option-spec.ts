@@ -1,8 +1,8 @@
 /**
- * Select-family shared option IR — Phase 31 (2026-06-04).
+ * Select-family shared option IR — .
  *
  * Shared by Select / TreeSelect / Cascader / Mention. Array-only
- * authoring per Phase 19/25 precedent.
+ * authoring per precedent.
  *
  * `OptionSpec` — leaf option (no children).
  * `OptionGroupSpec` — grouping container (children = nested options or

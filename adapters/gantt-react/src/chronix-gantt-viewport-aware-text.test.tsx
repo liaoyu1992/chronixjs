@@ -30,7 +30,7 @@ function bar(id: string, startHourOffset: number, endHourOffset: number, title?:
 }
 
 /**
- * Mirror of vue2 Phase 31.5.2.1's pattern adapted to RTL. Drives
+ * Mirror of vue2 pattern adapted to RTL. Drives
  * `chartScroll.scrollLeft` + `clientWidth` by stubbing the DOM props on
  * the chart-pane + dispatching a scroll event + invoking the captured
  * ResizeObserver callback inside `act()`.
@@ -50,7 +50,7 @@ function driveChartScroll(
   });
 }
 
-describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning — Phase 32.5.1', () => {
+describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
   let originalResizeObserver: typeof globalThis.ResizeObserver | undefined;
   let roCallbackHolder: { cb: ResizeObserverCallback | undefined };
@@ -126,7 +126,7 @@ describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning —
     expect(Number(dotEl.getAttribute('x'))).toBe(309);
   });
 
-  it('Phase 28.2.2: partial-overlap bar (right edge offscreen-right, left edge inside viewport) keeps default title-start at bar edge', () => {
+  it('partial-overlap bar (right edge offscreen-right, left edge inside viewport) keeps default title-start at bar edge', () => {
     // Bar at hours 1..16 (axis-inside). renderX = 60, renderWidth = 900.
     // Scroll to scrollLeft=0, clientWidth=200 → viewport [0, 200). Bar
     // overlaps viewport on left only (60 < 200; 960 > 200). Only
@@ -148,7 +148,7 @@ describe('<ChronixGantt> viewport-aware bar title + progress-dot positioning —
   });
 
   it('underlying resize edge-zone hit-test rect stays at bar geometric edge under viewport-clip (visual + hit-test diverge by design)', () => {
-    // Phase 32.5.1 deliberately keeps the resize edge-zone rect
+    // deliberately keeps the resize edge-zone rect
     // (cx-gantt-bar-resizer-start) at renderX regardless of viewport
     // state. Only the visible dot shifts to viewport edge. The hit-test
     // geometry must stay at the bar's real edge so resize gestures

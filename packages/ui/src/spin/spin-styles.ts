@@ -1,8 +1,8 @@
 /**
- * Spin stylesheet — Phase 16 (2026-06-02).
+ * Spin stylesheet — .
  *
  * CSS-only indicator: a circle border with `border-top-color:
- * transparent` rotated via keyframes. Decouples Spin from the Phase 9
+ * transparent` rotated via keyframes. Decouples Spin from the
  * icon registry (no SVG dependency) — every adapter ships the same
  * spinner shape with no extra bundle cost.
  *
@@ -73,7 +73,7 @@ let injected = false;
  * Inject the Spin stylesheet into `document.head` exactly once.
  * Safe to call from any adapter; no-op on server + subsequent calls.
  * Sticky-flag semantics: once injected, removing the `<style>` element
- * does NOT trigger re-injection (matches Phase 12 button-styles).
+ * does NOT trigger re-injection (matches button-styles).
  */
 export function ensureChronixSpinStyles(): void {
   if (injected) return;

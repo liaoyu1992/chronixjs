@@ -9,7 +9,7 @@ import { computed, defineComponent, h, onBeforeUnmount, ref } from 'vue';
 
 /**
  * `<ChronixNumberAnimation>` — Vue 3 animated number display.
- * Phase 35 (2026-06-05).
+ * .
  *
  * Props:
  *

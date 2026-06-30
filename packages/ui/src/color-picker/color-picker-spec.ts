@@ -1,5 +1,5 @@
 /**
- * ColorPicker component IR — Phase 33 (2026-06-05).
+ * ColorPicker component IR — .
  *
  * Color picker with HSV square + hue strip + hex input + swatches.
  * Uses cx-kit `@chronixjs/cx-kit/color-picker` for all color math.

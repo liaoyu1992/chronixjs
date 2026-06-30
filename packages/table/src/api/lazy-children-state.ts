@@ -1,7 +1,7 @@
 import type { RowSpec } from '../ir/index.js';
 
 /**
- * Phase 34 (2026-05-28): args object passed to the consumer-provided
+ * args object passed to the consumer-provided
  * `childrenLoader`. The adapter SFC invokes the loader the first time
  * a lazy-eligible parent (`hasChildren: true && children === undefined`)
  * is expanded.
@@ -31,7 +31,7 @@ export interface ChildrenLoaderArgs {
 }
 
 /**
- * Phase 34 (2026-05-28): lazy-load lifecycle status for a single row.
+ * lazy-load lifecycle status for a single row.
  *
  * Rows not present in the SFC's `lazyChildrenStateRef` Map are in
  * implicit `'idle'` state — there is no `LazyChildrenStatus = 'idle'`
@@ -40,7 +40,7 @@ export interface ChildrenLoaderArgs {
 export type LazyChildrenStatus = 'loading' | 'loaded' | 'error';
 
 /**
- * Phase 34 (2026-05-28): per-row lazy state stored in the adapter
+ * per-row lazy state stored in the adapter
  * SFC's `lazyChildrenStateRef` Map.
  *
  * Invariants:

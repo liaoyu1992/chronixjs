@@ -1,5 +1,5 @@
 /**
- * Calendar component IR — Phase 32 (2026-06-05).
+ * Calendar component IR — .
  *
  * Standalone calendar (always visible, no popup).
  * Reuses `generateCalendarGrid` from the DatePicker module.

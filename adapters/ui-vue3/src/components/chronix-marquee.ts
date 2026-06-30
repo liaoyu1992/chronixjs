@@ -18,7 +18,7 @@ import {
 
 /**
  * `<ChronixMarquee>` — Vue 3 SFC wrapping the core `MarqueeProps`
- * IR. Phase 22 (2026-06-03). Tier A auto-scrolling content strip.
+ * IR. . Tier A auto-scrolling content strip.
  *
  * Renders root `<div>` with an inner `__track` carrying the slot
  * content rendered TWICE (for seamless loop). Animation duration

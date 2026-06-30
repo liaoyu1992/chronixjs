@@ -1,5 +1,5 @@
 /**
- * chronix-ui marquee module — Phase 22 (2026-06-03).
+ * chronix-ui marquee module — .
  */
 
 export type { MarqueeDirection, MarqueeProps } from './marquee-spec.js';

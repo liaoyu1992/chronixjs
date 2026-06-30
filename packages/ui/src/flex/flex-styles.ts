@@ -1,5 +1,5 @@
 /**
- * Flex stylesheet — Phase 17 (2026-06-02).
+ * Flex stylesheet — .
  *
  * Single-element flex container; per-instance `gap` value comes
  * from inline `style="gap: ..."` set by the adapter via

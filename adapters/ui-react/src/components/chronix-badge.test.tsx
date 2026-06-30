@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixBadge } from './chronix-badge.js';
 
 /**
- * Phase 14 (2026-06-02) — Badge mount tests (react). Verbatim port
+ * — Badge mount tests (react). Verbatim port
  * of the vue3 Badge suite to `@testing-library/react`.
  */
 

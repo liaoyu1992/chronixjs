@@ -1,5 +1,5 @@
 /**
- * Alert IR — Phase 15 (2026-06-02). Tier A info-container component.
+ * Alert IR — . Tier A info-container component.
  *
  * Renders a typed banner with an optional title, content slot/children,
  * and an optional close button. 5 semantic types share the same DOM

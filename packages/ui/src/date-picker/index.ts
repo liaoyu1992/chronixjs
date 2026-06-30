@@ -1,5 +1,5 @@
 /**
- * DatePicker module — Phase 32 (2026-06-05).
+ * DatePicker module — .
  *
  * Framework-agnostic date picker IR: calendar grid generation,
  * date formatting/parsing, navigation, BEM class resolvers, CSS.

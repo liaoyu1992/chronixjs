@@ -1,5 +1,5 @@
 /**
- * chronix-ui `getNestedValue` — Phase 34 (2026-06-05).
+ * chronix-ui `getNestedValue` — .
  *
  * Pure helper for dot-path access into a nested object. Used by FormItem
  * to read the current field value from the form model.

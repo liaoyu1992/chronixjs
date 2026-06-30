@@ -1,5 +1,5 @@
 /**
- * Affix component IR — Phase 27 (2026-06-03). Tier B scroll-position
+ * Affix component IR — . Tier B scroll-position
  * trigger: fixes a child element to the viewport when its natural
  * scroll position passes a `top` or `bottom` threshold.
  *

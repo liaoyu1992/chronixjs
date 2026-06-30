@@ -45,7 +45,7 @@ function nextRaf(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
-describe('useScrollSync (Phase 49 — vue2 port of Phase 23)', () => {
+describe('useScrollSync (vue2 port)', () => {
   it('attaches scroll listeners on mount and removes them on unmount', () => {
     const wrapper = mountHost();
     const paneA = wrapper.find<HTMLElement>('[data-test="pane-a"]').element;

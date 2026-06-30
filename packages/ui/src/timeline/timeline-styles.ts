@@ -1,5 +1,5 @@
 /**
- * Timeline stylesheet — Phase 20 (2026-06-03).
+ * Timeline stylesheet — .
  *
  * Vertical column of `(indicator + content)` rows. Indicator
  * contains a colored dot at top + a connecting line below; the line

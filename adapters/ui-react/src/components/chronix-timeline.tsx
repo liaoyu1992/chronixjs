@@ -12,7 +12,7 @@ export interface ChronixTimelineProps extends Omit<HTMLAttributes<HTMLDivElement
 }
 
 /**
- * `<ChronixTimeline>` — React port of the Phase 20 Timeline.
+ * `<ChronixTimeline>` — React port of the Timeline.
  */
 export function ChronixTimeline(props: ChronixTimelineProps): JSX.Element {
   const { items = defaultTimelineProps.items, ...rest } = props;

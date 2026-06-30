@@ -1,5 +1,5 @@
 /**
- * Phase 41.1 (2026-05-29): one segment in a cell text after splitting
+ * one segment in a cell text after splitting
  * by a quick-find needle. `isMatch === true` means the segment
  * matched the lowercased needle (case-insensitive substring); the
  * SFC wraps it in a `<span class="cx-table-cell__find-match">`.
@@ -14,14 +14,14 @@ export interface TextSegment {
 }
 
 /**
- * Phase 41.1 (2026-05-29): split a cell text by a quick-find needle
+ * split a cell text by a quick-find needle
  * into alternating match / non-match segments.
  *
  * Behavior:
  *
  * - Empty / blank needle (`needle === ''` after `.trim()`) → returns
  *   a single non-match segment carrying the full text (no highlight).
- *   Mirrors Phase 41's identity case for empty needles.
+ *   Mirrors identity case for empty needles.
  * - Empty text → returns an empty array.
  * - Non-empty text + non-empty needle → walks `text` lowercased,
  *   finding each occurrence of the lowercased needle. Pushes a

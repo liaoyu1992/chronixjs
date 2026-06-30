@@ -1,10 +1,10 @@
 /**
- * Skeleton IR — Phase 16 (2026-06-02). Tier A placeholder primitive.
+ * Skeleton IR — . Tier A placeholder primitive.
  *
  * Renders a single shimmering placeholder block (text line / rect /
  * circle). Consumers stack multiple `<ChronixSkeleton />` to produce
  * multi-line placeholders — the compound `lines: number` prop is out
- * of scope for Phase 16 (see audit/UI_PHASE_16_LOADING_STATES_DESIGN.md
+ * of scope (see audit/UI_PHASE_16_LOADING_STATES_DESIGN.md
  * § Out-of-scope).
  *
  * Public surface:

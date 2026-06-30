@@ -3,13 +3,13 @@ import { computed, ref, watch, type ComputedRef, type Ref } from 'vue';
 import type { RowSpec } from '@chronixjs/table';
 
 /**
- * Phase 30.2 (2026-05-28): vue2 composable for tree-data expand state.
- * Verbatim port of vue3's `use-tree-expand-state.ts` (Phase 30.1) —
+ * vue2 composable for tree-data expand state.
+ * Verbatim port of vue3's `use-tree-expand-state.ts` —
  * Vue 2.7's Composition API has the same `Ref` / `computed` / `watch`
  * shape so the port is mechanical.
  *
- * Hybrid controlled / uncontrolled per Phase 30 Decision B.1 (matches
- * Phase 26 `useActiveCell` + Phase 16 `useCellRange` precedents):
+ * Hybrid controlled / uncontrolled per Decision B.1 (matches
+ * `useActiveCell` + `useCellRange` precedents):
  *
  * - When `controlled.value` is non-undefined → controlled mode. Source
  *   of truth is the prop; toggle / expand / collapse emit `change`

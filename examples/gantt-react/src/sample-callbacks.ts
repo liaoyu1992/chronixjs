@@ -9,7 +9,7 @@ import type {
 } from '@chronixjs/gantt';
 
 /**
- * **Phase 46: sample predicate / callback domain code for the
+ * **sample predicate / callback domain code for the
  * chronix-react demo.**
  *
  * Mirror of `examples/gantt-vue3/src/sample-callbacks.ts`. The

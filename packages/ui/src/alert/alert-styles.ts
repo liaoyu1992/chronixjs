@@ -1,5 +1,5 @@
 /**
- * Alert stylesheet — Phase 15 (2026-06-02). Same pattern as
+ * Alert stylesheet — . Same pattern as
  * Button/Tag/Divider/Badge: single core CSS string, idempotent
  * injection, CSS-var token fallback.
  */

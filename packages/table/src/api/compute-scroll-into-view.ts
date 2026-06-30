@@ -1,5 +1,5 @@
 /**
- * Phase 27 (2026-05-28): pure scroll-math helper for auto-scrolling a
+ * pure scroll-math helper for auto-scrolling a
  * scroll container so a target rectangle becomes fully visible.
  *
  * The active-cell auto-scroll feature feeds this with the body
@@ -33,7 +33,7 @@
  * chronix-NEW (original grids ship `ensureIndexVisible` / `scrollToCell`
  * style methods that combine the compute + DOM mutation; the pure-
  * function shape with input numbers + output numbers is chronix's own,
- * matching the Phase 26 `computeNextActiveCell` vs AG-Grid's
+ * matching the `computeNextActiveCell` vs AG-Grid's
  * `CellNavigationService` posture).
  */
 export interface ScrollIntoViewViewport {

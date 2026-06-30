@@ -1,17 +1,17 @@
 /**
- * Descriptions IR — Phase 21 (2026-06-03). Tier A multi-column
+ * Descriptions IR — . Tier A multi-column
  * key-value display.
  *
  * Renders an iterated sequence of `(label, value)` item cells
  * laid out in a CSS-Grid grid of `columns` equal-fraction tracks.
  * Per-item `span: number` drives a `grid-column: span N` inline
  * style for items that should occupy more than one column (Phase
- * 21 Decision B.1 — the item-side mirror of Phase 17 Grid's
+ * 21 Decision B.1 — the item-side mirror Grid's
  * `cols: number` numeric shortcut).
  *
- * Per Phase 21 Decision D.1, items come EXCLUSIVELY from the
+ * Per Decision D.1, items come EXCLUSIVELY from the
  * `items: readonly DescriptionItem[]` array prop (parallel to
- * Phase 19 Breadcrumb C.1 + Phase 20 Steps/Timeline D.1). No
+ * Breadcrumb C.1 + Steps/Timeline D.1). No
  * `<ChronixDescriptionGroup>` sub-component.
  *
  * Public surface:

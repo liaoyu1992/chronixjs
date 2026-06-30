@@ -15,7 +15,7 @@ import {
 } from 'vue';
 
 /**
- * `<ChronixAffix>` — Vue 3 scroll-position-driven affix. Phase 27
+ * `<ChronixAffix>` — Vue 3 scroll-position-driven affix.
  * (2026-06-03). Renders a placeholder + content; on scroll past the
  * `top` / `bottom` threshold, content gets `position: fixed` inline
  * styles.

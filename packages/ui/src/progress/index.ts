@@ -1,5 +1,5 @@
 /**
- * chronix-ui progress module — Phase 16 (2026-06-02). Line variant.
+ * chronix-ui progress module — . Line variant.
  *
  * Core IR for the Progress component. Adapter components consume
  * these types + pure helpers to render framework-specific progress

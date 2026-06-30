@@ -1,5 +1,5 @@
 /**
- * Timeline IR — Phase 20 (2026-06-03). Tier A chronological event
+ * Timeline IR — . Tier A chronological event
  * sequence display.
  *
  * Renders an iterated sequence of `(indicator + content)` items.
@@ -7,10 +7,10 @@
  * (omitted on the last item per the same `isLast` convention Phase
  * 19 Breadcrumb established). Content is a string-only triple
  * (`title` + optional `description` + optional `timestamp`) — rich
- * per-item custom rendering is parked per Phase 20 Decision E.1.
+ * per-item custom rendering is parked per Decision E.1.
  *
- * Per Phase 20 Decision D.1, items come EXCLUSIVELY from the
- * `items: readonly TimelineItem[]` array prop (parallel to Phase 19
+ * Per Decision D.1, items come EXCLUSIVELY from the
+ * `items: readonly TimelineItem[]` array prop (parallel
  * Breadcrumb C.1). No `<ChronixTimelineItem>` sub-component.
  *
  * Public surface:

@@ -1,5 +1,5 @@
 /**
- * Pagination BEM class-list resolvers — Phase 33 (2026-06-05).
+ * Pagination BEM class-list resolvers — .
  */
 
 export interface ResolvePaginationRootClassListInput {

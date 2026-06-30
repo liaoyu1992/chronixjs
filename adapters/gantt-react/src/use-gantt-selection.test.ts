@@ -40,11 +40,11 @@ const barClick = (barId: string, shiftKey: boolean): BarClickPayload => ({
 const emptyClick = (rowId: string | null): EmptyAreaClickPayload => ({
   rowId,
   jsEvent: pe(false) as unknown as EmptyAreaClickPayload['jsEvent'],
-  // Phase 54 — required field; unselectAuto path doesn't read it.
+  // required field; unselectAuto path doesn't read it.
   time: new Date('2026-05-18T00:00:00'),
 });
 
-describe('useGanttSelection (Phase 32.3)', () => {
+describe('useGanttSelection ', () => {
   it('empty selection by default — selectedBarIds is [] and isSelected is false', () => {
     const { result } = renderHook(() => useGanttSelection());
     expect(result.current.selectedBarIds).toEqual([]);

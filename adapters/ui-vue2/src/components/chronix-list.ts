@@ -9,7 +9,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixList>` — Vue 2.7 port of the Phase 21 List.
+ * `<ChronixList>` — Vue 2.7 port of the List.
  *
  * Root element is `<ul>` (not `<div>`); items are `<li>`. DOM
  * shape, class list, and per-item conditional sub-element render

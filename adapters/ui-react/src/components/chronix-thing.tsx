@@ -25,12 +25,12 @@ export interface ChronixThingProps extends Omit<HTMLAttributes<HTMLDivElement>, 
 }
 
 /**
- * `<ChronixThing>` — React port of the Phase 23 Thing.
+ * `<ChronixThing>` — React port of the Thing.
  *
  * Props type extends `Omit<HTMLAttributes<HTMLDivElement>, 'title'>`
  * — the native `title` HTML attribute is shadowed by the chronix
  * `title` string prop. Rich-content alternative names (`headerNode`
- * / `descriptionNode`) mirror Phase 19 PageHeader's slot-equivalent
+ * / `descriptionNode`) mirror PageHeader's slot-equivalent
  * convention.
  */
 export function ChronixThing(props: ChronixThingProps): JSX.Element {

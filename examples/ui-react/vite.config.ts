@@ -2,7 +2,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
 /**
- * chronix-ui react demo — Phase 12 (2026-06-02).
+ * chronix-ui react demo — .
  *
  * Port 8733 per UI_MIGRATION_PLAN.md (vue3=8731 / vue2=8732 / react=8733).
  * Cross-adapter parity Playwright in

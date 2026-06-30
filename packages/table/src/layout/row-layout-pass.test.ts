@@ -74,7 +74,7 @@ describe('rowLayoutPass', () => {
     expect(result.visibleRows).toBe(rows);
   });
 
-  // Phase 46-C (2026-05-30): row-height override map for auto-height.
+  // -C (2026-05-30): row-height override map for auto-height.
   it('rowHeightOverridesByRowId wins over heightHint AND defaultRowHeight', () => {
     const rows = [row('r1', 50), row('r2'), row('r3', 80)];
     const result = rowLayoutPass({

@@ -1,8 +1,8 @@
 /**
- * chronix-ui form component spec — Phase 34 (2026-06-05).
+ * chronix-ui form component spec — .
  *
  * Prop interfaces for ChronixForm and ChronixFormItem adapter components.
- * Validation logic lives in the existing Phase 6 modules (form-spec,
+ * Validation logic lives in the existing modules (form-spec,
  * validate-field, validate-form, field-state). This file adds the
  * component-level layout + display props.
  */
