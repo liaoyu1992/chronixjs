@@ -6,7 +6,7 @@ import { ChronixUIProvider } from '../providers/chronix-ui-provider.js';
 import { ChronixTag } from './chronix-tag.js';
 
 /**
- * Phase 13 (2026-06-02) — Tag mount tests (vue3). Mirrors the Phase
+ * — Tag mount tests (vue3). Mirrors the Phase
  * 11 Button suite shape but adapts to Tag's prop surface (6 types
  * instead of 2 variants; `closable` / `bordered` / `round` / `disabled`
  * modifiers; close-event emission).

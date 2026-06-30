@@ -61,7 +61,7 @@ function link(
   };
 }
 
-describe('<ChronixGantt> useLineEventColor + onLineCallback — Phase 28.3', () => {
+describe('<ChronixGantt> useLineEventColor + onLineCallback', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
@@ -74,7 +74,7 @@ describe('<ChronixGantt> useLineEventColor + onLineCallback — Phase 28.3', () 
 
   it('useLineEventColor: true makes link stroke inherit source bar resolved bg color', () => {
     // Bar A's style sets bg to #ef4444 → that color flows through
-    // Phase 20's cascade to the link as its stroke.
+    // cascade to the link as its stroke.
     const wrapper = mount(ChronixGantt, {
       props: {
         bars: [bar('a', 'r1', 0, 4, { backgroundColor: '#ef4444' }), bar('b', 'r2', 6, 10)],

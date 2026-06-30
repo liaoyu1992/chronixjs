@@ -7,7 +7,7 @@ import {
 import { defineComponent, h, nextTick, onMounted, ref, watch } from 'vue';
 
 /**
- * `<ChronixCollapseTransition>` — Vue 3. Phase 28 (2026-06-04). Wraps
+ * `<ChronixCollapseTransition>` — Vue 3. . Wraps
  * arbitrary slot content in a height transition driven by the core
  * `buildHeightCollapseTransitionStyles` builder. Adapter measures
  * `element.scrollHeight` in `nextTick` post-mount and applies the

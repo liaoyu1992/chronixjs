@@ -1,5 +1,5 @@
 /**
- * chronix-ui discrete-dialog module — Phase 36 (2026-06-05).
+ * chronix-ui discrete-dialog module — .
  */
 
 export type { DialogItem, DialogType } from './discrete-dialog-spec.js';

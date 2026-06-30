@@ -32,7 +32,7 @@ const monthAxis: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> header day classes — Phase 29', () => {
+describe('<ChronixGantt> header day classes', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

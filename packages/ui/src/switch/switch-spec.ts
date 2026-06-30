@@ -1,5 +1,5 @@
 /**
- * Switch component IR — Phase 25 (2026-06-03). Tier B boolean toggle
+ * Switch component IR — . Tier B boolean toggle
  * surface. Root element is `<button role="switch">` for native keyboard
  * activation + a11y semantics.
  */

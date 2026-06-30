@@ -11,7 +11,7 @@ import { computed, defineComponent, h, type CSSProperties, type PropType } from 
 /**
  * `<ChronixGrid>` — Vue 3 SFC wrapping the core `GridProps` IR.
  *
- * Phase 17 (2026-06-02). CSS Grid 2D layout container. Numeric
+ * . CSS Grid 2D layout container. Numeric
  * `cols` maps to `repeat(N, minmax(0, 1fr))`; string `cols` passes
  * verbatim to `grid-template-columns`. Per-axis gap via `xGap` /
  * `yGap` numeric pixel props.

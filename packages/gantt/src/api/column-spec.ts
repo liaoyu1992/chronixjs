@@ -1,8 +1,8 @@
 import type { RowSpec } from '../ir/row-spec.js';
 
 /**
- * Phase 49 — sidebar column descriptor. Relocated to core from the
- * vue3 + react adapter-local copies (Phase 38 `HeaderCellArg`
+ * sidebar column descriptor. Relocated to core from the
+ * vue3 + react adapter-local copies (`HeaderCellArg`
  * precedent: when the 3rd concrete consumer lands, the primitive
  * moves to core). Used by every adapter's sidebar `<colgroup>` +
  * `<th>` / `<td>` cell render.
@@ -33,7 +33,7 @@ export interface ColumnSpec {
  *
  * Pure function — exported for unit testing the matrix shape
  * independently of the render path. Verbatim shape across all three
- * adapters (vue3, vue2, react) since Phase 49 consolidated the
+ * adapters (vue3, vue2, react) since consolidated the
  * declaration here.
  */
 export function computeRowSpans(

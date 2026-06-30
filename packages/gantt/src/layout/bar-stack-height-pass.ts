@@ -1,7 +1,7 @@
 import type { BarStackHeightPassInput, BarStackHeightPassOutput } from './types.js';
 
 /**
- * Derives per-row heights from event stacking. Phase 2 pre-pass for
+ * Derives per-row heights from event stacking. pre-pass for
  * `RowSwimlaneLayout`: caller pipes `heightsPerRow` (or the by-id map)
  * into `RowSpec.heightHint` so swimlanes accommodate the bars that
  * will land on each row.
@@ -41,7 +41,7 @@ export const defaultBarStackHeightPass: BarStackHeightPass = {
     // A bar exactly touching the boundary (end == axisStart) is treated
     // as out — its rendered width would be 0.
     //
-    // Phase 30: bucket entries carry the bar `id` so per-bar level
+    // bucket entries carry the bar `id` so per-bar level
     // assignments survive into the output. Pre-Phase-30 the bucket was
     // anonymous `{ start, end }` shapes.
     interface BucketedBar {
@@ -65,7 +65,7 @@ export const defaultBarStackHeightPass: BarStackHeightPass = {
 
     const heightsPerRow: number[] = [];
     const heightByRowId = new Map<string, number>();
-    // Phase 30: per-bar level assignments aggregated across all rows.
+    // per-bar level assignments aggregated across all rows.
     // Bars on different rows can reuse the same level number — the
     // downstream placement pass scopes Y by `strip.y` (row-relative)
     // so cross-row level collisions are not a problem.
@@ -100,7 +100,7 @@ export const defaultBarStackHeightPass: BarStackHeightPass = {
  * ascending so a longer bar doesn't bump a shorter equal-start sibling
  * unnecessarily.
  *
- * Phase 30: extended from the original `computeMaxLevel` to also return
+ * extended from the original `computeMaxLevel` to also return
  * the per-bar level map. Same algorithm; just no longer discards the
  * intermediate `assigned` values.
  */

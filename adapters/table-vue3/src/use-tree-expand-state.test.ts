@@ -9,7 +9,7 @@ function rowSpec(id: string, children?: readonly RowSpec[]): RowSpec {
   return children == null ? { id, data: {} } : { id, data: {}, children };
 }
 
-describe('useTreeExpandState (Phase 30.1)', () => {
+describe('useTreeExpandState ', () => {
   it('uncontrolled: seeds empty when no defaultExpandedRowIds and depth=0', () => {
     const emit = vi.fn();
     const api = useTreeExpandState({

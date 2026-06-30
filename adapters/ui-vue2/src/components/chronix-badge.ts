@@ -10,7 +10,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixBadge>` — Vue 2.7 port of the Phase 14 Badge pilot.
+ * `<ChronixBadge>` — Vue 2.7 port of the Badge pilot.
  * Verbatim surface mirror of the vue3 adapter; runtime differences
  * are confined to Vue 2's h() data-object syntax (`class` stays
  * top-level — no `attrs:` needed for `<sup>` since there are no

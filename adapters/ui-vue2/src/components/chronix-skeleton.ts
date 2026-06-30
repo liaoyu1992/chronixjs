@@ -9,7 +9,7 @@ import {
 import { computed, defineComponent, h, type PropType } from 'vue';
 
 /**
- * `<ChronixSkeleton>` — Vue 2.7 port of the Phase 16 Skeleton.
+ * `<ChronixSkeleton>` — Vue 2.7 port of the Skeleton.
  * Verbatim surface mirror of vue3 sibling.
  */
 export const ChronixSkeleton = defineComponent({

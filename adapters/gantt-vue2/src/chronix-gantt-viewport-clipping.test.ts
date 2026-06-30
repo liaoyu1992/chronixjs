@@ -60,7 +60,7 @@ function driveChartScroll(
   resizeObserverCallback?.([], {} as ResizeObserver);
 }
 
-describe('<ChronixGantt> viewport-clipping continuation triangles — Phase 31.5.2.1', () => {
+describe('<ChronixGantt> viewport-clipping continuation triangles', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
   let originalResizeObserver: typeof globalThis.ResizeObserver | undefined;
   // `useChartScrollState` listens on a single ResizeObserver per pane;

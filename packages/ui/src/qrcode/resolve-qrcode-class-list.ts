@@ -3,7 +3,7 @@ import type { QrCodeProps } from './qrcode-spec.js';
 /**
  * Compute class set for the QrCode root element.
  *
- * Phase 22 (2026-06-03).
+ * .
  *
  * Class structure:
  *

@@ -5,7 +5,7 @@ import type { DOMRectLike, PopupPlacement } from './popup-spec.js';
  * main axis, return the flipped placement (alignment suffix preserved);
  * otherwise return `placement` unchanged. Pure function.
  *
- * Phase 4 (2026-06-02).
+ * .
  *
  * Flip rules (main-axis only — cross-axis alignment is handled by clamp):
  *

@@ -5,23 +5,23 @@
  * potentially other chronix packages). Each primitive is a pure-logic
  * controller + types; rendering belongs to the consuming adapter.
  *
- * Phase 0 (2026-05-23): package skeleton.
- * Phase 96 (2026-05-31): KitVirtualList headless helper —
+ * package skeleton.
+ * KitVirtualList headless helper —
  *   `computeVirtualWindow` pure helper for uniform-height virtual
  *   lists. See `./virtual-list/`.
- * Phase 97 (2026-05-31): KitSlider headless helpers —
+ * KitSlider headless helpers —
  *   `computeSliderValueAtPosition` + `computeSliderPositionForValue`
  *   + `computeSliderValueOnKey` with W3C ARIA APG keyboard
  *   semantics. See `./slider/`.
- * Phase 98 (2026-05-31): KitInputRange dual-handle range helpers —
+ * KitInputRange dual-handle range helpers —
  *   `computeRangeClosestHandle` + `computeRangeValueAtPosition` +
  *   `computeRangeValueOnKey` with overlap-clamp policy; builds on
- *   Phase 97 slider math. See `./input-range/`.
- * Phase 99 (2026-05-31): KitColorPicker headless helpers —
+ *   slider math. See `./input-range/`.
+ * KitColorPicker headless helpers —
  *   RGB ↔ HSV ↔ HEX color conversions (`rgbToHsv` / `hsvToRgb` /
  *   `rgbToHex` / `hexToRgb`) + saturation-value square + hue strip
  *   pointer math. See `./color-picker/`.
- * Phase 100 (2026-05-31): KitAutocomplete headless helpers —
+ * KitAutocomplete headless helpers —
  *   `filterAutocompleteItems` (prefix/substring filter + ranking)
  *   + `computeMatchSpans` (highlight char-range computation).
  *   See `./autocomplete/`. **Completes cx-kit 5/5 primitives.**

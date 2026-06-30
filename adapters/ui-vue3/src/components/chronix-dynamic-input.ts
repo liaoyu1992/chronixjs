@@ -9,7 +9,7 @@ import { computed, defineComponent, h, type VNode } from 'vue';
 
 /**
  * `<ChronixDynamicInput>` — Vue 3 dynamic value-list component.
- * Phase 35 (2026-06-05).
+ * .
  *
  * Props:
  *

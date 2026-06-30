@@ -170,7 +170,7 @@ describe('<ChronixFiltersToolPanel> (react)', () => {
   });
 });
 
-describe('Phase 100.2: advanced filter typeahead (react)', () => {
+describe('advanced filter typeahead (react)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -210,7 +210,7 @@ describe('Phase 100.2: advanced filter typeahead (react)', () => {
     expect(items).toHaveLength(1);
     expect(items[0]!.getAttribute('aria-selected')).toBe('true'); // boolean true serializes to "true" attr
     // Label is in the first span; category badge ('column') is in
-    // the second span (Phase 100.2.1 layout).
+    // the second span (layout).
     expect(items[0]!.querySelector('span')!.textContent).toBe('名称');
     unmount();
   });
@@ -236,7 +236,7 @@ describe('Phase 100.2: advanced filter typeahead (react)', () => {
     unmount();
   });
 
-  it('100.2 (react): Enter commits active item — textarea replaced with col.id + trailing space (Phase 100.2.4)', () => {
+  it('100.2 (react): Enter commits active item — textarea replaced with col.id + trailing space ', () => {
     const { container, unmount } = render(
       <ChronixFiltersToolPanel tableHandle={makeHandle()} columns={columns} filterSpec={[]} />,
     );
@@ -248,7 +248,7 @@ describe('Phase 100.2: advanced filter typeahead (react)', () => {
     ta.selectionEnd = 2;
     fireEvent.change(ta, { target: { value: 'na' } });
     fireEvent.keyDown(ta, { key: 'Enter' });
-    // Phase 100.2.4 (react port): column commit appends a trailing
+    // (react port): column commit appends a trailing
     // space + auto-triggers typeahead for the operator slot.
     expect(ta.value).toBe('name ');
     expect(container.querySelector('[data-testid="cx-filters-typeahead"]')).not.toBeNull();
@@ -270,7 +270,7 @@ describe('Phase 100.2: advanced filter typeahead (react)', () => {
     unmount();
   });
 
-  it('100.2 (react): click on a typeahead item commits the selection (Phase 100.2.4 trailing space)', () => {
+  it('100.2 (react): click on a typeahead item commits the selection (trailing space)', () => {
     const { container, unmount } = render(
       <ChronixFiltersToolPanel tableHandle={makeHandle()} columns={columns} filterSpec={[]} />,
     );
@@ -289,7 +289,7 @@ describe('Phase 100.2: advanced filter typeahead (react)', () => {
   });
 });
 
-describe('Phase 100.2.1: typeahead slot detection + operator/keyword suggestions (react)', () => {
+describe('typeahead slot detection + operator/keyword suggestions (react)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -378,7 +378,7 @@ describe('Phase 100.2.1: typeahead slot detection + operator/keyword suggestions
     unmount();
   });
 
-  it('100.2.1 (react): Enter commits operator item + Phase 100.2.4 trailing space', () => {
+  it('100.2.1 (react): Enter commits operator item + trailing space', () => {
     const { container, unmount } = render(
       <ChronixFiltersToolPanel tableHandle={makeHandle()} columns={columns} filterSpec={[]} />,
     );
@@ -395,7 +395,7 @@ describe('Phase 100.2.1: typeahead slot detection + operator/keyword suggestions
     unmount();
   });
 
-  it('100.2.1 (react): Enter commits keyword item + Phase 100.2.4 trailing space', () => {
+  it('100.2.1 (react): Enter commits keyword item + trailing space', () => {
     const { container, unmount } = render(
       <ChronixFiltersToolPanel tableHandle={makeHandle()} columns={columns} filterSpec={[]} />,
     );
@@ -430,7 +430,7 @@ describe('Phase 100.2.1: typeahead slot detection + operator/keyword suggestions
   });
 });
 
-describe('Phase 100.2.3: operator subset by column type (react)', () => {
+describe('operator subset by column type (react)', () => {
   const typedColumns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -544,7 +544,7 @@ describe('Phase 100.2.3: operator subset by column type (react)', () => {
   });
 });
 
-describe('Phase 100.2.2: value slot suggestions (react)', () => {
+describe('value slot suggestions (react)', () => {
   const typedColumns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -732,7 +732,7 @@ describe('detectTypeaheadSlot (react)', () => {
     expect(ADVANCED_FILTER_OPERATORS.length).toBe(12);
     expect(ADVANCED_FILTER_KEYWORDS).toEqual(['AND', 'OR', 'NOT']);
   });
-  // Phase 100.2.2 (2026-06-01 — react port): prevColumn extraction.
+  // (2026-06-01 — react port): prevColumn extraction.
   it("100.2.2 (react): after 'qty > ' → value slot with prevColumn='qty'", () => {
     const r = detectTypeaheadSlot('qty > ', 6);
     expect(r.slot).toBe('value');
@@ -772,7 +772,7 @@ describe('extractWordAtCursor (react)', () => {
   });
 });
 
-describe('Phase 100.2.2.2: histogram count badge per value (react)', () => {
+describe('histogram count badge per value (react)', () => {
   const typedColumns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -867,7 +867,7 @@ describe('Phase 100.2.2.2: histogram count badge per value (react)', () => {
   });
 });
 
-describe('Phase 100.2.2.3: date-typed value formatter (react)', () => {
+describe('date-typed value formatter (react)', () => {
   const dateColumns: readonly ColumnSpec[] = [
     { id: 'createdAt', field: 'createdAt', headerName: 'Created', type: 'date' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -988,7 +988,7 @@ describe('Phase 100.2.2.3: date-typed value formatter (react)', () => {
   });
 });
 
-describe('Phase 100.2.3.1: custom column-type operator override (react)', () => {
+describe('custom column-type operator override (react)', () => {
   const customColumns: readonly ColumnSpec[] = [
     { id: 'price', field: 'price', headerName: 'Price', type: 'currency' },
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
@@ -1105,7 +1105,7 @@ describe('Phase 100.2.3.1: custom column-type operator override (react)', () => 
   });
 });
 
-describe('Phase 100.2.3.2: localized operator labels (react)', () => {
+describe('localized operator labels (react)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量', type: 'number' },
@@ -1232,7 +1232,7 @@ describe('Phase 100.2.3.2: localized operator labels (react)', () => {
   });
 });
 
-describe('Phase 100.2.4: auto-trigger after operator commit (react)', () => {
+describe('auto-trigger after operator commit (react)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -1344,7 +1344,7 @@ describe('Phase 100.2.4: auto-trigger after operator commit (react)', () => {
   });
 });
 
-describe('Phase 100.2.6: auto-scroll active item into view (react)', () => {
+describe('auto-scroll active item into view (react)', () => {
   const manyColumns: readonly ColumnSpec[] = Array.from({ length: 30 }, (_, i) => ({
     id: `col${i}`,
     field: `col${i}`,
@@ -1453,7 +1453,7 @@ describe('Phase 100.2.6: auto-scroll active item into view (react)', () => {
   });
 });
 
-describe('Phase 100.2.2.4: string-literal-internal typeahead (react)', () => {
+describe('string-literal-internal typeahead (react)', () => {
   const typedColumns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -1555,7 +1555,7 @@ describe('Phase 100.2.2.4: string-literal-internal typeahead (react)', () => {
   });
 });
 
-describe('Phase 100.2.5: per-slot recent LRU rings (react)', () => {
+describe('per-slot recent LRU rings (react)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -1652,7 +1652,7 @@ describe('Phase 100.2.5: per-slot recent LRU rings (react)', () => {
   });
 });
 
-describe('Phase 100.2.2.1: SSR async value getter (react)', () => {
+describe('SSR async value getter (react)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'status', field: 'status', headerName: 'Status', type: 'text' },
   ];
@@ -1696,7 +1696,7 @@ describe('Phase 100.2.2.1: SSR async value getter (react)', () => {
     ta.selectionStart = 10;
     ta.selectionEnd = 10;
     fireEvent.change(ta, { target: { value: 'status = i' } });
-    // Phase 118 (2026-06-02 — react port): getter widened with
+    // (2026-06-02 — react port): getter widened with
     // optional 3rd `signal?: AbortSignal` arg.
     expect(getter).toHaveBeenCalledWith('status', 'i', expect.any(AbortSignal));
     unmount();
@@ -1803,7 +1803,7 @@ describe('Phase 100.2.2.1: SSR async value getter (react)', () => {
   });
 });
 
-describe('Phase 112: persistent typeahead recent (react)', () => {
+describe('persistent typeahead recent (react)', () => {
   const columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'qty', field: 'qty', headerName: '数量' },
@@ -1943,7 +1943,7 @@ describe('formatFilterChipLabel (react)', () => {
   });
 });
 
-describe('Phase 118: P3 finale — AbortController + per-column recents (react)', () => {
+describe('P3 finale — AbortController + per-column recents (react)', () => {
   const phase118Columns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name' },
     { id: 'qty', field: 'qty', headerName: 'Qty', type: 'number' },
@@ -1966,7 +1966,7 @@ describe('Phase 118: P3 finale — AbortController + per-column recents (react)'
     ta.getBoundingClientRect = () => full;
   }
 
-  it('Phase 118 (react): getter receives an AbortSignal arg', () => {
+  it('(react): getter receives an AbortSignal arg', () => {
     const getter = vi.fn<
       (colId: string, query: string, signal?: AbortSignal) => Promise<readonly ColumnUniqueValue[]>
     >(() => Promise.resolve([{ value: 'OK', count: 1 }]));
@@ -1991,7 +1991,7 @@ describe('Phase 118: P3 finale — AbortController + per-column recents (react)'
     unmount();
   });
 
-  it('Phase 118 (react): rapid typing aborts the prior in-flight controller', () => {
+  it('(react): rapid typing aborts the prior in-flight controller', () => {
     const signals: AbortSignal[] = [];
     const getter = vi.fn((_colId: string, _query: string, signal?: AbortSignal) => {
       if (signal != null) signals.push(signal);
@@ -2018,7 +2018,7 @@ describe('Phase 118: P3 finale — AbortController + per-column recents (react)'
     unmount();
   });
 
-  it('Phase 118 (react): typeaheadRecentScope="per-column-value" mounts cleanly', () => {
+  it('(react): typeaheadRecentScope="per-column-value" mounts cleanly', () => {
     const { unmount } = render(
       <ChronixFiltersToolPanel
         tableHandle={phase118Handle}

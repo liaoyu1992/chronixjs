@@ -7,8 +7,8 @@ import {
 } from './sidebar-divider.js';
 
 describe('sidebar-divider constants', () => {
-  it('SIDEBAR_DIVIDER_WIDTH = 8 (grab-target track width)', () => {
-    expect(SIDEBAR_DIVIDER_WIDTH).toBe(8);
+  it('SIDEBAR_DIVIDER_WIDTH = 4 (grab-target track width)', () => {
+    expect(SIDEBAR_DIVIDER_WIDTH).toBe(4);
   });
 
   it('MIN_SIDEBAR_AREA_WIDTH = 40 (per-pane minimum)', () => {
@@ -16,7 +16,7 @@ describe('sidebar-divider constants', () => {
   });
 });
 
-describe('clampSidebarWidth (Phase 50 pure helper)', () => {
+describe('clampSidebarWidth (pure helper)', () => {
   it('returns the proposed width when inside [min, max]', () => {
     // wrapperWidth=800 → max=800-40=760; proposed=300 → 300.
     expect(clampSidebarWidth(300, 800)).toBe(300);

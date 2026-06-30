@@ -1,5 +1,5 @@
 /**
- * Spin IR — Phase 16 (2026-06-02). Tier A loading-state primitive.
+ * Spin IR — . Tier A loading-state primitive.
  *
  * Renders an indeterminate rotating indicator with an optional
  * description below it. Inline / standalone form only — the
@@ -14,10 +14,10 @@
  * - **`resolveSpinClassList`** pure helper.
  *
  * Theme tokens read via CSS-var fallback in `spin-styles.ts`. Per
- * Phase 0.3 Decision A.1 the adapter's `size` default is `undefined`
+ * Decision A.1 the adapter's `size` default is `undefined`
  * so it falls back to `ctx.size`; `description` opts out of the
  * description row when `undefined` (testable only at the pure-fn
- * level — see Phase 15 Empty.description friction note).
+ * level — see Empty.description friction note).
  */
 
 /** Sizing token. */

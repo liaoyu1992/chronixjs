@@ -8,7 +8,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixAnchor>` — Vue 2.7 port of the Phase 35 Anchor.
+ * `<ChronixAnchor>` — Vue 2.7 port of the Anchor.
  * Verbatim surface mirror of the vue3 sibling; runtime differences are
  * Vue 2's `attrs:` data-object for HTML attributes and `on:` for events.
  */

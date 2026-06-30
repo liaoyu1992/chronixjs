@@ -3,13 +3,13 @@ import { computed, defineComponent, h, type PropType, type StyleValue, type VNod
 
 /**
  * `<ChronixLog>` — Vue 3 SFC wrapping the core `LogProps` IR.
- * Phase 23 (2026-06-03). Tier A terminal-output viewer.
+ * . Tier A terminal-output viewer.
  *
  * Per Decision D.1 the per-line number is rendered as real DOM
  * text in a `<span class="__line-number" aria-hidden="true">`
  * (NOT via CSS `counter-increment` + `::before`).
  *
- * Per Decision A.1 + Phase 21 D.1, items come exclusively from the
+ * Per Decision A.1 + D.1, items come exclusively from the
  * `lines` array prop — no scoped slots / render-props.
  *
  * No emits — Log is a pure-visual primitive.

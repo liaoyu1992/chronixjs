@@ -1,5 +1,5 @@
 /**
- * ColorPicker CSS — Phase 33 (2026-06-05).
+ * ColorPicker CSS — .
  *
  * BEM styles for cx-ui-color-picker + all sub-elements.
  * CSS var tokens with fallbacks for theme customization.

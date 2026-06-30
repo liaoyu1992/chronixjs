@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { bool, describeConfigSchema, enumOf, num, str, useDemoConfig } from './demo-config.js';
 
 /**
- * Phase 46: React port of vue3's `demo-config.test.ts`. Field
+ * React port of vue3's `demo-config.test.ts`. Field
  * factories (`bool` / `str` / `num` / `enumOf` / `describeConfigSchema`)
  * are framework-agnostic + tested as pure functions. The hook
  * (`useDemoConfig`) is tested via `@testing-library/react`'s
@@ -140,7 +140,7 @@ describe('useDemoConfig', () => {
     });
   });
 
-  it('Phase 21: todayLine bool schema field round-trips through URL', () => {
+  it('todayLine bool schema field round-trips through URL', () => {
     setUrl('?todayLine=true');
     const { result } = renderHook(() =>
       useDemoConfig({

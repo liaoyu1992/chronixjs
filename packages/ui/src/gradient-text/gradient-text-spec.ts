@@ -1,5 +1,5 @@
 /**
- * GradientText IR — Phase 24 (2026-06-03). Tier A text with
+ * GradientText IR — . Tier A text with
  * CSS linear-gradient applied via `background-clip: text`.
  */
 

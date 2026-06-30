@@ -1,7 +1,7 @@
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Args passed to `ColumnSpec.valueGetter`. Phase 5 (2026-05-23).
+ * Args passed to `ColumnSpec.valueGetter`. .
  *
  * The value-getter runs BEFORE value resolution, so it has access to
  * `row` + `column` but NOT to a resolved `value`. Use the row's
@@ -18,7 +18,7 @@ export interface CellValueArgs {
 
 /**
  * Args passed to `ColumnSpec.valueFormatter` + `ColumnSpec.cellClass`
- * (the function form). Phase 5 (2026-05-23).
+ * (the function form). .
  *
  * The pipeline order is: `valueGetter` → `value` → `valueFormatter` +
  * `cellClass` both receive the post-getter `value`. If `valueGetter`

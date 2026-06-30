@@ -4,7 +4,7 @@ import { filterAutocompleteItems } from './filter-autocomplete-items.js';
 
 const getText = (s: string): string => s;
 
-describe('filterAutocompleteItems — Phase 100', () => {
+describe('filterAutocompleteItems', () => {
   it('empty query returns all items with score=0 in input order', () => {
     const result = filterAutocompleteItems({
       items: ['banana', 'apple', 'cherry'],

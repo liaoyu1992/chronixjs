@@ -1,5 +1,5 @@
 /**
- * QrCode stylesheet — Phase 22 (2026-06-03).
+ * QrCode stylesheet — .
  *
  * Renders the QR matrix as an `<svg>` element when an encoder is
  * registered + the value encodes successfully. The SVG carries

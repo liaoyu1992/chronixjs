@@ -71,7 +71,7 @@ describe('useGanttLayout (vue2 port)', () => {
     const placed = placedBars.value[0]!;
     expect(placed.width).toBeCloseTo(240, 5);
     expect(placed.x).toBeCloseTo(8 * 60, 5); // bar starts at hour 8
-    // Phase 43 defaults: barHeight=30, barVerticalPadding=4,
+    // defaults: barHeight=30, barVerticalPadding=4,
     // rowSpacing=1 → strip 0 starts at y=0, bar y = 0 + 4 = 4.
     expect(placed.y).toBe(4);
     expect(placed.height).toBe(30);
@@ -145,7 +145,7 @@ describe('useGanttLayout (vue2 port)', () => {
     expect(s1.y).toBe(s0.y + s0.height + 1);
   });
 
-  it('Phase 30: threads levelByBarId from stack-height pass into placement pass — overlapping same-row bars get distinct Y', () => {
+  it('threads levelByBarId from stack-height pass into placement pass — overlapping same-row bars get distinct Y', () => {
     // Three bars all on r1 with mutually overlapping time windows.
     // Greedy interval coloring (sort by start, then end) → b1 level 0,
     // b2 level 1, b3 level 2.

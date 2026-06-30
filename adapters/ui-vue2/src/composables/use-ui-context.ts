@@ -6,7 +6,7 @@ import { UI_CONTEXT_INJECTION_KEY } from '../providers/chronix-ui-provider.js';
 /**
  * Vue 2.7 composable returning the active `ChronixUIContext` as a `Ref`.
  *
- * Phase 12 (2026-06-02) per Phase 0.3 Decision B.1. Verbatim port of
+ * per Decision B.1. Verbatim port of
  * `adapters/ui-vue3`'s `useUIContext()` — Vue 2.7's Composition API
  * `inject` + `Ref` types share the same surface as Vue 3.
  *

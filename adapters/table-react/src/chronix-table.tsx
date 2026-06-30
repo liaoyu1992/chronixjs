@@ -173,10 +173,10 @@ import { useTreeExpandState } from './use-tree-expand-state.js';
 
 /**
  * Public imperative facade for `<ChronixTable>`. Mirrors the shape
- * of chronix-table-vue3's `TableHandle` at its Phase 2 form. Every
+ * of chronix-table-vue3's `TableHandle` at its form. Every
  * consumer-facing read or imperative action lives on this object,
  * exposed via React's `forwardRef` + `useImperativeHandle` pattern.
- * Phase 48 shipped the minimum read surface; per-feature phases
+ * shipped the minimum read surface; per-feature phases
  * extend it (sort / filter / edit / selection / resize methods
  * land in their owning sub-phases mirroring vue3's progression).
  */
@@ -192,83 +192,83 @@ export interface TableHandle {
    */
   getResolvedWidth(colId: string): number | undefined;
   /**
-   * Phase 49 + 49.1 (vue3 Phase 8 + 8.1 equivalent): read the current
+   * + 49.1 (vue3 + 8.1 equivalent): read the current
    * ordered sort spec. Empty array = no sort. Single-column = one-entry
    * array. Multi-column = N-entry array in lex-order priority.
    * Internal-only state ownership (no controlled `sortSpec` prop —
-   * Phase 49 Decision A.1 verbatim port; Phase 49.1 keeps the same
+   * Decision A.1 verbatim port; keeps the same
    * posture).
    */
   getSort(): readonly SortSpec[];
   /**
-   * Phase 49 + 49.1: apply a sort spec. Accepts a single `SortSpec`
+   * + 49.1: apply a sort spec. Accepts a single `SortSpec`
    * (wrapped into a one-entry array for convenience), a full ordered
    * `readonly SortSpec[]`, or `null` (cleared = empty array).
    * Silently rejects atomically when any entry's column has
    * `sortable === false` or doesn't exist.
    */
   setSort(spec: SortSpec | readonly SortSpec[] | null): void;
-  /** Phase 49 + 49.1: convenience for `setSort(null)`. */
+  /** + 49.1: convenience for `setSort(null)`. */
   clearSort(): void;
   /**
-   * Phase 50 (vue3 Phase 9 equivalent): read the current ordered
+   * (vue3 equivalent): read the current ordered
    * filter spec. Empty array = no filter. Multi-column filter =
    * N-entry array with AND semantics. Internal-only state ownership.
    */
   getFilter(): readonly FilterSpec[];
   /**
-   * Phase 50: apply a filter spec. Accepts a single `FilterSpec`
+   * apply a filter spec. Accepts a single `FilterSpec`
    * (wrapped into a one-entry array for convenience), a full
    * `readonly FilterSpec[]`, or `null` (cleared = empty array).
    * Silently rejects atomically when any entry's column has
    * `filterable === false` or doesn't exist.
    */
   setFilter(spec: FilterSpec | readonly FilterSpec[] | null): void;
-  /** Phase 50: convenience for `setFilter(null)`. */
+  /** convenience for `setFilter(null)`. */
   clearFilter(): void;
   /**
-   * Phase 42 (2026-05-29 — react port): read the active advanced
+   * (2026-05-29 — react port): read the active advanced
    * filter (if any). Returns `null` when the current filter spec has
    * no `ExpressionFilterSpec` entry; otherwise returns the AST plus
    * the original DSL text when applied via `parseAndSetAdvancedFilter`.
-   * Verbatim port of vue3 Phase 42.
+   * Verbatim port of vue3 .
    */
   getAdvancedFilter(): {
     readonly expression: FilterExpression;
     readonly source: string | null;
   } | null;
   /**
-   * Phase 42: apply an advanced filter expression — wraps the AST
+   * apply an advanced filter expression — wraps the AST
    * in an `ExpressionFilterSpec` and dispatches via the same path
    * `setFilter` uses, preserving any pre-existing `text` / `number`
    * variants. Pass `null` to remove just the expression entry.
    */
   setAdvancedFilter(expression: FilterExpression | null, source?: string): void;
   /**
-   * Phase 42: parse a DSL string with `parseFilterExpression` and
+   * parse a DSL string with `parseFilterExpression` and
    * apply it on success; returns the parser result so consumers can
    * render error UIs.
    */
   parseAndSetAdvancedFilter(text: string): ParseFilterExpressionResult;
   /**
-   * Phase 43 (2026-05-29 — react port): collect the unique values
+   * (2026-05-29 — react port): collect the unique values
    * appearing in a given column across the table's CURRENT rows
-   * (pre-filter). Drives the Phase 43 set-filter dropdown UI.
-   * Verbatim port of vue3 Phase 43.
+   * (pre-filter). Drives the set-filter dropdown UI.
+   * Verbatim port of vue3 .
    */
   getColumnUniqueValues(
     colId: string,
     options?: { maxValues?: number },
   ): CollectUniqueColumnValuesResult;
   /**
-   * Phase 41 (2026-05-29 — react port): read the current quick-find
+   * (2026-05-29 — react port): read the current quick-find
    * needle. Empty string = no quick-find active. Internal-only state
    * (no controlled `quickFindText` prop; same posture as filter / sort).
-   * Verbatim port of vue3 Phase 41.
+   * Verbatim port of vue3 .
    */
   getQuickFindText(): string;
   /**
-   * Phase 41: apply a quick-find needle. Accepts a string (empty
+   * apply a quick-find needle. Accepts a string (empty
    * string clears), `null`, or `undefined` (both coerced to `''`).
    * Triggers the `onQuickFindTextChange` callback when the needle
    * actually changes (no-op dedup). Transitions reset pagination to
@@ -276,35 +276,35 @@ export interface TableHandle {
    */
   setQuickFindText(text: string | null | undefined): void;
   /**
-   * Phase 41: read the current top-level match count after
+   * read the current top-level match count after
    * `quickFindPass`. Equals `props.rows.length` when no quick-find is
    * active. For tree data, counts top-level retained rows only.
    */
   getQuickFindMatchCount(): number;
   /**
-   * Phase 51 (vue3 Phase 10 equivalent): read the current selected
+   * (vue3 equivalent): read the current selected
    * row ids in insertion order. Empty array = nothing selected.
    * Selection is orthogonal to filter / sort — row ids that are
    * filtered out remain "selected" in the underlying set.
    */
   getSelectedRowIds(): readonly string[];
   /**
-   * Phase 51: replace the selection. `null` clears it (equivalent to
+   * replace the selection. `null` clears it (equivalent to
    * passing `[]`). Fires `onSelectionChange` callback on transition.
    * Does NOT validate that ids reference real rows.
    */
   setSelectedRowIds(ids: readonly string[] | null): void;
-  /** Phase 51: convenience for `setSelectedRowIds(null)`. */
+  /** convenience for `setSelectedRowIds(null)`. */
   clearSelection(): void;
   /**
-   * Phase 51: O(1) check whether `rowId` is in the current selection.
+   * O(1) check whether `rowId` is in the current selection.
    * Used by the SFC's per-row render to apply the
    * `cx-table-row--selected` modifier; also exposed for consumer
    * row-level conditionals.
    */
   isRowSelected(rowId: string): boolean;
   /**
-   * Phase 52 (vue3 Phase 11 equivalent): read the current 0-based
+   * (vue3 equivalent): read the current 0-based
    * page index. Internal-only state ownership matches sort / filter /
    * selection. Returns `0` when `paginationEnabled` is `false` —
    * programmatic `setPage(99)` over a 3-page dataset returns `2` from
@@ -312,21 +312,21 @@ export interface TableHandle {
    */
   getPage(): number;
   /**
-   * Phase 52: set the 0-based page index. Triggers an `onPageChange`
+   * set the 0-based page index. Triggers an `onPageChange`
    * callback on transition (no-op when target equals the current
    * page). Clamped by `pagePass`; out-of-range writes silently
    * resolve to the nearest valid page.
    */
   setPage(page: number): void;
   /**
-   * Phase 52: read the current rows-per-page value. Returns
+   * read the current rows-per-page value. Returns
    * `initialPageSize` (or the latest `setPageSize` value) regardless
    * of `paginationEnabled` so consumers can pre-seed page sizes
    * before enabling pagination.
    */
   getPageSize(): number;
   /**
-   * Phase 52: set rows-per-page. Triggers an `onPageChange` callback
+   * set rows-per-page. Triggers an `onPageChange` callback
    * on transition (no-op when target equals the current pageSize).
    * If the new `pageSize` collapses the row set into fewer pages
    * than the current page index, `pagePass` clamps page to the new
@@ -334,13 +334,13 @@ export interface TableHandle {
    */
   setPageSize(pageSize: number): void;
   /**
-   * Phase 52: read the total page count. `1` when `paginationEnabled`
+   * read the total page count. `1` when `paginationEnabled`
    * is `false`; `0` when paginated and the dataset is empty;
    * otherwise `Math.ceil(totalRows / pageSize)`.
    */
   getTotalPages(): number;
   /**
-   * Phase 53 (vue3 Phase 12 equivalent): open the editor on a given
+   * (vue3 equivalent): open the editor on a given
    * cell. No-op when the column has `editable !== true` or the row
    * doesn't exist. When a different cell is already in edit mode,
    * commits the previous one first (matches click-elsewhere blur
@@ -348,30 +348,30 @@ export interface TableHandle {
    */
   startEditingCell(rowId: string, colId: string): void;
   /**
-   * Phase 53: commit the in-flight edit. No-op when no edit is in
+   * commit the in-flight edit. No-op when no edit is in
    * progress. Fires `onCellValueChange` (when draftValue differs
    * from baseValue) + `onCellEditStop {committed: true}`. Clears
-   * `editingCell` state. Phase 53.1: on rejection (invalid input
+   * `editingCell` state. on rejection (invalid input
    * for a `type: 'number'` column), fires `onCellEditStop
    * {committed: false}` but keeps `editingCell` set so the bad
    * input remains visible.
    */
   commitEditingCell(): void;
   /**
-   * Phase 53: cancel the in-flight edit (revert to baseValue).
+   * cancel the in-flight edit (revert to baseValue).
    * No-op when no edit is in progress. Fires `onCellEditStop
    * {committed: false}`. Clears `editingCell` state.
    */
   cancelEditingCell(): void;
   /**
-   * Phase 53: read the current `editingCell` state, or `null` when
+   * read the current `editingCell` state, or `null` when
    * no edit is in progress. Consumers should treat the returned
    * object as immutable — `setEditingCellDraft` swaps in a new
    * `EditingCell` object (immutable mutation).
    */
   getEditingCell(): EditingCell | null;
   /**
-   * Phase 53: programmatic draft-value update. No-op when no edit
+   * programmatic draft-value update. No-op when no edit
    * is in progress. Does NOT fire any callback (only commit fires
    * `onCellValueChange`). Used internally by the `<input>` onChange
    * handler; consumers can also call it to seed a raw value at
@@ -379,7 +379,7 @@ export interface TableHandle {
    */
   setEditingCellDraft(value: unknown): void;
   /**
-   * Phase 54 (vue3 Phase 13 equivalent): open a column-resize session
+   * (vue3 equivalent): open a column-resize session
    * for `colId`. Reads the current resolved width from the latest
    * layout as the baseWidth. Silent no-op when the column doesn't
    * exist, has `resizable: false`, or another resize is already in
@@ -387,28 +387,28 @@ export interface TableHandle {
    */
   startResizingColumn(colId: string): void;
   /**
-   * Phase 54: commit the in-flight resize. No-op when no resize is in
+   * commit the in-flight resize. No-op when no resize is in
    * progress. Fires `onColumnWidthChange` iff `draftWidth !==
-   * baseWidth` (no-op dedup matches Phase 53's `onCellValueChange`
+   * baseWidth` (no-op dedup matches `onCellValueChange`
    * rule); always fires `onColumnResizeStop {committed: true}`.
    * Clears `resizingColumn` state.
    */
   commitColumnResize(): void;
   /**
-   * Phase 54: cancel the in-flight resize (revert to baseWidth).
+   * cancel the in-flight resize (revert to baseWidth).
    * No-op when no resize is in progress. Fires `onColumnResizeStop
    * {committed: false}` only. No `onColumnWidthChange` callback.
    */
   cancelColumnResize(): void;
   /**
-   * Phase 54: read the current `ColumnResizing` state, or `null` when
+   * read the current `ColumnResizing` state, or `null` when
    * no resize is in progress. Consumers should treat the returned
    * object as immutable — every `applyResizeDraft` call swaps in a
    * new `ColumnResizing` object (immutable mutation).
    */
   getResizingColumn(): ColumnResizing | null;
   /**
-   * Phase 56 (2026-05-26 — react port of vue3 Phase 14): open a
+   * (2026-05-26 — react port of vue3): open a
    * column-move session for `colId` programmatically. Bypasses the
    * 5px pointer-down threshold. Silent no-op when column doesn't
    * exist, is `reorderable: false`, or another move is in flight.
@@ -416,59 +416,59 @@ export interface TableHandle {
    */
   startMovingColumn(colId: string): void;
   /**
-   * Phase 56: commit the in-flight move at `(targetColId, position)`.
+   * commit the in-flight move at `(targetColId, position)`.
    * Fires `onColumnOrderChange` iff the resulting column array differs
    * (no-op dedup); always fires `onColumnMoveStop {committed: true}`.
    * No-op when no move is in progress.
    */
   commitColumnMove(targetColId: string, position: 'before' | 'after'): void;
   /**
-   * Phase 56: cancel the in-flight move. No-op when no move is in
+   * cancel the in-flight move. No-op when no move is in
    * progress. Fires `onColumnMoveStop {committed: false}`. No
    * `onColumnOrderChange` callback.
    */
   cancelColumnMove(): void;
   /**
-   * Phase 56: read the current move state. Returns `null` when no
+   * read the current move state. Returns `null` when no
    * move is active.
    */
   getMovingColumn(): ColumnMoving | null;
-  /** Phase 44 (react port). */
+  /** (react port). */
   startMovingRow(rowId: string): void;
-  /** Phase 44 (react port). */
+  /** (react port). */
   commitRowMove(targetRowId: string, position: 'above' | 'below'): void;
-  /** Phase 44 (react port). */
+  /** (react port). */
   cancelRowMove(): void;
-  /** Phase 44 (react port). */
+  /** (react port). */
   getMovingRow(): RowMoving | null;
-  /** Phase 45 (2026-05-29 — react port). Verbatim mirror of vue3. */
+  /** (2026-05-29 — react port). Verbatim mirror of vue3. */
   refreshServerSideRows(): void;
   /**
-   * Phase 45.2 (2026-05-30 — react port): partial cache invalidation.
+   * (2026-05-30 — react port): partial cache invalidation.
    * Verbatim mirror of vue3 + vue2.
    */
   invalidateServerSideBlocks(blockIndices: readonly number[]): void;
-  /** Phase 45 (2026-05-29 — react port). Verbatim mirror of vue3. */
+  /** (2026-05-29 — react port). Verbatim mirror of vue3. */
   getServerSideTotalRowCount(): number;
-  /** Phase 45 (2026-05-29 — react port). Verbatim mirror of vue3. */
+  /** (2026-05-29 — react port). Verbatim mirror of vue3. */
   getServerSideBlockState(blockIndex: number): BlockState;
-  /** Phase 80 (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** (2026-05-30 — react port). Verbatim mirror of vue3. */
   openToolPanel(id: string): void;
-  /** Phase 80 (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** (2026-05-30 — react port). Verbatim mirror of vue3. */
   closeToolPanel(): void;
-  /** Phase 80 (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** (2026-05-30 — react port). Verbatim mirror of vue3. */
   getActiveToolPanelId(): string | null;
-  /** Phase 83-A (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
   openColumnHeaderMenu(colId: string): void;
-  /** Phase 83-A (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
   closeColumnHeaderMenu(): void;
-  /** Phase 83-A (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
   getOpenColumnHeaderMenuColId(): string | null;
-  /** Phase 83-B (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
   openContextMenuAt(rowId: string | null, colId: string | null, x: number, y: number): void;
-  /** Phase 83-B (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
   closeContextMenu(): void;
-  /** Phase 83-B (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
   getOpenContextMenuPosition(): {
     readonly rowId: string | null;
     readonly colId: string | null;
@@ -476,33 +476,33 @@ export interface TableHandle {
     readonly y: number;
   } | null;
   /**
-   * Phase 99.2 (2026-05-31 — react port): open the cell style editor
+   * (2026-05-31 — react port): open the cell style editor
    * popover. Verbatim mirror of vue3 method. No-op when
    * `enableCellStyleEditor` SFC prop is `false`.
    */
   openCellStyleEditor(rowId: string, colId: string): void;
   /**
-   * Phase 58 (2026-05-26 — react port of vue3 Phase 15): autosize a
+   * (2026-05-26 — react port of vue3): autosize a
    * single column to fit its widest cell content (and header label).
    * Measures every body cell in `pagedRows` via `Canvas.measureText`,
    * takes the max + header width, adds `theme.cellPaddingX * 2`
    * padding, and clamps to the column's `[minWidth, maxWidth]` bounds
    * via `computeAutosizeWidth`. Fires `onColumnWidthChange` iff the
    * new width differs from the current resolved width (no-op dedup
-   * matches Phase 54). Silent no-op when the column doesn't exist,
+   * matches). Silent no-op when the column doesn't exist,
    * is `resizable: false` (cannot mutate width), or is
    * `autosizeable: false` (explicit opt-out).
    */
   autosizeColumn(colId: string): void;
   /**
-   * Phase 58: autosize every visible column. Equivalent to calling
+   * autosize every visible column. Equivalent to calling
    * `autosizeColumn(id)` for each visible column id in display order
    * — fires N `onColumnWidthChange` callbacks (one per column whose
    * autosized width actually differs from its current width).
    */
   autosizeAllColumns(): void;
   /**
-   * Phase 60 (2026-05-26 — react port of vue3 Phase 16): programmatically
+   * (2026-05-26 — react port of vue3): programmatically
    * open / extend / clear the cell-range. Passing a `CellRange` with
    * `focus === anchor` opens a single-cell range; with `focus !== anchor`
    * opens the range AND immediately extends focus (fires onCellRangeStart
@@ -511,18 +511,18 @@ export interface TableHandle {
    */
   setCellRange(range: CellRange | null): void;
   /**
-   * Phase 60: clear the active cell-range. Fires onCellRangeStop with
+   * clear the active cell-range. Fires onCellRangeStop with
    * the last-known envelope so observers can react to the clear. No-op
    * when no range is active OR `cellRangeSelection !== 'enabled'`.
    */
   clearCellRange(): void;
   /**
-   * Phase 60: read the current cell-range as the canonical 2-point
+   * read the current cell-range as the canonical 2-point
    * form `{anchor, focus}`. Returns `null` when no range is active.
    */
   getCellRange(): CellRange | null;
   /**
-   * Phase 64 (2026-05-27 — react port of vue3 Phase 19): synthesize a
+   * (2026-05-27 — react port of vue3): synthesize a
    * TSV string over the active cell-range envelope + write it to
    * `navigator.clipboard`. Mirrors the Ctrl+C keyboard path so
    * consumers can drive the same flow without a real keyboard event.
@@ -535,7 +535,7 @@ export interface TableHandle {
    */
   copyCellRangeToClipboard(): Promise<string | null>;
   /**
-   * Phase 66 (2026-05-27 — react port of vue3 Phase 20): read TSV
+   * (2026-05-27 — react port of vue3): read TSV
    * from `navigator.clipboard` → parse → map against active
    * cell-range envelope (1×1 fill-all + N×M clamp-overflow per
    * Decision A.1) → coerce per `column.type` via
@@ -548,7 +548,7 @@ export interface TableHandle {
    */
   pasteCellRangeFromClipboard(): Promise<readonly PasteMutation[] | null>;
   /**
-   * Phase 68 (2026-05-27 — react port of vue3 Phase 21): programmatic
+   * (2026-05-27 — react port of vue3): programmatic
    * drag-fill commit. Extends the active cell-range envelope to include
    * `targetCell` (axis-locked per Decision A.1), computes the constant-
    * fill mutations via `computeDragFillMutations`, fires `onCellRangeFill`
@@ -563,71 +563,71 @@ export interface TableHandle {
    */
   fillCellRange(targetCell: CellRef): readonly PasteMutation[] | null;
   /**
-   * Phase 70 (2026-05-27 — react port of vue3 Phase 22): pop newest
+   * (2026-05-27 — react port of vue3): pop newest
    * `past` entry + fire `onHistoryReplay` with the REVERSED batch.
    * Returns `true` if a batch was undone, `false` on no-op or when
    * `enableUndoHistory !== true`.
    */
   undo(): boolean;
-  /** Phase 70: pop newest `future` + fire `onHistoryReplay` with the ORIGINAL batch. */
+  /** pop newest `future` + fire `onHistoryReplay` with the ORIGINAL batch. */
   redo(): boolean;
-  /** Phase 70: `true` when the next `undo()` would do something. */
+  /** `true` when the next `undo()` would do something. */
   canUndo(): boolean;
-  /** Phase 70: `true` when the next `redo()` would do something. */
+  /** `true` when the next `redo()` would do something. */
   canRedo(): boolean;
-  /** Phase 70: reset internal mutation history to `EMPTY_MUTATION_HISTORY` + fire `onHistoryChange`. */
+  /** reset internal mutation history to `EMPTY_MUTATION_HISTORY` + fire `onHistoryChange`. */
   clearHistory(): void;
-  /** Phase 70: read the current internal `{past, future}` state. */
+  /** read the current internal `{past, future}` state. */
   getHistory(): MutationHistoryState;
-  /** Phase 70: manually append a custom batch to the history. No-op when `enableUndoHistory !== true`. */
+  /** manually append a custom batch to the history. No-op when `enableUndoHistory !== true`. */
   recordMutationBatch(batch: MutationBatch): void;
   /**
-   * Phase 76 (2026-05-27 — react port of vue3 Phase 25): programmatic
+   * (2026-05-27 — react port of vue3): programmatic
    * equivalent of the column-visibility-menu checkbox click. Fires
    * `onColumnVisibilityChange` with `{column, hidden, jsEvent: null}`;
    * honors "at least one column visible" guard per Decision C.1.
    * Emit-only persistence per A.1.
    */
   setColumnVisibility(colId: string, hidden: boolean): void;
-  /** Phase 76 (react port): convenience for toggling a column's `hide` state. */
+  /** (react port): convenience for toggling a column's `hide` state. */
   toggleColumnVisibility(colId: string): void;
   /**
-   * Phase 76 (2026-05-28 — react port of vue3 Phase 26): read the
+   * (2026-05-28 — react port of vue3): read the
    * current keyboard-driven active cell. Returns null when no cell is
    * active.
    */
   getActiveCell(): CellRef | null;
   /**
-   * Phase 76 (react port): programmatically set the active cell. Fires
+   * (react port): programmatically set the active cell. Fires
    * `onActiveCellChange` on transition (dedup).
    */
   setActiveCell(rowId: string, colId: string): void;
   /**
-   * Phase 76 (react port): programmatically clear the active cell.
+   * (react port): programmatically clear the active cell.
    */
   clearActiveCell(): void;
   /**
-   * Phase 30.2 (react port, 2026-05-28): programmatically expand a
+   * (react port, 2026-05-28): programmatically expand a
    * tree row. No-op when already expanded or has no children. Fires
    * `onExpandedChange` on transition.
    */
   expandRow(rowId: string): void;
   /**
-   * Phase 30.2 (react port, 2026-05-28): programmatically collapse a
+   * (react port, 2026-05-28): programmatically collapse a
    * tree row. No-op when already collapsed or has no children. Fires
    * `onExpandedChange` on transition.
    */
   collapseRow(rowId: string): void;
-  /** Phase 34 (2026-05-28 — react port): get lazy-load status for a row. */
+  /** (2026-05-28 — react port): get lazy-load status for a row. */
   getLazyChildrenState(rowId: string): LazyChildrenStatus | 'idle';
-  /** Phase 34 (2026-05-28 — react port): get cached lazy children for a row. */
+  /** (2026-05-28 — react port): get cached lazy children for a row. */
   getLazyChildren(rowId: string): readonly RowSpec[] | null;
-  /** Phase 34 (2026-05-28 — react port): drop the lazy state entry for a row (or all rows). */
+  /** (2026-05-28 — react port): drop the lazy state entry for a row (or all rows). */
   invalidateLazyChildren(rowId?: string): void;
-  /** Phase 35 (2026-05-28 — react port): export rows + columns to CSV via browser download. */
+  /** (2026-05-28 — react port): export rows + columns to CSV via browser download. */
   exportToCsv(filename: string, options?: TableHandleExportToCsvOptions): void;
   /**
-   * Phase 39 (2026-05-29 — react port): serialize the current rows +
+   * (2026-05-29 — react port): serialize the current rows +
    * columns into an XLSX `ArrayBuffer` and trigger a browser download.
    * Async — returns `Promise<void>` that resolves after the anchor
    * click fires. Throws when `exceljs` is not installed (optional peer
@@ -635,72 +635,72 @@ export interface TableHandle {
    */
   exportToXlsx(filename: string, options?: TableHandleExportToXlsxOptions): Promise<void>;
   /**
-   * Phase 39.1 (2026-05-29 — react port): produce a multi-sheet .xlsx
-   * workbook in one call. Verbatim mirror of vue3 Phase 39.1 method.
+   * (2026-05-29 — react port): produce a multi-sheet .xlsx
+   * workbook in one call. Verbatim mirror of vue3 method.
    */
   exportToXlsxMultiSheet(filename: string, sheets: readonly AdapterXlsxSheetSpec[]): Promise<void>;
   /**
-   * Phase 115 (2026-06-02 — react port): snapshot of every invalid
-   * cell. Verbatim mirror of vue3 Phase 115.
+   * (2026-06-02 — react port): snapshot of every invalid
+   * cell. Verbatim mirror of vue3 .
    */
   getInvalidCells(): readonly InvalidCellEntry[];
   /**
-   * Phase 117.1 (2026-06-02 — react port): read the multi-filter
+   * (2026-06-02 — react port): read the multi-filter
    * entry at the given path. Empty path throws.
    */
   getMultiFilterEntryAtPath(colId: string, path: readonly number[]): MultiFilterEntry | null;
   /**
-   * Phase 117.1 (2026-06-02 — react port): immutable replace of the
+   * (2026-06-02 — react port): immutable replace of the
    * multi-filter entry at the given path. Empty path throws.
    */
   setMultiFilterEntryAtPath(colId: string, path: readonly number[], next: MultiFilterEntry): void;
   /**
-   * Phase 117.1 (2026-06-02 — react port): splice out the
+   * (2026-06-02 — react port): splice out the
    * multi-filter entry at the given path. Empty path throws.
    */
   removeMultiFilterEntryAtPath(colId: string, path: readonly number[]): void;
   /**
-   * Phase 38 (2026-05-29 — react port): project the current `(columns,
+   * (2026-05-29 — react port): project the current `(columns,
    * sort, filter, page, pageSize)` state into a JSON-serializable
-   * `TableViewState` snapshot. Verbatim mirror of vue3 Phase 38.
+   * `TableViewState` snapshot. Verbatim mirror of vue3 .
    */
   getTableView(): TableViewState;
   /**
-   * Phase 38 (2026-05-29 — react port): reconcile a saved
+   * (2026-05-29 — react port): reconcile a saved
    * `TableViewState` against the current `columns` prop + dispatch to
    * 4 setters + invoke `onColumnsChange` once with the reconciled
    * array. Foreign / unknown `version` inputs no-op silently. Verbatim
-   * mirror of vue3 Phase 38.
+   * mirror of vue3 .
    */
   applyTableView(state: TableViewState): void;
 }
 
-/** Phase 35 (2026-05-28 — react port): options for `TableHandle.exportToCsv`. */
+/** (2026-05-28 — react port): options for `TableHandle.exportToCsv`. */
 export interface TableHandleExportToCsvOptions {
   readonly rowSource?: 'all' | 'visible' | 'filtered' | 'selected';
   readonly visibleColumnsOnly?: boolean;
   readonly csvOptions?: ExportToCsvOptions;
 }
 
-/** Phase 39 (2026-05-29 — react port): options for `TableHandle.exportToXlsx`. */
+/** (2026-05-29 — react port): options for `TableHandle.exportToXlsx`. */
 export interface TableHandleExportToXlsxOptions {
   readonly rowSource?: 'all' | 'visible' | 'filtered' | 'selected';
   readonly visibleColumnsOnly?: boolean;
   readonly xlsxOptions?: ExportToXlsxOptions;
 }
 
-/** Phase 39.1 (2026-05-29 — react port): per-sheet spec for `exportToXlsxMultiSheet`. */
+/** (2026-05-29 — react port): per-sheet spec for `exportToXlsxMultiSheet`. */
 export interface AdapterXlsxSheetSpec {
   readonly sheetName: string;
   readonly rowSource?: 'all' | 'visible' | 'filtered' | 'selected';
   readonly columnIds?: readonly string[];
   readonly includeHeaders?: boolean;
-  /** Phase 39.3 (2026-05-29 — react port): per-sheet xlsx-level options (e.g. freezePane). */
+  /** (2026-05-29 — react port): per-sheet xlsx-level options (e.g. freezePane). */
   readonly xlsxOptions?: ExportToXlsxOptions;
 }
 
 /**
- * Phase 48.1 (2026-05-25): payload for the `onCellClick` callback.
+ * payload for the `onCellClick` callback.
  * Fires when a body cell receives a primary-button click. `value` is
  * the post-`valueGetter` cell value (the same value `valueFormatter`
  * / `cellClass` would see during render).
@@ -712,26 +712,26 @@ export interface CellClickPayload {
   readonly jsEvent: ReactMouseEvent;
 }
 
-/** Phase 48.1: payload for the `onRowClick` callback. */
+/** payload for the `onRowClick` callback. */
 export interface RowClickPayload {
   readonly row: RowSpec;
   readonly jsEvent: ReactMouseEvent;
 }
 
-/** Phase 48.1: payload for the `onRowMouseenter` callback. */
+/** payload for the `onRowMouseenter` callback. */
 export interface RowMouseenterPayload {
   readonly row: RowSpec;
   readonly jsEvent: ReactPointerEvent;
 }
 
-/** Phase 48.1: payload for the `onRowMouseleave` callback. */
+/** payload for the `onRowMouseleave` callback. */
 export interface RowMouseleavePayload {
   readonly row: RowSpec;
   readonly jsEvent: ReactPointerEvent;
 }
 
 /**
- * Phase 48.1 (2026-05-25): payload for the `onHeaderClick` callback.
+ * payload for the `onHeaderClick` callback.
  * Fires when a header cell receives a primary-button click.
  */
 export interface HeaderClickPayload {
@@ -740,12 +740,12 @@ export interface HeaderClickPayload {
 }
 
 /**
- * Phase 72 (2026-05-27): payload for the `onHeaderGroupClick` callback.
+ * payload for the `onHeaderGroupClick` callback.
  * Fires when a labelled column-group cell in the second header row
  * receives a primary-button click. Empty placeholder spans (un-grouped
  * columns when ANY column declares `headerGroup`) do NOT emit — they
  * have no `data-group-name` attr for the delegate to resolve.
- * Verbatim port of vue3 Phase 23's `HeaderGroupClickPayload`.
+ * Verbatim port of vue3 `HeaderGroupClickPayload`.
  */
 export interface HeaderGroupClickPayload {
   readonly groupName: string;
@@ -754,7 +754,7 @@ export interface HeaderGroupClickPayload {
 }
 
 /**
- * Phase 48.1: payload for the `onEmptyAreaClick` callback. Fires
+ * payload for the `onEmptyAreaClick` callback. Fires
  * when a body click lands inside `.cx-table-body-content` but NOT
  * on any row (e.g., in padding when the body height exceeds
  * totalBodyHeight). Mutually exclusive with `onRowClick` /
@@ -764,7 +764,7 @@ export interface EmptyAreaClickPayload {
   readonly jsEvent: ReactMouseEvent;
 }
 
-/** Phase 48.1: payload for the `onCellDblclick` callback. */
+/** payload for the `onCellDblclick` callback. */
 export interface CellDblclickPayload {
   readonly row: RowSpec;
   readonly column: ColumnSpec;
@@ -772,14 +772,14 @@ export interface CellDblclickPayload {
   readonly jsEvent: ReactMouseEvent;
 }
 
-/** Phase 48.1: payload for the `onRowDblclick` callback. */
+/** payload for the `onRowDblclick` callback. */
 export interface RowDblclickPayload {
   readonly row: RowSpec;
   readonly jsEvent: ReactMouseEvent;
 }
 
 /**
- * Phase 49 + 49.1 (2026-05-25): payload for the `onSortChange`
+ * + 49.1 (2026-05-25): payload for the `onSortChange`
  * callback. Fires every time the internal sort state transitions —
  * including transitions back to `[]` (sort cleared) and to / from a
  * multi-column lex-order arrangement. Consumers can mirror `sortSpec`
@@ -790,7 +790,7 @@ export interface SortChangePayload {
 }
 
 /**
- * Phase 50 (2026-05-25): payload for the `onFilterChange` callback.
+ * payload for the `onFilterChange` callback.
  * Fires every time the internal filter state transitions — including
  * transitions back to `[]` (filter cleared) and per-keystroke when
  * the consumer types into a `showFilterRow` input. Consumers can
@@ -801,20 +801,20 @@ export interface FilterChangePayload {
 }
 
 /**
- * Phase 41 (2026-05-29 — react port): payload for the
+ * (2026-05-29 — react port): payload for the
  * `onQuickFindTextChange` callback. Fires every time the internal
  * quick-find needle transitions — including transitions back to `''`
  * (cleared) and per-keystroke when the consumer calls
  * `setQuickFindText` from a controlled input. Consumers can mirror
  * `quickFindText` into external state without a controlled prop.
- * Verbatim port of vue3 Phase 41's `QuickFindTextChangePayload`.
+ * Verbatim port of vue3 `QuickFindTextChangePayload`.
  */
 export interface QuickFindTextChangePayload {
   readonly quickFindText: string;
 }
 
 /**
- * Phase 51 (2026-05-25): payload for the `onSelectionChange`
+ * payload for the `onSelectionChange`
  * callback. Fires every time the internal selection state
  * transitions — single select, multi-select toggle, clear,
  * programmatic setSelectedRowIds, etc. `selectedRowIds` is the full
@@ -826,7 +826,7 @@ export interface SelectionChangePayload {
 }
 
 /**
- * Phase 51.1 (2026-05-25): opt-in selection column config. When
+ * opt-in selection column config. When
  * `show: true`, the SFC renders an independent rail of
  * `<input type="checkbox">` cells before (`side: 'left'`) or after
  * (`side: 'right'`) the column-driven body. The rail sits outside
@@ -840,7 +840,7 @@ export interface SelectionColumnConfig {
 }
 
 /**
- * Phase 52 (2026-05-26): payload for the `onPageChange` callback.
+ * payload for the `onPageChange` callback.
  * Fires on every transition of the internal `(page, pageSize)` tuple
  * — `setPage`, `setPageSize`, the footer `«` / `»` buttons + size
  * `<select>` + page-number bar clicks. `page` is 0-based; `pageSize`
@@ -853,7 +853,7 @@ export interface PageChangePayload {
 }
 
 /**
- * Phase 60 (2026-05-26 — react port of vue3 Phase 16): payload for
+ * (2026-05-26 — react port of vue3): payload for
  * `onCellRangeStart` — fires when a cell-range session opens
  * (pointerdown on a body cell with `cellRangeSelection === 'enabled'`
  * OR programmatic `setCellRange`). `jsEvent` is `null` for the
@@ -865,7 +865,7 @@ export interface CellRangeStartPayload {
 }
 
 /**
- * Phase 60: payload for `onCellRangeChange` — fires on every pointer
+ * payload for `onCellRangeChange` — fires on every pointer
  * move that resolves a NEW cell under the cursor, AND on shift+click
  * extend, AND on programmatic `setCellRange` with asymmetric anchor +
  * focus. Carries both 2-point form + resolved envelope.
@@ -877,7 +877,7 @@ export interface CellRangeChangePayload {
 }
 
 /**
- * Phase 60: payload for `onCellRangeStop` — fires on pointerup that
+ * payload for `onCellRangeStop` — fires on pointerup that
  * commits a drag-extend, on shift+click that commits, and on
  * programmatic `clearCellRange()`. Range stays in state after stop
  * until cleared or replaced.
@@ -889,7 +889,7 @@ export interface CellRangeStopPayload {
 }
 
 /**
- * Phase 66 (2026-05-27 — react port of vue3 Phase 20): payload for
+ * (2026-05-27 — react port of vue3): payload for
  * `onCellRangePaste` — fires when the user presses Ctrl+V (Win/Linux)
  * / Cmd+V (macOS) over a focused body element with
  * `cellRangeSelection === 'enabled'` AND an active non-empty range,
@@ -902,7 +902,7 @@ export interface CellRangeStopPayload {
  * The `mutations` array contains ONLY cells that actually changed
  * (no-op dedup against current value) AND cells that successfully
  * coerced via `coerceEditDraftValue` (rejected cells silently
- * skipped — matches Phase 12.1 / 53.1 reject-and-keep semantic).
+ * skipped — matches reject-and-keep semantic).
  */
 export interface CellRangePastePayload {
   readonly envelope: CellRangeEnvelope;
@@ -912,7 +912,7 @@ export interface CellRangePastePayload {
 }
 
 /**
- * Phase 64 (2026-05-27 — react port of vue3 Phase 19): payload for
+ * (2026-05-27 — react port of vue3): payload for
  * `onCellRangeCopy` — fires when the user presses Ctrl+C (Win/Linux)
  * / Cmd+C (macOS) over a focused body element with
  * `cellRangeSelection === 'enabled'` AND an active non-empty range,
@@ -928,7 +928,7 @@ export interface CellRangeCopyPayload {
 }
 
 /**
- * Phase 68 (2026-05-27 — react port of vue3 Phase 21): payload for
+ * (2026-05-27 — react port of vue3): payload for
  * `onCellRangeFillStart` — fires once at pointerdown on the drag-fill
  * handle. The `source` field captures the envelope at the moment the
  * drag began; subsequent fill-change + fill callback invocations
@@ -941,7 +941,7 @@ export interface CellRangeFillStartPayload {
 }
 
 /**
- * Phase 68: payload for `onCellRangeFillChange` — fires on every
+ * payload for `onCellRangeFillChange` — fires on every
  * pointermove that resolves a NEW preview envelope (`fill !==
  * previous`). Used by consumers for live preview UI.
  */
@@ -952,10 +952,10 @@ export interface CellRangeFillChangePayload {
 }
 
 /**
- * Phase 68: payload for `onCellRangeFill` — fires once at pointerup
+ * payload for `onCellRangeFill` — fires once at pointerup
  * (drag commit) OR at programmatic `fillCellRange(targetCell)`. The
  * `mutations` array mirrors `CellRangePastePayload`'s shape so
- * consumers can reuse Phase 53 / Phase 66 batch-apply handler code.
+ * consumers can reuse batch-apply handler code.
  * Source cells (in `source ∩ fill`) are NEVER emitted — drag-fill is
  * EXTENSION-only per Decision B.1.
  */
@@ -967,7 +967,7 @@ export interface CellRangeFillPayload {
 }
 
 /**
- * Phase 70 (2026-05-27 — react port of vue3 Phase 22): payload for
+ * (2026-05-27 — react port of vue3): payload for
  * `onHistoryReplay` — fires when Ctrl+Z (undo) / Ctrl+Y / Ctrl+Shift+Z
  * (redo) replays a recorded mutation batch OR programmatic `undo()` /
  * `redo()`. `jsEvent` is `null` for the programmatic path.
@@ -990,7 +990,7 @@ export interface HistoryReplayPayload {
 }
 
 /**
- * Phase 70: payload for `onHistoryChange` — fires every time the
+ * payload for `onHistoryChange` — fires every time the
  * internal `mutationHistoryRef` transitions. Consumers use this to
  * update undo / redo button-disabled states + display history counts.
  */
@@ -999,12 +999,12 @@ export interface HistoryChangePayload {
 }
 
 /**
- * Phase 53 (2026-05-26): in-flight edit state. `rowId` + `colId`
+ * in-flight edit state. `rowId` + `colId`
  * identify the cell; `baseValue` is the original value the editor
  * opened against (sourced via `getCellValue`); `draftValue` is the
  * editor `<input>.value` parsed back through `editorDraftToString`
  * for display + through `coerceEditDraftValue` at commit time
- * (Phase 53.1). Consumers MUST treat this as immutable — every
+ * . Consumers MUST treat this as immutable — every
  * `applyEditDraft` call replaces the object reference.
  */
 export interface EditingCell {
@@ -1015,7 +1015,7 @@ export interface EditingCell {
 }
 
 /**
- * Phase 53 (2026-05-26): payload for the `onCellEditStart` callback.
+ * payload for the `onCellEditStart` callback.
  * Fires when the user (or programmatic `startEditingCell`) opens an
  * editor on an `editable: true` column's cell. `baseValue` is the
  * pre-edit cell value; `draftValue` starts at the formatted display
@@ -1031,7 +1031,7 @@ export interface CellEditStartPayload {
 }
 
 /**
- * Phase 53 (2026-05-26): payload for the `onCellEditStop` callback.
+ * payload for the `onCellEditStop` callback.
  * Fires on every commit-attempt resolution — success / cancel /
  * rejection. Three observable outcomes (disambiguated by combining
  * `committed` + an immediate `getEditingCell()` read after the emit):
@@ -1043,14 +1043,14 @@ export interface CellEditStartPayload {
  * - Cancel: `committed: false`, `finalValue` = baseValue. Edit
  *   session ENDS. No `cell-value-change` emit. `getEditingCell()`
  *   returns null.
- * - Phase 53.1 rejection (invalid input for a typed column —
+ *.1 rejection (invalid input for a typed column —
  *   `coerceEditDraftValue` returned `{ok: false}`): `committed:
  *   false`, `finalValue` = baseValue. Edit session does NOT end —
  *   editor stays on the bad cell + draftValue is preserved in the
  *   input. No `cell-value-change` emit. `getEditingCell()` returns
  *   non-null. Consumers can render rejection feedback (e.g. a red
  *   outline) without losing the user's typed input.
- * - Phase 101 (2026-06-01) validator rejection: coerce succeeded
+ * - validator rejection: coerce succeeded
  *   but `column.validator(coercedValue, row)` returned a non-null
  *   result. `committed: false`, `finalValue` = baseValue,
  *   `validationError` populated with the normalised
@@ -1066,16 +1066,16 @@ export interface CellEditStopPayload {
   readonly committed: boolean;
   readonly finalValue: unknown;
   /**
-   * Phase 101 / Phase 111 (2026-06-01): populated only when the
+   * populated only when the
    * commit was rejected by `column.validator` (sync) or
-   * `column.validatorAsync` (Phase 111). Absent for commit-success,
+   * `column.validatorAsync` . Absent for commit-success,
    * cancel, and coerce-rejected outcomes.
    */
   readonly validationError?: EditValidationError;
 }
 
 /**
- * Phase 111 (2026-06-01 — react port): payload for the
+ * (2026-06-01 — react port): payload for the
  * `onCellEditValidationPending` callback. Verbatim mirror of vue3.
  */
 export interface CellEditValidationPendingPayload {
@@ -1085,8 +1085,8 @@ export interface CellEditValidationPendingPayload {
 }
 
 /**
- * Phase 115 (2026-06-02 — react port): invalid-cell record. Mirrors
- * vue3 Phase 115 `InvalidCellEntry` shape.
+ * (2026-06-02 — react port): invalid-cell record. Mirrors
+ * vue3 `InvalidCellEntry` shape.
  */
 export interface InvalidCellEntry {
   readonly rowId: string;
@@ -1095,8 +1095,8 @@ export interface InvalidCellEntry {
 }
 
 /**
- * Phase 115 (2026-06-02 — react port): payload for `onInvalidCellsChange`.
- * Verbatim mirror of vue3 Phase 115.
+ * (2026-06-02 — react port): payload for `onInvalidCellsChange`.
+ * Verbatim mirror of vue3 .
  */
 export interface InvalidCellsChangePayload {
   readonly entries: readonly InvalidCellEntry[];
@@ -1104,24 +1104,24 @@ export interface InvalidCellsChangePayload {
 }
 
 /**
- * Phase 116 (2026-06-02 — react port): args for the
+ * (2026-06-02 — react port): args for the
  * `multiFilterChildRenderer` slot prop. Verbatim mirror of vue3
- * Phase 116. Consumer's renderer returns `ReactNode | null`.
+ * . Consumer's renderer returns `ReactNode | null`.
  */
 export interface MultiFilterChildRendererArgs {
   readonly column: ColumnSpec;
   readonly slotIdx: number;
   readonly slotKind: 'text' | 'number' | 'set';
-  /** Phase 117 (2026-06-02 — react port): widened to MultiFilterEntry. */
+  /** (2026-06-02 — react port): widened to MultiFilterEntry. */
   readonly child: MultiFilterEntry;
   readonly setChildValue: (next: MultiFilterEntry) => void;
 }
 
 /**
- * Phase 114 (2026-06-02 — react port): payload for
+ * (2026-06-02 — react port): payload for
  * `onAddMultiFilterSlot`. Verbatim mirror of vue3.
  *
- * Phase 117.1 (2026-06-02 — react port): extended with optional
+ * (2026-06-02 — react port): extended with optional
  * `path?: readonly number[]` so group-aware consumers can route
  * the add to a nested group (Decision D.1).
  */
@@ -1132,10 +1132,10 @@ export interface AddMultiFilterSlotPayload {
 }
 
 /**
- * Phase 114 (2026-06-02 — react port): payload for
+ * (2026-06-02 — react port): payload for
  * `onRemoveMultiFilterSlot`. Verbatim mirror of vue3.
  *
- * Phase 117.1: extended with optional `path?: readonly number[]`
+ * extended with optional `path?: readonly number[]`
  * carrying the parent-group path.
  */
 export interface RemoveMultiFilterSlotPayload {
@@ -1145,7 +1145,7 @@ export interface RemoveMultiFilterSlotPayload {
 }
 
 /**
- * Phase 117.1 (2026-06-02 — react port): payload for the NEW
+ * (2026-06-02 — react port): payload for the NEW
  * `onAddMultiFilterGroup` callback (Decision D.1). `path` is
  * required — every group add specifies its parent-group location
  * (root = `[]`).
@@ -1156,7 +1156,7 @@ export interface AddMultiFilterGroupPayload {
 }
 
 /**
- * Phase 117.1 (2026-06-02 — react port): payload for the NEW
+ * (2026-06-02 — react port): payload for the NEW
  * `onRemoveMultiFilterGroup` callback. `path` points at the GROUP
  * entry itself.
  */
@@ -1166,13 +1166,13 @@ export interface RemoveMultiFilterGroupPayload {
 }
 
 /**
- * Phase 53 (2026-05-26): payload for the `onCellValueChange` callback.
+ * payload for the `onCellValueChange` callback.
  * Fires AFTER a successful commit iff `coerceEditDraftValue` returned
  * a value !== baseValue. `oldValue` = baseValue captured at
- * `cell-edit-start`; `newValue` is the committed (Phase 53.1
+ * `cell-edit-start`; `newValue` is the committed (
  * coerced) draft.
  *
- * Phase 53.1 (vue3 Phase 12.1): for `column.type === 'number'`
+ * (vue3): for `column.type === 'number'`
  * columns, `newValue` is the coerced typed value (`number | null`),
  * not the raw string from the `<input>` element. Coercion happens
  * inside `applyEditCommit` via `coerceEditDraftValue` BEFORE this
@@ -1186,7 +1186,7 @@ export interface CellValueChangePayload {
 }
 
 /**
- * Phase 99.2.4 (2026-06-01 — react port): per-cell style override
+ * (2026-06-01 — react port): per-cell style override
  * shape. Verbatim mirror of vue3 + vue2 `CellStyle` interface; 9
  * optional axis fields; each cell can carry any combination.
  */
@@ -1200,7 +1200,7 @@ export interface CellStyle {
   readonly borderWidth?: string;
   readonly borderStyle?: string;
   readonly borderRadius?: string;
-  // Phase 99.2.3.1 (2026-06-01 — react port): 12 per-side border
+  // (2026-06-01 — react port): 12 per-side border
   // override fields. Verbatim mirror of vue3.
   readonly borderTopColor?: string;
   readonly borderTopWidth?: string;
@@ -1216,7 +1216,7 @@ export interface CellStyle {
   readonly borderLeftStyle?: string;
 }
 
-// Phase 99.2.3.1 (2026-06-01 — react port): internal mutable variant
+// (2026-06-01 — react port): internal mutable variant
 // of CellStyle. Verbatim mirror of vue3.
 interface CellStyleEntry {
   backgroundColor?: string;
@@ -1243,7 +1243,7 @@ interface CellStyleEntry {
 }
 
 /**
- * Phase 99.2.5 (2026-06-01 — react port): built-in default for the
+ * (2026-06-01 — react port): built-in default for the
  * `cellStylePresetColors` SFC prop. Verbatim mirror of vue3 + vue2.
  */
 export const CELL_STYLE_DEFAULT_PRESET_COLORS: readonly string[] = [
@@ -1264,12 +1264,12 @@ export const CELL_STYLE_DEFAULT_PRESET_COLORS: readonly string[] = [
 const CELL_STYLE_HEX_REGEX = /^#[0-9a-fA-F]{6}$/;
 
 /**
- * Phase 54 (2026-05-26): in-flight column-resize state. Created on
+ * in-flight column-resize state. Created on
  * pointerdown over a header resizer (or via the imperative
  * `startResizingColumn`); updated on every pointermove (immutable
  * mutation — fresh object reference each tick); cleared on pointerup
  * (commit) or pointercancel / lostpointercapture / cancelColumnResize
- * (cancel). `null` when no resize is active. Mirrors the Phase 53
+ * (cancel). `null` when no resize is active. Mirrors the
  * `EditingCell` shape so the architectural pattern stays uniform
  * across write-back surfaces (edit + resize).
  */
@@ -1282,7 +1282,7 @@ export interface ColumnResizing {
 }
 
 /**
- * Phase 54 (2026-05-26): payload for `onColumnResizeStart`. Fires when
+ * payload for `onColumnResizeStart`. Fires when
  * the user presses pointer on the resizer (or `startResizingColumn` is
  * invoked imperatively). `baseWidth` is the resolved pre-drag width
  * from `columnLayoutPass`. `draftWidth` initialises equal to baseWidth
@@ -1295,13 +1295,13 @@ export interface ColumnResizeStartPayload {
 }
 
 /**
- * Phase 54 (2026-05-26): payload for `onColumnResizeStop`. Fires on
+ * payload for `onColumnResizeStop`. Fires on
  * every resize-session end. Two outcomes:
  *
  * - **Commit** (pointerup with a clean release / `commitColumnResize`):
  *   `committed: true`, `finalWidth: draftWidth`. Followed by an
  *   `onColumnWidthChange` callback iff `draftWidth !== baseWidth`
- *   (no-op dedup matches Phase 53's `onCellValueChange` rule).
+ *   (no-op dedup matches `onCellValueChange` rule).
  * - **Cancel** (pointercancel / lostpointercapture /
  *   `cancelColumnResize`): `committed: false`, `finalWidth: baseWidth`.
  *   No `onColumnWidthChange` callback.
@@ -1313,7 +1313,7 @@ export interface ColumnResizeStopPayload {
 }
 
 /**
- * Phase 54 (2026-05-26): payload for `onColumnWidthChange`. Fires on
+ * payload for `onColumnWidthChange`. Fires on
  * commit when `draftWidth !== baseWidth`. `oldWidth` is the pre-drag
  * resolved width; `newWidth` is the clamped (per `clampResizeWidth`)
  * committed width.
@@ -1334,7 +1334,7 @@ export interface ColumnWidthChangePayload {
 }
 
 /**
- * Phase 56 (2026-05-26 — react port of vue3 Phase 14): pending column-
+ * (2026-05-26 — react port of vue3): pending column-
  * move state, set on header-cell pointerdown and held until cursor
  * crosses 5px Chebyshev threshold (promoted to `ColumnMoving`) or
  * pointerup arrives without crossing (cleared — header click → sort
@@ -1348,11 +1348,11 @@ export interface PendingColumnMove {
 }
 
 /**
- * Phase 56: in-flight column-move transaction. Created on threshold-
+ * in-flight column-move transaction. Created on threshold-
  * promotion. Updated on every pointermove (dropTarget + dropLineLeftPx
  * recomputed via getColumnDropTarget). Cleared on pointerup (commit) or
  * pointercancel / lostpointercapture / cancelColumnMove() (cancel).
- * Mirrors Phase 54 ColumnResizing shape.
+ * Mirrors ColumnResizing shape.
  */
 export interface ColumnMoving {
   readonly colId: string;
@@ -1363,7 +1363,7 @@ export interface ColumnMoving {
 }
 
 /**
- * Phase 56: payload for `onColumnMoveStart` callback. Fires when the
+ * payload for `onColumnMoveStart` callback. Fires when the
  * drag crosses the 5px threshold or `startMovingColumn` is called
  * programmatically.
  */
@@ -1373,7 +1373,7 @@ export interface ColumnMoveStartPayload {
 }
 
 /**
- * Phase 56: payload for `onColumnMoveStop`. Fires on every active
+ * payload for `onColumnMoveStop`. Fires on every active
  * move-session end. Commit: `committed: true`, `dropTarget` = resolved
  * target, followed by `onColumnOrderChange` iff reorder is meaningful.
  * Cancel: `committed: false`, `dropTarget` may be null, no
@@ -1386,7 +1386,7 @@ export interface ColumnMoveStopPayload {
 }
 
 /**
- * Phase 56: payload for `onColumnOrderChange`. Fires on commit when
+ * payload for `onColumnOrderChange`. Fires on commit when
  * the drag resolves to a meaningful reorder. Consumers MUST mirror by
  * passing `(movedColumn.id, targetColumn.id, position)` through
  * `computeColumnReorder` to rebuild their `columns` prop (Decision A.1
@@ -1400,20 +1400,20 @@ export interface ColumnOrderChangePayload {
   readonly newColumnIds: readonly string[];
 }
 
-/** Phase 44 (react port). Verbatim mirror of vue3 Phase 44. */
+/** (react port). Verbatim mirror of vue3 . */
 export interface RowDragColumnConfig {
   readonly show: boolean;
   readonly side?: 'left' | 'right';
 }
 
-/** Phase 44.2 (react port). Verbatim mirror of vue3 Phase 44.2. */
+/** (react port). Verbatim mirror of vue3 . */
 export interface RowDragAutoScrollConfig {
   readonly enabled?: boolean;
   readonly triggerZonePx?: number;
   readonly maxVelocityPxPerFrame?: number;
 }
 
-/** Phase 44 (react port). */
+/** (react port). */
 export interface PendingRowMove {
   readonly rowId: string;
   readonly startClientX: number;
@@ -1421,7 +1421,7 @@ export interface PendingRowMove {
   readonly pointerId: number;
 }
 
-/** Phase 44 (react port). */
+/** (react port). */
 export interface RowMoving {
   readonly rowId: string;
   readonly startClientY: number;
@@ -1430,20 +1430,20 @@ export interface RowMoving {
   readonly pointerId: number;
 }
 
-/** Phase 44 (react port). */
+/** (react port). */
 export interface RowMoveStartPayload {
   readonly row: RowSpec;
   readonly startClientY: number;
 }
 
-/** Phase 44 (react port). */
+/** (react port). */
 export interface RowMoveStopPayload {
   readonly row: RowSpec;
   readonly committed: boolean;
   readonly dropTarget: RowDropTarget | null;
 }
 
-/** Phase 44 (react port). */
+/** (react port). */
 export interface RowOrderChangePayload {
   readonly movedRow: RowSpec;
   readonly targetRow: RowSpec;
@@ -1453,7 +1453,7 @@ export interface RowOrderChangePayload {
 }
 
 /**
- * Phase 76 (2026-05-27 — react port of vue3 Phase 25): payload for
+ * (2026-05-27 — react port of vue3): payload for
  * `onColumnVisibilityChange`. Fires when the user toggles a column's
  * checkbox in the visibility menu OR a programmatic
  * `setColumnVisibility` / `toggleColumnVisibility` call runs. Carries
@@ -1468,7 +1468,7 @@ export interface ColumnVisibilityChangePayload {
 }
 
 /**
- * Phase 38 (2026-05-29 — react port of vue3 Phase 38): payload for
+ * (2026-05-29 — react port of vue3): payload for
  * `onColumnsChange` — fires once per `applyTableView()` call after the
  * saved `TableViewState` has been reconciled against the current
  * `columns` prop. Verbatim mirror of vue3 `ColumnsChangePayload`.
@@ -1479,7 +1479,7 @@ export interface ColumnsChangePayload {
 }
 
 /**
- * Phase 76 (2026-05-28 — react port of vue3 Phase 26): payload for
+ * (2026-05-28 — react port of vue3): payload for
  * `onActiveCellChange`. Both `rowId` and `colId` are `null` together
  * when the active cell is cleared (Escape / clearActiveCell). Emit-
  * only; internal-state ownership.
@@ -1491,7 +1491,7 @@ export interface ActiveCellChangePayload {
 }
 
 /**
- * Phase 30.2 (react port, 2026-05-28): payload for the
+ * (react port, 2026-05-28): payload for the
  * `onExpandedChange` callback. Fires on every transition of the
  * tree-data expand state. `next` is the full ordered list of
  * expanded row IDs after the transition.
@@ -1505,26 +1505,26 @@ export interface ExpandedChangePayload {
   readonly next: readonly string[];
 }
 
-/** Phase 34 (2026-05-28 — react port): payload for `onLazyLoadStart`. */
+/** (2026-05-28 — react port): payload for `onLazyLoadStart`. */
 export interface LazyLoadStartPayload {
   readonly parent: RowSpec;
 }
 
-/** Phase 34 (2026-05-28 — react port): payload for `onLazyLoadSuccess`. */
+/** (2026-05-28 — react port): payload for `onLazyLoadSuccess`. */
 export interface LazyLoadSuccessPayload {
   readonly parent: RowSpec;
   readonly children: readonly RowSpec[];
 }
 
-/** Phase 34 (2026-05-28 — react port): payload for `onLazyLoadError`. */
+/** (2026-05-28 — react port): payload for `onLazyLoadError`. */
 export interface LazyLoadErrorPayload {
   readonly parent: RowSpec;
   readonly error: unknown;
 }
 
 /**
- * Phase 48 + 48.1: React props for `<ChronixTable>`. Mirrors the
- * chronix-table-vue3 props surface scoped to Phase 2 + 3 + 4 + 5 +
+ * + 48.1: React props for `<ChronixTable>`. Mirrors the
+ * chronix-table-vue3 props surface scoped + 3 + 4 + 5 +
  * 5.1 + 6 + 7; per-feature phases extend it (sort / filter /
  * selection / pagination / edit / resize props land in their owning
  * sub-phases).
@@ -1544,7 +1544,7 @@ export interface ChronixTableProps {
   readonly rows: readonly RowSpec[];
   /**
    * Partial theme override. Spread over `defaultChronixTableTheme`
-   * at mount time. Phase 6 wires the merged theme into wrapper
+   * at mount time. wires the merged theme into wrapper
    * inline CSS custom properties so descendant CSS can resolve
    * `var(--cx-table-*, fallback)`.
    */
@@ -1559,95 +1559,95 @@ export interface ChronixTableProps {
    */
   readonly onTableReady?: (handle: TableHandle) => void;
   /**
-   * Phase 48.1 (vue3 Phase 5.1 equivalent): fires when a body cell
+   * (vue3 equivalent): fires when a body cell
    * receives a primary-button click. Delegated via a single
    * `onClick` handler on `.cx-table-body-content`.
    */
   readonly onCellClick?: (payload: CellClickPayload) => void;
   /**
-   * Phase 48.1: fires when a body row receives a primary-button
+   * fires when a body row receives a primary-button
    * click. Fires for every body click within a row, even if the
    * click lands on padding (no column resolution). Mutually
    * exclusive with `onEmptyAreaClick` for the same event.
    */
   readonly onRowClick?: (payload: RowClickPayload) => void;
   /**
-   * Phase 48.1: fires once per row when the pointer enters the row.
+   * fires once per row when the pointer enters the row.
    * Intra-row child-element re-entries are suppressed via
    * `relatedTarget` comparison.
    */
   readonly onRowMouseenter?: (payload: RowMouseenterPayload) => void;
   /**
-   * Phase 48.1: fires once per row when the pointer leaves the row.
+   * fires once per row when the pointer leaves the row.
    * Intra-row child-element exits are suppressed via
    * `relatedTarget` comparison.
    */
   readonly onRowMouseleave?: (payload: RowMouseleavePayload) => void;
   /**
-   * Phase 48.1 (vue3 Phase 7 equivalent): fires when a header cell
+   * (vue3 equivalent): fires when a header cell
    * receives a primary-button click.
    */
   readonly onHeaderClick?: (payload: HeaderClickPayload) => void;
   /**
-   * Phase 72 (2026-05-27 — react port of vue3 Phase 23): fires when a
+   * (2026-05-27 — react port of vue3): fires when a
    * labelled column-group cell in the second header row receives a
    * click. Un-grouped placeholder cells do NOT fire.
    */
   readonly onHeaderGroupClick?: (payload: HeaderGroupClickPayload) => void;
   /**
-   * Phase 48.1: fires when a body click lands inside the body
+   * fires when a body click lands inside the body
    * content layer but NOT on any row. Mutually exclusive with
    * `onRowClick` / `onCellClick` for the same event.
    */
   readonly onEmptyAreaClick?: (payload: EmptyAreaClickPayload) => void;
-  /** Phase 48.1: fires on body cell double-click. */
+  /** fires on body cell double-click. */
   readonly onCellDblclick?: (payload: CellDblclickPayload) => void;
-  /** Phase 48.1: fires on body row double-click. */
+  /** fires on body row double-click. */
   readonly onRowDblclick?: (payload: RowDblclickPayload) => void;
   /**
-   * Phase 49 + 49.1 (vue3 Phase 8 + 8.1 equivalent): fires when the
+   * + 49.1 (vue3 + 8.1 equivalent): fires when the
    * internal sort state transitions.
    */
   readonly onSortChange?: (payload: SortChangePayload) => void;
   /**
-   * Phase 50 (vue3 Phase 9 equivalent): opt-in filter-input row
+   * (vue3 equivalent): opt-in filter-input row
    * beneath the column headers. Default `false`. Programmatic
    * `setFilter` works regardless of this prop's value.
    */
   readonly showFilterRow?: boolean;
   /**
-   * Phase 114 (2026-06-02 — react port): default mode for newly-
+   * (2026-06-02 — react port): default mode for newly-
    * bootstrapped multi-filter specs. Verbatim mirror of vue3.
    * Default `'AND'`.
    */
   readonly multiFilterDefaultMode?: 'AND' | 'OR';
   /**
-   * Phase 116 (2026-06-02 — react port): per-slot custom renderer.
-   * Verbatim mirror of vue3 Phase 116. Consumer returns a
+   * (2026-06-02 — react port): per-slot custom renderer.
+   * Verbatim mirror of vue3 . Consumer returns a
    * `ReactNode` to replace the built-in widget for that slot, or
    * `null` to fall back to the chronix built-in. Layered on top of
    * one of the 3 declared `multiFilterChildTypes` literals.
    */
   readonly multiFilterChildRenderer?: (args: MultiFilterChildRendererArgs) => ReactNode | null;
   /**
-   * Phase 115 (2026-06-02 — react port): cross-cell / cross-row
-   * validators. Verbatim mirror of vue3 Phase 115.
+   * (2026-06-02 — react port): cross-cell / cross-row
+   * validators. Verbatim mirror of vue3 .
    */
   readonly rowValidators?: readonly RowValidator[];
   /**
-   * Phase 115 (2026-06-02 — react port): paste / drag-fill validator
+   * (2026-06-02 — react port): paste / drag-fill validator
    * policy. Default `'skip-rejected'` routes mutations through
    * `runCellValidator`; `'allow-invalid'` preserves legacy behavior.
    */
   readonly pasteValidatorPolicy?: 'skip-rejected' | 'allow-invalid';
   /**
-   * Phase 115 (2026-06-02 — react port): fires when the invalid-
+   * (2026-06-02 — react port): fires when the invalid-
    * cells map mutates. Consumer mirrors the entries into their own
    * state for summary-panel rendering.
    */
   readonly onInvalidCellsChange?: (payload: InvalidCellsChangePayload) => void;
   /**
-   * Phase 74 (2026-05-27 — react port of vue3 Phase 24): opt-in
+   * (2026-05-27 — react port of vue3): opt-in
    * sticky footer aggregate row beneath the body. Default `false`.
    * When `true`, the SFC renders one footer row mirroring the body's
    * column layout + horizontal scroll, with each column's
@@ -1659,7 +1659,7 @@ export interface ChronixTableProps {
    */
   readonly showFooterRow?: boolean;
   /**
-   * Phase 76 (2026-05-27 — react port of vue3 Phase 25): opt-in column
+   * (2026-05-27 — react port of vue3): opt-in column
    * visibility menu. Default `false`. When `true`, a button affordance
    * in the wrapper's top-right corner opens a popover listing every
    * column with per-column checkboxes + "全部显示" / "全部隐藏" actions.
@@ -1669,13 +1669,13 @@ export interface ChronixTableProps {
    */
   readonly showColumnVisibilityMenu?: boolean;
   /**
-   * Phase 76 (react port): fires when the user toggles a column's
+   * (react port): fires when the user toggles a column's
    * checkbox in the visibility menu OR a programmatic
    * `setColumnVisibility` / `toggleColumnVisibility` call runs.
    */
   readonly onColumnVisibilityChange?: (payload: ColumnVisibilityChangePayload) => void;
   /**
-   * Phase 38 (2026-05-29 — react port of vue3 Phase 38): fires once per
+   * (2026-05-29 — react port of vue3): fires once per
    * `applyTableView()` call after the saved `TableViewState` has been
    * reconciled against the current `columns` prop. Consumers do a
    * single `setColumns(payload.columns)` rebuild instead of N partial
@@ -1685,7 +1685,7 @@ export interface ChronixTableProps {
    */
   readonly onColumnsChange?: (payload: ColumnsChangePayload) => void;
   /**
-   * Phase 76 (2026-05-28 — react port of vue3 Phase 26): opt-in
+   * (2026-05-28 — react port of vue3): opt-in
    * cell-level keyboard navigation. Default `false`. When `true`,
    * arrow keys / Home / End / PageUp / PageDown / Ctrl+Home /
    * Ctrl+End move an internal `activeCell` focus marker; Enter / F2
@@ -1694,7 +1694,7 @@ export interface ChronixTableProps {
    */
   readonly enableKeyboardNavigation?: boolean;
   /**
-   * Phase 77 (react port of vue3 Phase 27): opt-out for keyboard-
+   * (react port of vue3): opt-out for keyboard-
    * driven auto-scroll. Default `true`. When the active cell moves via
    * keyboard or programmatic `setActiveCell` and lies outside the body
    * viewport, the body scrolls just enough to bring it into view
@@ -1704,7 +1704,7 @@ export interface ChronixTableProps {
    */
   readonly enableKeyboardAutoScroll?: boolean;
   /**
-   * Phase 30.2 (react port of vue3 Phase 30.1, 2026-05-28): controlled
+   * (react port of vue3 2026-05-28): controlled
    * expanded-row IDs for tree data. When set (non-undefined), the SFC
    * is in CONTROLLED expand mode — chevron clicks fire
    * `onExpandedChange` but do NOT mutate internal state. Consumer
@@ -1714,36 +1714,36 @@ export interface ChronixTableProps {
    */
   readonly expandedRowIds?: readonly string[];
   /**
-   * Phase 30.2 (react port): initial expanded-row IDs in uncontrolled
+   * (react port): initial expanded-row IDs in uncontrolled
    * mode. Wins over `defaultExpandedDepth`. Consulted only at mount.
    */
   readonly defaultExpandedRowIds?: readonly string[];
   /**
-   * Phase 30.2 (react port): initial expand depth in uncontrolled
+   * (react port): initial expand depth in uncontrolled
    * mode (default `0` = only top-level visible).
    * `Number.POSITIVE_INFINITY` expands everything on mount.
    * Consulted only at mount.
    */
   readonly defaultExpandedDepth?: number;
   /**
-   * Phase 30.2 (react port): fires when tree-data expand state
+   * (react port): fires when tree-data expand state
    * transitions (chevron click / Enter / Space / ArrowR / ArrowL /
    * programmatic). Payload carries the next full ordered list of
    * expanded row IDs.
    */
   readonly onExpandedChange?: (payload: ExpandedChangePayload) => void;
   /**
-   * Phase 76 (react port): fires when the keyboard-driven active cell
+   * (react port): fires when the keyboard-driven active cell
    * transitions. Both `rowId` + `colId` null when cleared.
    */
   readonly onActiveCellChange?: (payload: ActiveCellChangePayload) => void;
   /**
-   * Phase 50 (vue3 Phase 9 equivalent): fires when the internal
+   * (vue3 equivalent): fires when the internal
    * filter state transitions.
    */
   readonly onFilterChange?: (payload: FilterChangePayload) => void;
   /**
-   * Phase 41 (2026-05-29 — react port): fires when the internal
+   * (2026-05-29 — react port): fires when the internal
    * quick-find needle transitions. Same posture as `onFilterChange` /
    * `onSortChange` — no controlled `quickFindText` prop; consumers
    * mirror the latest needle into external state through this
@@ -1751,7 +1751,7 @@ export interface ChronixTableProps {
    */
   readonly onQuickFindTextChange?: (payload: QuickFindTextChangePayload) => void;
   /**
-   * Phase 51 (vue3 Phase 10 equivalent): row-selection mode.
+   * (vue3 equivalent): row-selection mode.
    *
    * - `'none'` (default) — row clicks don't change selection.
    * - `'single'` — plain click selects one; clicking selected deselects.
@@ -1760,76 +1760,76 @@ export interface ChronixTableProps {
    */
   readonly selectionMode?: 'none' | 'single' | 'multi';
   /**
-   * Phase 51.1 (vue3 Phase 10.1 equivalent): opt-in selection column
+   * (vue3 equivalent): opt-in selection column
    * with checkboxes + header three-state select-all. Default
    * `{ show: false, side: 'left' }`.
    */
   readonly selectionColumn?: SelectionColumnConfig;
-  /** Phase 44 (react port). */
+  /** (react port). */
   readonly rowDragColumn?: RowDragColumnConfig;
-  /** Phase 44.2 (react port). */
+  /** (react port). */
   readonly rowDragAutoScroll?: RowDragAutoScrollConfig;
-  /** Phase 44 (react port). */
+  /** (react port). */
   readonly onRowMoveStart?: (payload: RowMoveStartPayload) => void;
-  /** Phase 44 (react port). */
+  /** (react port). */
   readonly onRowMoveStop?: (payload: RowMoveStopPayload) => void;
-  /** Phase 44 (react port). */
+  /** (react port). */
   readonly onRowOrderChange?: (payload: RowOrderChangePayload) => void;
   /**
-   * Phase 51 (vue3 Phase 10 equivalent): fires when the internal
+   * (vue3 equivalent): fires when the internal
    * selection state transitions.
    */
   readonly onSelectionChange?: (payload: SelectionChangePayload) => void;
   /**
-   * Phase 52 (vue3 Phase 11 equivalent): opt-in client-side pagination.
+   * (vue3 equivalent): opt-in client-side pagination.
    * Default `false`. When `false`, internal `page` / `pageSize` state
    * is still tracked + handle methods still work + pagePass becomes a
    * passthrough — the footer simply isn't rendered.
    */
   readonly paginationEnabled?: boolean;
   /**
-   * Phase 52: initial rows-per-page. Default 20. Only consulted at
+   * initial rows-per-page. Default 20. Only consulted at
    * mount; subsequent changes via `setPageSize` / the footer
    * `<select>` override.
    */
   readonly initialPageSize?: number;
   /**
-   * Phase 52: rows-per-page options rendered in the footer `<select>`.
+   * rows-per-page options rendered in the footer `<select>`.
    * Default `[10, 20, 50, 100]`. Must include `initialPageSize` (the
    * `<select>` value would otherwise mismatch).
    */
   readonly pageSizeOptions?: readonly number[];
   /**
-   * Phase 52.1 (vue3 Phase 11.1 equivalent): how many sibling pages
+   * (vue3 equivalent): how many sibling pages
    * to show on either side of the current page in the page-number
    * bar. Default `1`.
    */
   readonly paginationSiblingCount?: number;
   /**
-   * Phase 52.1: how many boundary pages to pin at the start + end of
+   * how many boundary pages to pin at the start + end of
    * the page-number bar. Default `1`.
    */
   readonly paginationBoundaryCount?: number;
   /**
-   * Phase 52: fires when the internal `(page, pageSize)` state
+   * fires when the internal `(page, pageSize)` state
    * transitions. Consumers can mirror into external state without a
    * controlled prop.
    */
   readonly onPageChange?: (payload: PageChangePayload) => void;
   /**
-   * Phase 53 (vue3 Phase 12 equivalent): fires when an editor opens
+   * (vue3 equivalent): fires when an editor opens
    * on an `editable: true` column's cell (either via dblclick or via
    * programmatic `startEditingCell`).
    */
   readonly onCellEditStart?: (payload: CellEditStartPayload) => void;
   /**
-   * Phase 53: fires on every commit-attempt resolution — successful
-   * commit / cancel / Phase 53.1 rejection. See `CellEditStopPayload`
+   * fires on every commit-attempt resolution — successful
+   * commit / cancel / rejection. See `CellEditStopPayload`
    * for the 3-outcome contract.
    */
   readonly onCellEditStop?: (payload: CellEditStopPayload) => void;
   /**
-   * Phase 111 (2026-06-01): fires when `column.validatorAsync`
+   * fires when `column.validatorAsync`
    * starts (after coerce + sync-validator pass, before final
    * resolve). The editor stays open while the promise is in flight;
    * the cell paints `cx-table-cell--validating` + `data-cell-
@@ -1838,59 +1838,59 @@ export interface ChronixTableProps {
    */
   readonly onCellEditValidationPending?: (payload: CellEditValidationPendingPayload) => void;
   /**
-   * Phase 114 (2026-06-02 — react port): fires when the user clicks
+   * (2026-06-02 — react port): fires when the user clicks
    * `+` to add a new multi-filter slot. Verbatim mirror of vue3.
    */
   readonly onAddMultiFilterSlot?: (payload: AddMultiFilterSlotPayload) => void;
   /**
-   * Phase 114 (2026-06-02 — react port): fires when the user clicks
+   * (2026-06-02 — react port): fires when the user clicks
    * `×` to remove a multi-filter slot. Verbatim mirror of vue3.
    */
   readonly onRemoveMultiFilterSlot?: (payload: RemoveMultiFilterSlotPayload) => void;
   /**
-   * Phase 117.1 (2026-06-02 — react port): fires when the user
+   * (2026-06-02 — react port): fires when the user
    * clicks `+ 添加分组` on the multi-filter UI. Path carries the
    * parent-group location (root = `[]`).
    */
   readonly onAddMultiFilterGroup?: (payload: AddMultiFilterGroupPayload) => void;
   /**
-   * Phase 117.1 (2026-06-02 — react port): fires when the user
+   * (2026-06-02 — react port): fires when the user
    * clicks `×` on a nested group.
    */
   readonly onRemoveMultiFilterGroup?: (payload: RemoveMultiFilterGroupPayload) => void;
   /**
-   * Phase 53: fires AFTER a successful commit iff the committed
-   * (Phase 53.1 coerced) draft value differs from the baseValue.
+   * fires AFTER a successful commit iff the committed
+   * (coerced) draft value differs from the baseValue.
    * Consumers mirror this back into their `rows` array to persist
    * the edit.
    */
   readonly onCellValueChange?: (payload: CellValueChangePayload) => void;
   /**
-   * Phase 54 (vue3 Phase 13 equivalent): fires when a column-resize
+   * (vue3 equivalent): fires when a column-resize
    * session opens — either pointerdown on the resizer or imperative
    * `startResizingColumn`.
    */
   readonly onColumnResizeStart?: (payload: ColumnResizeStartPayload) => void;
   /**
-   * Phase 54: fires on every resize-session end — successful commit /
+   * fires on every resize-session end — successful commit /
    * cancel. See `ColumnResizeStopPayload` for the 2-outcome contract.
    */
   readonly onColumnResizeStop?: (payload: ColumnResizeStopPayload) => void;
   /**
-   * Phase 54: fires AFTER a successful commit iff the committed
+   * fires AFTER a successful commit iff the committed
    * (clampResizeWidth-bounded) `draftWidth` differs from the
    * pre-drag `baseWidth`. Consumers mirror this back into their
    * `columns` state to persist the resize.
    */
   readonly onColumnWidthChange?: (payload: ColumnWidthChangePayload) => void;
-  /** Phase 56: fires when a column-move drag crosses the threshold (or programmatic start). */
+  /** fires when a column-move drag crosses the threshold (or programmatic start). */
   readonly onColumnMoveStart?: (payload: ColumnMoveStartPayload) => void;
-  /** Phase 56: fires when an active column-move session ends (commit or cancel). */
+  /** fires when an active column-move session ends (commit or cancel). */
   readonly onColumnMoveStop?: (payload: ColumnMoveStopPayload) => void;
-  /** Phase 56: fires on commit when the drag resolves to a meaningful reorder (no-op dedup). */
+  /** fires on commit when the drag resolves to a meaningful reorder (no-op dedup). */
   readonly onColumnOrderChange?: (payload: ColumnOrderChangePayload) => void;
   /**
-   * Phase 60 (2026-05-26 — react port of vue3 Phase 16): opt-in
+   * (2026-05-26 — react port of vue3): opt-in
    * cell-range selection. Default `'none'` preserves all existing
    * pointer behavior. When `'enabled'`, body cells register pointer
    * handlers for drag-extend + shift+click extend; a new
@@ -1899,7 +1899,7 @@ export interface ChronixTableProps {
    */
   readonly cellRangeSelection?: 'none' | 'enabled';
   /**
-   * Phase 70 (2026-05-27 — react port of vue3 Phase 22): opt-in to
+   * (2026-05-27 — react port of vue3): opt-in to
    * the internal mutation-history recorder. When `true`, every
    * onCellValueChange / onCellRangePaste / onCellRangeFill callback
    * fires is auto-recorded into a bounded `{past, future}` stack +
@@ -1910,32 +1910,32 @@ export interface ChronixTableProps {
    */
   readonly enableUndoHistory?: boolean;
   /**
-   * Phase 70: maximum number of entries the internal `past` stack
+   * maximum number of entries the internal `past` stack
    * retains. Default `100`. Ignored when `enableUndoHistory: false`.
    */
   readonly undoHistoryMaxDepth?: number;
-  /** Phase 70: fires when Ctrl+Z / Ctrl+Y replays a recorded mutation batch OR programmatic `undo()` / `redo()`. */
+  /** fires when Ctrl+Z / Ctrl+Y replays a recorded mutation batch OR programmatic `undo()` / `redo()`. */
   readonly onHistoryReplay?: (payload: HistoryReplayPayload) => void;
-  /** Phase 70: fires whenever the internal mutation-history state transitions. */
+  /** fires whenever the internal mutation-history state transitions. */
   readonly onHistoryChange?: (payload: HistoryChangePayload) => void;
-  /** Phase 60: fires when a cell-range session opens (pointerdown / programmatic setCellRange). */
+  /** fires when a cell-range session opens (pointerdown / programmatic setCellRange). */
   readonly onCellRangeStart?: (payload: CellRangeStartPayload) => void;
-  /** Phase 60: fires on focus mutation (pointermove to a new cell / shift+click / programmatic). */
+  /** fires on focus mutation (pointermove to a new cell / shift+click / programmatic). */
   readonly onCellRangeChange?: (payload: CellRangeChangePayload) => void;
-  /** Phase 60: fires on commit (pointerup) and on programmatic clear. */
+  /** fires on commit (pointerup) and on programmatic clear. */
   readonly onCellRangeStop?: (payload: CellRangeStopPayload) => void;
-  /** Phase 64 (2026-05-27 — react port of vue3 Phase 19): fires when Ctrl+C copies an active range OR `copyCellRangeToClipboard()` is invoked. */
+  /** (2026-05-27 — react port of vue3): fires when Ctrl+C copies an active range OR `copyCellRangeToClipboard()` is invoked. */
   readonly onCellRangeCopy?: (payload: CellRangeCopyPayload) => void;
-  /** Phase 66 (2026-05-27 — react port of vue3 Phase 20): fires when Ctrl+V pastes into an active range OR `pasteCellRangeFromClipboard()` is invoked. */
+  /** (2026-05-27 — react port of vue3): fires when Ctrl+V pastes into an active range OR `pasteCellRangeFromClipboard()` is invoked. */
   readonly onCellRangePaste?: (payload: CellRangePastePayload) => void;
-  /** Phase 68 (2026-05-27 — react port of vue3 Phase 21): fires once at pointerdown on the drag-fill handle. */
+  /** (2026-05-27 — react port of vue3): fires once at pointerdown on the drag-fill handle. */
   readonly onCellRangeFillStart?: (payload: CellRangeFillStartPayload) => void;
-  /** Phase 68: fires on each pointermove that resolves a new preview envelope during drag-fill. */
+  /** fires on each pointermove that resolves a new preview envelope during drag-fill. */
   readonly onCellRangeFillChange?: (payload: CellRangeFillChangePayload) => void;
-  /** Phase 68: fires once at pointerup with the committed mutations array OR at programmatic `fillCellRange`. */
+  /** fires once at pointerup with the committed mutations array OR at programmatic `fillCellRange`. */
   readonly onCellRangeFill?: (payload: CellRangeFillPayload) => void;
   /**
-   * Phase 33 (2026-05-28 — react port): paint the loading overlay over
+   * (2026-05-28 — react port): paint the loading overlay over
    * the body region. Default `false`. When `true`, the overlay renders
    * with the configured `loadingOverlay` content (default `'Loading…'`)
    * + `aria-live="polite"`. Loading state takes precedence over the
@@ -1943,89 +1943,89 @@ export interface ChronixTableProps {
    */
   readonly loading?: boolean;
   /**
-   * Phase 33 (2026-05-28 — react port): content rendered inside the
+   * (2026-05-28 — react port): content rendered inside the
    * loading overlay. Defaults to `'Loading…'`. String or ReactNode.
    */
   readonly loadingOverlay?: string | ReactNode;
   /**
-   * Phase 33 (2026-05-28 — react port): content rendered inside the
+   * (2026-05-28 — react port): content rendered inside the
    * no-rows overlay when `rows.length === 0` AND `loading: false`.
    * Defaults to `'No rows'`.
    */
   readonly noRowsOverlay?: string | ReactNode;
   /**
-   * Phase 34 (2026-05-28 — react port): lazy children loader. When
+   * (2026-05-28 — react port): lazy children loader. When
    * provided AND a row carries `hasChildren: true` (without sync
    * `children`), the loader fires on first expand. Verbatim port of
-   * vue3 Phase 34 prop.
+   * vue3 prop.
    */
   readonly childrenLoader?: (args: ChildrenLoaderArgs) => Promise<readonly RowSpec[]>;
-  /** Phase 34 (2026-05-28 — react port): fires synchronously when a lazy-eligible row begins loading children. */
+  /** (2026-05-28 — react port): fires synchronously when a lazy-eligible row begins loading children. */
   readonly onLazyLoadStart?: (payload: LazyLoadStartPayload) => void;
-  /** Phase 34 (2026-05-28 — react port): fires after `childrenLoader` resolves AND the cache is committed. */
+  /** (2026-05-28 — react port): fires after `childrenLoader` resolves AND the cache is committed. */
   readonly onLazyLoadSuccess?: (payload: LazyLoadSuccessPayload) => void;
-  /** Phase 34 (2026-05-28 — react port): fires after `childrenLoader` rejects. */
+  /** (2026-05-28 — react port): fires after `childrenLoader` rejects. */
   readonly onLazyLoadError?: (payload: LazyLoadErrorPayload) => void;
   /**
-   * Phase 36 (2026-05-28 — react port): opt-in status bar between
+   * (2026-05-28 — react port): opt-in status bar between
    * body and pagination footer. Default `false`.
    */
   readonly showStatusBar?: boolean;
   /**
-   * Phase 36 (2026-05-28 — react port): custom status bar renderer.
+   * (2026-05-28 — react port): custom status bar renderer.
    * Receives the current counts; returns ReactNode to replace the
    * default text. When omitted, `defaultStatusBarText` is rendered.
    */
   readonly statusBarRenderer?: (counts: StatusBarCounts) => ReactNode;
   /**
-   * Phase 40 (2026-05-29 — react port): override the default live-
-   * region announce text. Verbatim mirror of vue3 Phase 40 prop.
+   * (2026-05-29 — react port): override the default live-
+   * region announce text. Verbatim mirror of vue3 prop.
    */
   readonly announceActiveCellText?: (args: FormatActiveCellAnnouncementInput) => string;
   /**
-   * Phase 45 (2026-05-29 — react port): row-model selection switch.
-   * Verbatim mirror of vue3 Phase 45 prop. Default `'clientSide'`.
+   * (2026-05-29 — react port): row-model selection switch.
+   * Verbatim mirror of vue3 prop. Default `'clientSide'`.
    */
   readonly rowModelType?: 'clientSide' | 'serverSide';
   /**
-   * Phase 45 (2026-05-29 — react port): consumer-supplied async
+   * (2026-05-29 — react port): consumer-supplied async
    * data source. Required when `rowModelType === 'serverSide'`.
    */
   readonly serverSideDataSource?: ServerSideDataSource;
   /**
-   * Phase 45 (2026-05-29 — react port): per-block size. Default 100.
+   * (2026-05-29 — react port): per-block size. Default 100.
    */
   readonly cacheBlockSize?: number;
   /**
-   * Phase 45 (2026-05-29 — react port): LRU cap on cached blocks.
+   * (2026-05-29 — react port): LRU cap on cached blocks.
    * Default 10.
    */
   readonly serverSideMaxBlocksInCache?: number;
   /**
-   * Phase 45.5 (2026-05-31 — react port): anticipatory next-block
+   * (2026-05-31 — react port): anticipatory next-block
    * prefetch ahead of scroll direction. Verbatim mirror of vue3
-   * Phase 45.5 prop. Default `0` (= disabled).
+   * prop. Default `0` (= disabled).
    */
   readonly serverSidePrefetchAheadBlocks?: number;
   /**
-   * Phase 96.2 (2026-05-31 — react port): Set filter dropdown
-   * virtualization threshold. Verbatim mirror of vue3 Phase 96.2 prop.
+   * (2026-05-31 — react port): Set filter dropdown
+   * virtualization threshold. Verbatim mirror of vue3 prop.
    * Default `100`.
    */
   readonly setFilterVirtualizeThreshold?: number;
   /**
-   * Phase 98.2 (2026-05-31 — react port): opt-in Number filter range
-   * slider. Verbatim mirror of vue3 Phase 98.2 prop. Default `false`.
+   * (2026-05-31 — react port): opt-in Number filter range
+   * slider. Verbatim mirror of vue3 prop. Default `false`.
    */
   readonly numberFilterShowRangeSlider?: boolean;
   /**
-   * Phase 99.2 (2026-05-31 — react port) + Phase 99.2.1 (2026-05-31 —
+   * (2026-05-31 — react port) + (2026-05-31 —
    * react port): opt-in per-cell style editor with Background + Text
    * tabs. Verbatim mirror of vue3 prop. Default `false`.
    */
   readonly enableCellStyleEditor?: boolean;
   /**
-   * Phase 99.2.4 (2026-06-01 — react port): controlled-mode override
+   * (2026-06-01 — react port): controlled-mode override
    * of the cell style map. When `undefined` (default), uncontrolled
    * mode (internal state authoritative; `onCellStyleChange` fires +
    * internal map mutates). When defined (any value, including `{}`),
@@ -2034,19 +2034,19 @@ export interface ChronixTableProps {
    */
   readonly cellStyleByRowIdColId?: Record<string, Record<string, CellStyle>>;
   /**
-   * Phase 99.2.5 (2026-06-01 — react port): preset color swatches
+   * (2026-06-01 — react port): preset color swatches
    * inside color tabs (background / text). Defaults to
    * `CELL_STYLE_DEFAULT_PRESET_COLORS`. Pass `[]` to disable preset row.
    */
   readonly cellStylePresetColors?: readonly string[];
   /**
-   * Phase 99.2.5 (2026-06-01 — react port): LRU cap on the in-memory
+   * (2026-06-01 — react port): LRU cap on the in-memory
    * recent-colors ring. Default 5. Clamped to [0, 20]. Set 0 to disable.
    */
   readonly cellStyleRecentColorsLimit?: number;
   /**
-   * Phase 99.2 (2026-05-31 — react port): callback invoked when the
-   * cell style editor commits Apply or Clear. Phase 99.2.1 (2026-05-31
+   * (2026-05-31 — react port): callback invoked when the
+   * cell style editor commits Apply or Clear. (2026-05-31
    * — react port) widens `style` to support a `color` axis. Phase
    * 99.2.2 (2026-06-01 — react port) further widens to support 3
    * font axes (`fontWeight`, `fontStyle`, `textDecoration`). Phase
@@ -2068,7 +2068,7 @@ export interface ChronixTableProps {
       readonly borderWidth?: string | null;
       readonly borderStyle?: string | null;
       readonly borderRadius?: string | null;
-      // Phase 99.2.3.1 (2026-06-01 — react port): per-side border
+      // (2026-06-01 — react port): per-side border
       // override fields. Verbatim mirror of vue3.
       readonly borderTopColor?: string | null;
       readonly borderTopWidth?: string | null;
@@ -2085,48 +2085,48 @@ export interface ChronixTableProps {
     };
   }) => void;
   /**
-   * Phase 46-C (2026-05-30 — react port): opt-in per-row auto-height
-   * measurement. Verbatim mirror of vue3 Phase 46-C prop.
+   * -C (2026-05-30 — react port): opt-in per-row auto-height
+   * measurement. Verbatim mirror of vue3 -C prop.
    */
   readonly enableRowAutoHeight?: boolean;
   /**
-   * Phase 46-C (2026-05-30 — react port): optional pixel cap on
-   * auto-measured row heights. Verbatim mirror of vue3 Phase 46-C prop.
+   * -C (2026-05-30 — react port): optional pixel cap on
+   * auto-measured row heights. Verbatim mirror of vue3 -C prop.
    */
   readonly maxRowAutoHeightPx?: number;
   /**
-   * Phase 80 (2026-05-30 — react port): tool-panel container config.
-   * Verbatim mirror of vue3 Phase 80 prop.
+   * (2026-05-30 — react port): tool-panel container config.
+   * Verbatim mirror of vue3 prop.
    */
   readonly toolPanel?: ToolPanelConfig;
   /**
-   * Phase 80 (2026-05-30 — react port): fires when the active tool-
+   * (2026-05-30 — react port): fires when the active tool-
    * panel id changes (icon click / programmatic openToolPanel /
    * closeToolPanel / initialOpenId-driven mount).
    */
   readonly onToolPanelChange?: (payload: ToolPanelChangePayload) => void;
   /**
-   * Phase 80 (2026-05-30 — react port): fires on pointer-up after a
+   * (2026-05-30 — react port): fires on pointer-up after a
    * tool-panel resize drag completes.
    */
   readonly onToolPanelWidthChange?: (payload: ToolPanelWidthChangePayload) => void;
-  /** Phase 83-A (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
   readonly showColumnHeaderMenu?: boolean;
-  /** Phase 83-B (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
   readonly contextMenu?: ContextMenuConfig | null;
-  /** Phase 83-A (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
   readonly onColumnHeaderMenuAction?: (payload: {
     colId: string;
     action: 'sort-asc' | 'sort-desc' | 'clear-sort' | 'hide' | 'autosize';
   }) => void;
-  /** Phase 83-B (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
   readonly onContextMenuOpen?: (payload: ContextMenuOpenPayload) => void;
-  /** Phase 83-B (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
   readonly onContextMenuClose?: () => void;
 }
 
 /**
- * Phase 51.1 default for `selectionColumn` prop. Module-level constant
+ * default for `selectionColumn` prop. Module-level constant
  * so React's prop-destructuring `= DEFAULT_SELECTION_COLUMN` gets a
  * stable reference (avoids re-running effects that depend on
  * `selectionColumn` on every render).
@@ -2136,31 +2136,31 @@ const DEFAULT_SELECTION_COLUMN: SelectionColumnConfig = Object.freeze({
   side: 'left',
 });
 
-/** Phase 44 (react port): stable default for the rowDragColumn prop. */
+/** (react port): stable default for the rowDragColumn prop. */
 const DEFAULT_ROW_DRAG_COLUMN: RowDragColumnConfig = Object.freeze({
   show: false,
   side: 'left',
 });
 
-/** Phase 49.1: stable identity for the no-sort default. */
+/** stable identity for the no-sort default. */
 const EMPTY_SORT_SPECS: readonly SortSpec[] = Object.freeze([]);
-/** Phase 50: stable identity for the no-filter default. */
+/** stable identity for the no-filter default. */
 const EMPTY_FILTER_SPECS: readonly FilterSpec[] = Object.freeze([]);
-/** Phase 51: stable identity for the no-selection default. */
+/** stable identity for the no-selection default. */
 const EMPTY_ROW_IDS: readonly string[] = Object.freeze([]);
-/** Phase 45 (2026-05-29 — react port): stable identity for the no-rows default. */
+/** (2026-05-29 — react port): stable identity for the no-rows default. */
 const EMPTY_ROW_LIST: readonly RowSpec[] = Object.freeze([]);
 const EMPTY_MENU_KBD_ITEMS: readonly MenuKeyboardNavItem[] = Object.freeze([]);
 
 /**
- * Phase 52 (2026-05-26): stable identity for the page-size options
+ * stable identity for the page-size options
  * default. Frozen so React's prop-destructuring `= DEFAULT_PAGE_SIZE_OPTIONS`
  * doesn't allocate a fresh array per render (avoids re-running effects
  * that depend on `pageSizeOptions`).
  */
 const DEFAULT_PAGE_SIZE_OPTIONS: readonly number[] = Object.freeze([10, 20, 50, 100]);
 
-// Phase 40.2 (2026-05-29 — react port): visually-hidden inline style
+// (2026-05-29 — react port): visually-hidden inline style
 // applied to the per-columnheader description span. Module-level
 // constant so React's render path doesn't allocate a new object each
 // frame. Identical to the WAI-ARIA-recommended .sr-only declaration.
@@ -2177,12 +2177,12 @@ const SR_ONLY_STYLE: CSSProperties = Object.freeze({
 });
 
 /**
- * Phase 41.1 (2026-05-29 — react port): wrap matching substrings in
+ * (2026-05-29 — react port): wrap matching substrings in
  * `<span class="cx-table-cell__find-match">` for quick-find visual
  * highlight. Returns the original `text` unchanged when no highlight
  * applies (empty needle / non-string cell text / column with
  * `filterable === false` / no match in this cell). Verbatim port of
- * vue3 Phase 41.1.
+ * vue3 .
  */
 function renderQuickFindHighlight(
   text: string | ReactNode,
@@ -2205,7 +2205,7 @@ function renderQuickFindHighlight(
 }
 
 /**
- * Phase 53 (2026-05-26): narrow an `unknown` draft value into a
+ * narrow an `unknown` draft value into a
  * displayable string for the editor `<input>.value` binding. Mirrors
  * the spirit of `defaultFormatCellValue` but always yields a string
  * (the input element requires a string value). Objects fall back to
@@ -2223,7 +2223,7 @@ function editorDraftToString(raw: unknown): string {
 }
 
 /**
- * Phase 49.1 / 50: normalize a possibly-single / array / null input
+ * normalize a possibly-single / array / null input
  * to the canonical readonly array shape used internally.
  */
 function normalizeSortInput(spec: SortSpec | readonly SortSpec[] | null): readonly SortSpec[] {
@@ -2241,7 +2241,7 @@ function normalizeFilterInput(
 }
 
 /**
- * Phase 50 / 50.1: compare two `FilterSpec`s for the dedup check in
+ * compare two `FilterSpec`s for the dedup check in
  * `applyFilter`. Dispatches on the `type` discriminant; returns false
  * for cross-type comparisons.
  */
@@ -2277,7 +2277,7 @@ function filterSpecEqual(a: FilterSpec, b: FilterSpec): boolean {
 }
 
 /**
- * Phase 49.1: plain-click single-column cycle. Replaces the entire
+ * plain-click single-column cycle. Replaces the entire
  * sort array; for the clicked column, walks `null → asc → desc →
  * null`. If the array currently holds another column (or length > 1),
  * a plain click always RESETS to single-column with the clicked
@@ -2291,7 +2291,7 @@ function cycleSingleColumnSort(current: readonly SortSpec[], colId: string): rea
 }
 
 /**
- * Phase 49.1: shift+click multi-column compose. Preserves the
+ * shift+click multi-column compose. Preserves the
  * existing array (and the priorities of other columns).
  *
  * - Column absent from array → append `{colId, direction:'asc'}`.
@@ -2311,10 +2311,10 @@ function cycleMultiColumnSort(current: readonly SortSpec[], colId: string): read
 }
 
 /**
- * Phase 48.1 (2026-05-25): walk up from `event.target` to find the
+ * walk up from `event.target` to find the
  * closest ancestor that carries a `data-row-id` / `data-col-id`
  * attribute. Returns null if the click landed in body padding or
- * outside any row. Pure helper; mirrors vue3 Phase 5.1's closestAttr.
+ * outside any row. Pure helper; mirrors vue3 closestAttr.
  */
 function closestAttr(target: EventTarget | null, attr: string): string | null {
   let el: Element | null = target instanceof Element ? target : null;
@@ -2327,7 +2327,7 @@ function closestAttr(target: EventTarget | null, attr: string): string | null {
 }
 
 /**
- * Phase 48.1: pointerover / pointerout's `relatedTarget` is the
+ * pointerover / pointerout's `relatedTarget` is the
  * element the pointer is COMING FROM / GOING TO. When the pointer
  * moves between children of the same row, both `event.target` and
  * `event.relatedTarget` have the same closest `[data-row-id]` —
@@ -2341,7 +2341,7 @@ function sameRow(a: EventTarget | null, b: EventTarget | null): boolean {
 }
 
 /**
- * Phase 48 + 48.1 (2026-05-25): react wrapper for chronix-table.
+ * + 48.1 (2026-05-25): react wrapper for chronix-table.
  *
  * Renders a `<div className="cx-table-wrapper" role="grid">`
  * containing a header rowgroup + body scrollport with a virtual
@@ -2351,19 +2351,19 @@ function sameRow(a: EventTarget | null, b: EventTarget | null): boolean {
  * `rowLayoutPass`; visible row window by `virtualRowsPass`. Cell
  * values resolve through `getCellValue` + `formatCellValue` +
  * `resolveCellClassNames`. Theme tokens emit as inline CSS custom
- * properties via `cssVarsForTheme`. 8 callback props (Phase 48.1)
+ * properties via `cssVarsForTheme`. 8 callback props
  * cover cell + row click/hover + header click + dblclick + empty-
  * area-click via delegated handlers on `.cx-table-body-content` +
  * `.cx-table-header`.
  *
- * Architecturally equivalent to chronix-table-vue3's Phase 7 SFC
+ * Architecturally equivalent to chronix-table-vue3's SFC
  * form. React idioms replace Vue composables: `useImperativeHandle`
  * instead of `expose()`; `useEffect` instead of `onMounted`;
  * `useMemo` instead of `computed`; `forwardRef<TableHandle,
  * ChronixTableProps>` wrapping the function component instead of
  * `defineComponent`; optional callback props replace emits.
  *
- * **DOM contract (Phase 48 + 48.1 — identical to vue3 Phase 7):**
+ * **DOM contract (+ 48.1 — identical to vue3):**
  *
  * - `.cx-table-wrapper[role="grid"]` — outer container with theme
  *   CSS custom properties inlined via `cssVarsForTheme(mergedTheme)`;
@@ -2394,27 +2394,27 @@ function sameRow(a: EventTarget | null, b: EventTarget | null): boolean {
  *         `resolveCellClassNames` outputs.
  */
 /**
- * Phase 68 helper: identity-stable empty `Set<string>` returned by
+ * helper: identity-stable empty `Set<string>` returned by
  * `dragFillPreviewSet` when no drag-fill preview is active. Verbatim
  * port of vue3's `EMPTY_PREVIEW_SET`.
  */
 const EMPTY_PREVIEW_SET: ReadonlySet<string> = new Set<string>();
 
 /**
- * Phase 96.2 (2026-05-31 — react port): hard-coded Set filter
+ * (2026-05-31 — react port): hard-coded Set filter
  * checkbox row height used by `computeVirtualWindow`. Verbatim port
  * of vue3's `SET_FILTER_ITEM_HEIGHT_PX`.
  */
 const SET_FILTER_ITEM_HEIGHT_PX = 28;
 
 /**
- * Phase 98.2 (2026-05-31 — react port): fixed step for Number filter
- * range slider. Verbatim port of vue3 Phase 98.2 constant.
+ * (2026-05-31 — react port): fixed step for Number filter
+ * range slider. Verbatim port of vue3 constant.
  */
 const NUMBER_FILTER_RANGE_STEP = 1;
 
 /**
- * Phase 68 helper: shallow equality on `CellRangeEnvelope` pairs.
+ * helper: shallow equality on `CellRangeEnvelope` pairs.
  * Verbatim port of vue3's `sameEnvelope`. Detects identity AND value
  * equality so the drag-fill pointer flow can dedup no-op
  * `onCellRangeFillChange` callbacks + skip the post-pointerup auto-
@@ -2554,7 +2554,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
 
     const wrapperRef = useRef<HTMLDivElement | null>(null);
     const bodyRef = useRef<HTMLDivElement | null>(null);
-    // Phase 62 (2026-05-26 — react port of vue3 Phase 17): header +
+    // (2026-05-26 — react port of vue3): header +
     // filter row are SIBLINGS of body, so the body's `overflowX: auto`
     // scroll does NOT propagate to them. The SFC mirrors
     // `bodyScrollLeft → headerEl.scrollLeft + filterRowEl.scrollLeft`
@@ -2565,28 +2565,28 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const headerRef = useRef<HTMLDivElement | null>(null);
     const filterRowRef = useRef<HTMLDivElement | null>(null);
     const footerRef = useRef<HTMLDivElement | null>(null);
-    // Phase 96.2 (2026-05-31 — react port): per-column Set filter
-    // virtualization state. Verbatim mirror of vue3 Phase 96.2.
+    // (2026-05-31 — react port): per-column Set filter
+    // virtualization state. Verbatim mirror of vue3 .
     const [setFilterScrollTopByColId, setSetFilterScrollTopByColId] = useState<
       Record<string, number>
     >({});
     const [setFilterViewportHeightByColId, setSetFilterViewportHeightByColId] = useState<
       Record<string, number>
     >({});
-    // Phase 98.2 (2026-05-31 — react port): per-column Number filter
-    // range slider drag state. Verbatim port of vue3 Phase 98.2.
+    // (2026-05-31 — react port): per-column Number filter
+    // range slider drag state. Verbatim port of vue3 .
     const numberFilterRangeDragRef = useRef<Record<string, RangeHandle | null>>({});
-    // Phase 99.2 (2026-05-31 — react port) + Phase 99.2.1 + Phase
-    // 99.2.2 + Phase 99.2.3 (2026-06-01 — react port): per-cell style
+    // (2026-05-31 — react port) + + Phase
+    // 99.2.2 + (2026-06-01 — react port): per-cell style
     // override map + editor open state. Entry shape carries 9 optional
     // axes; open-state shape carries `activeTab` (literal union widened
     // to include `'font'` and `'border'`) + per-color-tab persisted hex
     // slots + `fontState` + `borderState` slots. Verbatim port of vue3
-    // Phase 99.2.3.
+    // .
     const [internalCellStyleByRowIdColId, setInternalCellStyleByRowIdColId] = useState<
       Record<string, Record<string, CellStyleEntry>>
     >({});
-    // Phase 99.2.4 (2026-06-01 — react port) Decision I.1: effective-
+    // (2026-06-01 — react port) Decision I.1: effective-
     // map read wedge. Controlled-mode prop wins. All read sites consult
     // this memo; write sites continue targeting internal state via
     // setInternalCellStyleByRowIdColId, gated behind
@@ -2595,7 +2595,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       () => cellStyleByRowIdColId ?? internalCellStyleByRowIdColId,
       [cellStyleByRowIdColId, internalCellStyleByRowIdColId],
     );
-    // Phase 99.2.5 (2026-06-01 — react port) Decision K.1: in-memory
+    // (2026-06-01 — react port) Decision K.1: in-memory
     // recent-colors ring. Verbatim mirror of vue3.
     const [recentCellStyleColors, setRecentCellStyleColors] = useState<readonly string[]>([]);
     const pushRecentCellStyleColor = useCallback(
@@ -2632,7 +2632,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         borderWidth: string | null;
         borderStyle: string | null;
         borderRadius: string | null;
-        // Phase 99.2.3.1 (2026-06-01 — react port): 12 per-side
+        // (2026-06-01 — react port): 12 per-side
         // override fields. Verbatim mirror of vue3.
         borderTopColor: string | null;
         borderTopWidth: string | null;
@@ -2647,7 +2647,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         borderLeftWidth: string | null;
         borderLeftStyle: string | null;
         borderSideTarget: 'all' | 'top' | 'right' | 'bottom' | 'left';
-        // Phase 99.2.3.2 (2026-06-01 — react port): independent HSV
+        // (2026-06-01 — react port): independent HSV
         // editing-buffer for the border-tab HSV picker disclosure.
         hsv: Hsv;
         hex: string;
@@ -2660,14 +2660,14 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     cellStyleEditorOpenStateRef.current = cellStyleEditorOpen;
     const cellStyleSquareDragRef = useRef<boolean>(false);
     const cellStyleHueDragRef = useRef<boolean>(false);
-    // Phase 99.2.2.2 (2026-06-01 — react port): variable-font-weight
+    // (2026-06-01 — react port): variable-font-weight
     // slider drag state. Verbatim mirror of vue3.
     const cellStyleFontWeightSliderDragRef = useRef<boolean>(false);
-    // Phase 99.2.3.2 (2026-06-01 — react port): border-tab HSV drag
+    // (2026-06-01 — react port): border-tab HSV drag
     // refs. Verbatim mirror of vue3.
     const cellStyleBorderSquareDragRef = useRef<boolean>(false);
     const cellStyleBorderHueDragRef = useRef<boolean>(false);
-    // Phase 76 (2026-05-27 — react port of vue3 Phase 25): column-
+    // (2026-05-27 — react port of vue3): column-
     // visibility-menu state. `columnMenuOpen` toggles the popover;
     // `columnMenuButtonRef` / `columnMenuPopoverRef` anchor outside-
     // click detection. `columnMenuOpenRef` mirrors the state into a
@@ -2679,13 +2679,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     columnMenuOpenRef.current = columnMenuOpen;
     const columnMenuButtonRef = useRef<HTMLButtonElement | null>(null);
     const columnMenuPopoverRef = useRef<HTMLDivElement | null>(null);
-    // Phase 76 (2026-05-28 — react port of vue3 Phase 26): active-cell
+    // (2026-05-28 — react port of vue3): active-cell
     // focus marker for keyboard navigation. State mirror via ref so
     // the keydown useCallback can read the latest active cell without
     // re-subscribing on every render.
     const [activeCellState, setActiveCellState] = useState<CellRef | null>(null);
-    // Phase 40 (2026-05-29 — react port): live-region announce text.
-    // Verbatim mirror of vue3 Phase 40 wiring; updated by
+    // (2026-05-29 — react port): live-region announce text.
+    // Verbatim mirror of vue3 wiring; updated by
     // `applyActiveCellChange` only when `announce: true` is passed.
     const [srAnnounceText, setSrAnnounceText] = useState<string>('');
     const activeCellRef = useRef<CellRef | null>(null);
@@ -2694,29 +2694,29 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const { clientHeight: bodyClientHeight, scrollTop: bodyScrollTop } =
       useTableBodyScroll(bodyRef);
 
-    // Phase 49 + 49.1 (vue3 Phase 8 + 8.1 equivalent): internal sort
+    // + 49.1 (vue3 + 8.1 equivalent): internal sort
     // state. Widened from `SortSpec | null` to `readonly SortSpec[]`
     // for multi-column sort. No controlled prop — consumers drive
     // via imperative setSort/clearSort handle methods + observe via
     // the onSortChange callback prop. `sortSpecRef` mirrors for
-    // synchronous handle reads (Phase 49 B49.1 pattern).
+    // synchronous handle reads (B49.1 pattern).
     const [sortSpec, setSortSpec] = useState<readonly SortSpec[]>(EMPTY_SORT_SPECS);
     const sortSpecRef = useRef<readonly SortSpec[]>(EMPTY_SORT_SPECS);
 
-    // Phase 50 (vue3 Phase 9 equivalent): internal filter state. Same
+    // (vue3 equivalent): internal filter state. Same
     // posture as sort — internal-only, imperative handle methods +
     // onFilterChange callback. Always an array; empty = no filter.
     const [filterSpec, setFilterSpec] = useState<readonly FilterSpec[]>(EMPTY_FILTER_SPECS);
     const filterSpecRef = useRef<readonly FilterSpec[]>(EMPTY_FILTER_SPECS);
 
-    // Phase 41 (2026-05-29 — react port): internal quick-find text
+    // (2026-05-29 — react port): internal quick-find text
     // state. Same posture as sort + filter — internal-only, imperative
     // handle methods + onQuickFindTextChange callback. Empty string =
-    // no quick-find. Verbatim port of vue3 Phase 41.
+    // no quick-find. Verbatim port of vue3 .
     const [quickFindText, setQuickFindTextState] = useState<string>('');
     const quickFindTextRef = useRef<string>('');
 
-    // Phase 51 (vue3 Phase 10 equivalent): internal selection state.
+    // (vue3 equivalent): internal selection state.
     // Array shape is the API-surface canonical form (JSON-serializable).
     // Derived Set is for O(1) isRowSelected lookups during per-row
     // render — computed via useMemo so identity is stable when
@@ -2725,14 +2725,14 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const selectedRowIdsRef = useRef<readonly string[]>(EMPTY_ROW_IDS);
     const selectedRowIdsSet = useMemo(() => new Set(selectedRowIds), [selectedRowIds]);
 
-    // Phase 51.1 (vue3 Phase 10.1 equivalent): selection anchor for
+    // (vue3 equivalent): selection anchor for
     // shift+click range. Updates on plain click + Ctrl/Cmd+click +
     // checkbox toggle (the "intentional" selection actions); stays
     // put on shift+click so consecutive shift+clicks re-extend from
     // the same anchor. Cleared when selection goes empty.
     const selectionAnchorRef = useRef<string | null>(null);
 
-    // Phase 52 (vue3 Phase 11 equivalent): internal pagination state.
+    // (vue3 equivalent): internal pagination state.
     // 0-based page index + rows-per-page (seeded by initialPageSize at
     // mount). useState drives re-renders; useRef mirrors hold the
     // synchronous value handle methods read so post-`setPage(...)`
@@ -2745,12 +2745,12 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const [pageSizeState, setPageSizeState] = useState<number>(initialPageSize);
     const pageSizeStateRef = useRef<number>(initialPageSize);
 
-    // Phase 53 (vue3 Phase 12 equivalent): internal edit state.
+    // (vue3 equivalent): internal edit state.
     // editingCellRef is the canonical state holder (synchronous reads
     // for handle methods); editingCellState only triggers re-renders
     // when its shape changes (the per-cell render loop reads from the
     // state mirror to know which cell swaps in the <input> editor).
-    // Phase 70 (2026-05-27 — react port of vue3 Phase 22): undo /
+    // (2026-05-27 — react port of vue3): undo /
     // redo mutation history state. Hoisted ABOVE applyEditCommit /
     // performCellRangePaste / performFillCellRange so they can take
     // `recordBatchInternal` as a useCallback dep without TDZ. Per
@@ -2762,7 +2762,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const nextMutationBatchIdRef = useRef<number>(0);
 
     /**
-     * Phase 70: shared append-and-notify helper. Gates on
+     * shared append-and-notify helper. Gates on
      * `enableUndoHistory`; constructs a MutationBatch via
      * `appendMutationBatch`; fires `onHistoryChange` so consumer-side
      * UI updates its disabled state. Verbatim port of vue3's
@@ -2790,7 +2790,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     );
 
     /**
-     * Phase 70: undo — pop newest `past` entry, fire
+     * undo — pop newest `past` entry, fire
      * `onHistoryReplay` with the REVERSED batch, move original to
      * `future`. Returns true if action taken.
      */
@@ -2809,7 +2809,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     );
 
     /**
-     * Phase 70: redo — pop newest `future`, fire `onHistoryReplay`
+     * redo — pop newest `future`, fire `onHistoryReplay`
      * with ORIGINAL batch.
      */
     const performRedo = useCallback(
@@ -2831,10 +2831,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const editingCellRef = useRef<EditingCell | null>(null);
     const [editingCellState, setEditingCellState] = useState<EditingCell | null>(null);
 
-    // Phase 101 (2026-06-01 — react port): invalid-cell marker map.
+    // (2026-06-01 — react port): invalid-cell marker map.
     // Keyed by `${rowId}::${colId}`. `useRef` for the synchronous-read
     // holder (consumers don't need re-render on each transition); a
-    // sibling version counter `useState` (per Phase 100.2.2.1 react
+    // sibling version counter `useState` (per react
     // precedent) bumps on every mutation to re-render the cell with
     // the updated class / data-attr / ARIA triple.
     const invalidCellsRef = useRef<Map<string, EditValidationError>>(new Map());
@@ -2847,8 +2847,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const idx = key.indexOf('::');
       return { rowId: key.slice(0, idx), colId: key.slice(idx + 2) };
     }, []);
-    // Phase 115 (2026-06-02 — react port): invalid-cell snapshot +
-    // emit helper. Verbatim mirror of vue3 Phase 115.
+    // (2026-06-02 — react port): invalid-cell snapshot +
+    // emit helper. Verbatim mirror of vue3 .
     const snapshotInvalidCells = useCallback((): readonly InvalidCellEntry[] => {
       const entries: InvalidCellEntry[] = [];
       for (const [key, error] of invalidCellsRef.current) {
@@ -2865,9 +2865,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const entries = snapshotInvalidCells();
       onInvalidCellsChangeRef.current?.({ entries, count: entries.length });
     }, [snapshotInvalidCells]);
-    // Phase 111 (2026-06-01 — react port): in-flight async-validator
+    // (2026-06-01 — react port): in-flight async-validator
     // state. `useRef` for the holder + sibling version counter for
-    // reactive re-render on writes (matches Phase 101 + Phase
+    // reactive re-render on writes (matches + Phase
     // 100.2.2.1 react pattern). Verbatim mirror of vue3.
     interface PendingAsyncValidation {
       readonly requestId: number;
@@ -2877,7 +2877,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const [, setPendingAsyncValidationVersion] = useState<number>(0);
     const nextAsyncValidationRequestIdRef = useRef<number>(1);
 
-    // Phase 115 (2026-06-02 — react port): reconcile invalid markers
+    // (2026-06-02 — react port): reconcile invalid markers
     // for a row's cells after a commit lands. Verbatim mirror of
     // vue3. Mutates `invalidCellsRef.current` in place via Map clone;
     // caller bumps the version + emits.
@@ -2931,7 +2931,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return (column: ColumnSpec, value: unknown, row: RowSpec) =>
         runCellValidator({ column, value, row });
     }, []);
-    // Phase 115 (2026-06-02 — react port): synthesize post-commit
+    // (2026-06-02 — react port): synthesize post-commit
     // row from a base row + mutations. Verbatim mirror of vue3.
     // Uses a columnTable lookup via the ref-mirror so the helper can
     // run before columnTable is declared in hook order.
@@ -2954,7 +2954,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       },
       [],
     );
-    // Phase 115 (2026-06-02 — react port): after a paste/drag-fill
+    // (2026-06-02 — react port): after a paste/drag-fill
     // mutation batch lands, run `rowValidators` against each affected
     // row's post-commit state. Verbatim mirror of vue3. Looks up
     // post-batch rows via a rowsRef (rowDataSource isn't yet declared
@@ -2989,8 +2989,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [reconcileRowValidationsForRow, synthesizePostCommitRow, emitInvalidCellsChange],
     );
 
-    // Phase 32 (2026-05-28 — react port): tooltip state. Verbatim port
-    // of vue3 Phase 32 wiring — single setTimeout-driven delay, state
+    // (2026-05-28 — react port): tooltip state. Verbatim port
+    // of vue3 wiring — single setTimeout-driven delay, state
     // captured at fire time, cleared on pointerleave / scroll / edit /
     // range-drag.
     const tooltipPendingCellRef = useRef<CellRef | null>(null);
@@ -3003,32 +3003,32 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       readonly y: number;
     } | null>(null);
 
-    // Phase 53: guards the editor `<input>` blur handler from double-
+    // guards the editor `<input>` blur handler from double-
     // firing commit / cancel when Enter / Tab / Esc keydown handler
     // already explicitly committed / cancelled. The keydown handler
     // sets this true before calling commit/cancel; blur reads it +
     // skips.
     const editCommitInProgressRef = useRef<boolean>(false);
 
-    // Phase 54 (vue3 Phase 13 equivalent): internal column-resize
+    // (vue3 equivalent): internal column-resize
     // transaction. `resizingColumnRef` is the canonical synchronous-
     // read holder (used by handle methods + pointermove gate);
     // `resizingColumnState` is the render-trigger mirror (consumed by
     // `columnsForLayout` so the layout pipeline re-derives on every
-    // pointermove tick). Same pattern as Phase 53 editingCellRef +
+    // pointermove tick). Same pattern as editingCellRef +
     // editingCellState.
     const resizingColumnRef = useRef<ColumnResizing | null>(null);
     const [resizingColumnState, setResizingColumnState] = useState<ColumnResizing | null>(null);
 
-    // Phase 54: guards `onPointerCancel` + `onLostPointerCapture`
+    // guards `onPointerCancel` + `onLostPointerCapture`
     // handlers from firing a redundant cancel when an explicit
-    // pointerup commit is in progress. Mirrors Phase 53's
+    // pointerup commit is in progress. Mirrors
     // editCommitInProgressRef; reset deferred to `queueMicrotask`
     // to absorb the async `lostpointercapture` that fires AFTER
     // pointerup releases the capture.
     const resizeCommitInProgressRef = useRef<boolean>(false);
 
-    // Phase 56 (2026-05-26 — react port of vue3 Phase 14): two-stage
+    // (2026-05-26 — react port of vue3): two-stage
     // column-move state. `pendingMoveColumnRef` is set on header-cell
     // pointerdown but the drag is NOT active until cursor crosses 5px
     // Chebyshev (then pending is cleared + movingColumnRef +
@@ -3038,27 +3038,27 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // synchronous-read holder (used by handle + pointermove gate);
     // `movingColumnState` is the render-trigger mirror (consumed by
     // render for drop-line + modifier classes). Same useRef-canonical-
-    // + useState-mirror pattern as Phase 54 ColumnResizing.
+    // + useState-mirror pattern as ColumnResizing.
     const pendingMoveColumnRef = useRef<PendingColumnMove | null>(null);
     const movingColumnRef = useRef<ColumnMoving | null>(null);
     const [movingColumnState, setMovingColumnState] = useState<ColumnMoving | null>(null);
-    // Phase 56: mirrors Phase 54 resizeCommitInProgressRef.
+    // mirrors resizeCommitInProgressRef.
     const moveCommitInProgressRef = useRef<boolean>(false);
 
-    // Phase 44 (react port): pending + in-flight row-drag state. Same
+    // (react port): pending + in-flight row-drag state. Same
     // useRef-canonical + useState-mirror pattern as column-move.
     const pendingMoveRowRef = useRef<PendingRowMove | null>(null);
     const movingRowRef = useRef<RowMoving | null>(null);
     const [movingRowState, setMovingRowState] = useState<RowMoving | null>(null);
 
-    // Phase 44.2 (2026-05-31 — react port): drag auto-scroll state.
+    // (2026-05-31 — react port): drag auto-scroll state.
     const autoScrollRafIdRef = useRef<number | null>(null);
     const autoScrollLatestClientYRef = useRef<number>(0);
     const warnedRowDragMixedRef = useRef<boolean>(false);
     const rowDragAutoScrollPropRef = useRef<RowDragAutoScrollConfig | undefined>(rowDragAutoScroll);
     rowDragAutoScrollPropRef.current = rowDragAutoScroll;
 
-    // Phase 54 Decision B.1: `columnsForLayout` patches the resizing
+    // Decision B.1: `columnsForLayout` patches the resizing
     // column's spec with the draft width during an in-flight resize
     // transaction. Substituting `{ ...col, width: draftWidth }` with
     // `flex` destructure-omitted is the load-bearing trick —
@@ -3082,15 +3082,15 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       });
     }, [columns, resizingColumnState]);
 
-    // Phase 52 (vue3 Phase 11 equivalent): pagePass is a passthrough
+    // (vue3 equivalent): pagePass is a passthrough
     // when paginationEnabled is false — feed `pageSize: 0` so the
-    // pipeline preserves Phase 48-51 identity-equal output. The
+    // pipeline preserves -51 identity-equal output. The
     // internal pageSizeState is still tracked for the imperative
     // handle methods, so consumers can pre-seed it before flipping
     // paginationEnabled.
     const effectivePageSize = paginationEnabled ? pageSizeState : 0;
 
-    // Phase 30.2 (react port, 2026-05-28): tree-data expand-state hook.
+    // (react port, 2026-05-28): tree-data expand-state hook.
     // The hook owns the source-of-truth Set; chevron-click / keyboard
     // shortcuts route through `toggle` / `expand` / `collapse`. The
     // callback fires `onExpandedChange` if the consumer supplied one.
@@ -3108,7 +3108,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       onChange: onExpandedChangeStable,
     });
 
-    // Phase 34 (2026-05-28 — react port): per-row lazy state. The Map
+    // (2026-05-28 — react port): per-row lazy state. The Map
     // is stored via setLazyChildrenState; we replace (not mutate) so
     // React detects the change. The Ref mirror lets stale-resolution
     // guards read the current state synchronously inside load callbacks.
@@ -3128,7 +3128,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return out;
     }, [lazyChildrenState]);
 
-    // Phase 30.2 Decision F.1: effective expand set = user manual set
+    // Decision F.1: effective expand set = user manual set
     // ∪ filter-auto-expanded ancestors. We use `useState` + `useEffect`
     // to break the cycle (useTableLayout consumes this; useTableLayout
     // produces `filterForceExpandedRowIds` which then feeds back).
@@ -3139,22 +3139,22 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     >(() => treeExpandState.expandedRowIdsSet);
 
     /**
-     * Phase 45 (2026-05-29 — react port): server-side row model session.
-     * Verbatim mirror of vue3 Phase 45 wiring. `serverSideSessionRef`
+     * (2026-05-29 — react port): server-side row model session.
+     * Verbatim mirror of vue3 wiring. `serverSideSessionRef`
      * is the sync-read holder; `serverSideVersion` is the re-render
      * trigger bumped by the source's subscribe listener.
      */
     const serverSideSessionRef = useRef<ServerSideRowSource | null>(null);
     const [serverSideVersion, setServerSideVersion] = useState(0);
 
-    // Phase 45.5 (2026-05-31 — react port) Decision A.1: previous-tick
+    // (2026-05-31 — react port) Decision A.1: previous-tick
     // viewport range refs for direction inference. Verbatim mirror of
-    // vue3 Phase 45.5 (refs instead of state — read-only inside the
+    // vue3 (refs instead of state — read-only inside the
     // viewport effect; no re-render needed when they change).
     const prevFirstVisibleRef = useRef<number | null>(null);
     const prevLastVisibleRef = useRef<number | null>(null);
 
-    // Phase 45.1 (2026-05-30 — react port) Decision A.1: pageSize
+    // (2026-05-30 — react port) Decision A.1: pageSize
     // OVERRIDES cacheBlockSize when paginationEnabled. Re-create the
     // session when pageSize changes (= paginationEnabled active +
     // pageSizeState transitions). Verbatim mirror of vue3 watch.
@@ -3176,7 +3176,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         typeof console !== 'undefined'
       ) {
         console.warn(
-          '[chronix-table] rowModelType:"serverSide" + paginationEnabled:true: cacheBlockSize prop is ignored; pageSize is used as the block size (Phase 45.1 A.1). Remove cacheBlockSize to silence this warning.',
+          '[chronix-table] rowModelType:"serverSide" + paginationEnabled:true: cacheBlockSize prop is ignored; pageSize is used as the block size (A.1). Remove cacheBlockSize to silence this warning.',
         );
       }
       const session = createServerSideRowSource(serverSideDataSource, {
@@ -3189,7 +3189,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const unsubscribe = session.subscribe(() => {
         setServerSideVersion((v) => v + 1);
       });
-      // Phase 45.4 (2026-05-31 — react port) Decision C.1: eager
+      // (2026-05-31 — react port) Decision C.1: eager
       // bootstrap fetch. Verbatim mirror of vue3.
       session.getRowAt(0);
       return () => {
@@ -3198,7 +3198,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         if (serverSideSessionRef.current === session) {
           serverSideSessionRef.current = null;
         }
-        // Phase 45.5 (2026-05-31 — react port) Decision A.1: reset
+        // (2026-05-31 — react port) Decision A.1: reset
         // direction-tracking refs on session teardown so a new session
         // (= mode/source change) doesn't carry stale prev-tick state.
         prevFirstVisibleRef.current = null;
@@ -3220,8 +3220,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       session.applyView({ sortModel: sortSpec, filterModel: filterSpec });
     }, [rowModelType, sortSpec, filterSpec]);
 
-    // Phase 45.3 (2026-05-31 — react port) Decision B.1: viewport-driven
-    // dispatch effect. Verbatim mirror of vue3. Phase 45.5
+    // (2026-05-31 — react port) Decision B.1: viewport-driven
+    // dispatch effect. Verbatim mirror of vue3.
     // (2026-05-31 — react port) Decision B.1 extends this effect with
     // direction-aware prefetch pass appended after visible-range
     // dispatch (gated on `serverSidePrefetchAheadBlocks > 0`).
@@ -3237,7 +3237,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       for (let i = firstVisible; i < lastVisible; i++) {
         session.getRowAt(i);
       }
-      // Phase 45.5 (2026-05-31 — react port) Decision A.1 + B.1:
+      // (2026-05-31 — react port) Decision A.1 + B.1:
       // direction-aware prefetch pass. Verbatim mirror of vue3.
       const prefetchAheadBlocks = Math.max(0, Math.floor(serverSidePrefetchAheadBlocks));
       if (prefetchAheadBlocks > 0) {
@@ -3271,8 +3271,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     ]);
 
     /**
-     * Phase 46-C (2026-05-30 — react port): per-row auto-height
-     * measurement state. Verbatim mirror of vue3 Phase 46-C with
+     * -C (2026-05-30 — react port): per-row auto-height
+     * measurement state. Verbatim mirror of vue3 -C with
      * useState + useRef React idioms. The Map ref is the sync-read
      * holder; setMeasuredRowHeightVersion triggers re-renders when
      * the observer mutates the map.
@@ -3346,8 +3346,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, [enableRowAutoHeight, measuredRowHeightVersion]);
 
     /**
-     * Phase 80 (2026-05-30 — react port): tool-panel container state.
-     * Verbatim mirror of vue3 Phase 80 wiring with React useState +
+     * (2026-05-30 — react port): tool-panel container state.
+     * Verbatim mirror of vue3 wiring with React useState +
      * useRef idioms. Stale callback refs avoid re-creating handlers
      * when only the panel state changes.
      */
@@ -3411,11 +3411,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [applyToolPanelWidthChange],
     );
 
-    /** Phase 83-A (2026-05-30 — react port). Verbatim mirror of vue3. */
+    /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
     const [openColumnHeaderMenuColId, setOpenColumnHeaderMenuColId] = useState<string | null>(null);
     const openColumnHeaderMenuColIdRef = useRef(openColumnHeaderMenuColId);
     openColumnHeaderMenuColIdRef.current = openColumnHeaderMenuColId;
-    /** Phase 83-B (2026-05-30 — react port). Verbatim mirror of vue3. */
+    /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
     const [contextMenuPosition, setContextMenuPosition] = useState<{
       readonly rowId: string | null;
       readonly colId: string | null;
@@ -3464,7 +3464,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const total = session.getTotalRowCount();
       if (total <= 0) return EMPTY_ROW_LIST;
       const blockSize = session.cacheBlockSize;
-      // Phase 45.1 (2026-05-30 — react port) Decision B.1: when
+      // (2026-05-30 — react port) Decision B.1: when
       // paginationEnabled, allocate ONLY the current page's rows.
       // Verbatim mirror of vue3.
       if (paginationEnabled) {
@@ -3488,7 +3488,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         }
         return pageRows;
       }
-      // Phase 45.3 (2026-05-31 — react port) Decision A.1 + B.1: peek-only
+      // (2026-05-31 — react port) Decision A.1 + B.1: peek-only
       // loop. Verbatim mirror of vue3.
       const result: RowSpec[] = new Array<RowSpec>(total);
       for (let i = 0; i < total; i++) {
@@ -3506,7 +3506,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return result;
     }, [rowModelType, serverSideVersion, paginationEnabled, pageSizeState, pageState]);
 
-    // Phase 45.1 (2026-05-30 — react port) Decision B.1: footer values
+    // (2026-05-30 — react port) Decision B.1: footer values
     // for serverSide + paginationEnabled mode. Verbatim mirror of vue3.
     const serverSidePaginationActive = rowModelType === 'serverSide' && paginationEnabled;
     const serverSideTotalRowsForFooter = useMemo(() => {
@@ -3562,7 +3562,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       topPinnedRows,
       bottomPinnedRows,
     } = useTableLayout({
-      // Phase 54 Decision B.1: `columnsForLayout` patches the
+      // Decision B.1: `columnsForLayout` patches the
       // resizing column's spec with the draft width when a resize
       // is in flight; identity-equal to `columns` otherwise.
       columns: columnsForLayout,
@@ -3585,8 +3585,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         : {}),
     });
 
-    // Phase 46-A (2026-05-30 — react port): displayed-row-index lookup
-    // derived from pagedRows. Verbatim mirror of vue3 Phase 46-A.
+    // -A (2026-05-30 — react port): displayed-row-index lookup
+    // derived from pagedRows. Verbatim mirror of vue3 -A.
     const displayedRowIndexByRowId = useMemo<Record<string, number>>(() => {
       const map: Record<string, number> = {};
       for (let i = 0; i < pagedRows.length; i++) {
@@ -3596,7 +3596,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return map;
     }, [pagedRows]);
 
-    // Phase 34 (2026-05-28 — react port): lazy children load helpers.
+    // (2026-05-28 — react port): lazy children load helpers.
     const findRowByIdRecursive = useCallback(
       (rowId: string): RowSpec | null => {
         const walk = (rs: readonly RowSpec[]): RowSpec | null => {
@@ -3703,7 +3703,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       });
     }, []);
 
-    // Phase 35 (2026-05-28 — react port): refs mirroring the latest
+    // (2026-05-28 — react port): refs mirroring the latest
     // hook outputs so `runExportToCsv` can read fresh values without
     // depending on (and re-creating on) every render-cycle of those
     // outputs. Refs are updated below in render; the handle method
@@ -3777,7 +3777,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
 
     const runExportToXlsxMultiSheet = useCallback(
       async (filename: string, sheets: readonly AdapterXlsxSheetSpec[]): Promise<void> => {
-        // Phase 39.1 (react port): mirror of vue3 method. Resolve each
+        // (react port): mirror of vue3 method. Resolve each
         // spec's rowSource via exportStateRef + delegate to core.
         const s = exportStateRef.current;
         const sheetInputs: SingleSheetExportToXlsxInput[] = sheets.map((spec) => {
@@ -3835,7 +3835,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
 
     const runExportToXlsx = useCallback(
       async (filename: string, options?: TableHandleExportToXlsxOptions): Promise<void> => {
-        // Phase 39 (react port): verbatim mirror of runExportToCsv with
+        // (react port): verbatim mirror of runExportToCsv with
         // the Blob mimetype + dynamic exportToXlsx await.
         const s = exportStateRef.current;
         const rowSource = options?.rowSource ?? 'filtered';
@@ -3890,7 +3890,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // filter-force set, OR the quick-find-force set changes. Identity-
     // preserving on stable inputs: when both force lists are empty,
     // returns the user set by reference so virtualRowsPass / pagePass
-    // memoizations survive. Phase 41 (2026-05-29) extended this union
+    // memoizations survive. extended this union
     // with `quickFindForceExpandedRowIds`.
     useEffect(() => {
       const userSet = treeExpandState.expandedRowIdsSet;
@@ -3918,12 +3918,12 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     void filteredRows;
 
     const columnTable = useMemo<ColumnTable>(() => createColumnTable(columns), [columns]);
-    /** Phase 83-A (2026-05-30 — react port): ref-mirror for imperative TableHandle access. */
+    /** -A (2026-05-30 — react port): ref-mirror for imperative TableHandle access. */
     const columnTableRef = useRef(columnTable);
     columnTableRef.current = columnTable;
     const rowDataSource = useMemo<RowDataSource>(() => createClientSideRowSource(rows), [rows]);
 
-    // Phase 84 (2026-05-31): ARIA keyboard nav menu container refs +
+    // ARIA keyboard nav menu container refs +
     // 4 hook instantiations. Each hook manages a roving-tabindex
     // `activeIndex` + ArrowDown/Up/Home/End handler scoped to its
     // menu container. Items lists are useMemo'd over the surfaces'
@@ -3990,7 +3990,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     });
 
     /**
-     * Phase 62 (2026-05-26 — react port of vue3 Phase 17): downstream
+     * (2026-05-26 — react port of vue3): downstream
      * of `columnLayoutPass` — partitions `visibleColumns` into left-
      * pinned / center / right-pinned zones and computes cumulative
      * sticky offsets for each pinned cell. The result is read by the
@@ -4008,7 +4008,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, [visibleColumns, widthByColId]);
 
     /**
-     * Phase 30.2 (react port, 2026-05-28): which visible column shows
+     * (react port, 2026-05-28): which visible column shows
      * the expand/collapse chevron + indent (Decision D.1). Explicitly
      * opt-in via `treeColumn: true`; dev-warn fallback to first visible
      * column when tree present but no opt-in.
@@ -4036,10 +4036,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return null;
     }, [visibleColumns, maxTreeDepth]);
 
-    // Phase 72 / Phase 23.1 (2026-05-27 — react port): table-wide
+    // (2026-05-27 — react port): table-wide
     // header-group depth + per-zone spans (one inner array per nesting
-    // level). Per vue3 Phase 23 Decision A.1, groups never span across
-    // pinned-zone boundaries. Per vue3 Phase 23.1 Decision B.1, all
+    // level). Per vue3 Decision A.1, groups never span across
+    // pinned-zone boundaries. Per vue3 Decision B.1, all
     // zones produce the SAME number of rows (table-wide max depth) by
     // top-padding shallower zones with empty placeholder rows.
     const tableMaxHeaderDepth = useMemo<number>(() => {
@@ -4075,7 +4075,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, [tableMaxHeaderDepth, columnTable, pinnedColsResult]);
 
     /**
-     * Phase 74 (2026-05-27 — react port of vue3 Phase 24): per-colId
+     * (2026-05-27 — react port of vue3): per-colId
      * aggregate values for the optional sticky footer row. useMemo
      * deps on `visibleColumns` + `filteredRows` + `showFooterRow` so
      * the footer recomputes when the filter spec narrows the input.
@@ -4087,12 +4087,12 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return computeFooterValues(visibleColumns, filteredRows);
     }, [showFooterRow, visibleColumns, filteredRows]);
 
-    // Phase 49 (vue3 Phase 8 equivalent): apply a sort spec with
+    // (vue3 equivalent): apply a sort spec with
     // rejection + diff semantics. Silently rejects when target column
     // has `sortable === false` or doesn't exist (matches sortPass).
     // No-op when spec is identical to current. Fires onSortChange on
     // every observable transition (including transition back to null).
-    // Phase 49 + 49.1 (vue3 Phase 8 + 8.1 equivalent): apply array
+    // + 49.1 (vue3 + 8.1 equivalent): apply array
     // sort spec with rejection + dedup semantics. Rejects atomically
     // when ANY entry's column has sortable===false or doesn't exist
     // (matches sortPass). Array equality by length + per-entry
@@ -4100,7 +4100,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // methods + cycle helpers can read sortSpecRef.current
     // synchronously (matches vue3 ref.value semantics).
     //
-    // Phase 52 (vue3 Phase 11 Decision C.1): on every observable sort
+    // (vue3 Decision C.1): on every observable sort
     // transition, reset page index to 0 (the user expects to see the
     // top of the newly-ordered list, not whatever page index they
     // happened to be on under the previous sort). Reset fires only
@@ -4132,12 +4132,12 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, onSortChange, paginationEnabled, onPageChange],
     );
 
-    // Phase 50 + 50.1 (vue3 Phase 9 + 9.1 equivalent): apply filter
+    // + 50.1 (vue3 + 9.1 equivalent): apply filter
     // spec array. Atomic rejection on filterable===false / unknown
     // column. Per-entry equality via filterSpecEqual (text + number
     // variants).
     //
-    // Phase 52 (vue3 Phase 11 Decision C.1): same auto-reset-to-page-0
+    // (vue3 Decision C.1): same auto-reset-to-page-0
     // applied to filter transitions as to sort transitions — the user
     // expects to see the top of the newly-filtered list. Reset only
     // fires when `paginationEnabled` is true and a transition actually
@@ -4145,7 +4145,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const applyFilter = useCallback(
       (next: readonly FilterSpec[]): void => {
         for (const entry of next) {
-          // Phase 42 (react port): expression-variant specs are
+          // (react port): expression-variant specs are
           // validated at filterPass evaluation time; skip the colId-
           // keyed pre-flight check here.
           if (entry.type === 'expression') continue;
@@ -4171,11 +4171,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, onFilterChange, paginationEnabled, onPageChange],
     );
 
-    // Phase 41 (2026-05-29 — react port): apply a new quick-find text.
+    // (2026-05-29 — react port): apply a new quick-find text.
     // Dedup identical-string applications. A non-empty → empty (or
     // empty → non-empty) transition resets pagination to page 0
-    // (matches filter transition posture per Phase 52 Decision C.1).
-    // Verbatim port of vue3 Phase 41.
+    // (matches filter transition posture per Decision C.1).
+    // Verbatim port of vue3 .
     const applyQuickFindText = useCallback(
       (next: string): void => {
         const current = quickFindTextRef.current;
@@ -4192,9 +4192,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [onQuickFindTextChange, paginationEnabled, onPageChange],
     );
 
-    // Phase 51 + 51.1 (vue3 Phase 10 + 10.1 equivalent): apply
+    // + 51.1 (vue3 + 10.1 equivalent): apply
     // selection array with dedup. Clears the shift+click anchor
-    // when next.length === 0 (Phase 10.1 — stale anchor would
+    // when next.length === 0 (stale anchor would
     // confuse next shift+click).
     const applySelection = useCallback(
       (next: readonly string[]): void => {
@@ -4212,7 +4212,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [onSelectionChange],
     );
 
-    // Phase 51.1: anchor write helper. Called from every click-site
+    // anchor write helper. Called from every click-site
     // (body row click + per-row checkbox click) AFTER applySelection.
     // Only writes when NOT shift+click — shift+click reads the anchor
     // without moving it.
@@ -4221,7 +4221,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       selectionAnchorRef.current = rowId;
     }, []);
 
-    // Phase 76 (2026-05-27 — react port of vue3 Phase 25): emit-only
+    // (2026-05-27 — react port of vue3): emit-only
     // column-visibility-change helper. Honors "at least one column
     // visible" guard per Decision C.1 — refuses to hide the LAST
     // currently-visible column (no-op + no emit). Dedupes no-op
@@ -4303,7 +4303,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       if (e.key === 'Escape') setColumnMenuOpen(false);
     }, []);
 
-    // Phase 76 (2026-05-27 — react port): document-level pointerdown
+    // (2026-05-27 — react port): document-level pointerdown
     // listener for outside-click-closes-popover. Registered ONCE on
     // mount via useEffect with empty deps; reads `columnMenuOpenRef`
     // (synced from `columnMenuOpen` state above) so the closure stays
@@ -4325,7 +4325,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       };
     }, []);
 
-    // Phase 52 (vue3 Phase 11 equivalent): apply a `(page, pageSize)`
+    // (vue3 equivalent): apply a `(page, pageSize)`
     // tuple. Dedup against the current tuple — no-op writes (e.g.
     // setPage(currentPage)) don't re-fire `onPageChange`. Page input
     // is NOT clamped here — pagePass clamps when materializing
@@ -4349,7 +4349,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [onPageChange],
     );
 
-    // Phase 53 (vue3 Phase 12 equivalent): programmatic draft-value
+    // (vue3 equivalent): programmatic draft-value
     // update. No-op when no edit is in progress. Does NOT fire any
     // callback (only commit fires `onCellValueChange`). Used
     // internally by the `<input>` onChange handler.
@@ -4366,12 +4366,12 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       setEditingCellState(next);
     }, []);
 
-    // Phase 53: commit the in-flight edit. Fires `onCellValueChange`
-    // iff `draftValue !== baseValue` (dedup matches Phase 51's
+    // commit the in-flight edit. Fires `onCellValueChange`
+    // iff `draftValue !== baseValue` (dedup matches
     // applySelection no-op-transition rule); always fires
     // `onCellEditStop {committed: true}`.
     //
-    // Phase 53.1 Decision B.1: coerce the editor's raw draft to the
+    // Decision B.1: coerce the editor's raw draft to the
     // column's typed value BEFORE emitting. Rejected coercion
     // (e.g. "abc" in a number column) aborts the commit — leaves
     // editingCellRef set so the `<input>` stays rendered with the
@@ -4399,8 +4399,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         });
         return;
       }
-      // Phase 101 (2026-06-01 — react port): post-coerce validator
-      // gate. Verbatim port of vue3 Phase 101 — same locked execution
+      // (2026-06-01 — react port): post-coerce validator
+      // gate. Verbatim port of vue3 same locked execution
       // order per Decision E.1 (coerce → validator → outcome). Map
       // mutation followed by version-counter bump triggers re-render.
       const validationError = runCellValidator({ value: coerced.value, row, column });
@@ -4420,8 +4420,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         });
         return;
       }
-      // Phase 111 (2026-06-01 — react port): async-validator gate.
-      // Verbatim mirror of vue3 Phase 111 — race-discard via
+      // (2026-06-01 — react port): async-validator gate.
+      // Verbatim mirror of vue3 race-discard via
       // monotonic requestId token + ref-backed map with version
       // counter for re-render. `nextAsyncValidationRequestIdRef`
       // increments in place so each commit attempt gets a unique
@@ -4480,7 +4480,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               },
             ]);
           }
-          // Phase 115: row-level validator pass on synthesized
+          // row-level validator pass on synthesized
           // post-commit row.
           const postCommitRow = synthesizePostCommitRow(row, [
             { colId: column.id, newValue: draftValue },
@@ -4494,7 +4494,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const finalValue = coerced.value;
       editingCellRef.current = null;
       setEditingCellState(null);
-      // Phase 101: clear any prior invalid-cell marker on success.
+      // clear any prior invalid-cell marker on success.
       const commitKey = invalidCellKey(row.id, column.id);
       let invalidCellsChanged = false;
       if (invalidCellsRef.current.has(commitKey)) {
@@ -4511,7 +4511,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           oldValue: current.baseValue,
           newValue: finalValue,
         });
-        // Phase 70 (2026-05-27 — react port of vue3 Phase 22): auto-
+        // (2026-05-27 — react port of vue3): auto-
         // record into mutation history. No-op when
         // `enableUndoHistory: false`.
         recordBatchInternal('cell-edit', [
@@ -4523,7 +4523,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           },
         ]);
       }
-      // Phase 115 (2026-06-02 — react port): row-level validator
+      // (2026-06-02 — react port): row-level validator
       // pass on the synthesized post-commit row.
       const postCommitRow = synthesizePostCommitRow(row, [
         { colId: column.id, newValue: finalValue },
@@ -4544,7 +4544,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       recordBatchInternal,
     ]);
 
-    // Phase 53: cancel the in-flight edit (revert to baseValue).
+    // cancel the in-flight edit (revert to baseValue).
     // Fires `onCellEditStop {committed: false}`. No `onCellValueChange`
     // emit.
     const applyEditCancel = useCallback((): void => {
@@ -4555,7 +4555,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       editingCellRef.current = null;
       setEditingCellState(null);
       if (column == null || row == null) return;
-      // Phase 101 (2026-06-01 — react port): clear pending validator-
+      // (2026-06-01 — react port): clear pending validator-
       // rejection marker (baseValue was previously valid).
       const cancelKey = invalidCellKey(row.id, column.id);
       let invalidCellsChanged = false;
@@ -4566,7 +4566,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         setInvalidCellsVersion((v) => v + 1);
         invalidCellsChanged = true;
       }
-      // Phase 111 (2026-06-01 — react port): discard any in-flight
+      // (2026-06-01 — react port): discard any in-flight
       // async validation for this cell. Verbatim mirror of vue3.
       if (pendingAsyncValidationByKeyRef.current.has(cancelKey)) {
         const nextPending = new Map(pendingAsyncValidationByKeyRef.current);
@@ -4578,7 +4578,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       onCellEditStop?.({ row, column, committed: false, finalValue: current.baseValue });
     }, [columnTable, rowDataSource, invalidCellKey, emitInvalidCellsChange, onCellEditStop]);
 
-    // Phase 53: open the editor on `(rowId, colId)`.
+    // open the editor on `(rowId, colId)`.
     // - Column must have `editable === true`. Silent no-op otherwise.
     // - Row must exist. Silent no-op otherwise.
     // - If an edit is already open on a DIFFERENT cell, commit the
@@ -4614,7 +4614,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, rowDataSource, applyEditCommit, onCellEditStart],
     );
 
-    // Phase 54 (vue3 Phase 13 equivalent): open a column-resize
+    // (vue3 equivalent): open a column-resize
     // session for `colId`. Silent no-op when the column doesn't exist,
     // is `resizable: false`, or another resize is already in flight
     // for the same column. Reads the current resolved width from
@@ -4639,7 +4639,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, widthByColId, onColumnResizeStart],
     );
 
-    // Phase 54: update the draftWidth based on the current pointer X
+    // update the draftWidth based on the current pointer X
     // position. Computes `raw = baseWidth + (currentClientX - startX)`
     // then clamps via `clampResizeWidth` so per-column min/max bounds
     // are respected. Reassigns `resizingColumnRef` + state with a
@@ -4667,9 +4667,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, mergedTheme.defaultMinColumnWidth],
     );
 
-    // Phase 54: commit the in-flight resize. Fires
+    // commit the in-flight resize. Fires
     // `onColumnWidthChange` iff `draftWidth !== baseWidth` (no-op
-    // dedup matches Phase 53's `onCellValueChange` rule); always
+    // dedup matches `onCellValueChange` rule); always
     // fires `onColumnResizeStop {committed: true}`. Clears the resize
     // state.
     const applyResizeCommit = useCallback((): void => {
@@ -4687,7 +4687,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       onColumnResizeStop?.({ column, committed: true, finalWidth });
     }, [columnTable, onColumnWidthChange, onColumnResizeStop]);
 
-    // Phase 54: cancel the in-flight resize (revert to baseWidth).
+    // cancel the in-flight resize (revert to baseWidth).
     // Fires `onColumnResizeStop {committed: false}` only. No
     // `onColumnWidthChange` callback.
     const applyResizeCancel = useCallback((): void => {
@@ -4701,8 +4701,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       onColumnResizeStop?.({ column, committed: false, finalWidth: baseWidth });
     }, [columnTable, onColumnResizeStop]);
 
-    // ─────────────────────── Phase 58 (2026-05-26 — react port of vue3 Phase 15): column autosize ───────────────────────
-    // Verbatim port of vue3 Phase 15 — lazy-init hidden Canvas + Canvas.measureText
+    // ─────────────────────── (2026-05-26 — react port of vue3): column autosize ───────────────────────
+    // Verbatim port of vue3 lazy-init hidden Canvas + Canvas.measureText
     // for text width measurement; pure `computeAutosizeWidth` clamp. Reuses Phase
     // 54's `onColumnWidthChange` callback as the persistence channel (Decision
     // A.1 inherits — autosize is just another path producing a width change).
@@ -4717,7 +4717,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       (colId: string): void => {
         const column = columnTable.getById(colId);
         if (column == null) return;
-        // Phase 58: cannot mutate a non-resizable column's width;
+        // cannot mutate a non-resizable column's width;
         // explicit autosizeable:false opts out without affecting resize.
         if (column.resizable === false) return;
         if (column.autosizeable === false) return;
@@ -4759,7 +4759,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           ...(column.maxWidth != null ? { maxWidth: column.maxWidth } : {}),
           headerWidth,
         });
-        if (newWidth === baseWidth) return; // no-op dedup matches Phase 54
+        if (newWidth === baseWidth) return; // no-op dedup matches
         onColumnWidthChange?.({ column, oldWidth: baseWidth, newWidth });
       },
       [
@@ -4778,7 +4778,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       }
     }, [headerCells, applyAutosize]);
 
-    /** Phase 83-A (2026-05-30 — react port). Verbatim mirror of vue3. */
+    /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
     const onColumnHeaderMenuItemClick = useCallback(
       (
         colId: string,
@@ -4801,7 +4801,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [applySort, applyColumnVisibilityChange, applyAutosize, applyOpenColumnHeaderMenu],
     );
 
-    /** Phase 83-B (2026-05-30 — react port). Verbatim mirror of vue3. */
+    /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
     const onCellContextMenu = useCallback(
       (rowId: string, colId: string, e: ReactMouseEvent): void => {
         const cfg = contextMenuRef.current;
@@ -4826,7 +4826,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [applyCloseContextMenu],
     );
 
-    // Phase 83 (2026-05-30 — react port): document-level close-on-
+    // (2026-05-30 — react port): document-level close-on-
     // outside + close-on-Escape listeners shared by column header
     // menu + cell context menu.
     useEffect(() => {
@@ -4846,7 +4846,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             applyCloseContextMenu();
           }
         }
-        // Phase 99.2 (2026-05-31 — react port): outside-click closes
+        // (2026-05-31 — react port): outside-click closes
         // the cell style editor popover. Verbatim mirror of vue3.
         // Cancel logic is inlined (rather than calling the
         // `cancelCellStyleEditor` useCallback) to avoid a forward
@@ -4871,7 +4871,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           applyCloseContextMenu();
           e.stopPropagation();
         }
-        // Phase 99.2 (2026-05-31 — react port): Escape closes editor.
+        // (2026-05-31 — react port): Escape closes editor.
         if (cellStyleEditorOpenStateRef.current != null) {
           setCellStyleEditorOpen(null);
           cellStyleSquareDragRef.current = false;
@@ -4887,7 +4887,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       };
     }, [applyOpenColumnHeaderMenu, applyCloseContextMenu]);
 
-    // Phase 56 (2026-05-26 — react port of vue3 Phase 14): live
+    // (2026-05-26 — react port of vue3): live
     // getBoundingClientRect snapshot for every visible header cell.
     // Empty Map when wrapper unmounted. Verbatim port of vue3 helper.
     const getHeaderCellRectsLive = useCallback((): ReadonlyMap<string, ColumnHeaderRect> => {
@@ -4904,7 +4904,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return rects;
     }, []);
 
-    // Phase 56: convert a clientX drop target to wrapper-relative px.
+    // convert a clientX drop target to wrapper-relative px.
     const resolveDropLineLeftPx = useCallback(
       (
         dropTarget: ColumnDropTarget,
@@ -4922,7 +4922,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [],
     );
 
-    // Phase 56: promote pending → active. Fires onColumnMoveStart.
+    // promote pending → active. Fires onColumnMoveStart.
     const applyMoveStart = useCallback(
       (colId: string, startClientX: number, pointerId: number): void => {
         const column = columnTable.getById(colId);
@@ -4942,14 +4942,14 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, onColumnMoveStart],
     );
 
-    // Phase 56: recompute drop target on every pointermove. Dedup
+    // recompute drop target on every pointermove. Dedup
     // skips re-assign when target + line position unchanged.
     const applyMoveDraft = useCallback(
       (currentClientX: number): void => {
         const current = movingColumnRef.current;
         if (current == null) return;
         const rects = getHeaderCellRectsLive();
-        // Phase 18 (2026-05-27 — react port of Phase 18 vue3 baseline):
+        // (2026-05-27 — react port vue3 baseline):
         // pinned-zone guard. See vue3 adapter comment for the rationale
         // (same closure: cross-zone candidates skipped → null → no drop
         // indicator + no onColumnOrderChange callback).
@@ -4979,7 +4979,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [getHeaderCellRectsLive, resolveDropLineLeftPx, visibleColumns],
     );
 
-    // Phase 56: commit in-flight move. Fires onColumnOrderChange iff
+    // commit in-flight move. Fires onColumnOrderChange iff
     // meaningful reorder. Always fires onColumnMoveStop {committed:true}.
     const applyMoveCommit = useCallback((): void => {
       const current = movingColumnRef.current;
@@ -5014,7 +5014,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       onColumnMoveStop?.({ column: movedColumn, committed: true, dropTarget });
     }, [columns, columnTable, onColumnOrderChange, onColumnMoveStop]);
 
-    // Phase 56: cancel in-flight move (no reorder).
+    // cancel in-flight move (no reorder).
     const applyMoveCancel = useCallback((): void => {
       const current = movingColumnRef.current;
       if (current == null) return;
@@ -5026,8 +5026,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, [columnTable, onColumnMoveStop]);
 
     /**
-     * Phase 44 (2026-05-29 — react port): row-drag apply* family.
-     * Verbatim mirror of vue3 Phase 44.
+     * (2026-05-29 — react port): row-drag apply* family.
+     * Verbatim mirror of vue3 .
      */
     const findRowById = useCallback(
       (rowId: string): RowSpec | null => {
@@ -5191,7 +5191,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [findRowById],
     );
 
-    // Phase 44.2 (2026-05-31 — react port): drag auto-scroll rAF loop.
+    // (2026-05-31 — react port): drag auto-scroll rAF loop.
     // Verbatim mirror of vue3 wiring. `bodyRef.current` reads the body
     // element synchronously (mirror of vue3's bodyRef.value).
     const ensureAutoScrollLoopRunning = useCallback((): void => {
@@ -5292,14 +5292,14 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [applyRowMoveCancel, cancelAutoScrollLoop],
     );
 
-    // Phase 44.2 (react port): cleanup any in-flight rAF on unmount.
+    // (react port): cleanup any in-flight rAF on unmount.
     useEffect(() => {
       return () => {
         cancelAutoScrollLoop();
       };
     }, [cancelAutoScrollLoop]);
 
-    // ─────────────────────── Phase 60 (2026-05-26 — react port of vue3 Phase 16): cell range selection ───────────────────────
+    // ─────────────────────── (2026-05-26 — react port of vue3): cell range selection ───────────────────────
     // 2-point {anchor, focus} state shape (Decision B.1) + pure
     // `computeCellRangeEnvelope` derivation. Drag-extend via pointer-
     // capture + document.elementFromPoint resolution (Decision C.1).
@@ -5451,7 +5451,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [cellRangeSelection, applyCellRangeDraft, applyCellRangeStop],
     );
 
-    // ─────────────────────── Phase 64 (2026-05-27 — react port of vue3 Phase 19): clipboard copy ───────────────────────
+    // ─────────────────────── (2026-05-27 — react port of vue3): clipboard copy ───────────────────────
     // Shared TSV-synthesis + writeText + callback path. Both the Ctrl+C
     // keydown handler and the programmatic `copyCellRangeToClipboard()`
     // handle method route through here so the same fail-soft + callback
@@ -5480,7 +5480,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [cellRangeSelection, cellRangeEnvelope, rows, columns, onCellRangeCopy],
     );
 
-    // Phase 66 (2026-05-27 — react port of vue3 Phase 20): shared
+    // (2026-05-27 — react port of vue3): shared
     // TSV-readText + parse + map + callback path for clipboard paste.
     // Both the Ctrl+V keydown handler and the programmatic
     // `pasteCellRangeFromClipboard()` handle method route through
@@ -5515,7 +5515,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           resolvePasteValidatorGate(),
         );
         onCellRangePaste?.({ envelope: envelopeNow, mutations, text, jsEvent });
-        // Phase 70 (2026-05-27): auto-record into mutation history.
+        // auto-record into mutation history.
         recordBatchInternal('cell-range-paste', mutations);
         runPostBatchRowValidations(mutations);
         return mutations;
@@ -5532,7 +5532,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       ],
     );
 
-    // Phase 68 (2026-05-27 — react port of vue3 Phase 21): drag-fill
+    // (2026-05-27 — react port of vue3): drag-fill
     // state. Per Bundle I Decision B.1 — refs hold imperative state
     // read inside handlers (no re-render dependency); a parallel
     // useState slot mirrors the preview envelope so the preview-set
@@ -5570,7 +5570,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, [dragFillPreviewState]);
 
     /**
-     * Phase 68: pointerdown handler attached to the drag-fill handle
+     * pointerdown handler attached to the drag-fill handle
      * overlay. Verbatim port of vue3's `onDragFillPointerdown`.
      */
     const onDragFillPointerDown = useCallback(
@@ -5600,7 +5600,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     );
 
     /**
-     * Phase 68: pointermove handler. Verbatim port of vue3's
+     * pointermove handler. Verbatim port of vue3's
      * `onDragFillPointermove` — resolves cell under pointer +
      * computeDragFillEnvelope + fires `onCellRangeFillChange` with
      * no-op dedup via `sameEnvelope`. Updates BOTH the imperative ref
@@ -5637,7 +5637,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     );
 
     /**
-     * Phase 68: pointerup handler. Verbatim port of vue3's
+     * pointerup handler. Verbatim port of vue3's
      * `onDragFillPointerup` — computes mutations + fires
      * `onCellRangeFill` + auto-extends the active cell-range to cover
      * the fill envelope.
@@ -5674,7 +5674,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           applyCellRangeDraft(fillFocus, null);
         }
         onCellRangeFill?.({ source, fill, mutations, jsEvent: e });
-        // Phase 70: auto-record into mutation history.
+        // auto-record into mutation history.
         recordBatchInternal('cell-range-fill', mutations);
         runPostBatchRowValidations(mutations);
       },
@@ -5691,7 +5691,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     );
 
     /**
-     * Phase 68: pointercancel handler. Drops the gesture without
+     * pointercancel handler. Drops the gesture without
      * firing the commit callback.
      */
     const onDragFillPointerCancel = useCallback((e: ReactPointerEvent<HTMLDivElement>): void => {
@@ -5705,7 +5705,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, []);
 
     /**
-     * Phase 68: programmatic drag-fill commit (TableHandle method).
+     * programmatic drag-fill commit (TableHandle method).
      * Reads the live `cellRangeRef.current` + recomputes the source
      * envelope locally (NOT the closed-over `cellRangeEnvelope`
      * useMemo) so a consumer can call `setCellRange(...)` immediately
@@ -5746,7 +5746,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         applyCellRangeStart(fillAnchor, null);
         applyCellRangeDraft(fillFocus, null);
         onCellRangeFill?.({ source, fill, mutations, jsEvent: null });
-        // Phase 70: auto-record into mutation history.
+        // auto-record into mutation history.
         recordBatchInternal('cell-range-fill', mutations);
         runPostBatchRowValidations(mutations);
         return mutations;
@@ -5766,21 +5766,21 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       ],
     );
 
-    // Phase 64: body keydown handler. Gated on
+    // body keydown handler. Gated on
     // `cellRangeSelection === 'enabled'` + Ctrl+C / Cmd+C. Calls
     // `e.preventDefault()` only when the gate passes so other
     // keystrokes propagate normally.
     //
-    // Phase 66 (2026-05-27): extended to also detect Ctrl+V / Cmd+V
+    // extended to also detect Ctrl+V / Cmd+V
     // for the paste gesture. Same gate; same `e.preventDefault()`
     // discipline; single shared dispatch.
     //
-    // Phase 70 (2026-05-27 — react port of vue3 Phase 22): extended
+    // (2026-05-27 — react port of vue3): extended
     // to also detect Ctrl+Z (undo) + Ctrl+Y / Ctrl+Shift+Z (redo).
     // The undo / redo branches gate INDEPENDENTLY of `cellRangeSelection`
     // so consumers can use the history without enabling cell-range
     // selection.
-    // Phase 77 (2026-05-28 — react port of vue3 Phase 27): pinned-zone-
+    // (2026-05-28 — react port of vue3): pinned-zone-
     // aware auto-scroll to bring the given cell into the body viewport.
     // Skips horizontal axis when the cell is in a pinned column (sticky
     // positioning → always visible regardless of scrollLeft). Defined
@@ -5828,11 +5828,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [rowYByRowId, rowHeightByRowId, widthByColId, visibleColumns, pinnedColsResult, mergedTheme],
     );
 
-    // Phase 76 (2026-05-28 — react port of vue3 Phase 26): emit-only
+    // (2026-05-28 — react port of vue3): emit-only
     // active-cell-change helper. Dedupes no-op transitions. Pass null
     // for `cell` to clear; the callback fires with `rowId: null,
     // colId: null`.
-    // Phase 77 (2026-05-28 — react port of vue3 Phase 27): optional
+    // (2026-05-28 — react port of vue3): optional
     // `autoScroll` opt. Keyboard handler + programmatic `setActiveCell`
     // pass `true`; click handler + `clearActiveCell` keep default
     // `false`.
@@ -5857,9 +5857,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         if (opts?.autoScroll === true && cell != null && enableKeyboardAutoScroll) {
           runAutoScrollToCell(cell);
         }
-        // Phase 40 (2026-05-29 — react port): produce live-region
+        // (2026-05-29 — react port): produce live-region
         // announce text for keyboard-driven transitions. Verbatim
-        // mirror of vue3 Phase 40 wiring.
+        // mirror of vue3 wiring.
         if (opts?.announce === true && cell != null) {
           const row = rowDataSource.getById(cell.rowId);
           const column = columnTable.getById(cell.colId);
@@ -5904,7 +5904,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     );
 
     /**
-     * Phase 30.2 (react port, 2026-05-28): tree-data keyboard handler
+     * (react port, 2026-05-28): tree-data keyboard handler
      * (Decision N.1). Returns `true` when the keystroke was consumed
      * or `false` to let the existing nav logic run. Verbatim port of
      * vue3 `maybeHandleTreeKeyboard`. Defined AFTER `applyActiveCellChange`
@@ -5967,14 +5967,14 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const onBodyKeyDown = useCallback(
       (e: ReactKeyboardEvent<HTMLDivElement>): void => {
         const modifier = e.ctrlKey || e.metaKey;
-        // Phase 76 (2026-05-28 — react port of vue3 Phase 26): cell-
+        // (2026-05-28 — react port of vue3): cell-
         // level keyboard navigation. Gated on enableKeyboardNavigation
         // + editor NOT active. Handles non-modifier nav keys + Ctrl+
         // Home / Ctrl+End. Existing modifier branches stay reachable
         // through fall-through.
         if (enableKeyboardNavigation && editingCellRef.current == null) {
           const navKey = e.key;
-          // Phase 30.2 (react port, 2026-05-28): tree-data shortcuts
+          // (react port, 2026-05-28): tree-data shortcuts
           // (Enter/Space toggle, ArrowR expand, ArrowL collapse/parent-
           // jump) handled BEFORE nav-direction resolution so tree
           // gestures take precedence over edit-start + arrow-nav for
@@ -5995,7 +5995,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             const rowHeight = mergedTheme.rowHeight;
             const pageRowCount = Math.max(1, Math.floor((bodyClientHeight || 0) / rowHeight) || 1);
             const current = activeCellRef.current;
-            // Phase 79 (2026-05-28 — react port of vue3 Phase 29):
+            // (2026-05-28 — react port of vue3):
             // Ctrl+Arrow short-circuits to a data-region boundary jump.
             const isArrowKey =
               navKey === 'ArrowLeft' ||
@@ -6032,7 +6032,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             }
             if (next != null) {
               e.preventDefault();
-              // Phase 78 (2026-05-28 — react port of vue3 Phase 28):
+              // (2026-05-28 — react port of vue3):
               // shift+arrow extends cell-range; plain arrow with active
               // range collapses it (Decisions A.1 + B.1).
               if (e.shiftKey && cellRangeSelection === 'enabled') {
@@ -6063,7 +6063,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               }
             }
           }
-          // Phase 78 (Decision C.1): Escape clears BOTH activeCell + cellRange.
+          // (Decision C.1): Escape clears BOTH activeCell + cellRange.
           if (
             navKey === 'Escape' &&
             (activeCellRef.current != null || cellRangeRef.current != null)
@@ -6075,7 +6075,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         }
         if (!modifier) return;
         const key = e.key.toLowerCase();
-        // Phase 70 undo / redo dispatch.
+        // undo / redo dispatch.
         if (enableUndoHistory) {
           const isUndo = key === 'z' && !e.shiftKey;
           const isRedo = (key === 'z' && e.shiftKey) || key === 'y';
@@ -6090,7 +6090,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             return;
           }
         }
-        // Phase 64 / 66 cell-range clipboard dispatch.
+        // cell-range clipboard dispatch.
         if (cellRangeSelection !== 'enabled') return;
         const isCopyKey = key === 'c';
         const isPasteKey = key === 'v';
@@ -6126,7 +6126,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       ],
     );
 
-    // Phase 50 + 50.1: per-column filter-input update. Dispatches on
+    // + 50.1: per-column filter-input update. Dispatches on
     // column.type: 'number' → parsePrefixNumberFilter (supports `5`,
     // `>10`, `<20`, `>=5`, `<=10`, `!=3`, `5..50`); other → text
     // filter with 'contains' operator. Empty value (or invalid
@@ -6169,7 +6169,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, applyFilter],
     );
 
-    // Phase 50.1: round-trip the current filter spec back to the
+    // round-trip the current filter spec back to the
     // visible input value for a given column. Lets external
     // setFilter calls reactively update the input text.
     const filterInputValueFor = useCallback((colId: string): string => {
@@ -6182,8 +6182,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return '';
     }, []);
 
-    // Phase 43 (2026-05-29 — react port): set-filter dropdown helpers.
-    // Verbatim port of vue3 Phase 43 surface — reads from filterSpecRef
+    // (2026-05-29 — react port): set-filter dropdown helpers.
+    // Verbatim port of vue3 surface — reads from filterSpecRef
     // for always-current state + dispatches via applyFilter.
     const getSetFilterValues = useCallback(
       (colId: string): readonly (string | number | boolean | null)[] | null => {
@@ -6265,8 +6265,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [getSetFilterValues, applySetFilterValues, isSetFilterValueChecked],
     );
 
-    // Phase 102 (2026-06-01 — react port): multi-filter container
-    // helpers. Verbatim port of vue3 Phase 102. The slot-count warn
+    // (2026-06-01 — react port): multi-filter container
+    // helpers. Verbatim port of vue3 . The slot-count warn
     // registry is a `useRef<Set>` (no version counter needed; we
     // never read it during render — only mutate inside the bootstrap
     // path where the `console.warn` side effect is the goal).
@@ -6298,7 +6298,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           if (kind === 'set') return { type: 'set', selectedValues: null };
           return { type: 'number', operator: '=', value: 0 };
         });
-        // Phase 114 (2026-06-02 — react port): consumer-supplied default mode.
+        // (2026-06-02 — react port): consumer-supplied default mode.
         return { type: 'multi', colId: col.id, mode: multiFilterDefaultMode, filters };
       },
       [multiFilterDefaultMode],
@@ -6323,7 +6323,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       (col: ColumnSpec, slotIdx: number, rawValue: string): void => {
         const current = getMultiFilterSpec(col.id) ?? bootstrapMultiFilterSpec(col);
         const existing = current.filters[slotIdx];
-        // Phase 117 (2026-06-02 — react port): skip when slot is a group.
+        // (2026-06-02 — react port): skip when slot is a group.
         if (existing?.type === 'group') return;
         const slotKind = (col.multiFilterChildTypes ?? (['text', 'text'] as const))[slotIdx];
         if (slotKind == null) return;
@@ -6345,7 +6345,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       },
       [getMultiFilterSpec, bootstrapMultiFilterSpec, applyMultiFilterSpec],
     );
-    // Phase 116 (2026-06-02 — react port): set-child membership toggle.
+    // (2026-06-02 — react port): set-child membership toggle.
     const toggleMultiFilterChildSetValue = useCallback(
       (col: ColumnSpec, slotIdx: number, value: string | number | boolean | null): void => {
         const current = getMultiFilterSpec(col.id) ?? bootstrapMultiFilterSpec(col);
@@ -6382,11 +6382,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       },
       [getMultiFilterSpec],
     );
-    // Phase 117.1 (2026-06-02 — react port): path-based mutation helpers.
+    // (2026-06-02 — react port): path-based mutation helpers.
     const getMultiFilterEntryAtPathInternal = useCallback(
       (colId: string, path: readonly number[]): MultiFilterEntry | null => {
         if (path.length === 0) {
-          throw new Error('Phase 117.1: empty path not allowed; use getFilter() for root spec.');
+          throw new Error('empty path not allowed; use getFilter() for root spec.');
         }
         const spec = getMultiFilterSpec(colId);
         if (spec == null) return null;
@@ -6430,7 +6430,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const setMultiFilterEntryAtPathInternal = useCallback(
       (col: ColumnSpec, path: readonly number[], next: MultiFilterEntry): void => {
         if (path.length === 0) {
-          throw new Error('Phase 117.1: empty path not allowed; use setFilter() for root spec.');
+          throw new Error('empty path not allowed; use setFilter() for root spec.');
         }
         const current = getMultiFilterSpec(col.id) ?? bootstrapMultiFilterSpec(col);
         const rebuilt = replaceEntryAtPath(current.filters, path, 0, next);
@@ -6464,7 +6464,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const removeMultiFilterEntryAtPathInternal = useCallback(
       (col: ColumnSpec, path: readonly number[]): void => {
         if (path.length === 0) {
-          throw new Error('Phase 117.1: empty path not allowed; use setFilter(null) to clear.');
+          throw new Error('empty path not allowed; use setFilter(null) to clear.');
         }
         const current = getMultiFilterSpec(col.id);
         if (current == null) return;
@@ -6500,9 +6500,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [getMultiFilterSpec],
     );
 
-    // Phase 98.2 (2026-05-31 — react port): read the current Number
+    // (2026-05-31 — react port): read the current Number
     // filter range for a column from the filterSpec. Verbatim port
-    // of vue3 Phase 98.2 helper.
+    // of vue3 helper.
     const readNumberFilterRangeForCol = useCallback(
       (colId: string, extents: { min: number; max: number }): { low: number; high: number } => {
         const entry = filterSpec.find(
@@ -6519,7 +6519,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [filterSpec],
     );
 
-    // Phase 98.2 (2026-05-31 — react port): map a slider value to a
+    // (2026-05-31 — react port): map a slider value to a
     // percent along the track. Verbatim port of vue3 helper.
     const rangeThumbLeftPercent = useCallback(
       (value: number, extents: { min: number; max: number }): number => {
@@ -6532,8 +6532,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [],
     );
 
-    // Phase 99.2 (2026-05-31 — react port) + Phase 99.2.1 + Phase
-    // 99.2.2 + Phase 99.2.3 (2026-06-01 — react port): cell style
+    // (2026-05-31 — react port) + + Phase
+    // 99.2.2 + (2026-06-01 — react port): cell style
     // editor helpers. Verbatim port of vue3.
     const openCellStyleEditor = useCallback(
       (rowId: string, colId: string): void => {
@@ -6555,7 +6555,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         const persistedBorderWidth = persistedEntry?.borderWidth ?? null;
         const persistedBorderStyle = persistedEntry?.borderStyle ?? null;
         const persistedBorderRadius = persistedEntry?.borderRadius ?? null;
-        // Phase 99.2.3.1 (2026-06-01 — react port): 12 per-side fields.
+        // (2026-06-01 — react port): 12 per-side fields.
         const persistedBorderTopColor = persistedEntry?.borderTopColor ?? null;
         const persistedBorderTopWidth = persistedEntry?.borderTopWidth ?? null;
         const persistedBorderTopStyle = persistedEntry?.borderTopStyle ?? null;
@@ -6694,7 +6694,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       });
     }, []);
 
-    // Phase 99.2.2.1 (2026-06-01 — react port): set custom font weight.
+    // (2026-06-01 — react port): set custom font weight.
     const setCellStyleFontWeight = useCallback((value: string | null): void => {
       setCellStyleEditorOpen((state) => {
         if (state == null) return null;
@@ -6731,7 +6731,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [],
     );
 
-    // Phase 99.2.3.1 (2026-06-01 — react port): compute borderState
+    // (2026-06-01 — react port): compute borderState
     // field name for axis + target. Verbatim mirror of vue3.
     function borderFieldFor(
       axis: 'Color' | 'Width' | 'Style',
@@ -6865,7 +6865,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, []);
 
     const applyCellStyleEditor = useCallback((): void => {
-      // Phase 99.2.4 (2026-06-01 — react port): gate internal writes
+      // (2026-06-01 — react port): gate internal writes
       // behind isUncontrolled. Verbatim mirror of vue3.
       const isUncontrolled = cellStyleByRowIdColId === undefined;
       setCellStyleEditorOpen((state) => {
@@ -6914,7 +6914,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               if (borderState.borderRadius !== null)
                 nextForCell.borderRadius = borderState.borderRadius;
               else delete nextForCell.borderRadius;
-              // Phase 99.2.3.1 (2026-06-01 — react port): 12 per-side fields.
+              // (2026-06-01 — react port): 12 per-side fields.
               if (borderState.borderTopColor !== null)
                 nextForCell.borderTopColor = borderState.borderTopColor;
               else delete nextForCell.borderTopColor;
@@ -6954,8 +6954,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               return { ...prev, [rowId]: { ...prevForRow, [colId]: nextForCell } };
             });
           }
-          // Phase 99.2.5 (2026-06-01 — react port): track recent
-          // borderColor (skip null). Phase 99.2.3.1: also push per-side.
+          // (2026-06-01 — react port): track recent
+          // borderColor (skip null). also push per-side.
           if (borderState.borderColor !== null) {
             pushRecentCellStyleColor(borderState.borderColor);
           }
@@ -7006,7 +7006,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               };
             });
           }
-          // Phase 99.2.5 (2026-06-01 — react port): track recent
+          // (2026-06-01 — react port): track recent
           // bg/text color.
           pushRecentCellStyleColor(hex);
           onCellStyleChange?.({ rowId, colId, style: { [field]: hex } });
@@ -7070,7 +7070,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           'borderLeftWidth',
           'borderLeftStyle',
         ] as const satisfies readonly (keyof CellStyleEntry)[];
-        // Phase 99.2.4 (2026-06-01 — react port): gate internal Clear
+        // (2026-06-01 — react port): gate internal Clear
         // writes behind isUncontrolled. Verbatim mirror of vue3.
         const isUncontrolled = cellStyleByRowIdColId === undefined;
         if (isUncontrolled)
@@ -7145,14 +7145,14 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [],
     );
 
-    // Phase 51 + 51.1: OS-conventional row-click selection semantics.
+    // + 51.1: OS-conventional row-click selection semantics.
     // - 'none' → no-op.
     // - 'single' → plain click replaces; only-selected click deselects.
     // - 'multi' → plain click replaces; Ctrl/Cmd+click toggles;
-    //   shift+click range from selectionAnchor (Phase 51.1).
+    //   shift+click range from selectionAnchor .
     /**
-     * Phase 30.1.1 (react port, 2026-05-28): cascade-add / cascade-
-     * remove helpers. Verbatim port of vue3 Phase 30.1.1 helpers; in
+     * (react port, 2026-05-28): cascade-add / cascade-
+     * remove helpers. Verbatim port of vue3 helpers; in
      * react these are useCallback'd so other useCallbacks can depend
      * on stable references.
      */
@@ -7197,10 +7197,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         const current = selectedRowIdsRef.current;
         if (mode === 'none') return current;
 
-        // Phase 51.1: shift+click range (multi-mode only) — operates
+        // shift+click range (multi-mode only) — operates
         // on filteredRows so range never spans filtered-out rows.
         // No anchor set → fall through to plain-click branch.
-        // Phase 30.1.1: range gesture does NOT cascade descendants.
+        // range gesture does NOT cascade descendants.
         if (mode === 'multi' && shiftActive && selectionAnchorRef.current != null) {
           const displayedIds = filteredRows.map((r) => r.id);
           const range = computeRangeRowIds(selectionAnchorRef.current, rowId, displayedIds);
@@ -7210,13 +7210,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         if (mode === 'multi' && modifierActive) {
           const idx = current.indexOf(rowId);
           if (idx >= 0) {
-            // Phase 30.1.1: cascade remove on ctrl+click toggle off.
+            // cascade remove on ctrl+click toggle off.
             return cascadeRemoveDescendantIds(
               [...current.slice(0, idx), ...current.slice(idx + 1)],
               rowId,
             );
           }
-          // Phase 30.1.1: cascade add on ctrl+click toggle on.
+          // cascade add on ctrl+click toggle on.
           return cascadeAddDescendantIds(current, rowId);
         }
 
@@ -7225,13 +7225,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         if (current.length === 1 && current[0] === rowId) {
           return [];
         }
-        // Phase 30.1.1: plain-click replacement cascades descendants.
+        // plain-click replacement cascades descendants.
         return cascadeAddDescendantIds([rowId], rowId);
       },
       [filteredRows, cascadeAddDescendantIds, cascadeRemoveDescendantIds],
     );
 
-    // Phase 51.1: per-row checkbox click semantics (always toggle;
+    // per-row checkbox click semantics (always toggle;
     // checkbox is by definition multi). Shift+click reads anchor.
     const nextSelectionForCheckboxClick = useCallback(
       (rowId: string, shiftActive: boolean): readonly string[] => {
@@ -7243,7 +7243,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           if (range.length > 0) return range;
         }
 
-        // Phase 30.1.1: checkbox toggle cascades descendants.
+        // checkbox toggle cascades descendants.
         const idx = current.indexOf(rowId);
         if (idx >= 0) {
           return cascadeRemoveDescendantIds(
@@ -7256,7 +7256,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [filteredRows, cascadeAddDescendantIds, cascadeRemoveDescendantIds],
     );
 
-    // Phase 51.1: header "select-all" click semantics.
+    // header "select-all" click semantics.
     // - Every displayed row selected → deselect all displayed (keeps
     //   selection on other pages / filtered-out rows).
     // - Some / none displayed selected → add all displayed to selection.
@@ -7357,7 +7357,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         setSelectedRowIds: (ids: readonly string[] | null) => {
           const next = ids ?? EMPTY_ROW_IDS;
           applySelection(next);
-          // Phase 51.1: programmatic set seeds anchor at first id
+          // programmatic set seeds anchor at first id
           // (matches "anchor follows latest intentional action" rule).
           if (next.length > 0) {
             selectionAnchorRef.current = next[0]!;
@@ -7375,13 +7375,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           if (current.length <= 8) return current.includes(rowId);
           return new Set(current).has(rowId);
         },
-        // Phase 52 (vue3 Phase 11 equivalent): 5 pagination methods.
+        // (vue3 equivalent): 5 pagination methods.
         // getPage / getTotalPages read the post-clamp values from the
         // pass (so `setPage(99)` over a 3-page dataset returns `2`).
         // getPageSize reads from the ref (the SFC's source of truth;
         // pagePass's pageSize is `0` for the passthrough case but
         // consumers should observe the SFC-tracked value).
-        // Phase 45.1 (2026-05-30 — react port): serverSide+paginationEnabled
+        // (2026-05-30 — react port): serverSide+paginationEnabled
         // reads from the session-derived computeds (pagePass is in
         // passthrough state). Verbatim mirror of vue3.
         getPage: () =>
@@ -7391,7 +7391,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         setPageSize: (pageSize: number) => applyPage(pageStateRef.current, pageSize),
         getTotalPages: () =>
           serverSidePaginationActive ? serverSideTotalPagesForFooter : totalPagesFromPass,
-        // Phase 53 (vue3 Phase 12 equivalent): 5 edit methods. All
+        // (vue3 equivalent): 5 edit methods. All
         // route through the applyEdit* useCallbacks; getEditingCell
         // reads from the ref so it returns the latest state even
         // when called synchronously after setEditingCellDraft.
@@ -7400,7 +7400,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         cancelEditingCell: () => applyEditCancel(),
         getEditingCell: () => editingCellRef.current,
         setEditingCellDraft: (value: unknown) => applyEditDraft(value),
-        // Phase 54 (vue3 Phase 13 equivalent): 4 resize methods. All
+        // (vue3 equivalent): 4 resize methods. All
         // route through the applyResize* useCallbacks;
         // getResizingColumn reads from the ref so it returns the
         // latest state synchronously after programmatic start.
@@ -7592,7 +7592,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             pageSize: pageSizeStateRef.current,
           }),
         applyTableView: (state: TableViewState) => {
-          // Phase 38 (react port): mirror of vue3 wiring. Reconcile +
+          // (react port): mirror of vue3 wiring. Reconcile +
           // dispatch to 4 setters + invoke onColumnsChange once with
           // the reconciled array (Decision F.1 atomic restore).
           const result = applyTableView(
@@ -7666,7 +7666,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       openCellStyleEditor,
     ]);
 
-    // Phase 48 (2026-05-25): emit-once on mount. React's `useEffect`
+    // emit-once on mount. React's `useEffect`
     // with `[]` deps runs after the first render commits. Inside we
     // rebuild the handle locally because `handleRef.current` may not
     // be populated yet — `useImperativeHandle` runs at commit AND this
@@ -7753,7 +7753,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             if (current.length <= 8) return current.includes(rowId);
             return new Set(current).has(rowId);
           },
-          // Phase 52 + 53: same 10 new methods as the
+          // + 53: same 10 new methods as the
           // useImperativeHandle-built handle, in case the consumer
           // captured `onTableReady` before mount commit ran (rare
           // edge case — preserves vue3 parity for the fallback path).
@@ -7977,7 +7977,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       // useImperativeHandle commits before this useEffect runs.
     }, []);
 
-    // Phase 48.1 (vue3 Phase 5.1 / 7 equivalent): delegated body-
+    // (vue3 equivalent): delegated body-
     // content click handler. Walks up from event.target to the
     // closest [data-row-id] / [data-col-id] ancestor and fires the
     // relevant callback. Per-event mutually-exclusive routing:
@@ -7993,7 +7993,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         const row = rowDataSource.getById(rowId);
         if (!row) return;
         onRowClick?.({ row, jsEvent });
-        // Phase 51 + 51.1: apply OS-conventional selection semantics
+        // + 51.1: apply OS-conventional selection semantics
         // BEFORE the cell-click emit so observers reading
         // getSelectedRowIds() in a cell-click handler see post-click
         // state. Skip for selection-column synthetic data-row-id="__cx_select_all__"
@@ -8011,7 +8011,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         if (!column) return;
         const value = getCellValue({ row, column });
         onCellClick?.({ row, column, value, jsEvent });
-        // Phase 76 (react port of vue3 Phase 26): clicking a body cell
+        // (react port of vue3): clicking a body cell
         // also writes the active cell so subsequent arrow keys move
         // from the clicked cell.
         if (enableKeyboardNavigation) {
@@ -8033,7 +8033,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       ],
     );
 
-    // Phase 51.1: per-row checkbox click handler. stopPropagation
+    // per-row checkbox click handler. stopPropagation
     // prevents the body-row-click bubbling that would overwrite the
     // checkbox-toggle result.
     const onSelectionCheckboxClick = useCallback(
@@ -8047,7 +8047,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [nextSelectionForCheckboxClick, applySelection, setAnchorIfNotShift],
     );
 
-    // Phase 51.1: header "select-all" checkbox click handler.
+    // header "select-all" checkbox click handler.
     const onSelectAllCheckboxClick = useCallback(
       (jsEvent: ReactMouseEvent): void => {
         jsEvent.stopPropagation();
@@ -8057,13 +8057,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [nextSelectionForSelectAllClick, applySelection],
     );
 
-    // Phase 48.1 (vue3 Phase 7 equivalent): delegated body-content
+    // (vue3 equivalent): delegated body-content
     // dblclick handler. Symmetric to click; emits row-dblclick + cell-
     // dblclick (when colId resolves). Empty-area dblclicks are silently
     // ignored to match vue3 (consumers usually only care about
     // row/cell dblclick).
     //
-    // Phase 53 (vue3 Phase 12 equivalent): after the cell-dblclick
+    // (vue3 equivalent): after the cell-dblclick
     // emit, when the cell's column has `editable === true`, open the
     // inline editor on that cell. The double-click event itself does
     // not bubble through the cell-click handler (browsers fire
@@ -8091,7 +8091,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, rowDataSource, onCellDblclick, onRowDblclick, applyEditStart],
     );
 
-    // Phase 48.1 (vue3 Phase 5.1 equivalent): pointerover delegation
+    // (vue3 equivalent): pointerover delegation
     // with sameRow filter for intra-row child element re-entries.
     const onBodyContentPointerOver = useCallback(
       (jsEvent: ReactPointerEvent): void => {
@@ -8105,7 +8105,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [rowDataSource, onRowMouseenter],
     );
 
-    // Phase 48.1 (vue3 Phase 5.1 equivalent): pointerout delegation
+    // (vue3 equivalent): pointerout delegation
     // with sameRow filter for intra-row child element exits.
     const onBodyContentPointerOut = useCallback(
       (jsEvent: ReactPointerEvent): void => {
@@ -8119,7 +8119,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [rowDataSource, onRowMouseleave],
     );
 
-    // Phase 32 (2026-05-28 — react port): tooltip handlers. Verbatim
+    // (2026-05-28 — react port): tooltip handlers. Verbatim
     // port of vue3 wiring (see vue3 chronix-table.ts for rationale).
     const clearTooltipTimer = useCallback((): void => {
       if (tooltipTimerIdRef.current != null) {
@@ -8189,21 +8189,21 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       clearTooltip();
     }, [clearTooltip]);
 
-    // Phase 48.1 (vue3 Phase 7 equivalent): header rowgroup click
+    // (vue3 equivalent): header rowgroup click
     // delegation. Walks to closest [data-col-id]; resolves the
     // ColumnSpec via columnTable.getById and fires onHeaderClick.
     // Attaches separately to .cx-table-header (sibling to body);
     // body-side handlers don't reach header elements via the body-
     // content delegation.
     //
-    // Phase 49 (vue3 Phase 8 equivalent): also cycles the internal
+    // (vue3 equivalent): also cycles the internal
     // sort state when the clicked column is sortable. Cycle is `null
     // → asc → desc → null`; clicking a different sortable column
     // resets to `asc` for that column. Non-sortable columns are
     // click-no-op for sort but onHeaderClick still fires.
     const onHeaderRowgroupClick = useCallback(
       (jsEvent: ReactMouseEvent): void => {
-        // Phase 72 (2026-05-27 — react port of vue3 Phase 23): the
+        // (2026-05-27 — react port of vue3): the
         // same delegate also walks up for `[data-group-name]` ancestors
         // so the group row's labelled cells fire onHeaderGroupClick.
         // Group cells do NOT carry `data-col-id`, so the leaf-cell
@@ -8223,9 +8223,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         if (!column) return;
         onHeaderClick?.({ column, jsEvent });
         if (column.sortable === false) return;
-        // Read latest sort via the ref (Phase 49 B49.1 pattern).
-        // Phase 49.1: shift+click composes (Excel-style multi-column);
-        // plain click resets to single-column with the Phase 49 cycle.
+        // Read latest sort via the ref (B49.1 pattern).
+        // shift+click composes (Excel-style multi-column);
+        // plain click resets to single-column with the cycle.
         const current = sortSpecRef.current;
         const next: readonly SortSpec[] = jsEvent.shiftKey
           ? cycleMultiColumnSort(current, colId)
@@ -8237,21 +8237,21 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
 
     const t = mergedTheme;
 
-    // Phase 51.1 (vue3 Phase 10.1 equivalent): selection-column
+    // (vue3 equivalent): selection-column
     // geometry. Declared early because header / filter row / body row
     // styles all reference totalWithSelection.
     const selectionColShow = selectionColumn.show;
     const selectionColSide = selectionColumn.side;
     const selectionColWidth = t.selectionColumnWidth;
     const totalWithSelection = selectionColShow ? totalWidth + selectionColWidth : totalWidth;
-    // Phase 44 (react port).
+    // (react port).
     const rowDragColumnShow = rowDragColumn.show;
     const rowDragColumnSide = rowDragColumn.side ?? 'left';
     const rowDragColumnWidth = 30;
     const totalWithRowDrag = rowDragColumnShow
       ? totalWithSelection + rowDragColumnWidth
       : totalWithSelection;
-    // Phase 44.1 (2026-05-31 — react port): mutual-exclusivity warn.
+    // (2026-05-31 — react port): mutual-exclusivity warn.
     const anyColHasRowDragHandle = visibleColumns.some((c) => c.rowDragHandle === true);
     if (rowDragColumnShow && anyColHasRowDragHandle && warnedRowDragMixedRef.current !== true) {
       warnedRowDragMixedRef.current = true;
@@ -8260,8 +8260,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     }
 
-    // Phase 40.1 (2026-05-29 — react port): pre-compute aria-rowindex /
-    // aria-colindex lookups. Verbatim mirror of vue3 Phase 40.1 logic.
+    // (2026-05-29 — react port): pre-compute aria-rowindex /
+    // aria-colindex lookups. Verbatim mirror of vue3 logic.
     const pagedRowIdxByIdAria = new Map<string, number>(
       pagedRows.map((r, i) => [r.id, i] as const),
     );
@@ -8285,7 +8285,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }
     const ariaRowIndexAfterBody = 2 + topPinnedRows.length + pagedRows.length;
 
-    // Phase 51.1: select-all state computed once per render to drive
+    // select-all state computed once per render to drive
     // the header checkbox's checked / indeterminate property. Uses
     // filteredRows so "displayed" means post-filter (not raw `rows`).
     const displayedRowIds: readonly string[] = filteredRows.map((r) => r.id);
@@ -8302,7 +8302,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             ? 'unchecked'
             : 'indeterminate';
 
-    // Phase 51.1: header checkbox needs `indeterminate` set via DOM
+    // header checkbox needs `indeterminate` set via DOM
     // property (no HTML attribute equivalent). useEffect sets it
     // whenever selectAllState changes. Declared HERE (above the
     // header render) so build* helpers can reference `selectAllCheckboxRef`
@@ -8314,7 +8314,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       el.indeterminate = selectAllState === 'indeterminate';
     }, [selectAllState]);
 
-    // Phase 62 (2026-05-26 — react port of vue3 Phase 17): pinned-
+    // (2026-05-26 — react port of vue3): pinned-
     // column metadata for the current render. Source of truth for
     // per-cell sticky-offset application across header / filter /
     // body / selection-rail render. `pinnedColsResult` is the
@@ -8341,7 +8341,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       selectionColShow && selectionColSide === 'right' ? selectionColWidth : 0;
 
     /**
-     * Phase 62 helper: returns per-cell sticky-positioning style
+     * helper: returns per-cell sticky-positioning style
      * additions for a column. Returns an empty record for center
      * columns so spreading into the existing cell `style` object is a
      * no-op. Modifier classes are emitted separately so CSS hooks
@@ -8370,7 +8370,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }
 
     /**
-     * Phase 62 helper: returns per-cell zone modifier class suffixes.
+     * helper: returns per-cell zone modifier class suffixes.
      * The `--last` / `--first` modifier identifies the boundary cell
      * where the box-shadow visual separator paints.
      */
@@ -8388,7 +8388,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       return [];
     }
 
-    // Phase 62: the selection rail also sticks to its configured edge
+    // the selection rail also sticks to its configured edge
     // during horizontal scroll so it stays paired with the pinned
     // columns it sits next to. `left: 0` (or `right: 0`) places it
     // OUTSIDE the pinned zones; left-pinned cells' sticky offsets are
@@ -8411,17 +8411,17 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       : {};
 
     const headerCellNodes = headerCells.map((cell) => {
-      // Phase 49 + 49.1 (vue3 Phase 8 + 8.1 equivalent): per-cell sort
+      // + 49.1 (vue3 + 8.1 equivalent): per-cell sort
       // state + sortable lookup drive className modifiers + aria-sort
-      // + the indicator span. Phase 49.1: when multi-column sort is
+      // + the indicator span. when multi-column sort is
       // active (length > 1), append a superscript priority number
       // after the arrow so consumers can see the lex-order. Single-
       // column sort omits the superscript.
       const column = columnTable.getById(cell.colId);
       const isSortable = column?.sortable !== false;
-      // Phase 40.2 (2026-05-29 — react port): visually-hidden description
+      // (2026-05-29 — react port): visually-hidden description
       // text + aria-describedby reference so screen readers narrate sort
-      // + filter state. Verbatim port of vue3 Phase 40.2.
+      // + filter state. Verbatim port of vue3 .
       const headerDescribedById = `cx-table-header-cell-desc-${cell.colId}`;
       const headerDescription: string =
         column != null
@@ -8431,12 +8431,12 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               filterSpec,
             })
           : '';
-      // Phase 54 (vue3 Phase 13): per-column `resizable: false` opt-
+      // (vue3): per-column `resizable: false` opt-
       // out of the drag-resize affordance. When opted out, no resizer
       // DOM renders + the column-resizing modifier is unreachable.
       const isResizable = column?.resizable !== false;
       const isResizingThis = resizingColumnState?.colId === cell.colId;
-      // Phase 56 (2026-05-26 — react port of vue3 Phase 14): per-column
+      // (2026-05-26 — react port of vue3): per-column
       // `reorderable: false` opt-out of the drag-to-reorder affordance.
       const isReorderable = column?.reorderable !== false;
       const isMovingThis = movingColumnState?.colId === cell.colId;
@@ -8451,7 +8451,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const direction = activeIndex >= 0 ? sortSpec[activeIndex]!.direction : null;
       const indicatorText = direction === 'asc' ? '▲' : direction === 'desc' ? '▼' : '';
       const showPosition = activeIndex >= 0 && sortSpec.length > 1;
-      // Phase 62: pinned-zone modifier classes + sticky inline style
+      // pinned-zone modifier classes + sticky inline style
       // when the column is pinned. Empty record / empty array for
       // center columns so the spread / class push is a no-op.
       const pinnedHeaderStyle = pinnedCellStyle(cell.colId);
@@ -8488,7 +8488,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       ]
         .filter(Boolean)
         .join(' ');
-      // Phase 54 (vue3 Phase 13): 4px pointer-capture resizer at the
+      // (vue3): 4px pointer-capture resizer at the
       // right edge of every `resizable !== false` header cell. Once
       // setPointerCapture is called on the resizer element, all
       // subsequent pointermove + pointerup events fire on THAT
@@ -8548,7 +8548,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           // Defensive — a click on the 4px hit-area must not bubble
           // up to the header-cell's sort click.
           onClick={(e) => e.stopPropagation()}
-          // Phase 58 (2026-05-26 — react port of vue3 Phase 15):
+          // (2026-05-26 — react port of vue3):
           // dbl-click on the resizer autosizes the column to its
           // content. Gated on `autosizeable !== false` (separate
           // opt-out from `resizable`). preventDefault +
@@ -8562,9 +8562,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           }}
         />
       ) : null;
-      // Phase 56 (2026-05-26): whole-header-cell pointer wiring for
+      // whole-header-cell pointer wiring for
       // column-move drag. Gated on `reorderable !== false`. The resizer
-      // (Phase 54) stops propagation on its pointerdown so grabbing
+      // stops propagation on its pointerdown so grabbing
       // the 4px edge wins. Move handler never preventDefault's the
       // pointerdown — that would break the header click → sort cycle
       // delegated on `.cx-table-header` parent.
@@ -8579,7 +8579,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 } catch {
                   // Defensive: setPointerCapture throws InvalidPointerId
                   // on synthesized events without an active pointer
-                  // (Phase 14 B14.3 lesson).
+                  // (B14.3 lesson).
                 }
               }
               pendingMoveColumnRef.current = {
@@ -8691,7 +8691,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                   </button>
                   {isOpen &&
                     (() => {
-                      // Phase 84: roving tabindex over the 5 fixed actions.
+                      // roving tabindex over the 5 fixed actions.
                       const headerMenuActiveIdx = columnHeaderMenuKbdNav.activeIndex;
                       const tabForIdx = (idx: number, disabled: boolean): number => {
                         if (disabled) return -1;
@@ -8808,13 +8808,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       </div>
     );
 
-    // Phase 72 / Phase 23.1 (2026-05-27 — react port): when ANY visible
+    // (2026-05-27 — react port): when ANY visible
     // column declares a `headerGroup`, prepend N group rows above the
-    // leaf row (N = table-wide max nesting depth). Per vue3 Phase 23
-    // Decision B.1 + vue3 Phase 23.1 Decision B.1, all rows have the
+    // leaf row (N = table-wide max nesting depth). Per vue3
+    // Decision B.1 + vue3 Decision B.1, all rows have the
     // same column alignment — un-covered cells at a given level
     // render as singleton empty placeholders so the leaf row stays
-    // vertically aligned. Per Phase 23 Decision A.1, groups never
+    // vertically aligned. Per Decision A.1, groups never
     // span pinned-zone boundaries.
     function buildHeaderGroupSpanCell(
       span: HeaderGroupSpan,
@@ -8910,13 +8910,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         ref={headerRef}
         className="cx-table-header"
         role="rowgroup"
-        // Phase 62 (2026-05-26): `overflowX: hidden` makes header a
+        // `overflowX: hidden` makes header a
         // horizontal-clip container with a meaningful `scrollLeft`
         // setter; the body's `onScroll` handler mirrors
         // `body.scrollLeft → headerEl.scrollLeft` so the header row
         // visually scrolls in lockstep with body cells.
         //
-        // Phase 72 (2026-05-27): `onHeaderRowgroupClick` extended with
+        // `onHeaderRowgroupClick` extended with
         // a `[data-group-name]` ancestor walk so the same delegate also
         // fires `onHeaderGroupClick` for the group row's labelled cells.
         style={{ overflowX: 'hidden' }}
@@ -8927,7 +8927,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       </div>
     );
 
-    // Phase 50 + 50.1 (vue3 Phase 9 + 9.1 equivalent): opt-in filter
+    // + 50.1 (vue3 + 9.1 equivalent): opt-in filter
     // row beneath the header. One <input> per visible column; per-
     // input value reads from filterInputValueFor(colId). Number
     // columns get data-filter-type="number" + prefix-syntax
@@ -8938,7 +8938,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         ref={filterRowRef}
         className="cx-table-filter-row"
         role="rowgroup"
-        // Phase 62 (2026-05-26): mirror the header's outer-clip /
+        // mirror the header's outer-clip /
         // inner-content-row structure so the body's `scrollLeft` can
         // be programmatically mirrored to `filterRowEl.scrollLeft`
         // (default `overflow: visible` ignores `scrollLeft`).
@@ -8953,7 +8953,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               const isFilterable = col.filterable !== false;
               const isNumberColumn = col.type === 'number';
               const isSetFilterUi = col.filterUi === 'set';
-              // Phase 62: filter-row cells inherit pinned styling so
+              // filter-row cells inherit pinned styling so
               // they stay column-aligned with header + body cells
               // during horizontal scroll.
               const pinnedFilterStyle = pinnedCellStyle(col.id);
@@ -8961,14 +8961,14 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 .map((suffix) => `cx-table-filter-cell${suffix}`)
                 .join(' ');
 
-              // Phase 43 (react port): set-filter dropdown branch.
+              // (react port): set-filter dropdown branch.
               if (isSetFilterUi && isFilterable) {
                 const unique = collectUniqueColumnValues({ rows, column: col });
                 const allValues = unique.values.map((v) => v.value);
                 const summaryLabel = setFilterSummaryLabel(col.id, unique.values.length);
                 const totalItemCount = unique.values.length;
-                // Phase 96.2 (react port): verbatim mirror of vue3
-                // Phase 96.2 — threshold-gated
+                // (react port): verbatim mirror of vue3
+                // threshold-gated
                 // `computeVirtualWindow` virtualization.
                 const shouldVirtualize = totalItemCount > setFilterVirtualizeThreshold;
                 const renderSetFilterItem = (
@@ -9116,9 +9116,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 );
               }
 
-              // Phase 102 (2026-06-01 — react port) + Phase 116
-              // (2026-06-02 — react port) + Phase 117.1 (2026-06-02 —
-              // react port): multi-filter container branch. Phase 117.1
+              // (2026-06-01 — react port) +
+              // (2026-06-02 — react port) + (2026-06-02 —
+              // react port): multi-filter container branch.
               // ships recursive render — root + nested groups share
               // one `renderMultiFilterEntries` helper. Path threads
               // through every emit so consumers always know WHERE in
@@ -9485,9 +9485,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 : isNumberColumn
                   ? '过滤 (e.g. 5, >10, 5..50)'
                   : '过滤…';
-              // Phase 98.2 (react port): optional dual-handle range
+              // (react port): optional dual-handle range
               // slider beneath the Number filter text input. Verbatim
-              // port of vue3 Phase 98.2 wiring.
+              // port of vue3 wiring.
               let rangeSliderNode: ReactNode = null;
               if (numberFilterShowRangeSlider && isNumberColumn && isFilterable) {
                 const extents = computeColumnNumericExtents({ rows, column: col });
@@ -9696,13 +9696,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       </div>
     ) : null;
 
-    // Phase 48.1 + Phase 49 + Phase 52 (vue3 Phase 4 + 8 + 11
+    // + + (vue3 + 8 + 11
     // equivalent): pick the row subset to render. Pre-mount frame
     // (bodyClientHeight === 0) yields an empty visibleRows array —
     // fall back to `pagedRows` so the first paint reflects the
     // current sort + filter + pagination state. (pagedRows is
     // identity-equal to `sortedRows` when pageSize <= 0, preserving
-    // the Phase 4 / 49 fallback semantic.) After mount, visibleRows
+    // the fallback semantic.) After mount, visibleRows
     // tracks the scroll viewport and is already paginated because
     // virtualRowsPass consumes pagePass's output.
     const rowsToRender = bodyClientHeight > 0 ? visibleRows : pagedRows;
@@ -9758,7 +9758,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     }
 
-    // Phase 53 (vue3 Phase 12 equivalent): build the in-cell editor
+    // (vue3 equivalent): build the in-cell editor
     // `<input>`. Auto-focus + select-all-text on mount via the ref
     // callback. Keydown handlers: Enter / Tab commit; Esc cancels;
     // blur commits (Notion / Sheets convention). All key handlers
@@ -9766,7 +9766,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // the subsequent native blur (triggered by removing the input
     // from the DOM) doesn't double-fire.
     //
-    // Phase 53.1 (vue3 Phase 12.1 equivalent): dispatch on
+    // (vue3 equivalent): dispatch on
     // `column.type === 'number'` to render `<input type="number">`
     // instead of `<input type="text">` for numeric columns. The
     // number variant also sets `inputMode="decimal"` as a mobile
@@ -9774,7 +9774,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // typed value happens inside `applyEditCommit` via
     // `coerceEditDraftValue`, NOT here.
     /**
-     * Phase 30.2 (react port, 2026-05-28): chevron SVG / leaf spacer
+     * (react port, 2026-05-28): chevron SVG / leaf spacer
      * for the tree column (Decision I.1). For parent rows, renders a
      * clickable chevron with the `--expanded` modifier when expanded.
      * For leaf rows, renders a fixed-width spacer for column alignment.
@@ -9788,7 +9788,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       expanded: boolean,
       rowId: string,
     ): ReactElement {
-      // Phase 34 (2026-05-28 — react port): dispatch on lazy status.
+      // (2026-05-28 — react port): dispatch on lazy status.
       const lazyState = lazyChildrenState.get(rowId);
       if (lazyState?.status === 'loading') {
         return (
@@ -9925,9 +9925,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               applyEditCommit();
               editCommitInProgressRef.current = false;
             } else if (e.key === 'Tab') {
-              // Phase 53.2 (vue3 Phase 12.2): Tab commits THEN auto-
+              // (vue3): Tab commits THEN auto-
               // advances to the next editable cell in display order
-              // (forward by default; Shift+Tab backward). Phase 53.1
+              // (forward by default; Shift+Tab backward).
               // rejection path is preserved — if the commit was
               // rejected (editingCellRef still set), do NOT auto-
               // advance so the user can fix the bad input.
@@ -9951,11 +9951,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               editCommitInProgressRef.current = true;
               applyEditCommit();
               if (editingCellRef.current != null) {
-                // Phase 53.1 rejection — editor stays on the bad cell.
+                // rejection — editor stays on the bad cell.
                 editCommitInProgressRef.current = false;
                 return;
               }
-              // Phase 53.2 Decision C.1: use `pagedRows` (post-filter
+              // Decision C.1: use `pagedRows` (post-filter
               // + post-sort + post-page) NOT `visibleRows`. The
               // virtualization window is a render-only concern;
               // auto-advance respects the conceptual displayed-row
@@ -9982,7 +9982,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           }}
           onBlur={() => {
             if (editCommitInProgressRef.current) return;
-            // Phase 53 Decision: blur commits (Notion semantic).
+            // Decision: blur commits (Notion semantic).
             applyEditCommit();
           }}
           onClick={(e) => {
@@ -10001,7 +10001,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
 
     function buildBodyRowSelectionCell(row: RowSpec, rowH: number): ReactElement {
       const isSelected = selectedRowIdsSet.has(row.id);
-      // Phase 30.1.1 (react port, 2026-05-28): tristate visualization
+      // (react port, 2026-05-28): tristate visualization
       // (Decision C.1). DOM `input.indeterminate` PROPERTY set via a
       // `ref` callback after React commits — HTML attribute has no
       // effect; only the JS property does.
@@ -10048,11 +10048,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }
 
     /**
-     * Phase 44 (react port). Verbatim mirror of vue3 buildRowDragGripCell.
+     * (react port). Verbatim mirror of vue3 buildRowDragGripCell.
      */
     /**
-     * Phase 46-B (2026-05-30 — react port). Verbatim mirror of vue3
-     * Phase 46-B buildActionsCellChildren.
+     * -B (2026-05-30 — react port). Verbatim mirror of vue3
+     * -B buildActionsCellChildren.
      */
     function renderActionsCellChildren(actions: readonly RowAction[], row: RowSpec): ReactElement {
       return (
@@ -10127,15 +10127,15 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     }
 
-    // Phase 53 (vue3 Phase 12 equivalent): read the active edit state
+    // (vue3 equivalent): read the active edit state
     // from the mirror so the per-cell render block can swap in the
     // editor `<input>` instead of the formatted text for the matching
     // (rowId, colId).
     const activeEdit = editingCellState;
     const bodyRows = rowsToRender.map((row) => {
       const rowH = rowHeightByRowId[row.id] ?? t.rowHeight;
-      // Phase 45 (2026-05-29 — react port): server-side row model
-      // skeleton placeholder. Verbatim mirror of vue3 Phase 45.
+      // (2026-05-29 — react port): server-side row model
+      // skeleton placeholder. Verbatim mirror of vue3 .
       if (isServerSideSkeletonRowId(row.id)) {
         return (
           <div
@@ -10175,7 +10175,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       }
       const isSelected = selectedRowIdsSet.has(row.id);
       const cellNodes = visibleColumns.map((col) => {
-        // Phase 48.1 (vue3 Phase 5 equivalent): compute the value
+        // (vue3 equivalent): compute the value
         // once, share between formatter + class resolver.
         // `getCellValue` applies col.valueGetter or default field-
         // based extraction; `formatCellValue` applies
@@ -10184,10 +10184,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         // cellClass into a flat string[] of class additions on top of
         // the structural `cx-table-cell`.
         const value = getCellValue({ row, column: col });
-        // Phase 46-A (2026-05-30 — react port): row-number column override.
+        // -A (2026-05-30 — react port): row-number column override.
         const isRowNumberCol = col.rowNumber === true;
         const rowNumberIndex = isRowNumberCol ? displayedRowIndexByRowId[row.id] : undefined;
-        // Phase 46-B (2026-05-30 — react port): actions column flag.
+        // -B (2026-05-30 — react port): actions column flag.
         const isActionsCol = col.actions != null && col.actions.length > 0;
         const text = isRowNumberCol
           ? rowNumberIndex != null
@@ -10197,7 +10197,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             ? col.valueFormatter({ value, row, column: col })
             : formatCellValue({ row, column: col });
         const extraClasses = resolveCellClassNames({ value, row, column: col });
-        // Phase 53 (vue3 Phase 12 equivalent): when this cell is the
+        // (vue3 equivalent): when this cell is the
         // active edit cell, render the `<input>` editor in place of
         // the formatted text. The cell still carries its data-* attrs
         // + base styling so consumers observing cell DOM see
@@ -10206,41 +10206,41 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           activeEdit?.rowId === row.id && activeEdit.colId === col.id ? activeEdit : null;
         const classList = ['cx-table-cell', ...extraClasses];
         if (editingThisCell != null) classList.push('cx-table-cell--editing');
-        // Phase 101 (2026-06-01 — react port): invalid-cell marker
+        // (2026-06-01 — react port): invalid-cell marker
         // class. Painted when a prior commit attempt was rejected by
         // `column.validator`; cleared by next commit-success / cancel
         // on the same cell.
         const cellInvalidError = invalidCellsRef.current.get(invalidCellKey(row.id, col.id));
         const isInvalidCell = cellInvalidError != null;
         if (isInvalidCell) classList.push('cx-table-cell--invalid');
-        // Phase 111 (2026-06-01 — react port): in-flight async
+        // (2026-06-01 — react port): in-flight async
         // validation marker. Verbatim mirror of vue3.
         const isValidatingCell = pendingAsyncValidationByKeyRef.current.has(
           invalidCellKey(row.id, col.id),
         );
         if (isValidatingCell) classList.push('cx-table-cell--validating');
-        // Phase 46-C (2026-05-30 — react port): wrap-text modifier.
+        // -C (2026-05-30 — react port): wrap-text modifier.
         if (col.wrapText === true) classList.push('cx-table-cell--wrap-text');
-        // Phase 46-A (2026-05-30 — react port): row-number marker class.
+        // -A (2026-05-30 — react port): row-number marker class.
         if (isRowNumberCol) classList.push('cx-table-cell--row-number');
-        // Phase 46-B (2026-05-30 — react port): actions marker class.
+        // -B (2026-05-30 — react port): actions marker class.
         if (isActionsCol) classList.push('cx-table-cell--actions');
-        // Phase 76 (2026-05-28 — react port of vue3 Phase 26): active-
+        // (2026-05-28 — react port of vue3): active-
         // cell modifier — outline + outline-offset CSS styling lives
         // in the consumer's stylesheet so the SFC stays theme-agnostic.
         const isActiveCell = activeCellState?.rowId === row.id && activeCellState.colId === col.id;
         if (isActiveCell) classList.push('cx-table-cell--active');
-        // Phase 60 (2026-05-26 — react port of vue3 Phase 16): paint
+        // (2026-05-26 — react port of vue3): paint
         // the cell-range modifier when this cell falls inside the
         // resolved envelope. O(1) lookup via Set-derived useMemo values.
         const inCellRange = cellRangeRowSet.has(row.id) && cellRangeColSet.has(col.id);
         if (inCellRange) classList.push('cx-table-cell--in-cell-range');
-        // Phase 68 (2026-05-27 — react port of vue3 Phase 21): preview
+        // (2026-05-27 — react port of vue3): preview
         // class for cells in the drag-fill extension envelope.
         if (dragFillPreviewSet.has(`${row.id}/${col.id}`)) {
           classList.push('cx-table-cell--in-fill-preview');
         }
-        // Phase 62 (2026-05-26 — react port of vue3 Phase 17):
+        // (2026-05-26 — react port of vue3):
         // pinned-zone modifier classes + sticky inline style. Center
         // columns get neither.
         const pinnedCellSuffixes = pinnedCellModifierSuffixes(col.id);
@@ -10249,7 +10249,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         }
         const pinnedBodyStyle = pinnedCellStyle(col.id);
         const className = classList.join(' ');
-        // Phase 30.2 (react port, 2026-05-28): tree-column chevron +
+        // (react port, 2026-05-28): tree-column chevron +
         // indent (Decisions D.1 + I.1 + J.1).
         const isTreeColumn = treeColumnId === col.id;
         const treeActive = isTreeColumn;
@@ -10258,15 +10258,15 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         if (treeActive) {
           const rowDepth = row.depth ?? 0;
           treeIndentLeft = rowDepth * t.treeIndentPx;
-          // Phase 34: hasChildren OR sync children both mean "show chevron."
+          // hasChildren OR sync children both mean "show chevron."
           const rowHasChildren =
             (row.children != null && row.children.length > 0) || row.hasChildren === true;
           const rowExpanded = effectiveExpandedRowIdsSet.has(row.id);
           treeLeadingNode = renderTreeChevronOrSpacer(rowHasChildren, rowExpanded, row.id);
         }
-        // Phase 46-C (2026-05-30 — react port): auto-height cells use
+        // -C (2026-05-30 — react port): auto-height cells use
         // min-height so content can grow beyond defaultRowHeight.
-        // Phase 99.2.3.1 (2026-06-01 — react port): the 12 per-side
+        // (2026-06-01 — react port): the 12 per-side
         // border longhand spreads emit `string` values but React's
         // CSSProperties types them as literal unions
         // ('solid'|'dashed'|...) — cast the whole literal to bypass
@@ -10279,10 +10279,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           paddingLeft: `${t.cellPaddingX + treeIndentLeft}px`,
           paddingRight: `${t.cellPaddingX}px`,
           ...pinnedBodyStyle,
-          // Phase 99.2 (2026-05-31 — react port): per-cell
-          // background-color override. Phase 99.2.1 (2026-05-31 —
+          // (2026-05-31 — react port): per-cell
+          // background-color override. (2026-05-31 —
           // react port): second conditional spread for text-color
-          // (`color`) axis. Phase 99.2.2 (2026-06-01 — react port):
+          // (`color`) axis. (2026-06-01 — react port):
           // 3 more spreads for `fontWeight`, `fontStyle`,
           // `textDecoration`. Verbatim port of vue3.
           ...(effectiveCellStyleByRowIdColId[row.id]?.[col.id]?.backgroundColor !== undefined
@@ -10318,7 +10318,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 borderRadius: effectiveCellStyleByRowIdColId[row.id]![col.id]!.borderRadius,
               }
             : {}),
-          // Phase 99.2.3.1 (2026-06-01 — react port): 12 per-side
+          // (2026-06-01 — react port): 12 per-side
           // border longhand overrides. Verbatim mirror of vue3.
           ...(effectiveCellStyleByRowIdColId[row.id]?.[col.id]?.borderTopColor !== undefined
             ? { borderTopColor: effectiveCellStyleByRowIdColId[row.id]![col.id]!.borderTopColor }
@@ -10372,13 +10372,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             ? { borderLeftStyle: effectiveCellStyleByRowIdColId[row.id]![col.id]!.borderLeftStyle }
             : {}),
         } as CSSProperties;
-        // Phase 60: per-cell pointer handlers — gated on
+        // per-cell pointer handlers — gated on
         // `cellRangeSelection === 'enabled'` (gate runs INSIDE each
         // handler so we avoid conditional handler attach/detach that
         // would force a re-render on prop toggle).
         const cellRangeEnabled = cellRangeSelection === 'enabled';
         const cellAriaColIdx: number = ariaColIndexFor(col.id);
-        // Phase 44.1 (2026-05-31 — react port): per-cell row-drag grip
+        // (2026-05-31 — react port): per-cell row-drag grip
         // wiring. Verbatim mirror of vue3.
         const isRowDragHandleCell =
           col.rowDragHandle === true &&
@@ -10450,23 +10450,23 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           </div>
         );
       });
-      // Phase 48.1 (vue3 Phase 3 equivalent): body rows are absolute-
+      // (vue3 equivalent): body rows are absolute-
       // positioned children of `.cx-table-body-content` (position:
-      // relative + explicit totalBodyHeight). Sets up Phase 4
+      // relative + explicit totalBodyHeight). Sets up
       // virtualization with no refactor — virtualRowsPass only changes
       // which rows render.
-      // Phase 51: selected rows get cx-table-row--selected modifier +
-      // aria-selected="true". Phase 51.1: row width grows by selection
+      // selected rows get cx-table-row--selected modifier +
+      // aria-selected="true". row width grows by selection
       // column width when the selection rail is shown; selection cell
       // is prepended (left) or appended (right) per `selectionColumn.side`.
-      // Phase 44 (react port): row-drag modifier classes + grip cell.
+      // (react port): row-drag modifier classes + grip cell.
       const isRowDragSource = movingRowState?.rowId === row.id;
       const rowDropTarget = movingRowState?.dropTarget;
       const isRowDropTargetAbove =
         rowDropTarget?.targetRowId === row.id && rowDropTarget.position === 'above';
       const isRowDropTargetBelow =
         rowDropTarget?.targetRowId === row.id && rowDropTarget.position === 'below';
-      // Phase 46-C (2026-05-30 — react port): auto-height row uses
+      // -C (2026-05-30 — react port): auto-height row uses
       // min-height so content can grow beyond defaultRowHeight.
       const rowAutoHeight = enableRowAutoHeight === true;
       const rowClass = [
@@ -10524,11 +10524,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     });
 
-    // Phase 48.1 (vue3 Phase 4 equivalent): split body into scrollport
+    // (vue3 equivalent): split body into scrollport
     // + virtual-content layer. The outer `.cx-table-body` captures
     // scroll + height via `useTableBodyScroll`; the inner
     // `.cx-table-body-content` hosts absolute-positioned rows + carries
-    // delegated interaction handlers (Phase 5.1 + 7). Full
+    // delegated interaction handlers (+ 7). Full
     // totalBodyHeight on the content layer drives the scrollbar even
     // when only a windowed subset of rows is in the DOM.
     const bodyContentStyle: CSSProperties = {
@@ -10536,7 +10536,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       width: `${totalWidth}px`,
       height: `${totalBodyHeight}px`,
     };
-    // Phase 68 (2026-05-27 — react port of vue3 Phase 21): drag-fill
+    // (2026-05-27 — react port of vue3): drag-fill
     // handle overlay. Verbatim port of vue3's `dragFillHandle` —
     // rendered as the last child of `.cx-table-body-content`. Visible
     // iff `cellRangeSelection === 'enabled'` AND the envelope is
@@ -10603,7 +10603,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       </div>
     );
 
-    // Phase 31 (2026-05-28 — react port of vue3 Phase 31): pinned
+    // (2026-05-28 — react port of vue3): pinned
     // rows. Sticky-positioned inside the body scroll container; never
     // participate in filter / sort / page / virtualization.
     const buildPinnedRowNode = (
@@ -10631,7 +10631,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         const pinnedBodyStyle = pinnedCellStyle(col.id);
         const isPinnedCol = pinnedLeftSet.has(col.id) || pinnedRightSet.has(col.id);
         const cellZIndex = isPinnedCol ? 4 : t.pinnedRowZIndex;
-        // Phase 99.2.3.1: cast bypasses strict per-side CSSProperty
+        // cast bypasses strict per-side CSSProperty
         // literal-union checking — same rationale as body cell renderer.
         const cellStyle = {
           width: `${widthByColId[col.id] ?? 0}px`,
@@ -10640,7 +10640,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           paddingRight: `${t.cellPaddingX}px`,
           ...pinnedBodyStyle,
           ...(pinnedBodyStyle.position != null ? { zIndex: cellZIndex } : {}),
-          // Phase 99.2 + 99.2.1 + 99.2.2 (2026-06-01 — react port):
+          // + 99.2.1 + 99.2.2 (2026-06-01 — react port):
           // 5 conditional spreads for cell style axes, applied to
           // pinned-row cells for consistency with body cells.
           ...(effectiveCellStyleByRowIdColId[row.id]?.[col.id]?.backgroundColor !== undefined
@@ -10676,7 +10676,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 borderRadius: effectiveCellStyleByRowIdColId[row.id]![col.id]!.borderRadius,
               }
             : {}),
-          // Phase 99.2.3.1 (2026-06-01 — react port): 12 per-side
+          // (2026-06-01 — react port): 12 per-side
           // border longhand overrides on pinned-row cells. Verbatim
           // mirror of vue3 body cell renderer.
           ...(effectiveCellStyleByRowIdColId[row.id]?.[col.id]?.borderTopColor !== undefined
@@ -10797,7 +10797,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       buildPinnedRowNode(row, 'bottom', i, bottomPinnedRows.length),
     );
 
-    // Phase 33 (2026-05-28 — react port): loading + no-rows overlays.
+    // (2026-05-28 — react port): loading + no-rows overlays.
     // Loading takes precedence over no-rows per Decision F.1.
     const showLoadingOverlay = loading;
     const showNoRowsOverlay =
@@ -10842,7 +10842,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     }
 
-    // Phase 62 (2026-05-26 — react port of vue3 Phase 17):
+    // (2026-05-26 — react port of vue3):
     // `overflowX` flips `'hidden'` → `'auto'` so that when the total
     // column width exceeds the body's viewport width a horizontal
     // scrollbar appears + pinned cells' sticky positioning has a
@@ -10859,21 +10859,21 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         className="cx-table-body"
         role="rowgroup"
         style={bodyStyle}
-        // Phase 64 (2026-05-27 — react port of vue3 Phase 19):
+        // (2026-05-27 — react port of vue3):
         // `tabIndex={0}` makes the body focusable so Ctrl+C / Cmd+C
         // keydown lands here when the user is interacting with the
         // data area. Standard a11y pattern for "div that should
         // accept keyboard input"; the role="rowgroup" + per-cell
         // gridcell roles still describe semantics correctly.
         tabIndex={0}
-        // Phase 64: Ctrl+C / Cmd+C copies the active cell-range as
+        // Ctrl+C / Cmd+C copies the active cell-range as
         // TSV. Gates on cellRangeSelection === 'enabled' + active
         // range; non-matching keystrokes propagate normally.
         onKeyDown={onBodyKeyDown}
-        // Phase 32 (2026-05-28 — react port): pointer leaves body via
+        // (2026-05-28 — react port): pointer leaves body via
         // non-cell edge → clear pending + active tooltip.
         onPointerLeave={onBodyTooltipPointerLeave}
-        // Phase 62: mirror body's horizontal scroll into the header +
+        // mirror body's horizontal scroll into the header +
         // filter row's `scrollLeft` so the column-aligned strips
         // track together. Imperative DOM mutation (no React state
         // round-trip) — scroll events fire ~60Hz and a setState would
@@ -10891,7 +10891,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           if (filterEl != null && filterEl.scrollLeft !== x) {
             filterEl.scrollLeft = x;
           }
-          // Phase 74 (2026-05-27 — react port of vue3 Phase 24):
+          // (2026-05-27 — react port of vue3):
           // mirror horizontal scroll into the optional sticky footer
           // so its column-aligned cells track the body. Additive to
           // header + filter mirrors.
@@ -10899,7 +10899,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           if (footerEl != null && footerEl.scrollLeft !== x) {
             footerEl.scrollLeft = x;
           }
-          // Phase 32: clear tooltip on scroll (popover coords captured
+          // clear tooltip on scroll (popover coords captured
           // pre-scroll).
           onBodyTooltipScroll();
         }}
@@ -10911,7 +10911,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       </div>
     );
 
-    // Phase 74 (2026-05-27 — react port of vue3 Phase 24): opt-in
+    // (2026-05-27 — react port of vue3): opt-in
     // sticky footer aggregate row beneath the body. Verbatim port of
     // vue3 footer build; react JSX deltas: ref={footerRef} instead of
     // a callback ref, CSSProperties typed inline, className strings
@@ -10996,7 +10996,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           ref={footerRef}
           className="cx-table-footer"
           role="rowgroup"
-          // Phase 74: `overflowX: hidden` makes the footer's
+          // `overflowX: hidden` makes the footer's
           // scrollLeft setter meaningful so the body's onScroll
           // mirror works (same trick as the header).
           style={{ overflowX: 'hidden' }}
@@ -11012,8 +11012,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     }
 
-    // Phase 36 (2026-05-28 — react port): opt-in status bar between
-    // body and pagination footer. Verbatim port of vue3 Phase 36.
+    // (2026-05-28 — react port): opt-in status bar between
+    // body and pagination footer. Verbatim port of vue3 .
     let statusBar: ReactElement | null = null;
     if (showStatusBar) {
       const counts: StatusBarCounts = {
@@ -11048,7 +11048,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     }
 
-    // Phase 52 + 52.1 (vue3 Phase 11 + 11.1 equivalent): opt-in
+    // + 52.1 (vue3 + 11.1 equivalent): opt-in
     // pagination footer rendered below the body. Layout: prev button
     // + page-number bar (ellipsis-aware via computeVisiblePageNumbers)
     // + next button on the left; rows-total label + page-size
@@ -11059,7 +11059,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // suppressed (programmatic control still works).
     let paginationFooter: ReactElement | null = null;
     if (paginationEnabled) {
-      // Phase 45.1 (2026-05-30 — react port) Decision B.1: serverSide+
+      // (2026-05-30 — react port) Decision B.1: serverSide+
       // paginationEnabled reads totals from session-derived computeds.
       const cp = serverSidePaginationActive ? serverSideCurrentPageForFooter : currentPageFromPass;
       const tp = serverSidePaginationActive ? serverSideTotalPagesForFooter : totalPagesFromPass;
@@ -11071,7 +11071,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       // disabled (no navigation makes sense).
       const atFirst = tp === 0 || cp <= 0;
       const atLast = tp === 0 || cp >= tp - 1;
-      // Display 1-based per Phase 11 Decision B; empty dataset shows
+      // Display 1-based per Decision B; empty dataset shows
       // "0 / 0" so users see the empty state.
       const humanCurrent = tp === 0 ? 0 : cp + 1;
       const humanTotal = tp;
@@ -11177,7 +11177,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     }
 
-    // Phase 48.1 (vue3 Phase 6 equivalent): inline CSS custom
+    // (vue3 equivalent): inline CSS custom
     // properties on the wrapper so the theme reaches descendant CSS
     // via `var(--cx-table-*, fallback)`. Geometry tokens emit with
     // `px` units; color tokens pass through as raw strings. The cast
@@ -11186,11 +11186,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // string-only record into the style attribute is the standard
     // React pattern for custom properties.
     const themeVars = cssVarsForTheme(t);
-    // Phase 56 (2026-05-26): wrapper carries position:relative inline
+    // wrapper carries position:relative inline
     // so `.cx-table-drop-line` overlay's absolute coords resolve
     // against the wrapper (not the document).
     const wrapperStyle = { ...themeVars, position: 'relative' } as CSSProperties;
-    // Phase 56: drop-line overlay for column-move drag. Absolute-
+    // drop-line overlay for column-move drag. Absolute-
     // positioned 2px line spanning the wrapper's full vertical extent;
     // `left` is `movingColumnState.dropLineLeftPx` (pre-computed
     // wrapper-relative px). Only mounted when an active drag has a
@@ -11206,13 +11206,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       zIndex: 4,
     };
 
-    // Phase 40 (2026-05-29 — react port): aria-rowcount + aria-colcount
-    // + off-screen live region. Verbatim mirror of vue3 Phase 40
+    // (2026-05-29 — react port): aria-rowcount + aria-colcount
+    // + off-screen live region. Verbatim mirror of vue3
     // wrapper attrs + child div.
     const ariaRowCount = 1 + topPinnedRows.length + pagedRows.length + bottomPinnedRows.length;
     const ariaColCount = visibleColumns.length + (selectionColumn.show === true ? 1 : 0);
 
-    // Phase 44 (react port): row-drop-line overlay.
+    // (react port): row-drop-line overlay.
     const rowDropLine: ReactElement | null =
       movingRowState?.dropLineTopPx != null ? (
         <div
@@ -11233,8 +11233,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         />
       ) : null;
 
-    // Phase 80 (2026-05-30 — react port): tool-panel container side-by-
-    // side layout. Verbatim mirror of vue3 Phase 80 root render branch.
+    // (2026-05-30 — react port): tool-panel container side-by-
+    // side layout. Verbatim mirror of vue3 root render branch.
     const toolPanelCfg = toolPanel;
     const toolPanelEnabled =
       toolPanelCfg != null && toolPanelCfg.show && toolPanelCfg.panels.length > 0;
@@ -11256,7 +11256,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       >
         {toolPanelCfg.panels.map((descriptor, idx) => {
           const isActive = descriptor.id === activeToolPanelId;
-          // Phase 84: roving tabindex via composable's activeIndex.
+          // roving tabindex via composable's activeIndex.
           const isKbdActive = toolPanelKbdNav.activeIndex === idx;
           return (
             <button
@@ -11441,7 +11441,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                   width: `${SQUARE_SIZE_PX + 20}px`,
                 }}
               >
-                {/* Phase 99.2.1 (react port): tab strip — Background / Text. */}
+                {/* (react port): tab strip — Background / Text. */}
                 <div
                   className="cx-table-cell-style-editor__tabs"
                   role="tablist"
@@ -11516,7 +11516,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     >
                       加粗 (Bold)
                     </button>
-                    {/* Phase 99.2.2.1 (2026-06-01 — react port): custom
+                    {/* (2026-06-01 — react port): custom
                         font-weight 9-step picker in <details> disclosure.
                         Verbatim mirror of vue3. */}
                     <details
@@ -11570,7 +11570,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                       </div>
                     </details>
                     {(() => {
-                      // Phase 99.2.2.2 (2026-06-01 — react port):
+                      // (2026-06-01 — react port):
                       // variable-font weight single-handle range slider
                       // in 2nd <details> sibling. Verbatim mirror of
                       // vue3 single-handle inline math (Decision L.1).
@@ -11756,7 +11756,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 )}
                 {state.activeTab === 'border' &&
                   (() => {
-                    // Phase 99.2.3.1 + 99.2.3.2 (2026-06-01 — react port):
+                    // + 99.2.3.2 (2026-06-01 — react port):
                     // segmented control + target-aware widgets + HSV
                     // disclosure. Verbatim mirror of vue3.
                     const borderStateLocal = state.borderState;
@@ -12325,9 +12325,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     </div>
                   </>
                 )}
-                {/* Phase 99.2.5 (2026-06-01 — react port) + Phase 118
+                {/* (2026-06-01 — react port) +
                     (2026-06-02 — react port): preset palette + recent
-                    row. Phase 118 lifts the border-tab gate — palette
+                    row. lifts the border-tab gate — palette
                     now renders for bg / text / border tabs. Hoisted
                     out of the bg/text branch so border-tab also sees
                     it. */}
@@ -12493,7 +12493,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             className="cx-table-column-menu-popover"
             role="menu"
             tabIndex={0}
-            // Phase 84: chain existing Escape handler + new Arrow nav.
+            // chain existing Escape handler + new Arrow nav.
             onKeyDown={(e) => {
               onColumnMenuKeydown(e.nativeEvent);
               columnVisibilityMenuKbdNav.handleKeydown(e);
@@ -12544,7 +12544,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             {columns.map((col, idx) => {
               const isHidden = col.hide === true;
               const label = col.headerName ?? col.field ?? col.id;
-              // Phase 84: roving tabindex over the checkbox list.
+              // roving tabindex over the checkbox list.
               const isKbdActive = columnVisibilityMenuKbdNav.activeIndex === idx;
               return (
                 <label

@@ -4,7 +4,7 @@
  * value commits) during multi-keystroke composition for CJK / Korean /
  * Vietnamese / etc. languages.
  *
- * Phase 7 (2026-06-02).
+ * .
  *
  * Lifecycle:
  *
@@ -35,7 +35,7 @@
  * ```
  *
  * The state machine is pure-data; mutations happen via transactions
- * matching the FieldState pattern (Phase 6).
+ * matching the FieldState pattern .
  */
 export interface ImeCompositionState {
   /** `true` while an IME composition is in progress. */

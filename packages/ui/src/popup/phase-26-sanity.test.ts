@@ -1,20 +1,20 @@
 // @vitest-environment happy-dom
 /**
- * Phase 26 (2026-06-03) end-of-session sanity check on the popup
- * infrastructure that downstream Phase 27 / 31 / 32 components will
- * compose. If gaps surface here they get filed into Phase 27 design
+ * end-of-session sanity check on the popup
+ * infrastructure that downstream components will
+ * compose. If gaps surface here they get filed indesign
  * doc upfront.
  *
- * Three downstream phases depend on Phase 26:
- * - Phase 27 Modal + Drawer + Dropdown + Menu — share portal mount +
+ * Three downstream phases depend on
+ * - Modal + Drawer + Dropdown + Menu — share portal mount +
  *   click-outside + Escape close. Modal + Drawer need focus trap on
- *   top (Phase 7 KitFocusTrap, lands in Phase 27).
- * - Phase 31 Select + Cascader + TreeSelect + Mention — popup dropdown
+ *   top (KitFocusTrap, lands).
+ * - Select + Cascader + TreeSelect + Mention — popup dropdown
  *   + portal mount + width-match.
- * - Phase 32 DatePicker + TimePicker + Calendar — popup panel + portal
+ * - DatePicker + TimePicker + Calendar — popup panel + portal
  *   mount.
  *
- * This is a one-off; remove once Phase 27 ships and exercises the same
+ * This is a one-off; remove once ships and exercises the same
  * helpers in real components.
  */
 import { afterEach, describe, expect, it } from 'vitest';
@@ -28,7 +28,7 @@ import {
   type PopupTrigger,
 } from './index.js';
 
-describe('Phase 26 popup infra sanity (Phase 27 / 31 / 32 de-risk)', () => {
+describe('popup infra sanity (de-risk)', () => {
   afterEach(() => {
     resetPopupZIndexForTests();
   });
@@ -50,13 +50,13 @@ describe('Phase 26 popup infra sanity (Phase 27 / 31 / 32 de-risk)', () => {
     expect(uniq.size).toBe(stacked.length);
   });
 
-  it('all 4 trigger types are exhaustively enumerable for Phase 27 Dropdown/Menu/Modal', () => {
+  it('all 4 trigger types are exhaustively enumerable Dropdown/Menu/Modal', () => {
     const triggers: PopupTrigger[] = ['click', 'hover', 'focus', 'manual'];
     expect(triggers).toHaveLength(4);
     expect(triggers).toContain(DEFAULT_POPUP_TRIGGER);
   });
 
-  it('hover-enter delay 100ms + leave delay 200ms — reasonable for Phase 31 Select dropdown ergonomics', () => {
+  it('hover-enter delay 100ms + leave delay 200ms — reasonable Select dropdown ergonomics', () => {
     expect(DEFAULT_HOVER_ENTER_DELAY_MS).toBeGreaterThanOrEqual(50);
     expect(DEFAULT_HOVER_ENTER_DELAY_MS).toBeLessThanOrEqual(200);
     expect(DEFAULT_HOVER_LEAVE_DELAY_MS).toBeGreaterThan(DEFAULT_HOVER_ENTER_DELAY_MS);

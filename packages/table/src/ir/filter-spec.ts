@@ -1,13 +1,13 @@
 import type { FilterExpression } from './filter-expression.js';
 
 /**
- * IR primitive: filter specification (Phase 9, 2026-05-24).
+ * IR primitive: filter specification (2026-05-24).
  *
  * `FilterSpec` is a discriminated union over the `type` field so
  * downstream phases can extend with `'number' | 'date' | 'custom' |
- * 'set'` variants without breaking existing consumers. Phase 9
- * shipped the `'text'` variant; Phase 9.1 (2026-05-24) adds
- * `'number'`. Phase 42 (2026-05-29) adds `'expression'` — a whole-row
+ * 'set'` variants without breaking existing consumers.
+ * shipped the `'text'` variant; adds
+ * `'number'`. adds `'expression'` — a whole-row
  * boolean tree authored either literally or via the DSL parser.
  *
  * The discriminated-union shape lets `filterPass` accept
@@ -22,7 +22,7 @@ export type FilterSpec =
   | MultiFilterSpec;
 
 /**
- * Text-filter operators (Phase 9). The four basics that cover
+ * Text-filter operators . The four basics that cover
  * 80%+ of real-world text-filter use cases:
  *
  * - `contains` — substring match (most common; default behavior of
@@ -31,7 +31,7 @@ export type FilterSpec =
  * - `startsWith` — anchored at the cell value's start.
  * - `endsWith` — anchored at the cell value's end.
  *
- * Future Phase 9.x can widen this to `'notContains' | 'notEquals' |
+ * Future can widen this to `'notContains' | 'notEquals' |
  * 'regex'`, but the four shipped here are the universal baseline.
  */
 export type TextFilterOperator = 'contains' | 'equals' | 'startsWith' | 'endsWith';
@@ -43,7 +43,7 @@ export type TextFilterOperator = 'contains' | 'equals' | 'startsWith' | 'endsWit
  *   variants will use different `type` values).
  * - `colId` references a `ColumnSpec.id`. When unknown / the column
  *   has `filterable === false`, `filterPass` rejects atomically
- *   (matches Phase 8.1 sortPass rejection semantics).
+ *   (matches sortPass rejection semantics).
  * - `operator` picks the predicate; see `TextFilterOperator`.
  * - `value` is the user's search string. Empty (`''`) is treated as
  *   "no filter applied" — the spec is kept in the array (so the
@@ -62,7 +62,7 @@ export interface TextFilterSpec {
 }
 
 /**
- * Number-filter operators (Phase 9.1, 2026-05-24). Seven canonical
+ * Number-filter operators (2026-05-24). Seven canonical
  * numeric comparisons:
  *
  * - `=` — exact equality.
@@ -72,17 +72,17 @@ export interface TextFilterSpec {
  * - `inRange` — `value <= x <= valueTo` (both endpoints inclusive,
  *   matches Excel's "between" semantics).
  *
- * Future Phase 9.x can widen this set; the seven shipped here are
+ * Future can widen this set; the seven shipped here are
  * the universal baseline.
  */
 export type NumberFilterOperator = '=' | '!=' | '>' | '<' | '>=' | '<=' | 'inRange';
 
 /**
- * Number-filter spec (Phase 9.1).
+ * Number-filter spec .
  *
  * - `type: 'number'` discriminates this variant.
  * - `colId` references a `ColumnSpec.id`. Atomic rejection on unknown
- *   colId or `filterable === false` (matches Phase 9 TextFilterSpec).
+ *   colId or `filterable === false` (matches TextFilterSpec).
  * - `operator` picks the comparison; see `NumberFilterOperator`.
  * - `value` is the threshold / equality target.
  * - `valueTo` is required only when `operator === 'inRange'`; ignored
@@ -104,7 +104,7 @@ export interface NumberFilterSpec {
 }
 
 /**
- * Expression-filter spec (Phase 42, 2026-05-29).
+ * Expression-filter spec (2026-05-29).
  *
  * - `type: 'expression'` discriminates this variant. Carries a whole-
  *   row boolean AST (`FilterExpression`) authored either literally
@@ -125,7 +125,7 @@ export interface NumberFilterSpec {
  * Atomic rejection: `filterPass` rejects the entire `filterSpec`
  * array when ANY compare leaf inside `expression` references an
  * unknown `colId` OR a column with `filterable === false`. Matches
- * Phase 9 + 9.1's per-spec atomic rejection semantics.
+ * + 9.1's per-spec atomic rejection semantics.
  */
 export interface ExpressionFilterSpec {
   readonly type: 'expression';
@@ -134,7 +134,7 @@ export interface ExpressionFilterSpec {
 }
 
 /**
- * Set-filter spec (Phase 43, 2026-05-29).
+ * Set-filter spec (2026-05-29).
  *
  * Excel-style "checkbox list of unique values" filter — the consumer
  * picks which discrete column values pass through. `filterPass` uses
@@ -143,7 +143,7 @@ export interface ExpressionFilterSpec {
  *
  * - `type: 'set'` discriminates this variant.
  * - `colId` references a `ColumnSpec.id`. Atomic rejection on unknown
- *   colId or `filterable === false` (matches Phase 9 / 9.1 / 42
+ *   colId or `filterable === false` (matches
  *   posture).
  * - `selectedValues` semantics:
  *   - `null` → identity (filter inactive; every row passes).
@@ -152,8 +152,8 @@ export interface ExpressionFilterSpec {
  *     any entry. `null` literal inside the array matches null /
  *     undefined / missing cells (Excel's "(Blanks)" semantic).
  *
- * Cell-value coercion mirrors the existing Phase 9 filter-pass /
- * Phase 43 unique-value collection — `string` / `number` / `boolean`
+ * Cell-value coercion mirrors the existing filter-pass /
+ * unique-value collection — `string` / `number` / `boolean`
  * / `null` cells pass through; `bigint` / `Date` coerce to string via
  * the same path; objects / functions / symbols collapse to no-match.
  */
@@ -164,7 +164,7 @@ export interface SetFilterSpec {
 }
 
 /**
- * Phase 102 (2026-06-01): headless text-filter child variant for the
+ * headless text-filter child variant for the
  * multi-filter container. Identical to `TextFilterSpec` minus the
  * `colId` field — the parent `MultiFilterSpec.colId` is the
  * canonical column source, and repeating it per child invites
@@ -178,7 +178,7 @@ export interface MultiFilterChildText {
 }
 
 /**
- * Phase 102 (2026-06-01): headless number-filter child variant for
+ * headless number-filter child variant for
  * the multi-filter container. Identical to `NumberFilterSpec` minus
  * `colId`.
  */
@@ -190,10 +190,10 @@ export interface MultiFilterChildNumber {
 }
 
 /**
- * Phase 116 (2026-06-02): headless set-filter child variant for the
+ * headless set-filter child variant for the
  * multi-filter container. Mirrors `SetFilterSpec`'s `selectedValues`
  * field but drops `colId` (the parent `MultiFilterSpec.colId` is
- * canonical per Phase 102 Decision E.1).
+ * canonical per Decision E.1).
  *
  * Semantics match `SetFilterSpec`:
  * - `selectedValues: null` → identity (slot inactive; multi-filter's
@@ -208,18 +208,18 @@ export interface MultiFilterChildSet {
 }
 
 /**
- * Phase 102 + 116: union of supported multi-filter children.
+ * + 116: union of supported multi-filter children.
  *
- * - Phase 102 (2026-06-01): text + number variants.
- * - Phase 116 (2026-06-02): set variant lifted (was parked per
- *   Phase 102 Decision F.4). Set-slot renders as a nested
+ * - text + number variants.
+ * - set variant lifted (was parked per
+ *   Decision F.4). Set-slot renders as a nested
  *   `<details>` inside the multi-filter panel body — native
  *   disclosure widget nesting; no JS height management required.
  */
 export type MultiFilterChild = MultiFilterChildText | MultiFilterChildNumber | MultiFilterChildSet;
 
 /**
- * Phase 117 (2026-06-02): nested group inside the multi-filter
+ * nested group inside the multi-filter
  * container. Composes recursively with leaf children to express
  * `(A AND B) OR (C AND D)` patterns without dropping to the Phase
  * 42 expression DSL.
@@ -235,10 +235,10 @@ export type MultiFilterChild = MultiFilterChildText | MultiFilterChildNumber | M
  *
  * Empty groups (`filters: []`) are identity (group's predicate is
  * null; the parent's `anyActive` counter doesn't trip). Same shape
- * as Phase 102's flat-empty case.
+ * as flat-empty case.
  *
  * Depth cap: chronix logs a one-time `console.warn` when group
- * depth exceeds 3 (Phase 117 Decision B.1). The predicate still
+ * depth exceeds 3 (Decision B.1). The predicate still
  * builds at any depth.
  */
 export interface MultiFilterGroup {
@@ -248,18 +248,18 @@ export interface MultiFilterGroup {
 }
 
 /**
- * Phase 117 (2026-06-02): top-level union of multi-filter
+ * top-level union of multi-filter
  * `filters[]` element types — leaf children (text/number/set) OR
- * nested groups. Backwards-compatible widening from Phase 102's
+ * nested groups. Backwards-compatible widening 's
  * `MultiFilterChild` element type (every leaf widens trivially).
  */
 export type MultiFilterEntry = MultiFilterChild | MultiFilterGroup;
 
 /**
- * Phase 102 (2026-06-01): multi-filter container — N stacked filter
+ * multi-filter container — N stacked filter
  * widgets against a single column combined via an AND-or-OR mode
- * toggle. Composes the Phase 9 text / Phase 9.1 number predicate
- * helpers without reusing the Phase 42 expression DSL (which would
+ * toggle. Composes the text / number predicate
+ * helpers without reusing the expression DSL (which would
  * force consumers to author + serialize an AST per stack mutation).
  *
  * Semantics:
@@ -267,21 +267,21 @@ export type MultiFilterEntry = MultiFilterChild | MultiFilterGroup;
  * - `type: 'multi'` discriminates this variant.
  * - `colId` is the canonical column source for ALL children. Atomic
  *   rejection on unknown colId or `filterable === false` (matches
- *   Phase 9 / 9.1 / 42 / 43 posture).
+ *   posture).
  * - `mode: 'AND' | 'OR'` combines child predicates. Empty `filters`
  *   array OR all-empty-value children → identity (no exclusion);
  *   matches the per-spec "active filter short-circuit" pattern
- *   from Phase 9.
+ *   .
  * - `filters` is an ordered list of headless filter children. Order
  *   matters only for render layout — predicate combination is
  *   commutative in both AND and OR modes.
  *
- * The set-widget child shipped in Phase 116 (2026-06-02) as a
+ * The set-widget child shipped in as a
  * nested `<details>` inside the multi-filter panel body — native
  * disclosure widget nesting handles height management without JS
  * (`MultiFilterChildSet` variant joins the union).
  *
- * The Phase 42 expression DSL (`ExpressionFilterSpec`) remains the
+ * The expression DSL (`ExpressionFilterSpec`) remains the
  * escape hatch for power users needing cross-column / nested-group
  * filters; multi-filter is intentionally single-column only.
  */

@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixInfiniteScroll } from './chronix-infinite-scroll.js';
 
 /**
- * Phase 35 (2026-06-05) — InfiniteScroll mount tests (vue3).
+ * — InfiniteScroll mount tests (vue3).
  */
 describe('ChronixInfiniteScroll', () => {
   it('renders a div with base class and data-testid', () => {

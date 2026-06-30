@@ -1,5 +1,5 @@
 /**
- * Wave component IR — Phase 29 (2026-06-04). Tier B trivial CSS-ripple
+ * Wave component IR — . Tier B trivial CSS-ripple
  * wrapper. Pointerdown on the wrapped element triggers a brief CSS
  * keyframe animation via the `--rippling` modifier class.
  *

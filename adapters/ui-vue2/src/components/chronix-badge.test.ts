@@ -7,7 +7,7 @@ import { ChronixBadge } from './chronix-badge.js';
 const Badge = ChronixBadge as unknown as VueConstructor;
 
 /**
- * Phase 14 (2026-06-02) — Badge mount tests (vue2). Verbatim port of
+ * — Badge mount tests (vue2). Verbatim port of
  * the vue3 Badge suite to `@vue/test-utils@1.x`.
  */
 

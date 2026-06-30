@@ -47,7 +47,7 @@ export interface ChronixButtonProps extends Omit<
  * structural by construction, since all three consume the same
  * `resolveButtonClassList` and the same `CHRONIX_BUTTON_CSS`).
  *
- * Phase 12 (2026-06-02). Behavior follows Phase 0.3 Decision A.1
+ * . Behavior follows Decision A.1
  * default-merge precedence (own prop strict → context → interface
  * default).
  */

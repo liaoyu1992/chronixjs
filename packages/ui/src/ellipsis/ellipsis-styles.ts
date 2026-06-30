@@ -1,5 +1,5 @@
 /**
- * Ellipsis stylesheet — Phase 23 (2026-06-03).
+ * Ellipsis stylesheet — .
  *
  * Root `<span>` declares `display: inline-block; max-width: 100%`
  * so the truncation has a bounded measurement context within

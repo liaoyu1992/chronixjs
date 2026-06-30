@@ -1,8 +1,8 @@
 /**
  * @chronixjs/ui-react — React 18 adapter for the chronix-ui core IR.
  *
- * Phase 12 (2026-06-02): package skeleton + first rendering surface —
- *   `<ChronixUIProvider>` + `useUIContext()` (Phase 0.3 Decision A.1 +
+ * package skeleton + first rendering surface —
+ *   `<ChronixUIProvider>` + `useUIContext()` (Decision A.1 +
  *   B.1 in action — React Context for propagation; hook returns plain
  *   `ChronixUIContext` since React Context already drives reactivity)
  *   + `<ChronixButton>` first Tier A component port, mirroring the
@@ -110,7 +110,7 @@ export { ChronixDropdown, type ChronixDropdownProps } from './components/chronix
 export { ChronixMenu, type ChronixMenuProps } from './components/chronix-menu.js';
 export { ChronixAffix, type ChronixAffixProps } from './components/chronix-affix.js';
 export { ChronixBackTop, type ChronixBackTopProps } from './components/chronix-back-top.js';
-// Phase 28 (2026-06-04) — Layout family (8 components).
+// — Layout family (8 components).
 export { ChronixLayout, type ChronixLayoutProps } from './components/chronix-layout.js';
 export {
   ChronixLayoutHeader,
@@ -144,7 +144,7 @@ export {
   ChronixFloatButtonGroup,
   type ChronixFloatButtonGroupProps,
 } from './components/chronix-float-button-group.js';
-// Phase 29 (2026-06-04) — Tier B remainder (3 components).
+// — Tier B remainder (3 components).
 export { ChronixCarousel, type ChronixCarouselProps } from './components/chronix-carousel.js';
 export { ChronixWave, type ChronixWaveProps } from './components/chronix-wave.js';
 export {
@@ -152,7 +152,7 @@ export {
   type ChronixFocusDetectorProps,
 } from './components/chronix-focus-detector.js';
 export { ChronixTree, type ChronixTreeProps } from './components/chronix-tree.js';
-// Phase 31 (2026-06-04) — Tier C Select family (4 components).
+// — Tier C Select family (4 components).
 export { ChronixSelect, type ChronixSelectProps } from './components/chronix-select.js';
 export {
   ChronixTreeSelect,
@@ -160,7 +160,7 @@ export {
 } from './components/chronix-tree-select.js';
 export { ChronixCascader, type ChronixCascaderProps } from './components/chronix-cascader.js';
 export { ChronixMention, type ChronixMentionProps } from './components/chronix-mention.js';
-// Phase 32 (2026-06-05) — Tier C DatePicker / TimePicker / Calendar (3 components).
+// — Tier C DatePicker / TimePicker / Calendar (3 components).
 export {
   ChronixDatePicker,
   type ChronixDatePickerProps,
@@ -170,7 +170,7 @@ export {
   type ChronixTimePickerProps,
 } from './components/chronix-time-picker.js';
 export { ChronixCalendar, type ChronixCalendarProps } from './components/chronix-calendar.js';
-// Phase 33 (2026-06-05) — Tier C ColorPicker / Transfer / Slider / Pagination (4 components).
+// — Tier C ColorPicker / Transfer / Slider / Pagination (4 components).
 export {
   ChronixColorPicker,
   type ChronixColorPickerProps,
@@ -178,14 +178,14 @@ export {
 export { ChronixTransfer, type ChronixTransferProps } from './components/chronix-transfer.js';
 export { ChronixSlider, type ChronixSliderProps } from './components/chronix-slider.js';
 export { ChronixPagination, type ChronixPaginationProps } from './components/chronix-pagination.js';
-// Phase 34 (2026-06-05) — Tier C Form (ChronixForm + ChronixFormItem).
+// — Tier C Form (ChronixForm + ChronixFormItem).
 export {
   ChronixForm,
   type ChronixFormProps,
   ChronixFormItem,
   type ChronixFormItemProps,
 } from './components/chronix-form.js';
-// Phase 35 (2026-06-05) — Tier C remainder (7 components).
+// — Tier C remainder (7 components).
 export {
   ChronixDynamicInput,
   type ChronixDynamicInputProps,
@@ -209,7 +209,7 @@ export {
   useModalLifecycle,
   type ModalCloseReason as UseModalLifecycleCloseReason,
 } from './hooks/use-modal-lifecycle.js';
-// Phase 36 (2026-06-05) — Imperative APIs (4 hooks).
+// — Imperative APIs (4 hooks).
 export { useMessage, type MessageApi, type MessageCreateOptions } from './hooks/use-message.js';
 export {
   useNotification,

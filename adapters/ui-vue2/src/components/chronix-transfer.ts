@@ -12,7 +12,7 @@ import { computed, defineComponent, h, ref, type PropType } from 'vue';
 
 /**
  * `<ChronixTransfer>` — Vue 2 transfer with source/target panels + actions.
- * Phase 33 (2026-06-05).
+ * .
  */
 export const ChronixTransfer = defineComponent({
   name: 'ChronixTransfer',

@@ -1,7 +1,7 @@
 import type { ColumnSpec } from '../ir/index.js';
 
 /**
- * Phase 12.1 (2026-05-24): editor-string → typed-value coercion for
+ * editor-string → typed-value coercion for
  * the `<input>` cell editor's commit path.
  *
  * The vue3 adapter's `applyEditCommit` calls this helper with the
@@ -26,7 +26,7 @@ import type { ColumnSpec } from '../ir/index.js';
  * re-commit / programmatic-set path) so consumers calling
  * `commitEditingCell()` after a draft round-trip don't double-coerce.
  *
- * Date / boolean coercion remains passthrough at Phase 12.1; Phase
+ * Date / boolean coercion remains passthrough at; Phase
  * 12.3+ adds proper specialisations alongside the date / checkbox
  * editor branches.
  *

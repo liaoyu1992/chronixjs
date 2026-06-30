@@ -1,5 +1,5 @@
 /**
- * Equation IR — Phase 24 (2026-06-03). Tier A MathML renderer.
+ * Equation IR — . Tier A MathML renderer.
  * Adapter injects `value` as innerHTML inside a native `<math>`.
  */
 

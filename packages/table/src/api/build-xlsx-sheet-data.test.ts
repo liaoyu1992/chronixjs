@@ -200,9 +200,9 @@ describe('buildXlsxSheetData', () => {
     expect(result.columnWidths).toEqual([200, 120, 160, 80, 100]);
   });
 
-  // ────────────────────── Phase 39.4 (2026-05-29) ──────────────────────
+  // ────────────────────── ──────────────────────
 
-  it('Phase 39.4: columnExportStyles is array of undefined when no column has exportStyle', () => {
+  it('columnExportStyles is array of undefined when no column has exportStyle', () => {
     const result = buildXlsxSheetData({ rows: baseRows, columns: baseColumns });
     expect(result.columnExportStyles).toEqual([
       undefined,
@@ -213,7 +213,7 @@ describe('buildXlsxSheetData', () => {
     ]);
   });
 
-  it('Phase 39.4: columnExportStyles populates from ColumnSpec.exportStyle in input order', () => {
+  it('columnExportStyles populates from ColumnSpec.exportStyle in input order', () => {
     const styledQty: ColumnSpec = {
       ...numberColumn,
       exportStyle: {
@@ -237,7 +237,7 @@ describe('buildXlsxSheetData', () => {
     expect(result.columnExportStyles[4]).toEqual({ alignment: { horizontal: 'right' } });
   });
 
-  it('Phase 39.4: columnExportStyles respects options.columnIds subset + reorder', () => {
+  it('columnExportStyles respects options.columnIds subset + reorder', () => {
     const styledQty: ColumnSpec = {
       ...numberColumn,
       exportStyle: { font: { bold: true } },
@@ -252,7 +252,7 @@ describe('buildXlsxSheetData', () => {
     expect(result.columnExportStyles).toEqual([{ font: { bold: true } }, undefined]);
   });
 
-  it('Phase 39.4: columnExportStyles preserves structural identity of the style object', () => {
+  it('columnExportStyles preserves structural identity of the style object', () => {
     const sharedStyle = { font: { italic: true } };
     const styled: ColumnSpec = { ...numberColumn, exportStyle: sharedStyle };
     const result = buildXlsxSheetData({

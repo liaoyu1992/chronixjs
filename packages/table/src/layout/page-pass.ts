@@ -1,7 +1,7 @@
 import type { RowSpec } from '../ir/index.js';
 
 /**
- * Input to `pagePass` (Phase 11, 2026-05-24).
+ * Input to `pagePass` (2026-05-24).
  *
  * `rows` is the post-filter + post-sort row order (the canonical
  * pipeline runs `rows → filterPass → sortPass → pagePass`). `page`
@@ -49,7 +49,7 @@ export interface PagePassResult {
 
 /**
  * Slice rows into a single page of the post-filter + post-sort row
- * order (Phase 11, 2026-05-24).
+ * order (2026-05-24).
  *
  * Algorithm:
  *

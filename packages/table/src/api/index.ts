@@ -1,14 +1,14 @@
 /**
  * Public API barrel.
  *
- * Phase 1 (2026-05-23): `ChronixTableTheme` + `defaultChronixTableTheme`.
- * Phase 6 (2026-05-24): `cssVarsForTheme` for CSS-var injection.
- * Phase 9.1 (2026-05-24): `parsePrefixNumberFilter` + `formatPrefixNumberFilter`.
- * Phase 10.1 (2026-05-24): `computeRangeRowIds` for shift+click range selection.
- * Phase 12.1 (2026-05-24): `coerceEditDraftValue` for editor-string → typed-value coercion.
- * Phase 12.2 (2026-05-24): `findNextEditableCell` for Tab / Shift+Tab auto-advance during in-cell editing.
- * Phase 13 (2026-05-25): `clampResizeWidth` for column-resize drag width clamping.
- * Phase 14 (2026-05-26): `computeColumnReorder` + `getColumnDropTarget` +
+ * `ChronixTableTheme` + `defaultChronixTableTheme`.
+ * `cssVarsForTheme` for CSS-var injection.
+ * `parsePrefixNumberFilter` + `formatPrefixNumberFilter`.
+ * `computeRangeRowIds` for shift+click range selection.
+ * `coerceEditDraftValue` for editor-string → typed-value coercion.
+ * `findNextEditableCell` for Tab / Shift+Tab auto-advance during in-cell editing.
+ * `clampResizeWidth` for column-resize drag width clamping.
+ * `computeColumnReorder` + `getColumnDropTarget` +
  *   `DEFAULT_COLUMN_MOVE_DRAG_THRESHOLD_PX` for column-move drag-to-reorder.
  * Subsequent phases add `TableHandle`, `hitTestFromClient`, validation
  * helpers, formatter helpers, export helpers, etc.

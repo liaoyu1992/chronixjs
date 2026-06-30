@@ -1,5 +1,5 @@
 /**
- * Progress IR — Phase 16 (2026-06-02). Tier A loading-state primitive,
+ * Progress IR — . Tier A loading-state primitive,
  * line variant only. Circle / dashboard / segmented variants are
  * deferred (see audit/UI_PHASE_16_LOADING_STATES_DESIGN.md
  * § Out-of-scope + Decision B.1).

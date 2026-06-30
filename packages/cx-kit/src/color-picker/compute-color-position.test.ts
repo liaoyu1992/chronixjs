@@ -7,7 +7,7 @@ import {
   computeStripPositionForHue,
 } from './compute-color-position.js';
 
-describe('computeHsvAtSquarePosition — Phase 99', () => {
+describe('computeHsvAtSquarePosition', () => {
   it('top-left (0, 0) → (s=0, v=1, h=currentHue)', () => {
     const result = computeHsvAtSquarePosition({
       positionPxX: 0,
@@ -76,7 +76,7 @@ describe('computeHsvAtSquarePosition — Phase 99', () => {
   });
 });
 
-describe('computeSquarePositionForHsv — Phase 99', () => {
+describe('computeSquarePositionForHsv', () => {
   it('(s=0.5, v=0.5) → center', () => {
     const result = computeSquarePositionForHsv({
       hsv: { h: 0, s: 0.5, v: 0.5 },
@@ -128,7 +128,7 @@ describe('computeSquarePositionForHsv — Phase 99', () => {
   });
 });
 
-describe('computeHueAtStripPosition — Phase 99', () => {
+describe('computeHueAtStripPosition', () => {
   it('position 0 → hue 0', () => {
     expect(computeHueAtStripPosition({ positionPx: 0, stripSizePx: 360 })).toBe(0);
   });
@@ -160,7 +160,7 @@ describe('computeHueAtStripPosition — Phase 99', () => {
   });
 });
 
-describe('computeStripPositionForHue — Phase 99', () => {
+describe('computeStripPositionForHue', () => {
   it('hue 0 → position 0', () => {
     expect(computeStripPositionForHue({ hue: 0, stripSizePx: 360 })).toBe(0);
   });

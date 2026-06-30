@@ -1,7 +1,7 @@
 import type { NumberFilterOperator, NumberFilterSpec } from '../ir/index.js';
 
 /**
- * Phase 9.1 (2026-05-24): parse a single-input prefix-syntax string
+ * parse a single-input prefix-syntax string
  * into a `NumberFilterSpec`. Used by the SFC filter-row input on
  * `column.type === 'number'` columns.
  *
@@ -59,7 +59,7 @@ export function parsePrefixNumberFilter(value: string, colId: string): NumberFil
 }
 
 /**
- * Phase 9.1: inverse of `parsePrefixNumberFilter` — format a
+ * inverse of `parsePrefixNumberFilter` — format a
  * `NumberFilterSpec` back into the prefix-syntax string. Used by
  * the SFC to round-trip `getFilter()` content into the input's
  * `value` attribute so external `setFilter` calls reactively

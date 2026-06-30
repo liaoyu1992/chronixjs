@@ -15,7 +15,7 @@ export interface ChronixEllipsisProps extends Omit<
 }
 
 /**
- * `<ChronixEllipsis>` — React port of the Phase 23 Ellipsis.
+ * `<ChronixEllipsis>` — React port of the Ellipsis.
  *
  * Root element is `<span>` (NOT `<div>`) — 23-fr2: inline element
  * so it composes within inline flows. Props type uses

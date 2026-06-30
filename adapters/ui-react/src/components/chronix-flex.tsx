@@ -22,7 +22,7 @@ export interface ChronixFlexProps extends Omit<HTMLAttributes<HTMLDivElement>, '
 }
 
 /**
- * `<ChronixFlex>` — React port of the Phase 17 Flex.
+ * `<ChronixFlex>` — React port of the Flex.
  */
 export function ChronixFlex(props: ChronixFlexProps): JSX.Element {
   const {

@@ -1,5 +1,5 @@
 /**
- * Slider component IR — Phase 33 (2026-06-05).
+ * Slider component IR — .
  *
  * Single/range slider with marks. Uses cx-kit `@chronixjs/cx-kit/slider`
  * for value/position math and `@chronixjs/cx-kit/input-range` for range.

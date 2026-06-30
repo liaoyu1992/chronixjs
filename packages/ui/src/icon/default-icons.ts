@@ -11,7 +11,7 @@ export const DEFAULT_ICON_VIEW_BOX = '0 0 24 24';
  * The chronix-NEW default icon set — 12 essential glyphs covering the
  * needs of every Tier A/B/C component shipped through Phase ~120.
  *
- * Phase 9 (2026-06-02). Paths are chronix-original simple geometric
+ * . Paths are chronix-original simple geometric
  * shapes — readable but not pixel-art-perfect; consumers wanting
  * higher-quality icons replace via `registerIcon(...)` against the
  * same `name`. Replaceable names + their typical consumers:

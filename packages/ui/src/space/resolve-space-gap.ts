@@ -2,7 +2,7 @@ import type { SpaceSize } from './space-spec.js';
 
 /**
  * Pure helper — convert a Space `size` (discrete token or numeric
- * px) into a CSS `gap` value string. Phase 17 (2026-06-02). Shared
+ * px) into a CSS `gap` value string. . Shared
  * by all 3 adapters so the rendered inline-style is byte-identical
  * across vue3 / vue2 / react.
  *

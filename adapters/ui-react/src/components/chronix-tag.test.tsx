@@ -6,7 +6,7 @@ import { ChronixUIProvider } from '../providers/chronix-ui-provider.js';
 import { ChronixTag } from './chronix-tag.js';
 
 /**
- * Phase 13 (2026-06-02) — Tag mount tests (react). Verbatim port of
+ * — Tag mount tests (react). Verbatim port of
  * the vue3 Tag suite to `@testing-library/react`.
  */
 

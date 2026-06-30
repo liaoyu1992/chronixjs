@@ -23,7 +23,7 @@ export interface ChronixMarqueeProps extends Omit<HTMLAttributes<HTMLDivElement>
 }
 
 /**
- * `<ChronixMarquee>` — React port of the Phase 22 Marquee.
+ * `<ChronixMarquee>` — React port of the Marquee.
  *
  * Root `<div>` + inner `__track` carrying the children rendered
  * TWICE (for seamless loop). Animation runs as a pure CSS

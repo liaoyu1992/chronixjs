@@ -1,12 +1,12 @@
 import type { ColumnSpec, FilterSpec, SortSpec } from '../ir/index.js';
 
 /**
- * Phase 38 (2026-05-29): per-column snapshot for `TableViewState`.
+ * per-column snapshot for `TableViewState`.
  *
  * Captures the three column-level state surfaces that can drift from the
- * `ColumnSpec` defaults during normal user interaction: `hide` (Phase 25
- * column-visibility menu), `width` (Phase 13 column-resize), and `pinned`
- * (Phase 17 left/right zone). Column `id` is the canonical key; saved
+ * `ColumnSpec` defaults during normal user interaction: `hide` (
+ * column-visibility menu), `width` (column-resize), and `pinned`
+ * (left/right zone). Column `id` is the canonical key; saved
  * entries referencing an `id` not present in the current `columns` prop
  * at restore time are silently dropped by `applyTableView` (Decision E.1).
  *
@@ -23,7 +23,7 @@ export interface TableViewColumnState {
 }
 
 /**
- * Phase 38 (2026-05-29): canonical JSON snapshot of a chronix-table's
+ * canonical JSON snapshot of a chronix-table's
  * column layout + sort + filter + pagination state.
  *
  * `version: 1` is a literal-type-pinned format marker so future widening
@@ -51,7 +51,7 @@ export interface TableViewState {
 }
 
 /**
- * Phase 38 (2026-05-29): input for `serializeTableView`. The four
+ * input for `serializeTableView`. The four
  * non-`columns` fields mirror the equivalent TableHandle getter shapes
  * (`getSort()` / `getFilter()` / `getPage()` / `getPageSize()`); the
  * `columns` prop is passed verbatim and projected to
@@ -66,7 +66,7 @@ export interface SerializeTableViewInput {
 }
 
 /**
- * Phase 38 (2026-05-29): result of `applyTableView`. Adapters consume
+ * result of `applyTableView`. Adapters consume
  * this by passing each field to its corresponding TableHandle setter
  * (`setSort` / `setFilter` / `setPage` / `setPageSize`) + emitting
  * `columns-change` with the reconciled `columns` array so the consumer
@@ -81,7 +81,7 @@ export interface TableViewApplyResult {
 }
 
 /**
- * Phase 38 (2026-05-29): project the current table state into a
+ * project the current table state into a
  * JSON-serializable `TableViewState` snapshot.
  *
  * Pure function. No DOM, no I/O, no side effects. The output is safe
@@ -118,7 +118,7 @@ export function serializeTableView(input: SerializeTableViewInput): TableViewSta
 }
 
 /**
- * Phase 38 (2026-05-29): reconcile a `TableViewState` snapshot against
+ * reconcile a `TableViewState` snapshot against
  * the current `columns` prop + return the data the consumer needs to
  * pass to `setSort` / `setFilter` / `setPage` / `setPageSize` plus the
  * rebuilt columns array.
@@ -188,7 +188,7 @@ export function applyTableView(
 
   const reconciledIds = new Set(reconciledColumns.map((c) => c.id));
   const reconciledSort = state.sort.filter((s) => reconciledIds.has(s.colId));
-  // Phase 42 (2026-05-29): expression-variant filter specs have no
+  // expression-variant filter specs have no
   // single colId — their compare leaves reference column ids internally,
   // and `filterPass` already rejects atomically when any leaf points at
   // a missing column. Pass them through verbatim; downstream rejection

@@ -1,5 +1,5 @@
 /**
- * InputOtp component IR — Phase 25 (2026-06-03). Tier B one-time-
+ * InputOtp component IR — . Tier B one-time-
  * password entry surface: N independent cells that share a single
  * controlled string value of length ≤ length.
  *

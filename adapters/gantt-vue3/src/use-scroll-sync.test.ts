@@ -46,7 +46,7 @@ function nextRaf(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
-describe('useScrollSync — Phase 23', () => {
+describe('useScrollSync', () => {
   it('attaches scroll listeners on mount and removes them on unmount', () => {
     const wrapper = mountHost();
     const paneA = wrapper.find<HTMLElement>('[data-test="pane-a"]').element;

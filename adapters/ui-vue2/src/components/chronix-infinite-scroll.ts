@@ -7,7 +7,7 @@ import {
 import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref, type VNode } from 'vue';
 
 /**
- * `<ChronixInfiniteScroll>` — Vue 2.7 port of the Phase 35 InfiniteScroll.
+ * `<ChronixInfiniteScroll>` — Vue 2.7 port of the InfiniteScroll.
  * Verbatim surface mirror of the vue3 sibling; runtime differences are
  * Vue 2's `attrs:` data-object for HTML attributes and `on:` for events.
  * Uses IntersectionObserver in onMounted/onBeforeUnmount.

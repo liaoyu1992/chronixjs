@@ -45,7 +45,7 @@ function getHandle(wrapper: ReturnType<typeof mount>): GanttHandle {
   return wrapper.vm as unknown as GanttHandle;
 }
 
-describe('<ChronixGantt> imperative handle (Phase 24)', () => {
+describe('<ChronixGantt> imperative handle ', () => {
   describe('nav methods emit update:axisInput', () => {
     it('next() emits anchorDate one period later (week view → +7 days)', () => {
       const wrapper = mount(ChronixGantt, { props: { bars, rows, axisInput: baseAxisInput } });
@@ -136,7 +136,7 @@ describe('<ChronixGantt> imperative handle (Phase 24)', () => {
 
   describe('scrollToDate(date) writes chart-pane scrollLeft', () => {
     it('writes a numeric scrollLeft proportional to the date offset', () => {
-      // Phase 23 updated `scrollToDateImpl` to target the chart-pane
+      // updated `scrollToDateImpl` to target the chart-pane
       // (was wrapper pre-Phase-23). chart-pane owns horizontal scroll
       // under dual-scrollport; wrapper no longer has `overflow: auto`.
       const wrapper = mount(ChronixGantt, { props: { bars, rows, axisInput: baseAxisInput } });

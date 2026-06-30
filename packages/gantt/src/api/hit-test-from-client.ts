@@ -4,7 +4,7 @@ import { xToTime } from '../layout/x-to-time.js';
 import type { PlannedAxis, SwimlaneStrip } from '../layout/types.js';
 
 /**
- * Phase 56 — hit-test primitive for external-drag closure. Takes
+ * hit-test primitive for external-drag closure. Takes
  * client-space (page) coordinates and the chart pane's geometry
  * snapshot, returns the calendar `time` + target `rowId` if the
  * point falls inside the chart body's content area + a known row

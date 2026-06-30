@@ -7,7 +7,7 @@ import {
 import { ref, type Ref } from 'vue';
 
 /**
- * Vue 3 imperative Discrete Dialog composable — Phase 36 (2026-06-05).
+ * Vue 3 imperative Discrete Dialog composable — .
  *
  * Manages a reactive list of `DialogItem`s. Dialogs are persistent (no
  * auto-dismiss); they are removed via user action or `destroyAll()`.

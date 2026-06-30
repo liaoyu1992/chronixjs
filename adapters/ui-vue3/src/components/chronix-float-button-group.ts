@@ -12,12 +12,12 @@ import {
 import { defineComponent, h, onBeforeUnmount, ref, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixFloatButtonGroup>` — Vue 3. Phase 28 (2026-06-04). Stacked
+ * `<ChronixFloatButtonGroup>` — Vue 3. . Stacked
  * cluster of float buttons. `trigger: 'click' | 'hover'` enables an
  * expand/collapse main button; `trigger: undefined` renders a static
  * cluster (no main button, child buttons always visible).
  *
- * NOT a portal popup — already `position: fixed`. Reuses Phase 26
+ * NOT a portal popup — already `position: fixed`. Reuses
  * trigger-state idiom + hover-delay constants only.
  */
 export const ChronixFloatButtonGroup = defineComponent({

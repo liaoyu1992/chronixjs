@@ -3,7 +3,7 @@ import type { ListProps } from './list-spec.js';
 /**
  * Compute class set for the List root element.
  *
- * Phase 21 (2026-06-03).
+ * .
  *
  * Class structure:
  *

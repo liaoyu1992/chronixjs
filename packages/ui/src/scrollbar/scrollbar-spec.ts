@@ -1,5 +1,5 @@
 /**
- * Scrollbar IR — Phase 35. Custom-styled scrollbar container
+ * Scrollbar IR. Custom-styled scrollbar container
  * with hover/none trigger modes.
  */
 

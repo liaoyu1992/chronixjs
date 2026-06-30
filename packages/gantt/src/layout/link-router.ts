@@ -7,7 +7,7 @@ import type {
 } from './types.js';
 
 /**
- * Phase 2 layout pass #4. Computes SVG path strings + marker positions
+ * layout pass #4. Computes SVG path strings + marker positions
  * for dependency lines between placed bars.
  *
  * Two routings are supported. `'square'` emits a 3-segment orthogonal
@@ -34,7 +34,7 @@ export interface LinkRouter {
 }
 
 /**
- * Phase 2 layout pass #4. Computes SVG path strings + marker positions
+ * layout pass #4. Computes SVG path strings + marker positions
  * for dependency lines between placed bars.
  *
  * Two routings are supported. `'square'` emits a 3-segment orthogonal

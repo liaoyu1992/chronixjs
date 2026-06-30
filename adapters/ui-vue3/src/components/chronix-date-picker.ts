@@ -37,7 +37,7 @@ const MONTH_NAMES = [
 
 /**
  * `<ChronixDatePicker>` — Vue 3 date picker with calendar popup.
- * Phase 32 (2026-06-05). Single-date selection.
+ * . Single-date selection.
  */
 export const ChronixDatePicker = defineComponent({
   name: 'ChronixDatePicker',

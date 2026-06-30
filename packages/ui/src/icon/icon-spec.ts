@@ -1,5 +1,5 @@
 /**
- * Icon IR — Phase 9 (2026-06-02).
+ * Icon IR — .
  *
  * Pure-data SVG icon descriptors consumed by Tree (chevron / check),
  * Select / Cascader / Dropdown (chevron / close), Checkbox (check /

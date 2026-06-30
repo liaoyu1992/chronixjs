@@ -2,18 +2,18 @@ import { useEffect, useLayoutEffect, useRef, useState, type RefObject } from 're
 import { flushSync } from 'react-dom';
 
 /**
- * Phase 23: tracks the chart-pane's `scrollLeft` + `clientWidth` so
+ * tracks the chart-pane's `scrollLeft` + `clientWidth` so
  * downstream render code can react to user scroll and container
  * resize. Returned values are reactive values that update on scroll.
  *
  * Designed as a consumer-facing hook for follow-up phases that need
  * the chart-pane viewport state:
  *
- *   - **Phase 27.1** — `PlacedBar.isClippedStart` / `isClippedEnd`
- *     viewport-clipping flags (vs Phase 27's axis-range flags) need
+ *   - **** — `PlacedBar.isClippedStart` / `isClippedEnd`
+ *     viewport-clipping flags (vs axis-range flags) need
  *     scrollLeft + clientWidth to decide whether a bar's start/end
  *     extends past the visible viewport.
- *   - **Phase 28.2.1** — bar title truncation can shrink the
+ *   - **** — bar title truncation can shrink the
  *     available text width to the visible viewport intersection,
  *     not the full bar width, when the bar extends past either
  *     viewport edge.

@@ -13,7 +13,7 @@ import { computed, defineComponent, h, type CSSProperties, type PropType } from 
  * IR. Single-element placeholder; consumers stack multiple instances
  * for multi-line layouts.
  *
- * Phase 16 (2026-06-02).
+ * .
  *
  * Props:
  *

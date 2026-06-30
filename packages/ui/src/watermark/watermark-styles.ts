@@ -1,5 +1,5 @@
 /**
- * Watermark stylesheet — Phase 22 (2026-06-03).
+ * Watermark stylesheet — .
  *
  * The root `<div>` carries the SVG data-URI as inline
  * `background-image`, with `background-repeat: repeat` +

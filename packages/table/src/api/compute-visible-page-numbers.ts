@@ -1,5 +1,5 @@
 /**
- * Phase 11.1 (2026-05-24): compute the ellipsis-aware sequence of
+ * compute the ellipsis-aware sequence of
  * page numbers + ellipsis markers to render in the chronix-table
  * pagination footer.
  *
@@ -7,7 +7,7 @@
  * 0-based (matching `pagePass` + `setPage`); the SFC renders them
  * as `n + 1` for human display.
  *
- * Visible-page policy (Phase 11.1 Decision B.1):
+ * Visible-page policy (Decision B.1):
  *
  * - Always show `boundaryCount` pages at each edge.
  * - Show `siblingCount` pages on each side of `currentPage` when in

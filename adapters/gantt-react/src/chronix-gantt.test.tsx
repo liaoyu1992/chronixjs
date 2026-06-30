@@ -54,7 +54,7 @@ const baseAxisInput = (): AxisRangePlanInput => ({
   weekendsVisible: true,
 });
 
-describe('@chronixjs/gantt-react ChronixGantt (Phase 32 + 32.1)', () => {
+describe('@chronixjs/gantt-react ChronixGantt (+ 32.1)', () => {
   it('mounts and emits <div.cx-gantt-wrapper> root containing header + body SVGs', () => {
     const { container } = render(<ChronixGantt bars={[]} rows={[]} axisInput={baseAxisInput()} />);
 
@@ -94,7 +94,7 @@ describe('@chronixjs/gantt-react ChronixGantt (Phase 32 + 32.1)', () => {
       rows,
       axis,
       barHeight: 30,
-      barStackSpacing: 5, // Phase 43 default
+      barStackSpacing: 5, // default
     });
     const rowsWithHints = rows.map((r): RowSpec => {
       const hint = stackOut.heightByRowId.get(r.id);
@@ -110,9 +110,9 @@ describe('@chronixjs/gantt-react ChronixGantt (Phase 32 + 32.1)', () => {
       axis,
       strips: swimlaneOut.strips,
       barHeight: 30,
-      barVerticalPadding: 4, // Phase 43 default
+      barVerticalPadding: 4, // default
       levelByBarId: stackOut.levelByBarId,
-      barStackSpacing: 5, // Phase 43 default
+      barStackSpacing: 5, // default
     });
     const expected = placement.placedBars[0];
     expect(expected).toBeDefined();
@@ -155,7 +155,7 @@ describe('@chronixjs/gantt-react ChronixGantt (Phase 32 + 32.1)', () => {
     expect(container.querySelector('svg.cx-gantt-body')).not.toBeNull();
   });
 
-  // Phase 32.1: axis chrome render cases.
+  // axis chrome render cases.
 
   it('header SVG dimensions match axis.totalWidth × (headerRows × headerRowHeight + headerHeight)', () => {
     const axisInput = baseAxisInput();
@@ -226,7 +226,7 @@ describe('@chronixjs/gantt-react ChronixGantt (Phase 32 + 32.1)', () => {
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.2)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — pointer integration ', () => {
   // jsdom doesn't implement setPointerCapture / releasePointerCapture +
   // doesn't honor getBoundingClientRect from CSS. Stub both so the
   // adapter's pointer plumbing exercises the full begin / advance /
@@ -416,7 +416,7 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
     expect(onBarDrop).not.toHaveBeenCalled();
   });
 
-  it('pointerMinDistance={0} disables the gate — 1px move commits a drag (Phase 41)', () => {
+  it('pointerMinDistance={0} disables the gate — 1px move commits a drag ', () => {
     const onBarDrop = vi.fn<(p: BarDropPayload) => void>();
     const onBarClick = vi.fn<(p: BarClickPayload) => void>();
     const { container } = render(
@@ -483,7 +483,7 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
     expect(onBarDrop).not.toHaveBeenCalled();
   });
 
-  // Phase 32.2.1: Phase 19 validator gate adapter-level wiring.
+  // validator gate adapter-level wiring.
 
   function twoBarsCrossRow(): readonly BarSpec[] {
     // b1 on r1 hour 8-12, b2 on r2 hour 10-14 (time-intersecting).
@@ -669,7 +669,7 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
     expect(onBarDropRejected).not.toHaveBeenCalled();
   });
 
-  it('selectOverlap=false rejects range-select that intersects an existing bar (Phase 55)', () => {
+  it('selectOverlap=false rejects range-select that intersects an existing bar ', () => {
     const onSelect = vi.fn<(p: SelectPayload) => void>();
     const onSelectRejected = vi.fn<(p: SelectRejectedPayload) => void>();
     // b1 on r2 (8-12) — different row from where we select, so pointerdown
@@ -708,7 +708,7 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
     expect(onSelectRejected.mock.calls[0]![0].reason).toBe('overlap');
   });
 
-  it('selectConstraint narrower than eventConstraint vetoes select-only (Phase 55)', () => {
+  it('selectConstraint narrower than eventConstraint vetoes select-only ', () => {
     const onSelect = vi.fn<(p: SelectPayload) => void>();
     const onSelectRejected = vi.fn<(p: SelectRejectedPayload) => void>();
     const wideConstraint = {
@@ -747,7 +747,7 @@ describe('@chronixjs/gantt-react ChronixGantt — pointer integration (Phase 32.
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — theme / slot / selection (Phase 32.3)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — theme / slot / selection ', () => {
   // Shared helpers for this block — two bars on two rows so selection
   // tests can assert per-bar class application without ambiguity.
   function twoBars(): readonly BarSpec[] {
@@ -760,7 +760,7 @@ describe('@chronixjs/gantt-react ChronixGantt — theme / slot / selection (Phas
 
   // (1) Theme prop — 4 cases
 
-  it('default theme: bar fill matches defaultChronixTheme.barBackgroundColor (visible drift from Phase 32.2)', () => {
+  it('default theme: bar fill matches defaultChronixTheme.barBackgroundColor (visible drift)', () => {
     const { container } = render(
       <ChronixGantt bars={twoBars()} rows={twoRows()} axisInput={baseAxisInput()} />,
     );
@@ -1020,7 +1020,7 @@ describe('@chronixjs/gantt-react ChronixGantt — theme / slot / selection (Phas
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — Phase 20 cascade + bar text + continuation triangles (Phase 32.4)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — cascade + bar text + continuation triangles ', () => {
   // Bars + rows fixtures for this block. `barWithTitle` carries a title
   // long enough to demonstrate truncation on narrower widths; `clippedStart`
   // / `clippedEnd` have ranges extending outside the week-view axis so the
@@ -1052,7 +1052,7 @@ describe('@chronixjs/gantt-react ChronixGantt — Phase 20 cascade + bar text + 
   }
   const threeRowsTriangle = (): readonly RowSpec[] => [makeRow('r1'), makeRow('r2'), makeRow('r3')];
 
-  // (1) Phase 20 cascade — 8 cases
+  // (1) cascade — 8 cases
 
   it('default cascade: no override props → bar fill matches defaultChronixTheme.barBackgroundColor', () => {
     const { container } = render(
@@ -1166,7 +1166,7 @@ describe('@chronixjs/gantt-react ChronixGantt — Phase 20 cascade + bar text + 
     expect(container.querySelector('rect[data-bar-id="b2"]')?.getAttribute('fill')).toBe('#ff0000');
   });
 
-  it('Phase 28.3 font cascade: barFontSizeCallback flows to bar-text font-size attr', () => {
+  it('font cascade: barFontSizeCallback flows to bar-text font-size attr', () => {
     const fontSizeCb = (): number => 16;
     const { container } = render(
       <ChronixGantt
@@ -1217,7 +1217,7 @@ describe('@chronixjs/gantt-react ChronixGantt — Phase 20 cascade + bar text + 
     expect(titleText).not.toBeNull();
     const rendered = titleText?.textContent ?? '';
     // Truncated output must end with the `...` ellipsis suffix and be
-    // shorter than the input. Phase 32.6 reconciled react's truncateBarText
+    // shorter than the input. reconciled react's truncateBarText
     // to vue3/vue2 reference (3-char Latin `...` ellipsis + maxChars <= 3
     // cutoff) — verbatim assertion shape matches the other 2 adapters.
     expect(rendered.endsWith('...')).toBe(true);
@@ -1309,7 +1309,7 @@ describe('@chronixjs/gantt-react ChronixGantt — Phase 20 cascade + bar text + 
     ).toBe(0);
   });
 
-  it('data-viewport-clipped="false" populates this phase; Phase 32.5 lights up the "true" case', () => {
+  it('data-viewport-clipped="false" populates this phase; lights up the "true" case', () => {
     const { container } = render(
       <ChronixGantt
         bars={barsForTriangles()}
@@ -1318,7 +1318,7 @@ describe('@chronixjs/gantt-react ChronixGantt — Phase 20 cascade + bar text + 
       />,
     );
     // Every rendered continuation polygon (left + right) has
-    // data-viewport-clipped="false" until Phase 32.5 ports the viewport-clip math.
+    // data-viewport-clipped="false" until ports the viewport-clip math.
     const allTriangles = container.querySelectorAll('polygon.cx-gantt-bar-continuation-indicator');
     expect(allTriangles.length).toBeGreaterThanOrEqual(2);
     for (const tri of allTriangles) {
@@ -1327,7 +1327,7 @@ describe('@chronixjs/gantt-react ChronixGantt — Phase 20 cascade + bar text + 
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — link rendering + LINK_SLOT_NAME + barColorByBarId map (Phase 32.4.1)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — link rendering + LINK_SLOT_NAME + barColorByBarId map ', () => {
   // Fixture: 2 bars on 2 rows + 1 link b1→b2.
   function twoBars(): readonly BarSpec[] {
     return [
@@ -1562,7 +1562,7 @@ describe('@chronixjs/gantt-react ChronixGantt — link rendering + LINK_SLOT_NAM
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — today line + grid lines (Phase 32.4.2)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — today line + grid lines ', () => {
   // Pin Date.now() to mid-week 2026-05-20T12:00 so today falls inside the
   // baseAxisInput()'s week view (anchorDate 2026-05-18 → ends 2026-05-25).
   // resolvedTodayLine reads Date.now() at render time; without this fake
@@ -1738,7 +1738,7 @@ describe('@chronixjs/gantt-react ChronixGantt — today line + grid lines (Phase
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — geometry prop alignment (Phase 52)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — geometry prop alignment ', () => {
   // 4 layout props + 2 pointer props were declared on chronix-vue3 from
   // inception but never forwarded by chronix-react; the underlying
   // useGanttLayout + useGanttPointer hooks already accepted them. Each
@@ -1832,11 +1832,11 @@ describe('@chronixjs/gantt-react ChronixGantt — geometry prop alignment (Phase
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — progress overlay + slot rendering (Phase 53)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — progress overlay + slot rendering ', () => {
   // chronix-vue3 emits 3 cx-gantt-progress-* elements per bar that
   // declares both `progress.value` + `pointerOverlayId` AND emits
   // cx-gantt-slot rects per axis tick. chronix-react never ported
-  // either at Phase 32 scaffold; Phase 53 closes both gaps.
+  // either at scaffold; closes both gaps.
   const row = makeRow('r1');
   const barWithProgress = (
     progressOverride?: Partial<{ value: number; showText: boolean; textFormat: string }>,
@@ -1905,7 +1905,7 @@ describe('@chronixjs/gantt-react ChronixGantt — progress overlay + slot render
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — reference interaction parity (Phase 54)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — reference interaction parity ', () => {
   const row = makeRow('r1');
   const bar = (): BarSpec => ({
     id: 'b1',
@@ -1947,7 +1947,7 @@ describe('@chronixjs/gantt-react ChronixGantt — reference interaction parity (
   });
 });
 
-describe('@chronixjs/gantt-react ChronixGantt — hitTestFromClient (Phase 56)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — hitTestFromClient ', () => {
   const MS_PER_HOUR_P56 = 60 * 60 * 1000;
   const anchorP56 = new Date('2026-05-13T00:00:00Z');
   anchorP56.setHours(0, 0, 0, 0);

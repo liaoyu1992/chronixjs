@@ -31,8 +31,8 @@ import {
 import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
- * `<ChronixTreeSelect>` — Vue 3 tree select. Phase 31 (2026-06-04).
- * Select trigger + dropdown with Phase 30 Tree rows.
+ * `<ChronixTreeSelect>` — Vue 3 tree select. .
+ * Select trigger + dropdown with Tree rows.
  */
 export const ChronixTreeSelect = defineComponent({
   name: 'ChronixTreeSelect',

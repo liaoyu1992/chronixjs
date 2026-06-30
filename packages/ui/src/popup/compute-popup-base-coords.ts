@@ -5,7 +5,7 @@ import type { DOMRectLike, PopupPlacement } from './popup-spec.js';
  * for a given placement. Pure function — no viewport awareness; the
  * orchestrator (`resolvePopupPlacement`) handles flip + clamp on top.
  *
- * Phase 4 (2026-06-02).
+ * .
  *
  * For each placement:
  *

@@ -1,5 +1,5 @@
 /**
- * DatePicker BEM class-list resolvers — Phase 32 (2026-06-05).
+ * DatePicker BEM class-list resolvers — .
  */
 
 export interface ResolveDatePickerRootClassListInput {

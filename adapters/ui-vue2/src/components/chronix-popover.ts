@@ -12,7 +12,7 @@ import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 /**
  * `<ChronixPopover>` — Vue 2 inline-rendered popup (no `<Teleport>` in
  * Vue 2; popup is rendered as sibling of trigger with `position: fixed`).
- * Phase 26 (2026-06-03).
+ * .
  */
 export const ChronixPopover = defineComponent({
   name: 'ChronixPopover',

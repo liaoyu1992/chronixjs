@@ -1,7 +1,7 @@
 import type { ColumnSpec } from '../ir/index.js';
 
 /**
- * Phase 12.2 (2026-05-24): result shape for `findNextEditableCell`.
+ * result shape for `findNextEditableCell`.
  * `null` (from the parent return type) signals "no further editable
  * cell exists in the requested direction" — the consumer adapter
  * uses this to close the editor at the table boundary (Decision A.1).
@@ -12,7 +12,7 @@ export interface FindNextEditableCellResult {
 }
 
 /**
- * Phase 12.2: pure traversal helper for Tab / Shift+Tab auto-advance
+ * pure traversal helper for Tab / Shift+Tab auto-advance
  * during in-cell editing. Used by the vue3 adapter (and future vue2 /
  * react ports) to compute "the next editable cell in display order"
  * after a commit.

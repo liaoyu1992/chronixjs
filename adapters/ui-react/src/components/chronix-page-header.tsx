@@ -34,7 +34,7 @@ export interface ChronixPageHeaderProps extends Omit<HTMLAttributes<HTMLDivEleme
 }
 
 /**
- * `<ChronixPageHeader>` — React port of the Phase 19 PageHeader.
+ * `<ChronixPageHeader>` — React port of the PageHeader.
  */
 export function ChronixPageHeader(props: ChronixPageHeaderProps): JSX.Element {
   const {

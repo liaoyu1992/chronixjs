@@ -1,5 +1,5 @@
 /**
- * chronix-ui badge module — Phase 14 (2026-06-02).
+ * chronix-ui badge module — .
  *
  * Core IR for the Badge component. Adapter components consume these
  * types + pure helpers to render framework-specific badge elements

@@ -8,10 +8,10 @@ import type { VueConstructor } from 'vue';
 
 /**
  * Mirrors chronix-vue3:36-158's `describe('<ChronixGantt> dual-scrollport
- * architecture — Phase 23', ...)` block — chart-only subset (sidebar
+ * architecture', ...)` block — chart-only subset (sidebar
  * cases #1 / #4 / #10 from vue3 are skipped because chronix-vue2 has
  * no sidebar / columns prop). Plus 1 vue2-specific case asserting the
- * Phase 31.5 → 31.5.2 `scrollToDate` real-impl behavior at the
+ * → 31.5.2 `scrollToDate` real-impl behavior at the
  * dual-scrollport level.
  */
 
@@ -43,7 +43,7 @@ function bar(id: string, rowId: string): BarSpec {
   };
 }
 
-describe('<ChronixGantt> dual-scrollport architecture (Phase 31.5.2)', () => {
+describe('<ChronixGantt> dual-scrollport architecture ', () => {
   it('renders cx-gantt-chart-pane + cx-gantt-chart-header-pane scroll containers', () => {
     const wrapper = mount(GanttForTest, {
       propsData: { bars: [], rows, axisInput },
@@ -51,7 +51,7 @@ describe('<ChronixGantt> dual-scrollport architecture (Phase 31.5.2)', () => {
     expect(wrapper.find('div.cx-gantt-chart-pane').exists()).toBe(true);
     expect(wrapper.find('div.cx-gantt-chart-header-pane').exists()).toBe(true);
     // chronix-vue2 has no sidebar so sidebar-pane / sidebar-header-pane
-    // should NOT exist (deferred per Phase 31.5.2 Decision A.1).
+    // should NOT exist (deferred per Decision A.1).
     expect(wrapper.find('div.cx-gantt-sidebar-pane').exists()).toBe(false);
     expect(wrapper.find('div.cx-gantt-sidebar-header-pane').exists()).toBe(false);
   });
@@ -62,7 +62,8 @@ describe('<ChronixGantt> dual-scrollport architecture (Phase 31.5.2)', () => {
     });
     const chartPane = wrapper.find('div.cx-gantt-chart-pane').element as HTMLElement;
     const chartHeaderPane = wrapper.find('div.cx-gantt-chart-header-pane').element as HTMLElement;
-    expect(chartPane.style.overflow).toBe('auto');
+    expect(chartPane.style.overflowX).toBe('auto');
+    expect(chartPane.style.overflowY).toBe('hidden');
     expect(chartHeaderPane.style.overflow).toBe('hidden');
   });
 

@@ -10,7 +10,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 /**
  * `<ChronixAlert>` — Vue 3 SFC wrapping the core `AlertProps` IR.
  *
- * Phase 15 (2026-06-02).
+ * .
  *
  * Props:
  *

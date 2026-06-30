@@ -18,7 +18,7 @@
  * can carry any value (strings, numbers, dates, custom objects);
  * formatters and editors are responsible for type-narrowing.
  *
- * **Tree data fields (Phase 30, 2026-05-28):** `children` is the
+ * **Tree data fields (2026-05-28):** `children` is the
  * consumer-facing field — set it on parent rows to declare a
  * hierarchy. `depth` + `groupKey` are POST-`treeFlattenPass` outputs
  * owned by chronix (the layout pass populates them during flattening);
@@ -45,7 +45,7 @@ export interface RowSpec {
   /**
    * Per-row height override. When set, `rowLayoutPass` resolves this
    * row's height as `heightHint` instead of the theme's uniform
-   * `defaultRowHeight`. Phase 3 (2026-05-23) introduces this field;
+   * `defaultRowHeight`. introduces this field;
    * Phase ~24's row auto-height pass + Phase ~9's nested-header-row
    * sizing both write into it. Matches the chronix-gantt `RowSpec`
    * `heightHint` precedent so cross-package consumers see the same
@@ -54,7 +54,7 @@ export interface RowSpec {
   readonly heightHint?: number;
 
   /**
-   * Phase 30 (2026-05-28): tree-data nested children. When set,
+   * tree-data nested children. When set,
    * `treeFlattenPass` recurses into this array; the parent row gets
    * its expand/collapse chevron rendered in the `treeColumn`-flagged
    * column. Leaf rows omit this field (or pass `[]` — both treated
@@ -63,20 +63,20 @@ export interface RowSpec {
    *
    * Consumer ergonomics: the entire tree is passed at mount time
    * with this field set on every parent row. chronix does not lazy-
-   * load children (Phase 31 will). `treeFlattenPass` walks the tree
+   * load children (will). `treeFlattenPass` walks the tree
    * once per render to produce the flat visible-only row list.
    */
   readonly children?: readonly RowSpec[];
 
   /**
-   * Phase 34 (2026-05-28): lazy-eligible parent marker. Set to `true`
+   * lazy-eligible parent marker. Set to `true`
    * on a row whose children should be fetched on first expand via the
    * adapter's `childrenLoader` prop. Only honored when `children`
    * is undefined — sync `children` always wins.
    *
    * Semantics:
    *
-   * - `children !== undefined` → sync tree (Phase 30); `hasChildren`
+   * - `children !== undefined` → sync tree; `hasChildren`
    *   is IGNORED.
    * - `children === undefined && hasChildren === true` → lazy-eligible
    *   parent. Chevron renders; first expand invokes `childrenLoader`.
@@ -95,30 +95,30 @@ export interface RowSpec {
   readonly hasChildren?: boolean;
 
   /**
-   * Phase 30 (2026-05-28): post-`treeFlattenPass` row depth.
+   * post-`treeFlattenPass` row depth.
    * `0` = top level, `1` = direct child of a top-level parent, etc.
    * Populated by `treeFlattenPass` on each output row; consumer-
    * supplied values on input are overwritten.
    *
-   * Originally declared at Phase 1 as a forward-compat field with
-   * no semantics. Phase 30 gives it semantics as a chronix-populated
+   * Originally declared at as a forward-compat field with
+   * no semantics. gives it semantics as a chronix-populated
    * output field.
    */
   readonly depth?: number;
 
   /**
-   * Phase 30 (2026-05-28): post-`treeFlattenPass` parent row id, or
+   * post-`treeFlattenPass` parent row id, or
    * `null` for top-level rows. Populated by `treeFlattenPass`;
    * consumer-supplied values on input are overwritten.
    *
-   * Originally declared at Phase 1 as a forward-compat field with
-   * no semantics. Phase 30 gives it semantics as a chronix-populated
+   * Originally declared at as a forward-compat field with
+   * no semantics. gives it semantics as a chronix-populated
    * output field.
    */
   readonly groupKey?: string | null;
 
   /**
-   * Phase 31 (2026-05-28): pin this row to the top or bottom of the
+   * pin this row to the top or bottom of the
    * body. Pinned rows are extracted from `props.rows` BEFORE
    * `filterPass` / `sortPass` / `pagePass` run — they always render
    * regardless of filter spec, never participate in sort ordering, and
@@ -128,36 +128,36 @@ export interface RowSpec {
    * **DOM placement**: top-pinned rows render at `position: sticky;
    * top: 0` inside the body content layer; bottom-pinned rows render
    * at `position: sticky; bottom: 0`. Pinned-column zone offsets still
-   * apply per-cell (Phase 17), so a pinned row in a pinned column
+   * apply per-cell, so a pinned row in a pinned column
    * intersects naturally.
    *
    * **Selection**: pinned rows are excluded from the `selectAll` header
-   * checkbox's "all visible rows" set per Phase 31 Decision D.1. Per-
+   * checkbox's "all visible rows" set per Decision D.1. Per-
    * row click + checkbox toggling still works — consumers who want to
    * include pinned rows in select-all can override programmatically.
    *
    * **Tree data**: pinned rows must be LEAVES in v1. `children` on a
-   * pinned row is ignored with a `console.warn` at mount per Phase 31
+   * pinned row is ignored with a `console.warn` at mount per
    * Decision (out-of-scope).
    *
    * **Limit**: practical limit is ~50 pinned rows total (top + bottom);
    * above that, a `console.warn` advises switching to the footer
-   * aggregate row pass (Phase 24).
+   * aggregate row pass .
    */
   readonly pinned?: 'top' | 'bottom';
 
   /**
-   * Phase 44 (2026-05-29): allow the user to drag this row's grip
+   * allow the user to drag this row's grip
    * cell (when `rowDragColumn.show === true`) to reorder it. Defaults
    * to `true`. When `false`, the SFC's drag-handle rail renders an
    * empty cell for this row (no `≡` glyph, no pointer wiring), so a
    * regular cell click / range-select / dblclick-edit / drag-fill on
    * the rest of the row keeps working.
    *
-   * Mirror of `ColumnSpec.reorderable?: boolean` (Phase 14) on the
+   * Mirror of `ColumnSpec.reorderable?: boolean` on the
    * row axis. Pinned rows (`pinned: 'top' | 'bottom'`) are
    * unconditionally non-draggable regardless of this field —
-   * pinned-row semantics are sticky-by-design per Phase 31.
+   * pinned-row semantics are sticky-by-design per .
    */
   readonly draggable?: boolean;
 }

@@ -33,7 +33,7 @@ import {
 import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
- * `<ChronixSelect>` — Vue 3 full-featured select. Phase 31 (2026-06-04).
+ * `<ChronixSelect>` — Vue 3 full-featured select. .
  * Single/multi, filterable, virtual scrolling, clearable, loading.
  *
  * Emits:

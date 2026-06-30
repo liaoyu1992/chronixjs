@@ -62,7 +62,7 @@ export interface GanttEventMap {
   'view-change': ViewChangePayload;
   'bars-set': BarsSetPayload;
   /**
-   * Phase 22 toolbar + Phase 24 imperative handle: the canonical
+   * toolbar + imperative handle: the canonical
    * controlled-prop emit. Toolbar widget clicks AND
    * `handle.{prev,next,today,gotoDate,incrementDate,changeView,zoomTo}`
    * all funnel through this channel. Consumer wires `v-model:axis-input`
@@ -73,7 +73,7 @@ export interface GanttEventMap {
 }
 
 /**
- * Phase 21: configuration for the vertical "today" line drawn over the
+ * configuration for the vertical "today" line drawn over the
  * timeline. The line renders at the same x-coordinate as a bar whose
  * range started at `Date.now()` — adapter uses the same `pxPerMs` math
  * as `BarPlacementPass` so the line is pixel-aligned with bars starting
@@ -118,7 +118,7 @@ export interface TodayLineOption {
 }
 
 /**
- * Phase 22.2: configuration for the today-column background tint
+ * configuration for the today-column background tint
  * (original `todayBgColor`). Paints a translucent rect
  * spanning the full chart height at today's one-day-slot position
  * — behind the bars, above the chart background. Same x-coordinate
@@ -181,7 +181,7 @@ export interface GanttOptions {
   readonly slots?: Readonly<Record<string, SlotTemplate>>;
 
   /**
-   * Phase 21: vertical line marking "today" on the timeline. Pass
+   * vertical line marking "today" on the timeline. Pass
    * `false` or omit to hide; `true` to enable with all defaults
    * (`#ff6b6b` × 2 px × dashed × `'今日'` tooltip); an object literal
    * for per-field override. See `TodayLineOption` for the resolution

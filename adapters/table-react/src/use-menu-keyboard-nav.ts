@@ -8,11 +8,11 @@ import {
 } from 'react';
 
 /**
- * Phase 84 (2026-05-31): shared menu-keyboard-nav hook —
+ * shared menu-keyboard-nav hook —
  * W3C ARIA APG menu/tablist arrow-key navigation extracted into a
  * single per-adapter helper so the 4 chronix-table menu surfaces
- * (Phase 80 tool-panel tablist + Phase 83-A column header menu +
- * Phase 83-B cell context menu + Phase 25 column-visibility menu)
+ * (tool-panel tablist + -A column header menu +
+ * -B cell context menu + column-visibility menu)
  * share identical keyboard semantics. React port of the vue3
  * composable.
  *
@@ -22,7 +22,7 @@ import {
  * - B.1 — index-walk over the items array skipping disabled entries.
  * - C.1 — roving tabindex + imperative `.focus()`.
  *
- * `itemsRef` mirror (Phase 49 ratified pattern) keeps `handleKeydown`
+ * `itemsRef` mirror (ratified pattern) keeps `handleKeydown`
  * stable across renders without stale-closure bugs.
  */
 

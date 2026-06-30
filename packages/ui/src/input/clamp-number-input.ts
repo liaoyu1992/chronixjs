@@ -2,7 +2,7 @@
  * Clamp a numeric input value to a `[min, max]` range and optionally
  * snap to the nearest multiple of `step` relative to `stepBase`.
  *
- * Phase 7 (2026-06-02).
+ * .
  *
  * Order of operations:
  *

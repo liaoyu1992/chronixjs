@@ -36,7 +36,7 @@ const axisInput: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> bar title auto-render — Phase 28.2', () => {
+describe('<ChronixGantt> bar title auto-render', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {

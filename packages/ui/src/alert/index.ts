@@ -1,5 +1,5 @@
 /**
- * chronix-ui alert module — Phase 15 (2026-06-02).
+ * chronix-ui alert module — .
  */
 
 export type { AlertProps, AlertType } from './alert-spec.js';

@@ -1,5 +1,5 @@
 /**
- * Time formatting helper — Phase 32 (2026-06-05).
+ * Time formatting helper — .
  */
 
 import { format, isValid } from 'date-fns';

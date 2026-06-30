@@ -1,6 +1,6 @@
 /**
  * Pure helper — convert a Statistic `value` (+ optional precision)
- * into the display string. Phase 18 (2026-06-02). Shared across 3
+ * into the display string. . Shared across 3
  * adapters so the rendered text is byte-identical.
  *
  * Contract:

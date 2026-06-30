@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixAlert } from './chronix-alert.js';
 
 /**
- * Phase 15 (2026-06-02) — Alert mount tests (vue3).
+ * — Alert mount tests (vue3).
  */
 
 describe('ChronixAlert — default rendering', () => {

@@ -1,5 +1,5 @@
 /**
- * Checkbox component IR — Phase 25 (2026-06-03). Tier B boolean
+ * Checkbox component IR — . Tier B boolean
  * surface with optional indeterminate state.
  *
  * Precedence: when both `indeterminate: true` and `checked: true`,

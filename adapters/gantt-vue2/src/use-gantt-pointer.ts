@@ -119,7 +119,7 @@ export interface BarResizeStopCallback {
 }
 
 /**
- * Phase 19: validation rejection payloads. Fired when the commit-time
+ * validation rejection payloads. Fired when the commit-time
  * validator gate (`validateDrop` / `validateResize` / `validateSelect`)
  * vetoes a commit. The corresponding success callback (`onBarDrop` /
  * `onBarResize` / `onSelect`) does NOT fire — the bar visually reverts
@@ -183,13 +183,13 @@ export interface UseGanttPointerInput {
   /** Allow bar drag + edge resize. Default false. */
   readonly editable?: MaybeRefOrGetter<boolean>;
   /**
-   * Phase 54 — fine-grained drag gate. When `false`, the bar drag
+   * fine-grained drag gate. When `false`, the bar drag
    * transaction does NOT start even when `editable` is true. Default
    * `true`. Mirrors the original `eventStartEditable`.
    */
   readonly eventStartEditable?: MaybeRefOrGetter<boolean>;
   /**
-   * Phase 54 — fine-grained resize gate. When `false`, the bar resize
+   * fine-grained resize gate. When `false`, the bar resize
    * transaction does NOT start even when `editable` is true. Default
    * `true`. Mirrors the original `eventDurationEditable`.
    */
@@ -217,7 +217,7 @@ export interface UseGanttPointerInput {
   /** Snap drag-time delta to this multiple. Default no snap. */
   readonly snapDurationMs?: MaybeRefOrGetter<number>;
   /**
-   * Phase 25: minimum Pythagorean distance (in CSS pixels) from the
+   * minimum Pythagorean distance (in CSS pixels) from the
    * pointerdown origin before the active transaction is treated as a
    * confirmed drag. Below this threshold, the pointer-up aborts the
    * transaction + the adapter fires the `bar-click` /
@@ -264,7 +264,7 @@ export interface UseGanttPointerInput {
   /** Symmetric to `onBarDragStop` but for `bar-resize` transactions. */
   readonly onBarResizeStop?: (payload: BarResizeStopCallback) => void;
   /**
-   * Phase 19: full bar list, consulted by the commit-time validator
+   * full bar list, consulted by the commit-time validator
    * gate to evaluate `eventOverlap` against other bars. Optional —
    * when omitted, overlap is skipped (effectively `eventOverlap: true`)
    * and the gate only runs constraint + allow predicates.
@@ -294,21 +294,21 @@ export interface UseGanttPointerInput {
    */
   readonly eventConstraint?: MaybeRefOrGetter<EventConstraint | undefined>;
   /**
-   * Phase 55: independent overlap policy for calendar-range-select.
+   * independent overlap policy for calendar-range-select.
    * Falls back to `eventOverlap` when unset. Function form receives
    * `(stillBar, null)` — range-select has no moving bar.
    */
   readonly selectOverlap?: MaybeRefOrGetter<boolean | EventOverlapFunc | undefined>;
   /**
-   * Phase 55: independent constraint window for calendar-range-select.
+   * independent constraint window for calendar-range-select.
    * Falls back to `eventConstraint` when unset.
    */
   readonly selectConstraint?: MaybeRefOrGetter<EventConstraint | undefined>;
-  /** Phase 19: fires when a `BarDragTransaction` commit is rejected. */
+  /** fires when a `BarDragTransaction` commit is rejected. */
   readonly onBarDropRejected?: (payload: BarDropRejectedPayload) => void;
-  /** Phase 19: fires when a `BarResizeTransaction` commit is rejected. */
+  /** fires when a `BarResizeTransaction` commit is rejected. */
   readonly onBarResizeRejected?: (payload: BarResizeRejectedPayload) => void;
-  /** Phase 19: fires when a `CalendarRangeSelectTransaction` commit is rejected. */
+  /** fires when a `CalendarRangeSelectTransaction` commit is rejected. */
   readonly onSelectRejected?: (payload: SelectRejectedPayload) => void;
 }
 
@@ -358,11 +358,11 @@ export interface UseGanttPointerOutput {
    * Reset to `false` at the next `begin()`. Used by the adapter's
    * click-vs-drag discrimination — a pointerup that committed any
    * transaction (drag, resize, progress, range-select) should NOT
-   * also fire `'bar-click'`. Phase 12 addition.
+   * also fire `'bar-click'`. addition.
    */
   readonly wasDragCommit: ComputedRef<boolean>;
   /**
-   * Phase 25: `true` once the active transaction's pointer has moved
+   * `true` once the active transaction's pointer has moved
    * at least `pointerMinDistance` pixels (Pythagorean) from the
    * pointerdown origin. STICKY: stays `true` for the rest of the
    * gesture even if the pointer drifts back inside the threshold.
@@ -405,16 +405,16 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   // Set by `commit()`; reset by `begin()`. The adapter reads it during
   // the pointerup handler to decide whether to also emit `'bar-click'`
   // — a click that came AFTER a committed drag/resize/progress should
-  // not fire click. Phase 12.
+  // not fire click. .
   const dragCommittedFlag = ref(false);
-  // Phase 16: lazy-fire latch for the start/stop lifecycle callbacks.
+  // lazy-fire latch for the start/stop lifecycle callbacks.
   // Reset on each `begin()`; set to true on the first `advance()` that
   // produces a non-zero delta for a drag/resize transaction. Read by
   // `commit()` / `abort()` to decide whether the symmetric stop
   // callback fires — pure 0-delta clicks leave it false so neither
   // start nor stop fires.
   const dragStartFired = ref(false);
-  // Phase 25: sticky "ever surpassed" flag for the Pythagorean
+  // sticky "ever surpassed" flag for the Pythagorean
   // distance gate. Mirrors the original spec's
   // `FeaturefulElementDragging.isDistanceSurpassed` instance field.
   // Reset on each `begin()`; flipped to `true` on the first
@@ -423,7 +423,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   // `true` for the rest of the gesture even if the pointer drifts
   // back below the threshold — `dragstart` cannot un-fire.
   const dragDistanceSurpassedFlag = ref(false);
-  // Phase 25: pointerdown content-space origin tracked at the
+  // pointerdown content-space origin tracked at the
   // composable level so the distance gate applies uniformly across
   // all 4 transaction kinds, including `calendar-range-select` whose
   // transaction shape is time-domain (no deltaX/deltaY pixel fields).
@@ -483,14 +483,14 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   }
 
   function begin(contentX: number, contentY: number): void {
-    // Phase 12: reset the drag-committed flag at the start of every
+    // reset the drag-committed flag at the start of every
     // pointer interaction. The adapter checks this at pointerup to
     // decide whether to also fire `'bar-click'`.
     dragCommittedFlag.value = false;
-    // Phase 16: reset the start-fired latch so the first non-zero
+    // reset the start-fired latch so the first non-zero
     // advance of this new transaction can re-fire start.
     dragStartFired.value = false;
-    // Phase 25: reset the distance-surpassed sticky flag + capture
+    // reset the distance-surpassed sticky flag + capture
     // the pointerdown origin so subsequent advances compute distance
     // against a consistent reference. Origin always captured even if
     // no transaction starts (the early-return below sets `null`
@@ -512,7 +512,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     if (!hit) return;
 
     const editable = toValue(input.editable ?? false);
-    // Phase 54 — default `true` so pre-Phase-54 consumers see no change.
+    // default `true` so pre-Phase-54 consumers see no change.
     const eventStartEditable = toValue(input.eventStartEditable ?? true);
     const eventDurationEditable = toValue(input.eventDurationEditable ?? true);
     const selectable = toValue(input.selectable ?? false);
@@ -589,7 +589,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       });
     }
 
-    // Phase 25: update the sticky Pythagorean-distance gate against
+    // update the sticky Pythagorean-distance gate against
     // the pointerdown origin. Once the flag flips true it stays true
     // for the rest of the gesture, even if the pointer drifts back
     // inside the threshold — matches the original spec's
@@ -611,8 +611,8 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       }
     }
 
-    // Phase 16 + Phase 25: lazy-fire start once the transaction's
-    // pointer has moved past the distance threshold (Phase 25 sticky
+    // + lazy-fire start once the transaction's
+    // pointer has moved past the distance threshold (sticky
     // flag). Pure clicks or sub-threshold wiggles never flip the
     // flag, so start (and the symmetric stop on commit/abort) stays
     // unfired — matching the original spec where `dragstart` lives behind
@@ -634,7 +634,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     if (!txn) return;
     const snapDurationMs = toValue(input.snapDurationMs);
 
-    // Phase 16: stop fires BEFORE the commit callback. Reference order
+    // stop fires BEFORE the commit callback. Reference order
     // is `handleDragEnd` line 450 (eventDragStop) → line 457+ (drop).
     // Gated by `dragStartFired` so a transaction that started but
     // immediately hit commit without advancing (synthetic test path)
@@ -652,7 +652,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     else if (txn.kind === 'progress-handle') commitProgress(txn);
     else if (txn.kind === 'calendar-range-select') commitSelect(txn, snapDurationMs);
 
-    // Phase 12: mark that a commit fired so the adapter's pointerup
+    // mark that a commit fired so the adapter's pointerup
     // handler suppresses the subsequent `'bar-click'` emit.
     dragCommittedFlag.value = true;
     transaction.value = null;
@@ -738,7 +738,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
     const resolvedRowId = defaultStripResolver.atY(dropY, toValue(input.strips));
     const newRowId = resolvedRowId ?? oldRowId;
 
-    // Phase 19: commit-time validation gate. When any validator vetoes,
+    // commit-time validation gate. When any validator vetoes,
     // skip the success callback and fire the rejected callback instead.
     // Bars list is optional; when omitted, overlap check is skipped.
     const reason = runDropValidation(txn.barId, out.resolvedRange, newRowId);
@@ -773,7 +773,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       pxPerMs: pxPerMs(),
       ...(snapDurationMs !== undefined ? { snapDurationMs } : {}),
     });
-    // Phase 19: resize stays on the same row, so the proposal's rowId
+    // resize stays on the same row, so the proposal's rowId
     // is the bar's current rowId. Skip validation if `bars` isn't
     // supplied (preserves pre-Phase-19 behavior for tests that don't
     // thread bars through the composable).
@@ -806,7 +806,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
       txn,
       ...(snapDurationMs !== undefined ? { snapDurationMs } : {}),
     });
-    // Phase 19: validate range-select commit. `selectAllow` is the
+    // validate range-select commit. `selectAllow` is the
     // gate; `selectOverlap` / `selectConstraint` are parked.
     const reason = runSelectValidation(out.resolvedRange, txn.rowId);
     if (reason !== null) {
@@ -830,7 +830,7 @@ export function useGanttPointer(input: UseGanttPointerInput): UseGanttPointerOut
   }
 
   function abort(): void {
-    // Phase 16: fire stop on abort too. Reference fires
+    // fire stop on abort too. Reference fires
     // `eventDragStop` / `eventResizeStop` regardless of whether the
     // mutation was valid, so a confirmed drag that gets cancelled
     // (browser pointercancel, or the adapter's mid-drag escape)

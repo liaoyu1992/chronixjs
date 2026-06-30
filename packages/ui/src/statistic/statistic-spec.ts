@@ -1,5 +1,5 @@
 /**
- * Statistic IR — Phase 18 (2026-06-02). Tier A numeric display.
+ * Statistic IR — . Tier A numeric display.
  *
  * Renders a `(label, prefix, value, suffix)` block for KPI / dashboard
  * / summary widgets. Prefix + suffix surface via adapter slots (Vue)

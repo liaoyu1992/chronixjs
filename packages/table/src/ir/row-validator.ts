@@ -3,12 +3,12 @@ import type { RowSpec } from './row-spec.js';
 /**
  * IR primitive: per-row validator descriptor.
  *
- * Phase 115 (2026-06-02): cross-cell / cross-row validation. Consumer
+ * cross-cell / cross-row validation. Consumer
  * registers an array of `RowValidator` entries on the SFC's
  * `rowValidators` prop. After each commit lands (inline edit OR
  * paste OR drag-fill batch), the adapter runs each validator against
  * the post-commit row and aggregates the returned violations into
- * the cell-anchored invalid-state map (Phase 101 `invalidCellsRef`).
+ * the cell-anchored invalid-state map (`invalidCellsRef`).
  *
  * `id` is a diagnostic key — surfaces in the `invalid-cells-change`
  * emit payload so consumer-side summary panels can show "which
@@ -29,10 +29,10 @@ export interface RowValidator {
 /**
  * IR primitive: single cross-cell violation anchored to one cell.
  *
- * Phase 115: returned from `RowValidator.validate`. The `colId`
+ * returned from `RowValidator.validate`. The `colId`
  * picks which cell on the row paints `cx-table-cell--invalid`;
  * `reason` + `code` mirror `EditValidationError`'s shape so the
- * summary surface (Phase 115 Decision C.1) treats per-cell and
+ * summary surface (Decision C.1) treats per-cell and
  * row-level violations uniformly.
  */
 export interface RowValidationViolation {

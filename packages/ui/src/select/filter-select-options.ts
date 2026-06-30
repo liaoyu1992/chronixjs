@@ -1,5 +1,5 @@
 /**
- * Filter Select options by query — Phase 31 (2026-06-04).
+ * Filter Select options by query — .
  *
  * Pure helper: filters `SelectOption[]` by a search query string.
  * Preserves group structure (empty groups are removed).

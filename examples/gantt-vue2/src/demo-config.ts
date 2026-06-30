@@ -1,7 +1,7 @@
 import { ref, watch, type Ref } from 'vue';
 
 /**
- * **Phase 46: URL-query-driven demo config layer for the chronix-vue2 demo.**
+ * **URL-query-driven demo config layer for the chronix-vue2 demo.**
  *
  * Direct port of `examples/gantt-vue3/src/demo-config.ts`. Vue 2.7's
  * Composition API exposes the same `ref` + `watch` primitives as Vue 3,

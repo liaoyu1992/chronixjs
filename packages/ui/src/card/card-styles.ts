@@ -1,5 +1,5 @@
 /**
- * Card stylesheet — Phase 15 (2026-06-02).
+ * Card stylesheet — .
  */
 export const CHRONIX_CARD_CSS = `
 .cx-ui-card {

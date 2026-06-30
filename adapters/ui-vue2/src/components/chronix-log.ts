@@ -2,7 +2,7 @@ import { defaultLogProps, ensureChronixLogStyles, resolveLogClassList } from '@c
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixLog>` — Vue 2.7 port of the Phase 23 Log.
+ * `<ChronixLog>` — Vue 2.7 port of the Log.
  *
  * DOM shape + class list byte-identical to vue3 sibling.
  * Per-line `<li>` contains optional `<span class="__line-number"

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixCard } from './chronix-card.js';
 
 /**
- * Phase 15 (2026-06-02) — Card mount tests (vue3).
+ * — Card mount tests (vue3).
  */
 
 describe('ChronixCard — default rendering', () => {

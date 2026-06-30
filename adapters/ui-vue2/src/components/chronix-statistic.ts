@@ -7,7 +7,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixStatistic>` — Vue 2.7 port of the Phase 18 Statistic.
+ * `<ChronixStatistic>` — Vue 2.7 port of the Statistic.
  */
 export const ChronixStatistic = defineComponent({
   name: 'ChronixStatistic',

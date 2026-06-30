@@ -1,8 +1,8 @@
 import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 /**
- * Phase 49 (Phase 31.5.2-extended in chronix-vue2 / Phase 23 in
- * chronix-vue3 / Phase 48 in chronix-react): bidirectional vertical
+ * (-extended in chronix-vue2 / in
+ * chronix-vue3 / in chronix-react): bidirectional vertical
  * scroll sync between two DOM elements. Verbatim port of
  * `adapters/gantt-vue3/src/use-scroll-sync.ts` — Vue 2.7's Composition API
  * exposes `ref` + `onMounted` + `onUnmounted` with the same

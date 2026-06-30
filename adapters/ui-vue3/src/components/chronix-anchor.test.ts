@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixAnchor } from './chronix-anchor.js';
 
 /**
- * Phase 35 (2026-06-05) — Anchor mount tests (vue3).
+ * — Anchor mount tests (vue3).
  */
 describe('ChronixAnchor', () => {
   it('renders a nav with base class and data-testid', () => {

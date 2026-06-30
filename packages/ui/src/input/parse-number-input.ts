@@ -3,7 +3,7 @@
  * string isn't a parseable number. Pure helper used by InputNumber +
  * Slider + DatePicker numeric fields + any future numeric input.
  *
- * Phase 7 (2026-06-02).
+ * .
  *
  * Behavior:
  *

@@ -1,5 +1,5 @@
 /**
- * Image component IR — Phase 28 (2026-06-04). Tier B enhanced `<img>`
+ * Image component IR — . Tier B enhanced `<img>`
  * with native lazy loading + error fallback + previewable lightbox via
  * inlined `<ChronixModal>` (adapter wires).
  *

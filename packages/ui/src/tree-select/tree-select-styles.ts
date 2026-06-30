@@ -1,5 +1,5 @@
 /**
- * TreeSelect CSS — Phase 31 (2026-06-04).
+ * TreeSelect CSS — .
  */
 
 export const CHRONIX_TREE_SELECT_CSS = `

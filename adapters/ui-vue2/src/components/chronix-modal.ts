@@ -9,7 +9,7 @@ import { computed, defineComponent, h, toRef, type PropType, type VNode } from '
 import { useModalLifecycle, type ModalCloseReason } from '../composables/use-modal-lifecycle.js';
 
 /**
- * `<ChronixModal>` — Vue 2 inline-rendered centered modal. Phase 27
+ * `<ChronixModal>` — Vue 2 inline-rendered centered modal.
  * (2026-06-03). v0.1.0-alpha tradeoff per 27-vue2-fr1: rendered
  * inline next to consumer site; mask + panel use `position: fixed`
  * which provides viewport coverage in the vast majority of layouts.

@@ -15,7 +15,7 @@ function firePointerEvent(
   target.dispatchEvent(ev);
 }
 
-// Phase 54 (vue3 Phase 13): @testing-library's fireEvent.pointer* helpers
+// (vue3): @testing-library's fireEvent.pointer* helpers
 // don't reliably propagate `button` / `clientX` / `pointerId` init values
 // through happy-dom's PointerEvent constructor into the React synthetic
 // event. Use a generic Event with defineProperty for the fields the
@@ -33,7 +33,7 @@ function fireResizePointer(
   target.dispatchEvent(ev);
 }
 
-// Phase 56 (vue3 Phase 14 / react port): mirrors fireResizePointer but
+// (vue3 / react port): mirrors fireResizePointer but
 // also defines clientY (needed for Chebyshev threshold + drop-target
 // hit test). Bundle C Decision B.1 — keep separate from fireResizePointer
 // so test failures stay surface-isolated.
@@ -138,12 +138,12 @@ function heightPx(style: string | null): number {
   return match ? Number.parseFloat(match[1]!) : 0;
 }
 
-// Phase 48 (2026-05-25): architectural-equivalent SFC wiring guards
-// for chronix-table-react. Mirrors chronix-table-vue3's Phase 2 test
+// architectural-equivalent SFC wiring guards
+// for chronix-table-react. Mirrors chronix-table-vue3's test
 // suite (commit `3518eb7`) — 8 tests transferring assertion intent
 // through React Testing Library idioms.
 
-describe('<ChronixTable> (react) — Phase 48 mount + layout', () => {
+describe('<ChronixTable> (react) — mount + layout', () => {
   it('mounts a single .cx-table-wrapper root with role="grid"', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     const root = container.querySelector('.cx-table-wrapper');
@@ -240,11 +240,11 @@ describe('<ChronixTable> (react) — Phase 48 mount + layout', () => {
   });
 });
 
-// Phase 48.1 (2026-05-25): SFC wiring guards for the consolidated
-// mechanical-port tail covering vue3 Phase 3+4+5+5.1+6+7. ~22 tests
+// SFC wiring guards for the consolidated
+// mechanical-port tail covering vue3 +4+5+5.1+6+7. ~22 tests
 // across 6 describe blocks, one per ported vue3 phase.
 
-describe('<ChronixTable> (react) — Phase 48.1 rowLayoutPass + absolute body rows (vue3 Phase 3)', () => {
+describe('<ChronixTable> (react).1 rowLayoutPass + absolute body rows (vue3)', () => {
   it('body-content layer carries position:relative + explicit totalBodyHeight', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     const bodyContent = container.querySelector('.cx-table-body-content');
@@ -304,8 +304,8 @@ describe('<ChronixTable> (react) — Phase 48.1 rowLayoutPass + absolute body ro
   });
 });
 
-describe('<ChronixTable> (react) — Phase 48.1 virtualRowsPass + scrollport (vue3 Phase 4)', () => {
-  it('body scrollport carries overflow-y:auto + overflow-x:auto (Phase 62 flipped from hidden)', () => {
+describe('<ChronixTable> (react).1 virtualRowsPass + scrollport (vue3)', () => {
+  it('body scrollport carries overflow-y:auto + overflow-x:auto (flipped from hidden)', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     const body = container.querySelector('.cx-table-body');
     const style = body?.getAttribute('style') ?? '';
@@ -357,8 +357,8 @@ describe('<ChronixTable> (react) — Phase 48.1 virtualRowsPass + scrollport (vu
   });
 });
 
-describe('<ChronixTable> (react) — Phase 48.1 cell value resolution (vue3 Phase 5)', () => {
-  it('default path: getCellValue + formatCellValue resolves identical text to Phase 48 baseline', () => {
+describe('<ChronixTable> (react).1 cell value resolution (vue3)', () => {
+  it('default path: getCellValue + formatCellValue resolves identical text baseline', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     const r1Cells = container.querySelectorAll(
       '.cx-table-body .cx-table-row[data-row-id="r1"] .cx-table-cell',
@@ -418,7 +418,7 @@ describe('<ChronixTable> (react) — Phase 48.1 cell value resolution (vue3 Phas
   });
 });
 
-describe('<ChronixTable> (react) — Phase 48.1 interaction callbacks (vue3 Phase 5.1)', () => {
+describe('<ChronixTable> (react).1 interaction callbacks (vue3)', () => {
   it('onCellClick fires with row + column + value + jsEvent payload', () => {
     const onCellClick = vi.fn<(p: CellClickPayload) => void>();
     const { container } = render(
@@ -513,7 +513,7 @@ describe('<ChronixTable> (react) — Phase 48.1 interaction callbacks (vue3 Phas
   });
 });
 
-describe('<ChronixTable> (react) — Phase 48.1 theme CSS vars (vue3 Phase 6)', () => {
+describe('<ChronixTable> (react).1 theme CSS vars (vue3)', () => {
   it('wrapper carries --cx-table-* CSS custom properties for every theme token', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     const wrapper = container.querySelector('.cx-table-wrapper');
@@ -531,7 +531,7 @@ describe('<ChronixTable> (react) — Phase 48.1 theme CSS vars (vue3 Phase 6)', 
   });
 });
 
-describe('<ChronixTable> (react) — Phase 48.1 header-click + empty-area + dblclick (vue3 Phase 7)', () => {
+describe('<ChronixTable> (react).1 header-click + empty-area + dblclick (vue3)', () => {
   it('onHeaderClick fires with resolved ColumnSpec payload', () => {
     const onHeaderClick = vi.fn<(p: HeaderClickPayload) => void>();
     const { container } = render(
@@ -584,10 +584,10 @@ describe('<ChronixTable> (react) — Phase 48.1 header-click + empty-area + dblc
   });
 });
 
-// Phase 49 (2026-05-25): SFC wiring guards for sortPass single-column
-// header click cycle (vue3 Phase 8 architectural equivalent).
+// SFC wiring guards for sortPass single-column
+// header click cycle (vue3 architectural equivalent).
 
-describe('<ChronixTable> (react) — Phase 49 sortPass single-column (vue3 Phase 8)', () => {
+describe('<ChronixTable> (react) — sortPass single-column (vue3)', () => {
   const sortColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: '名称', flex: 1 },
@@ -718,10 +718,10 @@ describe('<ChronixTable> (react) — Phase 49 sortPass single-column (vue3 Phase
   });
 });
 
-// Phase 49.1 + 50 + 50.1 + 51 + 51.1 (2026-05-26): Bundle A SFC wiring
+// + 50 + 50.1 + 51 + 51.1 (2026-05-26): Bundle A SFC wiring
 // guards. 5 describe blocks, one per ported vue3 phase.
 
-describe('<ChronixTable> (react) — Phase 49.1 multi-column sort (vue3 Phase 8.1)', () => {
+describe('<ChronixTable> (react).1 multi-column sort (vue3)', () => {
   const sortColumns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称', width: 100 },
     { id: 'qty', field: 'qty', headerName: '数量', width: 100 },
@@ -812,7 +812,7 @@ describe('<ChronixTable> (react) — Phase 49.1 multi-column sort (vue3 Phase 8.
   });
 });
 
-describe('<ChronixTable> (react) — Phase 50 filter row (vue3 Phase 9)', () => {
+describe('<ChronixTable> (react) — filter row (vue3)', () => {
   const filterColumns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称', width: 100 },
     { id: 'note', field: 'note', headerName: '备注', width: 100, filterable: false },
@@ -896,7 +896,7 @@ describe('<ChronixTable> (react) — Phase 50 filter row (vue3 Phase 9)', () => 
   });
 });
 
-describe('<ChronixTable> (react) — Phase 50.1 prefix-number filter (vue3 Phase 9.1)', () => {
+describe('<ChronixTable> (react).1 prefix-number filter (vue3)', () => {
   const numColumns: readonly ColumnSpec[] = [
     { id: 'qty', field: 'qty', headerName: '数量', width: 100, type: 'number' },
     { id: 'name', field: 'name', headerName: '名称', width: 100 },
@@ -957,7 +957,7 @@ describe('<ChronixTable> (react) — Phase 50.1 prefix-number filter (vue3 Phase
   });
 });
 
-describe('<ChronixTable> (react) — Phase 40.2 aria-describedby on column headers (2026-05-29)', () => {
+describe('<ChronixTable> (react).2 aria-describedby on column headers (2026-05-29)', () => {
   const headerColumns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称', width: 100 },
     { id: 'qty', field: 'qty', headerName: '数量', width: 100, type: 'number' },
@@ -1008,7 +1008,7 @@ describe('<ChronixTable> (react) — Phase 40.2 aria-describedby on column heade
   });
 });
 
-describe('<ChronixTable> (react) — Phase 41.1 cell-level quick-find highlight (2026-05-29)', () => {
+describe('<ChronixTable> (react).1 cell-level quick-find highlight (2026-05-29)', () => {
   const hlColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: '名称', width: 100 },
@@ -1047,7 +1047,7 @@ describe('<ChronixTable> (react) — Phase 41.1 cell-level quick-find highlight 
   });
 });
 
-describe('<ChronixTable> (react) — Phase 41 quick-find / search (2026-05-29)', () => {
+describe('<ChronixTable> (react) — quick-find / search (2026-05-29)', () => {
   const findColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: '名称', width: 100 },
@@ -1128,7 +1128,7 @@ describe('<ChronixTable> (react) — Phase 41 quick-find / search (2026-05-29)',
   });
 });
 
-describe('<ChronixTable> (react) — Phase 51 row selection (vue3 Phase 10)', () => {
+describe('<ChronixTable> (react) — row selection (vue3)', () => {
   const selColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: '名称', width: 100 },
@@ -1208,7 +1208,7 @@ describe('<ChronixTable> (react) — Phase 51 row selection (vue3 Phase 10)', ()
   });
 });
 
-describe('<ChronixTable> (react) — Phase 51.1 checkbox column (vue3 Phase 10.1)', () => {
+describe('<ChronixTable> (react).1 checkbox column (vue3)', () => {
   const selColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: '名称', width: 100 },
@@ -1326,7 +1326,7 @@ describe('<ChronixTable> (react) — Phase 51.1 checkbox column (vue3 Phase 10.1
   });
 });
 
-// Phase 52 (vue3 Phase 11 equivalent): pagination base — pagePass slot
+// (vue3 equivalent): pagination base — pagePass slot
 // + 5 TableHandle methods + footer DOM + auto-reset on sort/filter.
 
 const paginationRows: readonly RowSpec[] = Array.from({ length: 50 }, (_, i) => {
@@ -1343,7 +1343,7 @@ const paginationColumns: readonly ColumnSpec[] = [
   { id: 'qty', field: 'qty', headerName: 'Qty', width: 100, type: 'number' },
 ];
 
-describe('<ChronixTable> (react) — Phase 52 pagination base', () => {
+describe('<ChronixTable> (react) — pagination base', () => {
   it('default pagination disabled — no .cx-table-pagination footer rendered', () => {
     const { container } = render(
       <ChronixTable columns={paginationColumns} rows={paginationRows} />,
@@ -1482,9 +1482,9 @@ describe('<ChronixTable> (react) — Phase 52 pagination base', () => {
   });
 });
 
-// Phase 52.1 (vue3 Phase 11.1 equivalent): ellipsis-aware page-number bar.
+// (vue3 equivalent): ellipsis-aware page-number bar.
 
-describe('<ChronixTable> (react) — Phase 52.1 page-number bar', () => {
+describe('<ChronixTable> (react).1 page-number bar', () => {
   it('5-page dataset renders all 5 page buttons + 0 ellipsis markers', () => {
     const { container } = render(
       <ChronixTable
@@ -1555,7 +1555,7 @@ describe('<ChronixTable> (react) — Phase 52.1 page-number bar', () => {
   });
 });
 
-// Phase 53 (vue3 Phase 12 equivalent): inline edit base — dblclick →
+// (vue3 equivalent): inline edit base — dblclick →
 // `<input>` editor + 5 TableHandle methods + 3 callback lifecycle.
 
 const editColumns: readonly ColumnSpec[] = [
@@ -1569,7 +1569,7 @@ const editRows: readonly RowSpec[] = [
   { id: 'r2', data: { id: 2, name: 'Beta', note: 'second' } },
 ];
 
-describe('<ChronixTable> (react) — Phase 53 inline edit base', () => {
+describe('<ChronixTable> (react) — inline edit base', () => {
   it('dblclick on editable cell opens .cx-table-cell--editing + <input.cx-table-cell-editor>', () => {
     const onStart = vi.fn<(p: CellEditStartPayload) => void>();
     const { container } = render(
@@ -1734,7 +1734,7 @@ describe('<ChronixTable> (react) — Phase 53 inline edit base', () => {
   });
 });
 
-// Phase 53.1 (vue3 Phase 12.1 equivalent): number editor + typed
+// (vue3 equivalent): number editor + typed
 // coercion via coerceEditDraftValue.
 
 const numberEditColumns: readonly ColumnSpec[] = [
@@ -1747,7 +1747,7 @@ const numberEditRows: readonly RowSpec[] = [
   { id: 'r2', data: { id: 2, qty: 20 } },
 ];
 
-describe('<ChronixTable> (react) — Phase 53.1 number editor', () => {
+describe('<ChronixTable> (react).1 number editor', () => {
   it('type:"number" + editable renders <input type="number" inputmode="decimal">', () => {
     const { container } = render(
       <ChronixTable columns={numberEditColumns} rows={numberEditRows} />,
@@ -1829,7 +1829,7 @@ describe('<ChronixTable> (react) — Phase 53.1 number editor', () => {
   });
 });
 
-// Phase 53.2 (vue3 Phase 12.2 equivalent): Tab cross-row navigation
+// (vue3 equivalent): Tab cross-row navigation
 // via findNextEditableCell + queueMicrotask-deferred blur guard.
 
 const tabColumns: readonly ColumnSpec[] = [
@@ -1844,7 +1844,7 @@ const tabRows: readonly RowSpec[] = [
   { id: 'r2', data: { id: 2, a: 'r2-a', b: 'r2-b', c: 'r2-c' } },
 ];
 
-describe('<ChronixTable> (react) — Phase 53.2 Tab cross-row navigation', () => {
+describe('<ChronixTable> (react).2 Tab cross-row navigation', () => {
   it('Tab from r1.a → r1.c (skips non-editable r1.b)', async () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
@@ -1904,7 +1904,7 @@ describe('<ChronixTable> (react) — Phase 53.2 Tab cross-row navigation', () =>
   });
 });
 
-// Phase 54 (vue3 Phase 13 equivalent): column resize — 4px resizer +
+// (vue3 equivalent): column resize — 4px resizer +
 // 4 TableHandle methods + 3-callback lifecycle + clampResizeWidth.
 
 const resizeColumns: readonly ColumnSpec[] = [
@@ -1918,7 +1918,7 @@ const resizeRows: readonly RowSpec[] = [
   { id: 'r1', data: { id: 1, name: 'Alpha', qty: 10, status: 'OK' } },
 ];
 
-describe('<ChronixTable> (react) — Phase 54 column resize', () => {
+describe('<ChronixTable> (react) — column resize', () => {
   it('every resizable!==false header cell carries a .cx-table-header-resizer', () => {
     const { container } = render(<ChronixTable columns={resizeColumns} rows={resizeRows} />);
     expect(container.querySelectorAll('.cx-table-header-resizer')).toHaveLength(3);
@@ -2083,7 +2083,7 @@ describe('<ChronixTable> (react) — Phase 54 column resize', () => {
   });
 });
 
-// Phase 56 (2026-05-26 — react port of vue3 Phase 14): column move via
+// (2026-05-26 — react port of vue3): column move via
 // drag-to-reorder header — 4 TableHandle methods + 3-callback lifecycle
 // + computeColumnReorder + getColumnDropTarget + 5px Chebyshev threshold.
 // See `audit/TABLE_PHASE_55_56_COLUMN_MOVE_PORTS_DESIGN.md`.
@@ -2121,7 +2121,7 @@ function stubReactHeaderRects(container: HTMLElement, slotWidthPx = 100): void {
   });
 }
 
-describe('<ChronixTable> (react) — Phase 56 column move (vue3 Phase 14)', () => {
+describe('<ChronixTable> (react) — column move (vue3)', () => {
   it('reorderable !== false header cells receive pointer-move wiring; reorderable:false skip it', () => {
     const onStart = vi.fn<(p: ColumnMoveStartPayload) => void>();
     const handleRef = createRef<TableHandle>();
@@ -2380,20 +2380,20 @@ describe('<ChronixTable> (react) — Phase 56 column move (vue3 Phase 14)', () =
   });
 });
 
-// ────────────────────────── Phase 58: column autosize (dbl-click resizer + imperative API) ──────────────────────────
-// Verbatim port of vue3 Phase 15 tests with react idiom subs:
+// ────────────────────────── column autosize (dbl-click resizer + imperative API) ──────────────────────────
+// Verbatim port of vue3 tests with react idiom subs:
 //  - `render(<ChronixTable ... />)` (@testing-library/react)
 //  - `fireEvent.doubleClick(el)` (no new pointer helper needed — dblclick is
 //    a plain MouseEvent without happy-dom propagation gotchas)
 //  - `createRef<TableHandle>()` + `ref={handleRef}` for handle access
 //  - `vi.fn()` spies for `onColumnWidthChange` callback assertions
-// Reuses Phase 54's resizer DOM as the dbl-click affordance + Phase 54's
+// Reuses resizer DOM as the dbl-click affordance +
 // `onColumnWidthChange` callback as the persistence channel (Decision A.1
-// inherits from vue3 Phase 15 — no new callback prop). In happy-dom (no Canvas
+// inherits from vue3 no new callback prop). In happy-dom (no Canvas
 // 2D context), `measureCellTextWidth` returns 0, so every measurement falls
 // back to the minWidth clamp.
 
-describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
+describe('<ChronixTable> (react) — column autosize', () => {
   function autosizeableColumns(): readonly ColumnSpec[] {
     // 5 cols. status has resizable:false (no resizer DOM → no dbl-click).
     // note has autosizeable:false explicit opt-out (resizer DOM exists; dblclick is a no-op).
@@ -2406,7 +2406,7 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
     ];
   }
 
-  it('Phase 58: resizable:true columns carry the resizer DOM that hosts the autosize dblclick handler', () => {
+  it('resizable:true columns carry the resizer DOM that hosts the autosize dblclick handler', () => {
     const { container } = render(<ChronixTable columns={autosizeableColumns()} rows={rows} />);
     // 4 columns have resizable !== false (id / name / qty / note).
     expect(container.querySelectorAll('.cx-table-header-resizer')).toHaveLength(4);
@@ -2416,7 +2416,7 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
     expect(container.querySelector('[data-resizer-col-id="status"]')).toBeNull();
   });
 
-  it('Phase 58: dbl-click on the resizer fires onColumnWidthChange (happy-dom degenerate → minWidth)', () => {
+  it('dbl-click on the resizer fires onColumnWidthChange (happy-dom degenerate → minWidth)', () => {
     const onColumnWidthChange = vi.fn<(payload: ColumnWidthChangePayload) => void>();
     const { container } = render(
       <ChronixTable
@@ -2438,7 +2438,7 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
     expect(payload.newWidth).toBe(60);
   });
 
-  it('Phase 58: dbl-click on an autosizeable:false column resizer is a silent no-op', () => {
+  it('dbl-click on an autosizeable:false column resizer is a silent no-op', () => {
     const onColumnWidthChange = vi.fn<(payload: ColumnWidthChangePayload) => void>();
     const { container } = render(
       <ChronixTable
@@ -2456,7 +2456,7 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
     expect(onColumnWidthChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 58: handle.autosizeColumn fires onColumnWidthChange for the target column', () => {
+  it('handle.autosizeColumn fires onColumnWidthChange for the target column', () => {
     const onColumnWidthChange = vi.fn<(payload: ColumnWidthChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -2474,7 +2474,7 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
     expect(payload.newWidth).toBe(60); // qty.minWidth
   });
 
-  it('Phase 58: handle.autosizeColumn on resizable:false column is silent no-op', () => {
+  it('handle.autosizeColumn on resizable:false column is silent no-op', () => {
     const onColumnWidthChange = vi.fn<(payload: ColumnWidthChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -2489,7 +2489,7 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
     expect(onColumnWidthChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 58: handle.autosizeColumn on autosizeable:false column is silent no-op', () => {
+  it('handle.autosizeColumn on autosizeable:false column is silent no-op', () => {
     const onColumnWidthChange = vi.fn<(payload: ColumnWidthChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -2504,7 +2504,7 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
     expect(onColumnWidthChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 58: handle.autosizeAllColumns fires onColumnWidthChange once per autosizeable+resizable column', () => {
+  it('handle.autosizeAllColumns fires onColumnWidthChange once per autosizeable+resizable column', () => {
     const onColumnWidthChange = vi.fn<(payload: ColumnWidthChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -2525,7 +2525,7 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
     expect(colIds).not.toContain('note');
   });
 
-  it('Phase 58: handle.autosizeColumn on unknown id is silent no-op', () => {
+  it('handle.autosizeColumn on unknown id is silent no-op', () => {
     const onColumnWidthChange = vi.fn<(payload: ColumnWidthChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -2541,16 +2541,16 @@ describe('<ChronixTable> (react) — Phase 58 column autosize', () => {
   });
 });
 
-// ────────────────────────── Phase 60: cell range selection (drag-extend + shift+click extend) ──────────────────────────
-// Verbatim port of vue3 Phase 16 tests with react idiom subs:
+// ────────────────────────── cell range selection (drag-extend + shift+click extend) ──────────────────────────
+// Verbatim port of vue3 tests with react idiom subs:
 //  - `render(<ChronixTable ... />)` (@testing-library/react)
 //  - `fireResizePointer` reused for pointerdown/pointerup (clientX/Y/pointerId)
 //  - `createRef<TableHandle>` + `vi.fn` spies for callback props
 // Drag-extend (pointermove via document.elementFromPoint) covered in
 // browser-verify only (happy-dom always returns null from elementFromPoint).
 
-describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
-  it('Phase 60: default cellRangeSelection is "none" — pointerdown on a body cell does NOT fire onCellRangeStart', () => {
+describe('<ChronixTable> (react) — cell range selection', () => {
+  it('default cellRangeSelection is "none" — pointerdown on a body cell does NOT fire onCellRangeStart', () => {
     const onCellRangeStart = vi.fn<(payload: CellRangeStartPayload) => void>();
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} onCellRangeStart={onCellRangeStart} />,
@@ -2565,7 +2565,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(onCellRangeStart).not.toHaveBeenCalled();
   });
 
-  it('Phase 60: cellRangeSelection="enabled" + pointerdown on a body cell → onCellRangeStart + in-cell-range modifier', () => {
+  it('cellRangeSelection="enabled" + pointerdown on a body cell → onCellRangeStart + in-cell-range modifier', () => {
     const onCellRangeStart = vi.fn<(payload: CellRangeStartPayload) => void>();
     const { container } = render(
       <ChronixTable
@@ -2589,7 +2589,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(cell.className).toContain('cx-table-cell--in-cell-range');
   });
 
-  it('Phase 60: handle.setCellRange opens range programmatically with non-trivial focus → fires start + change', () => {
+  it('handle.setCellRange opens range programmatically with non-trivial focus → fires start + change', () => {
     const onCellRangeStart = vi.fn<(payload: CellRangeStartPayload) => void>();
     const onCellRangeChange = vi.fn<(payload: CellRangeChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
@@ -2616,7 +2616,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(changePayload.envelope.colIds).toEqual(['id', 'name', 'qty']);
   });
 
-  it('Phase 60: handle.setCellRange with focus === anchor → only start (no change)', () => {
+  it('handle.setCellRange with focus === anchor → only start (no change)', () => {
     const onCellRangeStart = vi.fn<(payload: CellRangeStartPayload) => void>();
     const onCellRangeChange = vi.fn<(payload: CellRangeChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
@@ -2640,7 +2640,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(onCellRangeChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 60: handle.getCellRange returns the current state', () => {
+  it('handle.getCellRange returns the current state', () => {
     const handleRef = createRef<TableHandle>();
     render(
       <ChronixTable ref={handleRef} columns={columns} rows={rows} cellRangeSelection="enabled" />,
@@ -2657,7 +2657,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(current?.focus).toEqual({ rowId: 'r2', colId: 'name' });
   });
 
-  it('Phase 60: handle.clearCellRange wipes state + fires onCellRangeStop', () => {
+  it('handle.clearCellRange wipes state + fires onCellRangeStop', () => {
     const onCellRangeStop = vi.fn<(payload: CellRangeStopPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -2680,7 +2680,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(onCellRangeStop).toHaveBeenCalledTimes(1);
   });
 
-  it('Phase 60: setCellRange(null) is equivalent to clearCellRange', () => {
+  it('setCellRange(null) is equivalent to clearCellRange', () => {
     const onCellRangeStop = vi.fn<(payload: CellRangeStopPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -2703,7 +2703,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(onCellRangeStop).toHaveBeenCalledTimes(1);
   });
 
-  it('Phase 60: handle methods are silent no-ops when cellRangeSelection === "none"', () => {
+  it('handle methods are silent no-ops when cellRangeSelection === "none"', () => {
     const onCellRangeStart = vi.fn<(payload: CellRangeStartPayload) => void>();
     const onCellRangeChange = vi.fn<(payload: CellRangeChangePayload) => void>();
     const onCellRangeStop = vi.fn<(payload: CellRangeStopPayload) => void>();
@@ -2731,7 +2731,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(onCellRangeStop).not.toHaveBeenCalled();
   });
 
-  it('Phase 60: cellRangeSelection="enabled" + pointerdown then pointerup → onCellRangeStop fires', () => {
+  it('cellRangeSelection="enabled" + pointerdown then pointerup → onCellRangeStop fires', () => {
     const onCellRangeStop = vi.fn<(payload: CellRangeStopPayload) => void>();
     const { container } = render(
       <ChronixTable
@@ -2751,7 +2751,7 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
     expect(onCellRangeStop).toHaveBeenCalledTimes(1);
   });
 
-  it('Phase 60: pointerdown with non-primary button (right-click) does NOT open a session', () => {
+  it('pointerdown with non-primary button (right-click) does NOT open a session', () => {
     const onCellRangeStart = vi.fn<(payload: CellRangeStartPayload) => void>();
     const { container } = render(
       <ChronixTable
@@ -2771,17 +2771,17 @@ describe('<ChronixTable> (react) — Phase 60 cell range selection', () => {
   });
 });
 
-// ────────────────────────── Phase 62: pinned columns left / right (port of vue3 Phase 17) ──────────────────────────
+// ────────────────────────── pinned columns left / right (port of vue3) ──────────────────────────
 //
-// Phase 62 ships per-cell `position: sticky` for columns with
+// ships per-cell `position: sticky` for columns with
 // `ColumnSpec.pinned === 'left' | 'right'`, verbatim port of vue3
-// Phase 17. chronix-NEW `pinnedColsPass` partitions visible columns
+// . chronix-NEW `pinnedColsPass` partitions visible columns
 // into zones and computes cumulative sticky offsets; the SFC spreads
 // the resulting style + modifier classes into the existing flat row
 // layout. Click + pointer delegation is unchanged.
 
-describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
-  it('Phase 62: no pinned columns → no sticky inline styles or pinned-* modifier classes on any cell', () => {
+describe('<ChronixTable> — (pinned columns)', () => {
+  it('no pinned columns → no sticky inline styles or pinned-* modifier classes on any cell', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     for (const col of columns) {
       const header = container.querySelector<HTMLElement>(
@@ -2801,7 +2801,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     }
   });
 
-  it('Phase 62: pinned: "left" → header + body cells get position:sticky + left:0px + --pinned-left class', () => {
+  it('pinned: "left" → header + body cells get position:sticky + left:0px + --pinned-left class', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
       { id: 'name', field: 'name', flex: 1 },
@@ -2822,7 +2822,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(cell.classList.contains('cx-table-cell--pinned-left-last')).toBe(true);
   });
 
-  it('Phase 62: two left-pinned columns → second gets cumulative left offset = first.width', () => {
+  it('two left-pinned columns → second gets cumulative left offset = first.width', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
       { id: 'name', field: 'name', width: 120, pinned: 'left' },
@@ -2841,7 +2841,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(secondHeader.classList.contains('cx-table-header-cell--pinned-left-last')).toBe(true);
   });
 
-  it('Phase 62: pinned: "right" → cell gets position:sticky + right:0px + --pinned-right class', () => {
+  it('pinned: "right" → cell gets position:sticky + right:0px + --pinned-right class', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80 },
       { id: 'name', field: 'name', flex: 1 },
@@ -2864,7 +2864,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(cell.classList.contains('cx-table-cell--pinned-right-first')).toBe(true);
   });
 
-  it('Phase 62: two right-pinned columns → leftmost gets cumulative right offset = rightmost.width', () => {
+  it('two right-pinned columns → leftmost gets cumulative right offset = rightmost.width', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'name', field: 'name', flex: 1 },
       { id: 'status', field: 'status', width: 90, pinned: 'right' },
@@ -2883,7 +2883,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(rightmost.classList.contains('cx-table-header-cell--pinned-right-first')).toBe(false);
   });
 
-  it('Phase 62: pinned filter-row cells also get sticky positioning + zone modifier classes', () => {
+  it('pinned filter-row cells also get sticky positioning + zone modifier classes', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
       { id: 'name', field: 'name', flex: 1 },
@@ -2906,7 +2906,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(rightFilter.classList.contains('cx-table-filter-cell--pinned-right')).toBe(true);
   });
 
-  it('Phase 62: cell-click delegation still fires on a pinned body cell (Phase 48.4 wiring unchanged)', () => {
+  it('cell-click delegation still fires on a pinned body cell (wiring unchanged)', () => {
     const onCellClick = vi.fn();
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
@@ -2924,7 +2924,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(onCellClick).toHaveBeenCalledTimes(1);
   });
 
-  it('Phase 62: header-click delegation still fires on a pinned header cell (Phase 48.6 wiring unchanged)', () => {
+  it('header-click delegation still fires on a pinned header cell (wiring unchanged)', () => {
     const onHeaderClick = vi.fn();
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
@@ -2940,7 +2940,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(onHeaderClick).toHaveBeenCalledTimes(1);
   });
 
-  it('Phase 62: cell-range envelope spans across pinned + center zones (Phase 60 envelope unaffected)', () => {
+  it('cell-range envelope spans across pinned + center zones (envelope unaffected)', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
       { id: 'name', field: 'name', width: 100 },
@@ -2975,7 +2975,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(rightPinned.classList.contains('cx-table-cell--in-cell-range')).toBe(true);
   });
 
-  it('Phase 62: when selectionColumn.side === "left", left-pinned cells shift right by selectionColumnWidth', () => {
+  it('when selectionColumn.side === "left", left-pinned cells shift right by selectionColumnWidth', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
       { id: 'name', field: 'name', flex: 1 },
@@ -2994,7 +2994,7 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
     expect(pinnedHeader.style.left).toBe('36px');
   });
 
-  it('Phase 62: row-selection modifier paints uniformly across pinned + center cells', () => {
+  it('row-selection modifier paints uniformly across pinned + center cells', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
       { id: 'name', field: 'name', flex: 1 },
@@ -3015,10 +3015,10 @@ describe('<ChronixTable> — Phase 62 (pinned columns)', () => {
   });
 });
 
-// ────────────────────────── Phase 18: pinned cross-zone reorder guard (react port) ──────────────────────────
+// ────────────────────────── pinned cross-zone reorder guard (react port) ──────────────────────────
 
-describe('<ChronixTable> (react) — Phase 18 pinned cross-zone reorder guard', () => {
-  it('Phase 18 (react): dragging a left-pinned column over a CENTER column resolves dropTarget=null (cross-zone reject)', () => {
+describe('<ChronixTable> (react) — pinned cross-zone reorder guard', () => {
+  it('(react): dragging a left-pinned column over a CENTER column resolves dropTarget=null (cross-zone reject)', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
       { id: 'name', field: 'name', width: 100, pinned: 'left' },
@@ -3048,7 +3048,7 @@ describe('<ChronixTable> (react) — Phase 18 pinned cross-zone reorder guard', 
     expect(handleRef.current!.getMovingColumn()?.dropTarget).toBeNull();
   });
 
-  it('Phase 18 (react): dragging a left-pinned column over ANOTHER left-pinned column resolves dropTarget normally (same-zone allowed)', () => {
+  it('(react): dragging a left-pinned column over ANOTHER left-pinned column resolves dropTarget normally (same-zone allowed)', () => {
     const pinnedCols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', width: 80, pinned: 'left' },
       { id: 'name', field: 'name', width: 100, pinned: 'left' },
@@ -3081,15 +3081,15 @@ describe('<ChronixTable> (react) — Phase 18 pinned cross-zone reorder guard', 
   });
 });
 
-// ────────────────────────── Phase 64: clipboard copy (Ctrl+C on active cell-range, react port) ──────────────────────────
+// ────────────────────────── clipboard copy (Ctrl+C on active cell-range, react port) ──────────────────────────
 //
-// Phase 64 (react port of vue3 Phase 19) wires a Ctrl+C / Cmd+C onKeyDown
+// (react port of vue3) wires a Ctrl+C / Cmd+C onKeyDown
 // handler on the body `<div>` + a `copyCellRangeToClipboard()`
 // TableHandle method. Both flow through the same `performCellRangeCopy`
 // useCallback: synth TSV via the pure helper, fail-soft write to
 // `navigator.clipboard`, fire `onCellRangeCopy`.
 
-describe('<ChronixTable> (react) — Phase 64 clipboard copy', () => {
+describe('<ChronixTable> (react) — clipboard copy', () => {
   let writeTextMock: ReturnType<typeof vi.fn>;
   let originalClipboardDescriptor: PropertyDescriptor | undefined;
 
@@ -3111,7 +3111,7 @@ describe('<ChronixTable> (react) — Phase 64 clipboard copy', () => {
     }
   });
 
-  it('Phase 64: default cellRangeSelection: "none" → Ctrl+C is no-op (no callback, no writeText)', () => {
+  it('default cellRangeSelection: "none" → Ctrl+C is no-op (no callback, no writeText)', () => {
     const onCellRangeCopy = vi.fn<(payload: CellRangeCopyPayload) => void>();
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} onCellRangeCopy={onCellRangeCopy} />,
@@ -3124,7 +3124,7 @@ describe('<ChronixTable> (react) — Phase 64 clipboard copy', () => {
     expect(writeTextMock).not.toHaveBeenCalled();
   });
 
-  it('Phase 64: cellRangeSelection: "enabled" + no active range → Ctrl+C is no-op', () => {
+  it('cellRangeSelection: "enabled" + no active range → Ctrl+C is no-op', () => {
     const onCellRangeCopy = vi.fn<(payload: CellRangeCopyPayload) => void>();
     const { container } = render(
       <ChronixTable
@@ -3142,7 +3142,7 @@ describe('<ChronixTable> (react) — Phase 64 clipboard copy', () => {
     expect(writeTextMock).not.toHaveBeenCalled();
   });
 
-  it('Phase 64: cellRangeSelection: "enabled" + active range + Ctrl+C → callback fires + writeText called once', async () => {
+  it('cellRangeSelection: "enabled" + active range + Ctrl+C → callback fires + writeText called once', async () => {
     const onCellRangeCopy = vi.fn<(payload: CellRangeCopyPayload) => void>();
     const handleRef = createRef<TableHandle>();
     const { container } = render(
@@ -3174,7 +3174,7 @@ describe('<ChronixTable> (react) — Phase 64 clipboard copy', () => {
     expect(writeTextMock).toHaveBeenCalledWith('Alpha\t10\nBeta\t20');
   });
 
-  it('Phase 64: programmatic handle.copyCellRangeToClipboard() with active range → resolves to TSV + callback + writeText', async () => {
+  it('programmatic handle.copyCellRangeToClipboard() with active range → resolves to TSV + callback + writeText', async () => {
     const onCellRangeCopy = vi.fn<(payload: CellRangeCopyPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3203,7 +3203,7 @@ describe('<ChronixTable> (react) — Phase 64 clipboard copy', () => {
     expect(onCellRangeCopy.mock.calls[0]![0].jsEvent).toBeNull();
   });
 
-  it('Phase 64: programmatic handle.copyCellRangeToClipboard() with no active range → resolves to null + no callback + no writeText', async () => {
+  it('programmatic handle.copyCellRangeToClipboard() with no active range → resolves to null + no callback + no writeText', async () => {
     const onCellRangeCopy = vi.fn<(payload: CellRangeCopyPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3224,7 +3224,7 @@ describe('<ChronixTable> (react) — Phase 64 clipboard copy', () => {
     expect(onCellRangeCopy).not.toHaveBeenCalled();
   });
 
-  it('Phase 64: valueFormatter applied → formatted strings appear in the copied TSV', async () => {
+  it('valueFormatter applied → formatted strings appear in the copied TSV', async () => {
     const formattedCols: readonly ColumnSpec[] = [
       { id: 'name', field: 'name', flex: 1 },
       {
@@ -3263,15 +3263,15 @@ describe('<ChronixTable> (react) — Phase 64 clipboard copy', () => {
   });
 });
 
-// ────────────────────────── Phase 66: clipboard paste (Ctrl+V into active cell-range, react port) ──────────────────────────
+// ────────────────────────── clipboard paste (Ctrl+V into active cell-range, react port) ──────────────────────────
 //
-// Phase 66 (react port of vue3 Phase 20) extends Phase 64's onBodyKeyDown
+// (react port of vue3) extends onBodyKeyDown
 // with a Ctrl+V / Cmd+V branch + adds `pasteCellRangeFromClipboard()`
 // TableHandle method. Both flow through `performCellRangePaste` which
 // reads navigator.clipboard, parses TSV, computes mutations, fires
 // `onCellRangePaste`.
 
-describe('<ChronixTable> (react) — Phase 66 clipboard paste', () => {
+describe('<ChronixTable> (react) — clipboard paste', () => {
   let readTextMock: ReturnType<typeof vi.fn>;
   let originalClipboardDescriptor: PropertyDescriptor | undefined;
 
@@ -3293,7 +3293,7 @@ describe('<ChronixTable> (react) — Phase 66 clipboard paste', () => {
     }
   });
 
-  it('Phase 66: default cellRangeSelection: "none" → Ctrl+V is no-op (no callback, no readText)', () => {
+  it('default cellRangeSelection: "none" → Ctrl+V is no-op (no callback, no readText)', () => {
     const onCellRangePaste = vi.fn<(payload: CellRangePastePayload) => void>();
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} onCellRangePaste={onCellRangePaste} />,
@@ -3306,7 +3306,7 @@ describe('<ChronixTable> (react) — Phase 66 clipboard paste', () => {
     expect(readTextMock).not.toHaveBeenCalled();
   });
 
-  it('Phase 66: cellRangeSelection: "enabled" + no active range → Ctrl+V is no-op', () => {
+  it('cellRangeSelection: "enabled" + no active range → Ctrl+V is no-op', () => {
     const onCellRangePaste = vi.fn<(payload: CellRangePastePayload) => void>();
     const { container } = render(
       <ChronixTable
@@ -3324,7 +3324,7 @@ describe('<ChronixTable> (react) — Phase 66 clipboard paste', () => {
     expect(readTextMock).not.toHaveBeenCalled();
   });
 
-  it('Phase 66: cellRangeSelection: "enabled" + active range + Ctrl+V → callback fires + readText called once', async () => {
+  it('cellRangeSelection: "enabled" + active range + Ctrl+V → callback fires + readText called once', async () => {
     readTextMock.mockResolvedValue('X\tY\nZ\tW');
     const onCellRangePaste = vi.fn<(payload: CellRangePastePayload) => void>();
     const handleRef = createRef<TableHandle>();
@@ -3356,7 +3356,7 @@ describe('<ChronixTable> (react) — Phase 66 clipboard paste', () => {
     expect(payload.mutations.length).toBeGreaterThan(0);
   });
 
-  it('Phase 66: programmatic handle.pasteCellRangeFromClipboard() with active range → resolves to mutations + callback', async () => {
+  it('programmatic handle.pasteCellRangeFromClipboard() with active range → resolves to mutations + callback', async () => {
     readTextMock.mockResolvedValue('Zara');
     const onCellRangePaste = vi.fn<(payload: CellRangePastePayload) => void>();
     const handleRef = createRef<TableHandle>();
@@ -3384,7 +3384,7 @@ describe('<ChronixTable> (react) — Phase 66 clipboard paste', () => {
     expect(onCellRangePaste.mock.calls[0]![0].jsEvent).toBeNull();
   });
 
-  it('Phase 66: programmatic handle.pasteCellRangeFromClipboard() with no active range → null + no callback + no readText', async () => {
+  it('programmatic handle.pasteCellRangeFromClipboard() with no active range → null + no callback + no readText', async () => {
     const onCellRangePaste = vi.fn<(payload: CellRangePastePayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3405,7 +3405,7 @@ describe('<ChronixTable> (react) — Phase 66 clipboard paste', () => {
     expect(onCellRangePaste).not.toHaveBeenCalled();
   });
 
-  it('Phase 66: column.type: "number" — mixed valid/invalid paste skips invalid cells', async () => {
+  it('column.type: "number" — mixed valid/invalid paste skips invalid cells', async () => {
     readTextMock.mockResolvedValue('99\tabc');
     const numericCols: readonly ColumnSpec[] = [
       { id: 'qty', field: 'qty', type: 'number', width: 80 },
@@ -3442,27 +3442,27 @@ describe('<ChronixTable> (react) — Phase 66 clipboard paste', () => {
   });
 });
 
-// ────────────────────────── Phase 68: drag-fill handle (react port of vue3 Phase 21) ──────────────────────────
+// ────────────────────────── drag-fill handle (react port of vue3) ──────────────────────────
 //
-// Phase 68 ports drag-fill autofill handle to react. Wiring guards
+// ports drag-fill autofill handle to react. Wiring guards
 // verify the SFC surfaces the handle DOM + `fillCellRange` TableHandle
 // method + 3-callback triplet. Decisions A.1 / B.1 / C.1 inherit
-// verbatim from vue3 Phase 21.
+// verbatim from vue3 .
 
-describe('<ChronixTable> (react) — Phase 68 drag-fill handle', () => {
-  it('Phase 68: default cellRangeSelection: "none" → no .cx-table-drag-fill-handle rendered', () => {
+describe('<ChronixTable> (react) — drag-fill handle', () => {
+  it('default cellRangeSelection: "none" → no .cx-table-drag-fill-handle rendered', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     expect(container.querySelector('.cx-table-drag-fill-handle')).toBeNull();
   });
 
-  it('Phase 68: cellRangeSelection: "enabled" + no active range → no handle rendered', () => {
+  it('cellRangeSelection: "enabled" + no active range → no handle rendered', () => {
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} cellRangeSelection="enabled" />,
     );
     expect(container.querySelector('.cx-table-drag-fill-handle')).toBeNull();
   });
 
-  it('Phase 68: cellRangeSelection: "enabled" + active range → handle visible with 8×8 inline style', () => {
+  it('cellRangeSelection: "enabled" + active range → handle visible with 8×8 inline style', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={rows} cellRangeSelection="enabled" />,
@@ -3480,7 +3480,7 @@ describe('<ChronixTable> (react) — Phase 68 drag-fill handle', () => {
     expect(style).toContain('height: 8px');
   });
 
-  it('Phase 68: programmatic handle.fillCellRange(targetCell) with 1-col source → returns mutations + fires onCellRangeFill', () => {
+  it('programmatic handle.fillCellRange(targetCell) with 1-col source → returns mutations + fires onCellRangeFill', () => {
     const onCellRangeFill = vi.fn<(payload: CellRangeFillPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3514,7 +3514,7 @@ describe('<ChronixTable> (react) — Phase 68 drag-fill handle', () => {
     expect(payload.jsEvent).toBeNull();
   });
 
-  it('Phase 68: handle.fillCellRange(targetCell) with no active range → null + no callback', () => {
+  it('handle.fillCellRange(targetCell) with no active range → null + no callback', () => {
     const onCellRangeFill = vi.fn<(payload: CellRangeFillPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3534,7 +3534,7 @@ describe('<ChronixTable> (react) — Phase 68 drag-fill handle', () => {
     expect(onCellRangeFill).not.toHaveBeenCalled();
   });
 
-  it('Phase 68: handle.fillCellRange(targetCell) inside source → returns null (no-fill preview)', () => {
+  it('handle.fillCellRange(targetCell) inside source → returns null (no-fill preview)', () => {
     const onCellRangeFill = vi.fn<(payload: CellRangeFillPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3561,13 +3561,13 @@ describe('<ChronixTable> (react) — Phase 68 drag-fill handle', () => {
   });
 });
 
-// ────────────────────────── Phase 70: undo / redo mutation history (react port of vue3 Phase 22) ──────────────────────────
+// ────────────────────────── undo / redo mutation history (react port of vue3) ──────────────────────────
 //
-// Phase 70 ports undo / redo mutation history to react. Wiring guards
+// ports undo / redo mutation history to react. Wiring guards
 // verify auto-record gating, onHistoryChange callback firing,
 // undo/redo callbacks + state transitions, and Ctrl+Z body keydown
 // dispatch. Decisions A.1 / B.1 / C.1 inherit verbatim from vue3
-// Phase 22.
+// .
 
 const editableColsR: readonly ColumnSpec[] = [
   { id: 'name', field: 'name', headerName: '名称', flex: 1, editable: true },
@@ -3579,8 +3579,8 @@ const editableRowsR: readonly RowSpec[] = [
   { id: 'r2', data: { name: 'Beta', qty: 20 } },
 ];
 
-describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () => {
-  it('Phase 70: default enableUndoHistory: false → no record + canUndo stays false', () => {
+describe('<ChronixTable> (react) — undo / redo mutation history', () => {
+  it('default enableUndoHistory: false → no record + canUndo stays false', () => {
     const onHistoryChange = vi.fn<(payload: HistoryChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3600,7 +3600,7 @@ describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () 
     expect(onHistoryChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 70: enableUndoHistory: true + cell-edit → batch recorded; canUndo true; onHistoryChange fires', () => {
+  it('enableUndoHistory: true + cell-edit → batch recorded; canUndo true; onHistoryChange fires', () => {
     const onHistoryChange = vi.fn<(payload: HistoryChangePayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3623,7 +3623,7 @@ describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () 
     expect(onHistoryChange).toHaveBeenCalledTimes(1);
   });
 
-  it('Phase 70: enableUndoHistory: true + cell-range-fill → batch recorded', () => {
+  it('enableUndoHistory: true + cell-range-fill → batch recorded', () => {
     const handleRef = createRef<TableHandle>();
     render(
       <ChronixTable
@@ -3645,7 +3645,7 @@ describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () 
     expect(handleRef.current!.canUndo()).toBe(true);
   });
 
-  it('Phase 70: handle.undo() → fires onHistoryReplay with REVERSED mutations + direction undo', () => {
+  it('handle.undo() → fires onHistoryReplay with REVERSED mutations + direction undo', () => {
     const onHistoryReplay = vi.fn<(payload: HistoryReplayPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3676,7 +3676,7 @@ describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () 
     expect(handleRef.current!.canRedo()).toBe(true);
   });
 
-  it('Phase 70: handle.redo() → fires onHistoryReplay with ORIGINAL mutations + direction redo', () => {
+  it('handle.redo() → fires onHistoryReplay with ORIGINAL mutations + direction redo', () => {
     const onHistoryReplay = vi.fn<(payload: HistoryReplayPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3707,7 +3707,7 @@ describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () 
     expect(handleRef.current!.canRedo()).toBe(false);
   });
 
-  it('Phase 70: new mutation after undo → future cleared (canRedo false)', () => {
+  it('new mutation after undo → future cleared (canRedo false)', () => {
     const handleRef = createRef<TableHandle>();
     render(
       <ChronixTable
@@ -3730,7 +3730,7 @@ describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () 
     expect(handleRef.current!.getHistory().future).toHaveLength(0);
   });
 
-  it('Phase 70: handle.undo() with no past → false; no callback', () => {
+  it('handle.undo() with no past → false; no callback', () => {
     const onHistoryReplay = vi.fn<(payload: HistoryReplayPayload) => void>();
     const handleRef = createRef<TableHandle>();
     render(
@@ -3750,7 +3750,7 @@ describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () 
     expect(onHistoryReplay).not.toHaveBeenCalled();
   });
 
-  it('Phase 70: body Ctrl+Z keydown with enableUndoHistory + non-empty past → fires onHistoryReplay', () => {
+  it('body Ctrl+Z keydown with enableUndoHistory + non-empty past → fires onHistoryReplay', () => {
     const onHistoryReplay = vi.fn<(payload: HistoryReplayPayload) => void>();
     const handleRef = createRef<TableHandle>();
     const { container } = render(
@@ -3778,15 +3778,15 @@ describe('<ChronixTable> (react) — Phase 70 undo / redo mutation history', () 
   });
 });
 
-describe('<ChronixTable> Phase 72: multi-row pinned headers (column groups)', () => {
-  it('Phase 72: no column has headerGroup → no .cx-table-row--header-group rendered', () => {
+describe('<ChronixTable> multi-row pinned headers (column groups)', () => {
+  it('no column has headerGroup → no .cx-table-row--header-group rendered', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     expect(container.querySelector('.cx-table-row--header-group')).toBeNull();
     expect(container.querySelector('.cx-table-row--header')).not.toBeNull();
     expect(container.querySelectorAll('.cx-table-header-group').length).toBe(0);
   });
 
-  it('Phase 72: 2 contiguous cols share headerGroup → 1 labelled span with combined width', () => {
+  it('2 contiguous cols share headerGroup → 1 labelled span with combined width', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80, headerGroup: '基础信息' },
       { id: 'name', field: 'name', headerName: '名称', width: 140, headerGroup: '基础信息' },
@@ -3803,7 +3803,7 @@ describe('<ChronixTable> Phase 72: multi-row pinned headers (column groups)', ()
     expect(widthPx(labelled[0]!.getAttribute('style'))).toBe(80 + 140);
   });
 
-  it('Phase 72: mixed grouped + un-grouped → empty placeholders sized to leaf widths; row height = theme.headerGroupHeight', () => {
+  it('mixed grouped + un-grouped → empty placeholders sized to leaf widths; row height = theme.headerGroupHeight', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80, headerGroup: '基础信息' },
       { id: 'name', field: 'name', headerName: '名称', width: 140, headerGroup: '基础信息' },
@@ -3821,7 +3821,7 @@ describe('<ChronixTable> Phase 72: multi-row pinned headers (column groups)', ()
     }
   });
 
-  it('Phase 72: same headerGroup name on a left-pinned col + a center col → 2 separate spans (zone-split)', () => {
+  it('same headerGroup name on a left-pinned col + a center col → 2 separate spans (zone-split)', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80, pinned: 'left', headerGroup: 'X' },
       { id: 'name', field: 'name', headerName: '名称', width: 140, headerGroup: 'X' },
@@ -3836,7 +3836,7 @@ describe('<ChronixTable> Phase 72: multi-row pinned headers (column groups)', ()
     expect(xSpans[1]!.getAttribute('data-col-ids')).toBe('name');
   });
 
-  it('Phase 72: click on labelled group cell → onHeaderGroupClick fires with payload', () => {
+  it('click on labelled group cell → onHeaderGroupClick fires with payload', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80, headerGroup: 'X' },
       { id: 'name', field: 'name', headerName: '名称', width: 140, headerGroup: 'X' },
@@ -3860,7 +3860,7 @@ describe('<ChronixTable> Phase 72: multi-row pinned headers (column groups)', ()
     expect(payload.colIds).toEqual(['id', 'name']);
   });
 
-  it('Phase 23.1: nested headerGroup path → 2 group rows + per-level data-header-group-level attr', () => {
+  it('nested headerGroup path → 2 group rows + per-level data-header-group-level attr', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'qty', field: 'qty', headerName: '数量', width: 100, headerGroup: ['财务', '订单'] },
       {
@@ -3886,7 +3886,7 @@ describe('<ChronixTable> Phase 72: multi-row pinned headers (column groups)', ()
     expect(orderCell.getAttribute('data-col-ids')).toBe('qty,price');
   });
 
-  it('Phase 23.1: mixed string + array headerGroup → un-nested cols get level-1 empty placeholders', () => {
+  it('mixed string + array headerGroup → un-nested cols get level-1 empty placeholders', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80, headerGroup: '基础信息' },
       { id: 'name', field: 'name', headerName: '名称', width: 140, headerGroup: '基础信息' },
@@ -3919,14 +3919,14 @@ describe('<ChronixTable> Phase 72: multi-row pinned headers (column groups)', ()
   });
 });
 
-describe('<ChronixTable> Phase 74 (react port of vue3 Phase 24): sticky footer aggregate row', () => {
-  it('Phase 74: showFooterRow defaults to false → no .cx-table-footer DOM is rendered', () => {
+describe('<ChronixTable> (react port of vue3): sticky footer aggregate row', () => {
+  it('showFooterRow defaults to false → no .cx-table-footer DOM is rendered', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     expect(container.querySelector('.cx-table-footer')).toBeNull();
     expect(container.querySelector('.cx-table-row--footer')).toBeNull();
   });
 
-  it('Phase 74: showFooterRow=true with no aggregators on any column → footer renders with all --empty placeholder cells', () => {
+  it('showFooterRow=true with no aggregators on any column → footer renders with all --empty placeholder cells', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} showFooterRow />);
     expect(container.querySelector('.cx-table-footer')).not.toBeNull();
     const emptyCells = container.querySelectorAll('.cx-table-footer-cell--empty');
@@ -3935,7 +3935,7 @@ describe('<ChronixTable> Phase 74 (react port of vue3 Phase 24): sticky footer a
     expect(emptyCells.length).toBe(columns.length);
   });
 
-  it('Phase 74: qty column with sum aggregator → footer cell renders aggregate value via valueFormatter', () => {
+  it('qty column with sum aggregator → footer cell renders aggregate value via valueFormatter', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
       { id: 'name', field: 'name', headerName: '名称', width: 140 },
@@ -3959,7 +3959,7 @@ describe('<ChronixTable> Phase 74 (react port of vue3 Phase 24): sticky footer a
     expect(idFooter!.textContent).toBe('');
   });
 
-  it('Phase 74: footer aggregates the post-filter rows — setFilter narrows the input', () => {
+  it('footer aggregates the post-filter rows — setFilter narrows the input', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
       {
@@ -3992,7 +3992,7 @@ describe('<ChronixTable> Phase 74 (react port of vue3 Phase 24): sticky footer a
     );
   });
 
-  it('Phase 74: aggregator throws → footer cell is rendered without crashing (empty text)', () => {
+  it('aggregator throws → footer cell is rendered without crashing (empty text)', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
       {
@@ -4011,7 +4011,7 @@ describe('<ChronixTable> Phase 74 (react port of vue3 Phase 24): sticky footer a
     expect(qtyFooter!.textContent).toBe('');
   });
 
-  it('Phase 74: footer cell width matches header cell width + applies theme.footerHeight', () => {
+  it('footer cell width matches header cell width + applies theme.footerHeight', () => {
     const cols: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
       { id: 'qty', field: 'qty', headerName: '数量', width: 130, aggregator: () => 0 },
@@ -4024,7 +4024,7 @@ describe('<ChronixTable> Phase 74 (react port of vue3 Phase 24): sticky footer a
     expect(heightPx(qtyFooter!.getAttribute('style'))).toBe(32);
   });
 
-  it('Phase 74: showFooterRow render does NOT fire any change callbacks', () => {
+  it('showFooterRow render does NOT fire any change callbacks', () => {
     const onSortChange = vi.fn();
     const onFilterChange = vi.fn();
     const cols: readonly ColumnSpec[] = [
@@ -4044,14 +4044,14 @@ describe('<ChronixTable> Phase 74 (react port of vue3 Phase 24): sticky footer a
   });
 });
 
-describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibility menu', () => {
-  it('Phase 76: showColumnVisibilityMenu defaults to false → no menu DOM', () => {
+describe('<ChronixTable> (react port of vue3): column visibility menu', () => {
+  it('showColumnVisibilityMenu defaults to false → no menu DOM', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     expect(container.querySelector('.cx-table-column-menu-button')).toBeNull();
     expect(container.querySelector('.cx-table-column-menu-popover')).toBeNull();
   });
 
-  it('Phase 76: showColumnVisibilityMenu=true → button visible; popover initially closed', () => {
+  it('showColumnVisibilityMenu=true → button visible; popover initially closed', () => {
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} showColumnVisibilityMenu />,
     );
@@ -4059,7 +4059,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibili
     expect(container.querySelector('.cx-table-column-menu-popover')).toBeNull();
   });
 
-  it('Phase 76: click button → popover opens with one checkbox per column + action buttons', () => {
+  it('click button → popover opens with one checkbox per column + action buttons', () => {
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} showColumnVisibilityMenu />,
     );
@@ -4073,7 +4073,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibili
     expect(container.querySelector('.cx-table-column-menu-action--hide-all')).not.toBeNull();
   });
 
-  it('Phase 76: uncheck a checkbox → onColumnVisibilityChange fires with hidden:true', () => {
+  it('uncheck a checkbox → onColumnVisibilityChange fires with hidden:true', () => {
     const onColumnVisibilityChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -4101,7 +4101,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibili
     expect(payload.hidden).toBe(true);
   });
 
-  it('Phase 76: programmatic setColumnVisibility fires the callback', () => {
+  it('programmatic setColumnVisibility fires the callback', () => {
     const onColumnVisibilityChange = vi.fn();
     const handleRef = createRef<TableHandle>();
     render(
@@ -4124,7 +4124,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibili
     expect(payload.hidden).toBe(true);
   });
 
-  it('Phase 76: hide-all keeps first column visible; emits per other previously-visible column', () => {
+  it('hide-all keeps first column visible; emits per other previously-visible column', () => {
     const onColumnVisibilityChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -4147,7 +4147,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibili
     expect(calledColIds).not.toContain(columns[0]!.id);
   });
 
-  it('Phase 76: show-all emits per previously-hidden column only', () => {
+  it('show-all emits per previously-hidden column only', () => {
     const cols: readonly ColumnSpec[] = columns.map((c) =>
       c.id === 'qty' ? { ...c, hide: true } : c,
     );
@@ -4175,7 +4175,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibili
     expect(payload.hidden).toBe(false);
   });
 
-  it('Phase 76: refuses to hide the last visible column (C.1 guard) — no callback fires', () => {
+  it('refuses to hide the last visible column (C.1 guard) — no callback fires', () => {
     const cols: readonly ColumnSpec[] = columns.map((c) =>
       c.id === 'qty' ? c : { ...c, hide: true },
     );
@@ -4195,7 +4195,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibili
     expect(onColumnVisibilityChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 76: toggleColumnVisibility flips the current `hide` value', () => {
+  it('toggleColumnVisibility flips the current `hide` value', () => {
     const cols: readonly ColumnSpec[] = columns.map((c) =>
       c.id === 'qty' ? { ...c, hide: true } : c,
     );
@@ -4222,8 +4222,8 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 25): column visibili
   });
 });
 
-describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyboard navigation', () => {
-  it('Phase 76: enableKeyboardNavigation=false → ArrowRight is a no-op', () => {
+describe('<ChronixTable> (react port of vue3): cell-level keyboard navigation', () => {
+  it('enableKeyboardNavigation=false → ArrowRight is a no-op', () => {
     const onActiveCellChange = vi.fn();
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} onActiveCellChange={onActiveCellChange} />,
@@ -4235,7 +4235,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyb
     expect(onActiveCellChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 76: click cell + nav enabled → onActiveCellChange fires with clicked cell', () => {
+  it('click cell + nav enabled → onActiveCellChange fires with clicked cell', () => {
     const onActiveCellChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -4258,7 +4258,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyb
     expect(payload.colId).toBe('qty');
   });
 
-  it('Phase 76: ArrowRight after click moves to next column same row', () => {
+  it('ArrowRight after click moves to next column same row', () => {
     const onActiveCellChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -4284,7 +4284,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyb
     expect(lastCall.colId).toBe('status');
   });
 
-  it('Phase 76: ArrowRight on last column is no-op', () => {
+  it('ArrowRight on last column is no-op', () => {
     const onActiveCellChange = vi.fn();
     const handleRef = createRef<TableHandle>();
     const { container } = render(
@@ -4307,7 +4307,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyb
     expect(onActiveCellChange.mock.calls.length).toBe(callsBefore);
   });
 
-  it('Phase 76: Ctrl+End jumps to bottom-right cell', () => {
+  it('Ctrl+End jumps to bottom-right cell', () => {
     const onActiveCellChange = vi.fn();
     const handleRef = createRef<TableHandle>();
     const { container } = render(
@@ -4333,7 +4333,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyb
     expect(lastCall.colId).toBe('note');
   });
 
-  it('Phase 76: Enter on editable active cell begins edit', () => {
+  it('Enter on editable active cell begins edit', () => {
     const editableCols: readonly ColumnSpec[] = columns.map((c) =>
       c.id === 'note' ? { ...c, editable: true } : c,
     );
@@ -4358,7 +4358,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyb
     expect(onCellEditStart).toHaveBeenCalled();
   });
 
-  it('Phase 76: programmatic setActiveCell + clearActiveCell fire callbacks', () => {
+  it('programmatic setActiveCell + clearActiveCell fire callbacks', () => {
     const onActiveCellChange = vi.fn();
     const handleRef = createRef<TableHandle>();
     render(
@@ -4388,7 +4388,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyb
     expect(clearedPayload.colId).toBeNull();
   });
 
-  it('Phase 76: active cell carries cx-table-cell--active modifier + data-active', () => {
+  it('active cell carries cx-table-cell--active modifier + data-active', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={rows} enableKeyboardNavigation />,
@@ -4404,7 +4404,7 @@ describe('<ChronixTable> Phase 76 (react port of vue3 Phase 26): cell-level keyb
   });
 });
 
-describe('<ChronixTable> Phase 77 (react port of vue3 Phase 27): auto-scroll to active cell', () => {
+describe('<ChronixTable> (react port of vue3): auto-scroll to active cell', () => {
   function seedBodyViewport(container: HTMLElement): HTMLElement {
     const bodyEl = container.querySelector<HTMLElement>('.cx-table-body')!;
     Object.defineProperty(bodyEl, 'clientHeight', { value: 100, configurable: true });
@@ -4417,7 +4417,7 @@ describe('<ChronixTable> Phase 77 (react port of vue3 Phase 27): auto-scroll to 
     data: { id: i, name: `name-${i}`, qty: i, status: 'OK', note: '' },
   }));
 
-  it('Phase 77: keyboard ArrowDown across many rows scrolls body vertically (default ON)', () => {
+  it('keyboard ArrowDown across many rows scrolls body vertically (default ON)', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={manyRows} enableKeyboardNavigation />,
@@ -4436,7 +4436,7 @@ describe('<ChronixTable> Phase 77 (react port of vue3 Phase 27): auto-scroll to 
     expect(bodyEl.scrollTop).toBeGreaterThan(0);
   });
 
-  it('Phase 77: keyboard ArrowRight across many cols scrolls body horizontally', () => {
+  it('keyboard ArrowRight across many cols scrolls body horizontally', () => {
     const narrowCols: readonly ColumnSpec[] = Array.from({ length: 10 }, (_, i) => ({
       id: `c${i}`,
       field: `c${i}`,
@@ -4467,7 +4467,7 @@ describe('<ChronixTable> Phase 77 (react port of vue3 Phase 27): auto-scroll to 
     expect(bodyEl.scrollLeft).toBeGreaterThan(0);
   });
 
-  it('Phase 77: enableKeyboardAutoScroll=false disables scroll even with kb-nav on', () => {
+  it('enableKeyboardAutoScroll=false disables scroll even with kb-nav on', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable
@@ -4492,7 +4492,7 @@ describe('<ChronixTable> Phase 77 (react port of vue3 Phase 27): auto-scroll to 
     expect(bodyEl.scrollTop).toBe(0);
   });
 
-  it('Phase 77: click does NOT auto-scroll (clicked cell already visible)', () => {
+  it('click does NOT auto-scroll (clicked cell already visible)', () => {
     const { container } = render(
       <ChronixTable columns={columns} rows={manyRows} enableKeyboardNavigation />,
     );
@@ -4505,7 +4505,7 @@ describe('<ChronixTable> Phase 77 (react port of vue3 Phase 27): auto-scroll to 
     expect(bodyEl.scrollTop).toBe(initialTop);
   });
 
-  it('Phase 77: programmatic setActiveCell to a far row auto-scrolls', () => {
+  it('programmatic setActiveCell to a far row auto-scrolls', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={manyRows} enableKeyboardNavigation />,
@@ -4518,7 +4518,7 @@ describe('<ChronixTable> Phase 77 (react port of vue3 Phase 27): auto-scroll to 
     expect(bodyEl.scrollTop).toBeGreaterThan(0);
   });
 
-  it('Phase 77: clearActiveCell does not auto-scroll (no destination)', () => {
+  it('clearActiveCell does not auto-scroll (no destination)', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={manyRows} enableKeyboardNavigation />,
@@ -4535,8 +4535,8 @@ describe('<ChronixTable> Phase 77 (react port of vue3 Phase 27): auto-scroll to 
   });
 });
 
-describe('<ChronixTable> Phase 78 (react port of vue3 Phase 28): shift+Arrow extends cell-range', () => {
-  it('Phase 78: shift+ArrowRight after click opens fresh range with anchor=clicked cell', () => {
+describe('<ChronixTable> (react port of vue3): shift+Arrow extends cell-range', () => {
+  it('shift+ArrowRight after click opens fresh range with anchor=clicked cell', () => {
     const onCellRangeStart = vi.fn();
     const onCellRangeChange = vi.fn();
     const { container } = render(
@@ -4571,7 +4571,7 @@ describe('<ChronixTable> Phase 78 (react port of vue3 Phase 28): shift+Arrow ext
     expect(lastChange.range.focus).toEqual({ rowId: 'r2', colId: 'status' });
   });
 
-  it('Phase 78: consecutive shift+ArrowDown extends focus; anchor stays put', () => {
+  it('consecutive shift+ArrowDown extends focus; anchor stays put', () => {
     const onCellRangeChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -4600,7 +4600,7 @@ describe('<ChronixTable> Phase 78 (react port of vue3 Phase 28): shift+Arrow ext
     expect(last.range.focus).toEqual({ rowId: 'r3', colId: 'qty' });
   });
 
-  it('Phase 78: plain ArrowRight when range exists collapses the range', () => {
+  it('plain ArrowRight when range exists collapses the range', () => {
     const onCellRangeStop = vi.fn();
     const handleRef = createRef<TableHandle>();
     const { container } = render(
@@ -4627,7 +4627,7 @@ describe('<ChronixTable> Phase 78 (react port of vue3 Phase 28): shift+Arrow ext
     expect(onCellRangeStop).toHaveBeenCalled();
   });
 
-  it('Phase 78: Escape clears both activeCell AND cellRange', () => {
+  it('Escape clears both activeCell AND cellRange', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable
@@ -4653,7 +4653,7 @@ describe('<ChronixTable> Phase 78 (react port of vue3 Phase 28): shift+Arrow ext
     expect(handleRef.current?.getCellRange()).toBeNull();
   });
 
-  it('Phase 78: shift+End extends range to last column same row', () => {
+  it('shift+End extends range to last column same row', () => {
     const onCellRangeChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -4679,7 +4679,7 @@ describe('<ChronixTable> Phase 78 (react port of vue3 Phase 28): shift+Arrow ext
     expect(last.range.focus).toEqual({ rowId: 'r2', colId: 'note' });
   });
 
-  it('Phase 78: cellRangeSelection=none disables shift+arrow extension', () => {
+  it('cellRangeSelection=none disables shift+arrow extension', () => {
     const onCellRangeStart = vi.fn();
     const onActiveCellChange = vi.fn();
     const { container } = render(
@@ -4704,7 +4704,7 @@ describe('<ChronixTable> Phase 78 (react port of vue3 Phase 28): shift+Arrow ext
   });
 });
 
-describe('<ChronixTable> Phase 79 (react port of vue3 Phase 29): Ctrl+Arrow data-region jumps', () => {
+describe('<ChronixTable> (react port of vue3): Ctrl+Arrow data-region jumps', () => {
   const sparseRows: readonly RowSpec[] = [
     { id: 'r1', data: { id: 1, name: 'a', qty: 10, status: 'X', note: 'first' } },
     { id: 'r2', data: { id: 2, name: 'b', qty: 20, status: 'Y', note: 'second' } },
@@ -4713,7 +4713,7 @@ describe('<ChronixTable> Phase 79 (react port of vue3 Phase 29): Ctrl+Arrow data
     { id: 'r5', data: { id: 5, name: 'e', qty: 50, status: 'V', note: 'last' } },
   ];
 
-  it('Phase 79: Ctrl+ArrowDown from first row of filled column jumps to last filled row', () => {
+  it('Ctrl+ArrowDown from first row of filled column jumps to last filled row', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={sparseRows} enableKeyboardNavigation />,
@@ -4728,7 +4728,7 @@ describe('<ChronixTable> Phase 79 (react port of vue3 Phase 29): Ctrl+Arrow data
     expect(handleRef.current?.getActiveCell()).toEqual({ rowId: 'r5', colId: 'qty' });
   });
 
-  it('Phase 79: Ctrl+ArrowDown from filled cell with empty below stays put', () => {
+  it('Ctrl+ArrowDown from filled cell with empty below stays put', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={sparseRows} enableKeyboardNavigation />,
@@ -4743,7 +4743,7 @@ describe('<ChronixTable> Phase 79 (react port of vue3 Phase 29): Ctrl+Arrow data
     expect(handleRef.current?.getActiveCell()).toEqual({ rowId: 'r2', colId: 'note' });
   });
 
-  it('Phase 79: Ctrl+ArrowDown from EMPTY cell jumps to first non-empty below', () => {
+  it('Ctrl+ArrowDown from EMPTY cell jumps to first non-empty below', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={sparseRows} enableKeyboardNavigation />,
@@ -4758,7 +4758,7 @@ describe('<ChronixTable> Phase 79 (react port of vue3 Phase 29): Ctrl+Arrow data
     expect(handleRef.current?.getActiveCell()).toEqual({ rowId: 'r5', colId: 'note' });
   });
 
-  it('Phase 79: Ctrl+ArrowRight from filled cell jumps along the row', () => {
+  it('Ctrl+ArrowRight from filled cell jumps along the row', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={columns} rows={sparseRows} enableKeyboardNavigation />,
@@ -4773,7 +4773,7 @@ describe('<ChronixTable> Phase 79 (react port of vue3 Phase 29): Ctrl+Arrow data
     expect(handleRef.current?.getActiveCell()).toEqual({ rowId: 'r1', colId: 'note' });
   });
 
-  it('Phase 79: Ctrl+Shift+ArrowDown extends cell-range from anchor to boundary', () => {
+  it('Ctrl+Shift+ArrowDown extends cell-range from anchor to boundary', () => {
     const onCellRangeChange = vi.fn();
     const handleRef = createRef<TableHandle>();
     const { container } = render(
@@ -4800,7 +4800,7 @@ describe('<ChronixTable> Phase 79 (react port of vue3 Phase 29): Ctrl+Arrow data
     expect(last.range.focus).toEqual({ rowId: 'r5', colId: 'qty' });
   });
 
-  it('Phase 79: Ctrl+ArrowDown without activeCell falls back to top-left init', () => {
+  it('Ctrl+ArrowDown without activeCell falls back to top-left init', () => {
     const onActiveCellChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -4821,7 +4821,7 @@ describe('<ChronixTable> Phase 79 (react port of vue3 Phase 29): Ctrl+Arrow data
   });
 });
 
-describe('<ChronixTable> Phase 30.2 (react port of vue3 Phase 30.1): tree data', () => {
+describe('<ChronixTable> (react port of vue3): tree data', () => {
   const treeColumns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称', flex: 1, treeColumn: true },
     { id: 'kind', field: 'kind', headerName: '类型', width: 100 },
@@ -5086,7 +5086,7 @@ describe('<ChronixTable> Phase 30.2 (react port of vue3 Phase 30.1): tree data',
   });
 });
 
-describe('<ChronixTable> Phase 30.1.1 (react port): tristate row-selection cascade', () => {
+describe('<ChronixTable> (react port): tristate row-selection cascade', () => {
   const cascadeColumns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称', flex: 1, treeColumn: true },
   ];
@@ -5196,7 +5196,7 @@ describe('<ChronixTable> Phase 30.1.1 (react port): tristate row-selection casca
   });
 });
 
-describe('<ChronixTable> Phase 30.1.2 (react port): tree-aware sort', () => {
+describe('<ChronixTable> (react port): tree-aware sort', () => {
   const sortColumns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称', flex: 1, treeColumn: true },
   ];
@@ -5246,7 +5246,7 @@ describe('<ChronixTable> Phase 30.1.2 (react port): tree-aware sort', () => {
   });
 });
 
-describe('Phase 38: saved table views (react)', () => {
+describe('saved table views (react)', () => {
   const viewColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: 'Name', flex: 1 },
@@ -5398,7 +5398,7 @@ describe('Phase 38: saved table views (react)', () => {
   });
 });
 
-describe('Phase 39: Excel xlsx export (react)', () => {
+describe('Excel xlsx export (react)', () => {
   const viewColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: 'Name', flex: 1 },
@@ -5507,7 +5507,7 @@ describe('Phase 39: Excel xlsx export (react)', () => {
   });
 });
 
-describe('Phase 40 + 39.1: a11y + multi-sheet xlsx (react)', () => {
+describe('+ 39.1: a11y + multi-sheet xlsx (react)', () => {
   const viewColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: 'Name', flex: 1 },
@@ -5570,7 +5570,7 @@ describe('Phase 40 + 39.1: a11y + multi-sheet xlsx (react)', () => {
     };
   }
 
-  it('Phase 40 (react): wrapper carries aria-rowcount + aria-colcount + role=grid', () => {
+  it('(react): wrapper carries aria-rowcount + aria-colcount + role=grid', () => {
     const { container } = render(<ChronixTable columns={viewColumns} rows={viewRows} />);
     const root = container.querySelector('.cx-table-wrapper');
     expect(root).not.toBeNull();
@@ -5580,7 +5580,7 @@ describe('Phase 40 + 39.1: a11y + multi-sheet xlsx (react)', () => {
     expect(Number(root!.getAttribute('aria-rowcount'))).toBeGreaterThanOrEqual(3);
   });
 
-  it('Phase 40 (react): off-screen live region renders with role=status + aria-live=polite', () => {
+  it('(react): off-screen live region renders with role=status + aria-live=polite', () => {
     const { container } = render(<ChronixTable columns={viewColumns} rows={viewRows} />);
     const live = container.querySelector('.cx-table-sr-announce');
     expect(live).not.toBeNull();
@@ -5589,7 +5589,7 @@ describe('Phase 40 + 39.1: a11y + multi-sheet xlsx (react)', () => {
     expect(live!.getAttribute('aria-atomic')).toBe('true');
   });
 
-  it('Phase 39.1 (react): exportToXlsxMultiSheet triggers ONE Blob download with XLSX mimetype', async () => {
+  it('(react): exportToXlsxMultiSheet triggers ONE Blob download with XLSX mimetype', async () => {
     const handleRef = createRef<TableHandle>();
     render(<ChronixTable ref={handleRef} columns={viewColumns} rows={viewRows} />);
     const { captured, restore } = patchMultiSheetDownload();
@@ -5611,7 +5611,7 @@ describe('Phase 40 + 39.1: a11y + multi-sheet xlsx (react)', () => {
   });
 });
 
-describe('Phase 40.1 + 39.3: per-cell ARIA indices + xlsx freeze-pane (react)', () => {
+describe('+ 39.3: per-cell ARIA indices + xlsx freeze-pane (react)', () => {
   const viewColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: 'Name', flex: 1 },
@@ -5675,14 +5675,14 @@ describe('Phase 40.1 + 39.3: per-cell ARIA indices + xlsx freeze-pane (react)', 
     };
   }
 
-  it('Phase 40.1 (react): header row has aria-rowindex=1', () => {
+  it('(react): header row has aria-rowindex=1', () => {
     const { container } = render(<ChronixTable columns={viewColumns} rows={viewRows} />);
     const header = container.querySelector('.cx-table-row--header');
     expect(header).not.toBeNull();
     expect(header!.getAttribute('aria-rowindex')).toBe('1');
   });
 
-  it('Phase 40.1 (react): body rows have monotonically increasing aria-rowindex starting at 2', () => {
+  it('(react): body rows have monotonically increasing aria-rowindex starting at 2', () => {
     const { container } = render(<ChronixTable columns={viewColumns} rows={viewRows} />);
     const bodyRows = Array.from(
       container.querySelectorAll('.cx-table-row:not(.cx-table-row--header)'),
@@ -5692,7 +5692,7 @@ describe('Phase 40.1 + 39.3: per-cell ARIA indices + xlsx freeze-pane (react)', 
     expect(indices).toEqual([2, 3, 4]);
   });
 
-  it('Phase 40.1 (react): body cells have aria-colindex matching column position (1..N)', () => {
+  it('(react): body cells have aria-colindex matching column position (1..N)', () => {
     const { container } = render(<ChronixTable columns={viewColumns} rows={viewRows} />);
     const firstBodyRow = container.querySelector('.cx-table-row:not(.cx-table-row--header)');
     expect(firstBodyRow).not.toBeNull();
@@ -5701,7 +5701,7 @@ describe('Phase 40.1 + 39.3: per-cell ARIA indices + xlsx freeze-pane (react)', 
     expect(indices).toEqual([1, 2, 3]);
   });
 
-  it('Phase 40.1 (react): column headers carry matching aria-colindex (1..N)', () => {
+  it('(react): column headers carry matching aria-colindex (1..N)', () => {
     const { container } = render(<ChronixTable columns={viewColumns} rows={viewRows} />);
     const allColHeaders = Array.from(
       container.querySelectorAll('.cx-table-row--header [role="columnheader"]'),
@@ -5713,7 +5713,7 @@ describe('Phase 40.1 + 39.3: per-cell ARIA indices + xlsx freeze-pane (react)', 
     expect(indices).toEqual([1, 2, 3]);
   });
 
-  it('Phase 39.3 (react): exportToXlsxMultiSheet threads xlsxOptions.freezePane per sheet', async () => {
+  it('(react): exportToXlsxMultiSheet threads xlsxOptions.freezePane per sheet', async () => {
     const handleRef = createRef<TableHandle>();
     render(<ChronixTable ref={handleRef} columns={viewColumns} rows={viewRows} />);
     const { captured, restore } = patchMultiSheetDownload();
@@ -5730,7 +5730,7 @@ describe('Phase 40.1 + 39.3: per-cell ARIA indices + xlsx freeze-pane (react)', 
   });
 });
 
-describe('Phase 42 (react): advanced filter', () => {
+describe('(react): advanced filter', () => {
   interface AdvancedFilterHandle {
     getFilter(): readonly FilterSpec[];
     setFilter(spec: FilterSpec | readonly FilterSpec[] | null): void;
@@ -5841,7 +5841,7 @@ describe('Phase 42 (react): advanced filter', () => {
   });
 });
 
-describe('Phase 44 (react): row drag', () => {
+describe('(react): row drag', () => {
   interface RowDragHandle {
     startMovingRow(rowId: string): void;
     commitRowMove(targetRowId: string, position: 'above' | 'below'): void;
@@ -5989,7 +5989,7 @@ describe('Phase 44 (react): row drag', () => {
   });
 });
 
-describe('Phase 43 (react): set filter', () => {
+describe('(react): set filter', () => {
   interface SetFilterHandle {
     getFilter(): readonly FilterSpec[];
     setFilter(spec: FilterSpec | readonly FilterSpec[] | null): void;
@@ -6095,7 +6095,7 @@ describe('Phase 43 (react): set filter', () => {
   });
 });
 
-describe('Phase 96.2: set filter virtualization (react)', () => {
+describe('set filter virtualization (react)', () => {
   const SET_FILTER_COLUMNS: readonly ColumnSpec[] = [
     { id: 'tag', field: 'tag', headerName: 'Tag', width: 160, filterUi: 'set' },
   ];
@@ -6176,7 +6176,7 @@ describe('Phase 96.2: set filter virtualization (react)', () => {
   });
 });
 
-describe('Phase 98.2: number filter range slider (react)', () => {
+describe('number filter range slider (react)', () => {
   const NUM_COLS: readonly ColumnSpec[] = [
     { id: 'qty', field: 'qty', headerName: 'Qty', width: 200, type: 'number' },
   ];
@@ -6288,7 +6288,7 @@ describe('Phase 98.2: number filter range slider (react)', () => {
   });
 });
 
-describe('Phase 99.2: cell style editor (react)', () => {
+describe('cell style editor (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -6481,7 +6481,7 @@ describe('Phase 99.2: cell style editor (react)', () => {
   });
 });
 
-describe('Phase 99.2.1: cell text color extension (react)', () => {
+describe('cell text color extension (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -6713,7 +6713,7 @@ describe('Phase 99.2.1: cell text color extension (react)', () => {
   });
 });
 
-describe('Phase 99.2.2: cell font axes extension (react)', () => {
+describe('cell font axes extension (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -7037,7 +7037,7 @@ describe('Phase 99.2.2: cell font axes extension (react)', () => {
   });
 });
 
-describe('Phase 99.2.3: cell border axes extension (react)', () => {
+describe('cell border axes extension (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -7261,7 +7261,7 @@ describe('Phase 99.2.3: cell border axes extension (react)', () => {
       );
     });
     expect(container.querySelector('.cx-table-cell-style-editor')).toBeNull();
-    // Phase 99.2.3.1 (2026-06-01 — react port) widened border-tab
+    // (2026-06-01 — react port) widened border-tab
     // payload to 16 fields. Use toHaveBeenLastCalledWith with
     // objectContaining for partial match.
     expect(onCellStyleChange).toHaveBeenLastCalledWith(
@@ -7402,7 +7402,7 @@ describe('Phase 99.2.3: cell border axes extension (react)', () => {
         container.querySelector<HTMLButtonElement>('button[data-cx-style-action="clear"]')!,
       );
     });
-    // Phase 99.2.3.1 (2026-06-01 — react port) widened border-tab
+    // (2026-06-01 — react port) widened border-tab
     // Clear payload to null all 16 fields (4 all-sides + 12 per-side).
     expect(onCellStyleChange).toHaveBeenLastCalledWith({
       rowId: 'r1',
@@ -7437,7 +7437,7 @@ describe('Phase 99.2.3: cell border axes extension (react)', () => {
   });
 });
 
-describe('Phase 99.2.2.1: custom font-weight 100-900 picker (react)', () => {
+describe('custom font-weight 100-900 picker (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -7611,7 +7611,7 @@ describe('Phase 99.2.2.1: custom font-weight 100-900 picker (react)', () => {
   });
 });
 
-describe('Phase 99.2.3.1: per-side borders (react)', () => {
+describe('per-side borders (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -7928,7 +7928,7 @@ describe('Phase 99.2.3.1: per-side borders (react)', () => {
   });
 });
 
-describe('Phase 99.2.3.2: borderColor HSV picker (react)', () => {
+describe('borderColor HSV picker (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -8123,7 +8123,7 @@ describe('Phase 99.2.3.2: borderColor HSV picker (react)', () => {
   });
 });
 
-describe('Phase 99.2.4: controlled-mode cell-style prop (react)', () => {
+describe('controlled-mode cell-style prop (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -8307,7 +8307,7 @@ describe('Phase 99.2.4: controlled-mode cell-style prop (react)', () => {
   });
 });
 
-describe('Phase 99.2.5: color palette + recent colors (react)', () => {
+describe('color palette + recent colors (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -8509,7 +8509,7 @@ describe('Phase 99.2.5: color palette + recent colors (react)', () => {
   });
 });
 
-describe('Phase 99.2.2.2: variable font-weight slider (react)', () => {
+describe('variable font-weight slider (react)', () => {
   const CELL_STYLE_COLUMNS: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: 'Name', width: 200 },
   ];
@@ -8698,7 +8698,7 @@ describe('Phase 99.2.2.2: variable font-weight slider (react)', () => {
   });
 });
 
-describe('Phase 45: server-side row model (react)', () => {
+describe('server-side row model (react)', () => {
   interface DeferredGetRows {
     readonly params: GetRowsParams;
     resolve(result: GetRowsResult): void;
@@ -8744,7 +8744,7 @@ describe('Phase 45: server-side row model (react)', () => {
       />,
     );
     expect(container.querySelector('.cx-table-wrapper')).toBeTruthy();
-    // Phase 45.4 (2026-05-31 — react port): bootstrap fires getRowAt(0).
+    // (2026-05-31 — react port): bootstrap fires getRowAt(0).
     expect(calls.length).toBe(1);
     expect(calls[0]?.params.startRow).toBe(0);
   });
@@ -8790,7 +8790,7 @@ describe('Phase 45: server-side row model (react)', () => {
         serverSideDataSource={source}
       />,
     );
-    // Phase 45.4: bootstrap fires getRowAt(0) → block 0 LOADING; block 99 untouched.
+    // bootstrap fires getRowAt(0) → block 0 LOADING; block 99 untouched.
     expect(ref.current?.getServerSideBlockState(0).kind).toBe('loading');
     expect(ref.current?.getServerSideBlockState(99).kind).toBe('idle');
   });
@@ -8820,7 +8820,7 @@ describe('Phase 45: server-side row model (react)', () => {
   });
 });
 
-describe('Phase 45.1 + 45.2: server-side refinements (react)', () => {
+describe('+ 45.2: server-side refinements (react)', () => {
   interface DeferredGetRows {
     readonly params: GetRowsParams;
     resolve(result: GetRowsResult): void;
@@ -8862,7 +8862,7 @@ describe('Phase 45.1 + 45.2: server-side refinements (react)', () => {
       />,
     );
     expect(container.querySelector('.cx-table-wrapper')).toBeTruthy();
-    // Phase 45.4 bootstrap fires getRowAt(0) with endRow=startRow+pageSize.
+    // bootstrap fires getRowAt(0) with endRow=startRow+pageSize.
     expect(calls.length).toBe(1);
     expect(calls[0]!.params.endRow - calls[0]!.params.startRow).toBe(25);
   });
@@ -8906,7 +8906,7 @@ describe('Phase 45.1 + 45.2: server-side refinements (react)', () => {
     expect(events[0]).toEqual({ page: 0, pageSize: 50 });
   });
 
-  it('45.2: invalidateServerSideBlocks([0]) returns block 0 to idle (Phase 45.4 bootstrap → loading → invalidate → idle) (react)', () => {
+  it('45.2: invalidateServerSideBlocks([0]) returns block 0 to idle (bootstrap → loading → invalidate → idle) (react)', () => {
     const { source, calls } = makeControlledSource();
     const ref = createRef<TableHandle>();
     render(
@@ -8919,7 +8919,7 @@ describe('Phase 45.1 + 45.2: server-side refinements (react)', () => {
         cacheBlockSize={10}
       />,
     );
-    // Phase 45.4 bootstrap fires getRowAt(0) → LOADING.
+    // bootstrap fires getRowAt(0) → LOADING.
     expect(calls.length).toBe(1);
     expect(ref.current?.getServerSideBlockState(0).kind).toBe('loading');
     ref.current?.invalidateServerSideBlocks([0]);
@@ -8948,7 +8948,7 @@ describe('Phase 45.1 + 45.2: server-side refinements (react)', () => {
   });
 });
 
-describe('Phase 45.3 + 45.4: viewport-driven dispatch + bootstrap (react)', () => {
+describe('+ 45.4: viewport-driven dispatch + bootstrap (react)', () => {
   interface DeferredGetRows {
     readonly params: GetRowsParams;
     resolve(result: GetRowsResult): void;
@@ -9084,7 +9084,7 @@ describe('Phase 45.3 + 45.4: viewport-driven dispatch + bootstrap (react)', () =
   });
 });
 
-describe('Phase 45.5: server-side anticipatory prefetch (react)', () => {
+describe('server-side anticipatory prefetch (react)', () => {
   interface DeferredGetRows {
     readonly params: GetRowsParams;
     resolve(result: GetRowsResult): void;
@@ -9113,7 +9113,7 @@ describe('Phase 45.5: server-side anticipatory prefetch (react)', () => {
     return { source, calls };
   }
 
-  // Phase 45.5 react tests drive scroll via Object.defineProperty +
+  // react tests drive scroll via Object.defineProperty +
   // dispatchEvent('scroll'); mirrors the vue3/vue2 helper. Wrapped in
   // act() since React batches the state updates from useTableBodyScroll's
   // setState calls.
@@ -9266,7 +9266,7 @@ describe('Phase 45.5: server-side anticipatory prefetch (react)', () => {
   });
 });
 
-describe('Phase 46: Tier 3 finale (react)', () => {
+describe('Tier 3 finale (react)', () => {
   it('46-A: ColumnSpec.rowNumber:true renders displayed-position index (1-based)', () => {
     const numberedColumns: readonly ColumnSpec[] = [
       { id: 'num', headerName: '#', width: 60, rowNumber: true },
@@ -9358,7 +9358,7 @@ describe('Phase 46: Tier 3 finale (react)', () => {
   });
 });
 
-describe('Phase 80: tool-panel container (react)', () => {
+describe('tool-panel container (react)', () => {
   const panelConfig: ToolPanelConfig = {
     show: true,
     panels: [
@@ -9442,7 +9442,7 @@ describe('Phase 80: tool-panel container (react)', () => {
   });
 });
 
-describe('<ChronixTable> — Phase 83-A column header menu (react)', () => {
+describe('<ChronixTable> — -A column header menu (react)', () => {
   it('83A-1: showColumnHeaderMenu:true renders a ▾ button in each column header (react)', () => {
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} showColumnHeaderMenu={true} />,
@@ -9517,7 +9517,7 @@ describe('<ChronixTable> — Phase 83-A column header menu (react)', () => {
   });
 });
 
-describe('<ChronixTable> — Phase 83-B cell context menu (react)', () => {
+describe('<ChronixTable> — -B cell context menu (react)', () => {
   it('83B-1: right-click on a cell opens the menu at cursor coords (react)', () => {
     const onClick = vi.fn();
     const { container } = render(
@@ -9587,7 +9587,7 @@ describe('<ChronixTable> — Phase 83-B cell context menu (react)', () => {
   });
 });
 
-describe('Phase 84: Phase 80 tool-panel tablist keyboard nav (react)', () => {
+describe('tool-panel tablist keyboard nav (react)', () => {
   const panelConfig: ToolPanelConfig = {
     show: true,
     panels: [
@@ -9682,7 +9682,7 @@ describe('Phase 84: Phase 80 tool-panel tablist keyboard nav (react)', () => {
   });
 });
 
-describe('Phase 84: Phase 83-A column header menu keyboard nav (react)', () => {
+describe('-A column header menu keyboard nav (react)', () => {
   async function flush(): Promise<void> {
     await act(async () => {
       await Promise.resolve();
@@ -9817,7 +9817,7 @@ describe('Phase 84: Phase 83-A column header menu keyboard nav (react)', () => {
   });
 });
 
-describe('Phase 84: Phase 83-B cell context menu keyboard nav (react)', () => {
+describe('-B cell context menu keyboard nav (react)', () => {
   const ctxConfig = {
     items: [
       { id: 'copy', label: 'Copy', onClick: vi.fn() },
@@ -9948,7 +9948,7 @@ describe('Phase 84: Phase 83-B cell context menu keyboard nav (react)', () => {
   });
 });
 
-describe('Phase 84: Phase 25 column-visibility menu keyboard nav (react)', () => {
+describe('column-visibility menu keyboard nav (react)', () => {
   async function flush(): Promise<void> {
     await act(async () => {
       await Promise.resolve();
@@ -10051,7 +10051,7 @@ describe('Phase 84: Phase 25 column-visibility menu keyboard nav (react)', () =>
   });
 });
 
-describe('Phase 44.1 + 44.2 (react): per-column rowDragHandle + drag auto-scroll', () => {
+describe('+ 44.2 (react): per-column rowDragHandle + drag auto-scroll', () => {
   interface RowDragHandleApi {
     startMovingRow(rowId: string): void;
     cancelRowMove(): void;
@@ -10199,11 +10199,11 @@ describe('Phase 44.1 + 44.2 (react): per-column rowDragHandle + drag auto-scroll
   });
 });
 
-// ────────────────────────── Phase 101: per-column validator + invalid-cell surface (react) ──────────────────────────
-// Verbatim port of vue3 Phase 101 tests. Same 5 cases.
+// ────────────────────────── per-column validator + invalid-cell surface (react) ──────────────────────────
+// Verbatim port of vue3 tests. Same 5 cases.
 
-describe('Phase 101: per-column validator + invalid-cell surface (react)', () => {
-  it('Phase 101: validator undefined → commit succeeds (backwards-compat)', () => {
+describe('per-column validator + invalid-cell surface (react)', () => {
+  it('validator undefined → commit succeeds (backwards-compat)', () => {
     const onStop = vi.fn<(p: CellEditStopPayload) => void>();
     const phaseColumns: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
@@ -10224,7 +10224,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(stopPayload.validationError).toBeUndefined();
   });
 
-  it('Phase 101: validator returns string → reject + validationError + editor stays open', () => {
+  it('validator returns string → reject + validationError + editor stays open', () => {
     const validator = vi.fn<(value: unknown) => string | null>((value) =>
       typeof value === 'string' && value.length < 3 ? 'too short' : null,
     );
@@ -10260,7 +10260,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 101: validator returns EditValidationError → code propagates verbatim', () => {
+  it('validator returns EditValidationError → code propagates verbatim', () => {
     const onStop = vi.fn<(p: CellEditStopPayload) => void>();
     const phaseColumns: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
@@ -10290,7 +10290,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     );
   });
 
-  it('Phase 101: invalid cell renders --invalid class + data-cell-invalid + aria-invalid', () => {
+  it('invalid cell renders --invalid class + data-cell-invalid + aria-invalid', () => {
     const phaseColumns: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
       {
@@ -10325,9 +10325,9 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(cellAfter.getAttribute('data-cell-invalid')).toBeNull();
   });
 
-  // ---- Phase 111: async validator (react) -----------------------------------
+  // ---- async validator (react) -----------------------------------
 
-  it('Phase 111 (react): async resolve null → commit succeeds + cell-value-change', async () => {
+  it('(react): async resolve null → commit succeeds + cell-value-change', async () => {
     const validatorAsync = vi.fn((_v: unknown) => Promise.resolve(null));
     const onStop = vi.fn<(p: CellEditStopPayload) => void>();
     const onChange = vi.fn<(p: CellValueChangePayload) => void>();
@@ -10368,7 +10368,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
-  it('Phase 111 (react): async resolve string → reject + validationError + editor stays open', async () => {
+  it('(react): async resolve string → reject + validationError + editor stays open', async () => {
     const onStop = vi.fn<(p: CellEditStopPayload) => void>();
     const onChange = vi.fn<(p: CellValueChangePayload) => void>();
     const phaseColumns: readonly ColumnSpec[] = [
@@ -10405,7 +10405,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 111 (react): sync validator short-circuits async (async not called)', async () => {
+  it('(react): sync validator short-circuits async (async not called)', async () => {
     const validatorAsync = vi.fn((_v: unknown) => Promise.resolve(null));
     const onPending = vi.fn();
     const phaseColumns: readonly ColumnSpec[] = [
@@ -10439,7 +10439,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(onPending).not.toHaveBeenCalled();
   });
 
-  it('Phase 111 (react): pending cell paints --validating + data-attr + aria-busy', async () => {
+  it('(react): pending cell paints --validating + data-attr + aria-busy', async () => {
     let resolveValidator: (v: null) => void = () => undefined;
     const phaseColumns: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
@@ -10472,7 +10472,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(cellAfter.classList.contains('cx-table-cell--validating')).toBe(false);
   });
 
-  it('Phase 111 (react): Promise rejection → validationError with code "async-error"', async () => {
+  it('(react): Promise rejection → validationError with code "async-error"', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     const onStop = vi.fn<(p: CellEditStopPayload) => void>();
     const phaseColumns: readonly ColumnSpec[] = [
@@ -10507,7 +10507,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     consoleErrorSpy.mockRestore();
   });
 
-  it('Phase 111 (react): cancel during pending discards the in-flight async', async () => {
+  it('(react): cancel during pending discards the in-flight async', async () => {
     let resolveValidator: (v: null) => void = () => undefined;
     const onStop = vi.fn<(p: CellEditStopPayload) => void>();
     const onChange = vi.fn<(p: CellValueChangePayload) => void>();
@@ -10550,7 +10550,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it('Phase 102: filterUi="multi" renders <details> + segmented mode toggle + N stacked inputs', () => {
+  it('filterUi="multi" renders <details> + segmented mode toggle + N stacked inputs', () => {
     const phaseColumns: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
       { id: 'note', field: 'note', headerName: 'Note', flex: 1, filterUi: 'multi' },
@@ -10576,7 +10576,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(modeButtons[1]!.getAttribute('aria-checked')).toBe('false');
   });
 
-  it('Phase 102: typing in slot 0 emits filter-change with MultiFilterSpec', () => {
+  it('typing in slot 0 emits filter-change with MultiFilterSpec', () => {
     const onFilterChange = vi.fn<(p: FilterChangePayload) => void>();
     const phaseColumns: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
@@ -10607,7 +10607,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(multi!.filters[1]).toEqual({ type: 'text', operator: 'contains', value: '' });
   });
 
-  it('Phase 102: clicking OR mode button emits filter-change with mode: "OR"', () => {
+  it('clicking OR mode button emits filter-change with mode: "OR"', () => {
     const onFilterChange = vi.fn<(p: FilterChangePayload) => void>();
     const phaseColumns: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
@@ -10631,7 +10631,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(multi!.mode).toBe('OR');
   });
 
-  it('Phase 102: AND mode + both slots populated excludes rows that match only one', () => {
+  it('AND mode + both slots populated excludes rows that match only one', () => {
     const phaseColumns: readonly ColumnSpec[] = [
       { id: 'id', field: 'id', headerName: 'ID', width: 80 },
       { id: 'note', field: 'note', headerName: 'Note', flex: 1, filterUi: 'multi' },
@@ -10658,7 +10658,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
     expect(bodyCells[0]!.textContent).toBe('second');
   });
 
-  it('Phase 101: coerce-rejected SKIPS validator (locked order per Decision E.1)', () => {
+  it('coerce-rejected SKIPS validator (locked order per Decision E.1)', () => {
     const validator = vi.fn<(value: unknown) => null>(() => null);
     const onStop = vi.fn<(p: CellEditStopPayload) => void>();
     const phaseColumns: readonly ColumnSpec[] = [
@@ -10693,7 +10693,7 @@ describe('Phase 101: per-column validator + invalid-cell surface (react)', () =>
   });
 });
 
-describe('Phase 114: multi-filter polish — default mode + runtime slot add/remove (react)', () => {
+describe('multi-filter polish — default mode + runtime slot add/remove (react)', () => {
   const multiColumns: readonly ColumnSpec[] = [
     { id: 'name', field: 'name', headerName: '名称' },
     { id: 'note', field: 'note', headerName: '备注', filterUi: 'multi' },
@@ -10703,7 +10703,7 @@ describe('Phase 114: multi-filter polish — default mode + runtime slot add/rem
     { id: 'r2', data: { name: 'bob', note: 'two' } },
   ];
 
-  it('Phase 114.A (react): default mode AND when prop omitted', () => {
+  it('.A (react): default mode AND when prop omitted', () => {
     const onFilterChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -10722,7 +10722,7 @@ describe('Phase 114: multi-filter polish — default mode + runtime slot add/rem
     expect(multi!.mode).toBe('AND');
   });
 
-  it('Phase 114.A (react): default mode OR honoured when prop is "OR"', () => {
+  it('.A (react): default mode OR honoured when prop is "OR"', () => {
     const onFilterChange = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -10742,7 +10742,7 @@ describe('Phase 114: multi-filter polish — default mode + runtime slot add/rem
     expect(multi!.mode).toBe('OR');
   });
 
-  it('Phase 114.B (react): clicking `+ 添加条件` fires onAddMultiFilterSlot', () => {
+  it('.B (react): clicking `+ 添加条件` fires onAddMultiFilterSlot', () => {
     const onAdd = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -10758,11 +10758,11 @@ describe('Phase 114: multi-filter polish — default mode + runtime slot add/rem
     expect(addBtn).not.toBeNull();
     fireEvent.click(addBtn);
     expect(onAdd).toHaveBeenCalledTimes(1);
-    // Phase 117.1: payload now carries `path: []` for root-level add.
+    // payload now carries `path: []` for root-level add.
     expect(onAdd).toHaveBeenLastCalledWith({ colId: 'note', slotKind: 'text', path: [] });
   });
 
-  it('Phase 114.B (react): clicking × fires onRemoveMultiFilterSlot with slotIdx', () => {
+  it('.B (react): clicking × fires onRemoveMultiFilterSlot with slotIdx', () => {
     const onRemove = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -10778,11 +10778,11 @@ describe('Phase 114: multi-filter polish — default mode + runtime slot add/rem
     expect(removeBtns.length).toBe(2);
     fireEvent.click(removeBtns[1]!);
     expect(onRemove).toHaveBeenCalledTimes(1);
-    // Phase 117.1: payload now carries `path: []` for root-level remove.
+    // payload now carries `path: []` for root-level remove.
     expect(onRemove).toHaveBeenLastCalledWith({ colId: 'note', slotIdx: 1, path: [] });
   });
 
-  it('Phase 114.B (react): × button disabled (no emit) when slot count = 1', () => {
+  it('.B (react): × button disabled (no emit) when slot count = 1', () => {
     const oneSlotColumns: readonly ColumnSpec[] = [
       { id: 'name', field: 'name', headerName: '名称' },
       {
@@ -10813,7 +10813,7 @@ describe('Phase 114: multi-filter polish — default mode + runtime slot add/rem
   });
 });
 
-describe('Phase 115: validation followup — cross-cell + summary + paste-gate (react)', () => {
+describe('validation followup — cross-cell + summary + paste-gate (react)', () => {
   const editableColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: 'Name', flex: 1 },
@@ -10828,7 +10828,7 @@ describe('Phase 115: validation followup — cross-cell + summary + paste-gate (
     { id: 'r3', data: { id: 3, name: 'Gamma', qty: 30, status: 'OK', note: '' } },
   ];
 
-  it('Phase 115 (react): rowValidators triggers onInvalidCellsChange after inline-edit commit', () => {
+  it('(react): rowValidators triggers onInvalidCellsChange after inline-edit commit', () => {
     const rowValidators = [
       {
         id: 'qty-positive',
@@ -10871,7 +10871,7 @@ describe('Phase 115: validation followup — cross-cell + summary + paste-gate (
     expect(last.entries[0]?.error.code).toBe('min');
   });
 
-  it('Phase 115 (react): pasteValidatorPolicy="skip-rejected" drops validator-illegal paste cells', async () => {
+  it('(react): pasteValidatorPolicy="skip-rejected" drops validator-illegal paste cells', async () => {
     const validator = (value: unknown) => {
       if (typeof value === 'number' && value < 0) return { reason: 'must be positive' };
       return null;
@@ -10910,7 +10910,7 @@ describe('Phase 115: validation followup — cross-cell + summary + paste-gate (
     expect(result![0]).toMatchObject({ rowId: 'r1', colId: 'qty', newValue: 100 });
   });
 
-  it('Phase 115 (react): getInvalidCells() TableHandle snapshot reflects invalid state', () => {
+  it('(react): getInvalidCells() TableHandle snapshot reflects invalid state', () => {
     const validator = (v: unknown) => (v === 'BAD' ? { reason: 'forbidden' } : null);
     const validatedColumns: readonly ColumnSpec[] = [
       ...editableColumns.slice(0, 3),
@@ -10933,7 +10933,7 @@ describe('Phase 115: validation followup — cross-cell + summary + paste-gate (
   });
 });
 
-describe('Phase 116: multi-filter set-child + multiFilterChildRenderer (react)', () => {
+describe('multi-filter set-child + multiFilterChildRenderer (react)', () => {
   const setRows: readonly RowSpec[] = [
     { id: 'r1', data: { id: 1, name: 'Alpha', qty: 10, status: 'OK', note: 'n1' } },
     { id: 'r2', data: { id: 2, name: 'Beta', qty: 20, status: 'WIP', note: 'n2' } },
@@ -10956,7 +10956,7 @@ describe('Phase 116: multi-filter set-child + multiFilterChildRenderer (react)',
     { id: 'note', field: 'note', headerName: 'Note', flex: 2 },
   ];
 
-  it('Phase 116 (react): set-slot renders nested <details> with checkbox list', () => {
+  it('(react): set-slot renders nested <details> with checkbox list', () => {
     const { container } = render(
       <ChronixTable columns={setColumns} rows={setRows} showFilterRow />,
     );
@@ -10970,7 +10970,7 @@ describe('Phase 116: multi-filter set-child + multiFilterChildRenderer (react)',
     expect(labels.length).toBe(3);
   });
 
-  it('Phase 116 (react): toggling a set-slot checkbox fires onFilterChange', () => {
+  it('(react): toggling a set-slot checkbox fires onFilterChange', () => {
     const onFilterChange = vi.fn<(p: FilterChangePayload) => void>();
     const { container } = render(
       <ChronixTable
@@ -10991,7 +10991,7 @@ describe('Phase 116: multi-filter set-child + multiFilterChildRenderer (react)',
     expect(onFilterChange).toHaveBeenCalled();
   });
 
-  it('Phase 116 (react): multiFilterChildRenderer non-null replaces built-in widget', () => {
+  it('(react): multiFilterChildRenderer non-null replaces built-in widget', () => {
     const renderer = vi.fn(() => (
       <div className="consumer-rendered-slot" data-testid="consumer-slot">
         custom
@@ -11010,7 +11010,7 @@ describe('Phase 116: multi-filter set-child + multiFilterChildRenderer (react)',
     expect(container.querySelector('.cx-table-multi-filter__set-slot-list')).toBeNull();
   });
 
-  it('Phase 116 (react): multiFilterChildRenderer returning null falls back to built-in', () => {
+  it('(react): multiFilterChildRenderer returning null falls back to built-in', () => {
     const renderer = vi.fn(() => null);
     const { container } = render(
       <ChronixTable
@@ -11025,7 +11025,7 @@ describe('Phase 116: multi-filter set-child + multiFilterChildRenderer (react)',
   });
 });
 
-describe('Phase 117: multi-filter nested groups (react)', () => {
+describe('multi-filter nested groups (react)', () => {
   const phaseRows: readonly RowSpec[] = [
     { id: 'r1', data: { id: 1, name: 'Alpha', qty: 10, status: 'OK', note: 'a' } },
     { id: 'r2', data: { id: 2, name: 'Beta', qty: 20, status: 'WIP', note: 'b' } },
@@ -11048,7 +11048,7 @@ describe('Phase 117: multi-filter nested groups (react)', () => {
     { id: 'note', field: 'note', headerName: 'Note', flex: 2 },
   ];
 
-  it('Phase 117 (react): consumer-injected group spec filters rows correctly', () => {
+  it('(react): consumer-injected group spec filters rows correctly', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={phaseColumns} rows={phaseRows} />,
@@ -11077,7 +11077,7 @@ describe('Phase 117: multi-filter nested groups (react)', () => {
     expect(ids).toEqual(['4']);
   });
 
-  it('Phase 117 (react): empty group is identity', () => {
+  it('(react): empty group is identity', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={phaseColumns} rows={phaseRows} />,
@@ -11096,7 +11096,7 @@ describe('Phase 117: multi-filter nested groups (react)', () => {
     expect(ids).toEqual(['1', '2', '3', '4']);
   });
 
-  it('Phase 117 (react): setMultiFilterChildValue early-returns on group slot', () => {
+  it('(react): setMultiFilterChildValue early-returns on group slot', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={phaseColumns} rows={phaseRows} />,
@@ -11122,7 +11122,7 @@ describe('Phase 117: multi-filter nested groups (react)', () => {
   });
 });
 
-describe('Phase 117.1: nested-groups in-UI affordances (react)', () => {
+describe('nested-groups in-UI affordances (react)', () => {
   const phaseRows: readonly RowSpec[] = [
     { id: 'r1', data: { id: 1, name: 'Alpha', qty: 10 } },
     { id: 'r2', data: { id: 2, name: 'Beta', qty: 20 } },
@@ -11143,7 +11143,7 @@ describe('Phase 117.1: nested-groups in-UI affordances (react)', () => {
     },
   ];
 
-  it('Phase 117.1 (react): consumer-injected group spec renders nested <details> with mode label', () => {
+  it('(react): consumer-injected group spec renders nested <details> with mode label', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={phaseColumns} rows={phaseRows} showFilterRow />,
@@ -11171,7 +11171,7 @@ describe('Phase 117.1: nested-groups in-UI affordances (react)', () => {
     expect(groupNode!.textContent).toContain('分组 (OR)');
   });
 
-  it('Phase 117.1 (react): clicking nested group mode toggle dispatches via setMultiFilterEntryAtPath', () => {
+  it('(react): clicking nested group mode toggle dispatches via setMultiFilterEntryAtPath', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={phaseColumns} rows={phaseRows} showFilterRow />,
@@ -11206,7 +11206,7 @@ describe('Phase 117.1: nested-groups in-UI affordances (react)', () => {
     expect((inner as { mode: string }).mode).toBe('OR');
   });
 
-  it('Phase 117.1 (react): clicking root `+ 添加分组` fires onAddMultiFilterGroup with empty path', () => {
+  it('(react): clicking root `+ 添加分组` fires onAddMultiFilterGroup with empty path', () => {
     const onAddGroup = vi.fn();
     const { container } = render(
       <ChronixTable
@@ -11225,7 +11225,7 @@ describe('Phase 117.1: nested-groups in-UI affordances (react)', () => {
     expect(onAddGroup).toHaveBeenLastCalledWith({ colId: 'qty', path: [] });
   });
 
-  it('Phase 117.1 (react): clicking group × fires onRemoveMultiFilterGroup with full path', () => {
+  it('(react): clicking group × fires onRemoveMultiFilterGroup with full path', () => {
     const handleRef = createRef<TableHandle>();
     const onRemoveGroup = vi.fn();
     const { container } = render(
@@ -11265,7 +11265,7 @@ describe('Phase 117.1: nested-groups in-UI affordances (react)', () => {
     expect(onRemoveGroup).toHaveBeenLastCalledWith({ colId: 'qty', path: [1] });
   });
 
-  it('Phase 117.1 (react): setMultiFilterEntryAtPath handle method mutates entry; empty path throws', () => {
+  it('(react): setMultiFilterEntryAtPath handle method mutates entry; empty path throws', () => {
     const handleRef = createRef<TableHandle>();
     render(<ChronixTable ref={handleRef} columns={phaseColumns} rows={phaseRows} showFilterRow />);
     act(() => {

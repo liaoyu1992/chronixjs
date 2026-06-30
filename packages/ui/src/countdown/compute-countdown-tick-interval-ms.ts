@@ -2,7 +2,7 @@ import type { CountdownPrecision } from './countdown-spec.js';
 
 /**
  * Pure helper — derive the tick cadence (in milliseconds) for a
- * Countdown of the requested precision. Phase 18 (2026-06-02).
+ * Countdown of the requested precision. .
  *
  * Contract:
  *

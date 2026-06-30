@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { computeMatchSpans } from './compute-match-spans.js';
 
-describe('computeMatchSpans — Phase 100', () => {
+describe('computeMatchSpans', () => {
   it('empty query returns []', () => {
     expect(computeMatchSpans('hello', '')).toEqual([]);
   });

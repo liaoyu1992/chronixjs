@@ -1,15 +1,15 @@
 /**
- * Log IR — Phase 23 (2026-06-03). Tier A terminal-output viewer
+ * Log IR — . Tier A terminal-output viewer
  * for CI / deploy / audit-trail / build-output consumption.
  *
- * Per Phase 23 Decision D.1 the per-line number is rendered as
+ * Per Decision D.1 the per-line number is rendered as
  * real DOM text in a `<span class="cx-ui-log__line-number"
  * aria-hidden="true">` rather than via CSS `counter-increment` +
  * `::before content: counter(line)`. Real DOM text is readable by
  * Playwright + included in copy-paste fidelity + handled
  * consistently by assistive tech.
  *
- * Per Decision A.1 (Phase 21 D.1 echo) the items come exclusively
+ * Per Decision A.1 (D.1 echo) the items come exclusively
  * from the `lines: readonly string[]` array prop — no scoped slots
  * / render-props.
  *

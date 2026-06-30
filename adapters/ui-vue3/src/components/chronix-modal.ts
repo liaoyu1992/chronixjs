@@ -18,7 +18,7 @@ import {
 import { useModalLifecycle, type ModalCloseReason } from '../composables/use-modal-lifecycle.js';
 
 /**
- * `<ChronixModal>` — Vue 3 portal-mounted centered modal. Phase 27
+ * `<ChronixModal>` — Vue 3 portal-mounted centered modal.
  * (2026-06-03). Consumes `useModalLifecycle` for focus trap + body
  * scroll lock + Escape close + mask click close.
  *

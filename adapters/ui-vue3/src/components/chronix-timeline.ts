@@ -9,7 +9,7 @@ import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
  * `<ChronixTimeline>` — Vue 3 SFC wrapping the core `TimelineProps`
- * IR. Phase 20 (2026-06-03). Tier A chronological event sequence
+ * IR. . Tier A chronological event sequence
  * display.
  */
 export const ChronixTimeline = defineComponent({

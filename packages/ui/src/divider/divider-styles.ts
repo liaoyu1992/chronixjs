@@ -1,6 +1,6 @@
 /**
- * Divider stylesheet — Phase 13 (2026-06-02). Mirrors the Phase 11
- * Button + Phase 13 Tag styles hoist pattern: single CSS string in
+ * Divider stylesheet — . Mirrors the
+ * Button + Tag styles hoist pattern: single CSS string in
  * core; all 3 adapters share. Tokens via CSS-var fallback.
  *
  * Layout strategy:

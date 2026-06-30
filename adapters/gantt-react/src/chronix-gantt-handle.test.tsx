@@ -45,7 +45,7 @@ const baseAxisInput: AxisRangePlanInput = {
   weekendsVisible: true,
 };
 
-describe('<ChronixGantt> imperative GanttHandle (Phase 33)', () => {
+describe('<ChronixGantt> imperative GanttHandle ', () => {
   afterEach(() => {
     cleanup();
   });

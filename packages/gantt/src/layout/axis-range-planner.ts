@@ -32,7 +32,7 @@ const IS_TIME_SCALE: Record<ViewId, boolean> = {
 
 /**
  * Slot width derivation matched to the original rendered geometry.
- * See `audit/journal/2026-05-13.md` (Phase 2 / slot-width parity) for the
+ * See `audit/journal/2026-05-13.md` (/ slot-width parity) for the
  * empirical reverse-engineering of this formula.
  *
  * The floor is `minChars × fontSize`:
@@ -181,7 +181,7 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
   // `weekday: 'narrow'` emits a one-char weekday in zh-CN ("一" … "六" / "日"),
   // matching the original DOM's `"DD日<wd>"` tick-label format. The previous
   // `'short'` value emitted `"周X"` which is wider and looks wrong above
-  // narrow day slots. See `audit/journal/2026-05-13.md` Phase 4.7.
+  // narrow day slots. See `audit/journal/2026-05-13.md` .
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
     day: 'numeric',
     weekday: 'narrow',
@@ -248,7 +248,7 @@ function planMonthBandedAxis(
   // stays compact across N parallel months. `planMonthView` (single
   // month) keeps `{ year: 'numeric', month: 'long' }` since the band
   // spans the entire axis and the year context is meaningful. See
-  // `audit/journal/2026-05-13.md` Phase 4.9.
+  // `audit/journal/2026-05-13.md` .
   const monthFmt = new Intl.DateTimeFormat(input.locale, {
     month: 'long',
   });

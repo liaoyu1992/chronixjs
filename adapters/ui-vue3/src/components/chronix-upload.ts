@@ -11,7 +11,7 @@ import { computed, defineComponent, h, ref, type VNode } from 'vue';
 
 /**
  * `<ChronixUpload>` — Vue 3 file upload component.
- * Phase 35 (2026-06-05).
+ * .
  *
  * Props:
  *

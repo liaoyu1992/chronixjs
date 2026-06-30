@@ -65,9 +65,9 @@ describe('getColumnDropTarget', () => {
     });
   });
 
-  // ────────────────────────── Phase 18: pinned-zone guard ──────────────────────────
+  // ────────────────────────── pinned-zone guard ──────────────────────────
 
-  it('Phase 18: same-zone drop target is allowed when pinnedZoneByColId is supplied', () => {
+  it('same-zone drop target is allowed when pinnedZoneByColId is supplied', () => {
     const rects = makeRects([
       { colId: 'id', left: 0, right: 80 },
       { colId: 'name', left: 80, right: 200 },
@@ -86,7 +86,7 @@ describe('getColumnDropTarget', () => {
     });
   });
 
-  it('Phase 18: cross-zone drop target is rejected (returns null) when pinnedZoneByColId is supplied', () => {
+  it('cross-zone drop target is rejected (returns null) when pinnedZoneByColId is supplied', () => {
     const rects = makeRects([
       { colId: 'id', left: 0, right: 80 },
       { colId: 'name', left: 80, right: 200 },

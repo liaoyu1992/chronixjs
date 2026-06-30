@@ -1,5 +1,5 @@
 /**
- * Select CSS — Phase 31 (2026-06-04).
+ * Select CSS — .
  *
  * BEM styles for cx-ui-select + all sub-elements. CSS var tokens
  * with fallbacks for theme customization.

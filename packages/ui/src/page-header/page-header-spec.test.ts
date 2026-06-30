@@ -35,7 +35,7 @@ describe('PAGE_HEADER_BACK_ICON_PLACEHOLDER', () => {
     expect(PAGE_HEADER_BACK_ICON_PLACEHOLDER).toBe('←');
   });
 
-  it('is a single visible character (Phase 9 icon registry will swap in SVG later)', () => {
+  it('is a single visible character (icon registry will swap in SVG later)', () => {
     expect(typeof PAGE_HEADER_BACK_ICON_PLACEHOLDER).toBe('string');
     expect(PAGE_HEADER_BACK_ICON_PLACEHOLDER.length).toBe(1);
   });

@@ -11,7 +11,7 @@ import { usePopupLifecycle } from '../composables/use-popup-lifecycle.js';
 
 /**
  * `<ChronixTooltip>` — Vue 3 thin-styled text-only popup variant.
- * Phase 26 (2026-06-03). Wraps the same portal + lifecycle as
+ * . Wraps the same portal + lifecycle as
  * `<ChronixPopover>` but renders `props.content` (NOT a slot) inside a
  * dark `cx-ui-tooltip` surface with smaller padding.
  */

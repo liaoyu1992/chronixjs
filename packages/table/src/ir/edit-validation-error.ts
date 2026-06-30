@@ -1,7 +1,7 @@
 /**
  * IR primitive: cell-edit validation error.
  *
- * Phase 101 (2026-06-01): structured payload returned from a
+ * structured payload returned from a
  * `ColumnSpec.validator` to reject an in-flight edit commit. The
  * adapter surfaces this object on the `cell-edit-stop` event's
  * payload when the validator rejected the commit, leaves the editor

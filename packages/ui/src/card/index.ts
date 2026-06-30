@@ -1,5 +1,5 @@
 /**
- * chronix-ui card module — Phase 15 (2026-06-02).
+ * chronix-ui card module — .
  */
 
 export type { CardProps, CardSize } from './card-spec.js';

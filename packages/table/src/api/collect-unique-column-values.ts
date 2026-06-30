@@ -3,13 +3,13 @@ import { getCellValue } from '../render/format-cell-value.js';
 import type { ColumnSpec, RowSpec } from '../ir/index.js';
 
 /**
- * Input to `collectUniqueColumnValues` (Phase 43, 2026-05-29).
+ * Input to `collectUniqueColumnValues` (2026-05-29).
  *
  * - `rows` is the FULL row population to walk — typically the
  *   `props.rows` passed to the table, NOT the post-filter
  *   `filteredRows`. The Excel-style set filter needs ALL unique
  *   values so users can re-tick a value they previously unchecked
- *   (per Phase 43 Decision C.1).
+ *   (per Decision C.1).
  * - `column` carries the `valueGetter` / `field` / `id` lookup
  *   strategy for each cell.
  * - `maxValues` caps the unique-value count to protect against
@@ -47,7 +47,7 @@ const DEFAULT_MAX_VALUES = 10000;
 
 /**
  * Collect unique cell values for a column from a row population
- * (Phase 43, 2026-05-29).
+ * (2026-05-29).
  *
  * Algorithm:
  *
@@ -55,7 +55,7 @@ const DEFAULT_MAX_VALUES = 10000;
  *    (which honors `column.valueGetter` / `column.field` / `column.id`).
  * 2. Coerce the raw cell value into a canonical leaf type
  *    (`string` / `number` / `boolean` / `null`). Objects / functions
- *    / symbols / NaN / Infinity → `null` (mirrors the Phase 9
+ *    / symbols / NaN / Infinity → `null` (mirrors the
  *    text-filter coercion path so the set-filter list and the
  *    text-filter predicate agree on what counts as a "value").
  *    `bigint` and `Date` stringify (via `String(big)` / `toISOString`).

@@ -1,10 +1,10 @@
 /**
- * QrCode IR — Phase 22 (2026-06-03). Tier A QR code SVG
+ * QrCode IR — . Tier A QR code SVG
  * rendering wrapping the optional `qrcode-generator` peer-dep.
  *
- * Per Phase 22 Decision C.1, `qrcode-generator` is chronix-ui's
- * third optional peer-dep (after `async-validator` at Phase 8 +
- * planned `date-fns` at Phase 14 / DatePicker). Consumers
+ * Per Decision C.1, `qrcode-generator` is chronix-ui's
+ * third optional peer-dep (after `async-validator` at +
+ * planned `date-fns` at / DatePicker). Consumers
  * `pnpm add qrcode-generator` to activate the QrCode component;
  * without it the adapter renders a placeholder div with the
  * `--unavailable` modifier. The chronix-ui core never throws at

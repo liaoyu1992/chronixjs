@@ -53,7 +53,7 @@ describe('encodeMarqueeKeyframes', () => {
 
   it('uses uniquely-namespaced keyframe names (no bare scroll/marquee)', () => {
     const css = encodeMarqueeKeyframes();
-    // Phase 22 22-fr2 friction note — uniquely namespaced names
+    // 22-fr2 friction note — uniquely namespaced names
     // to avoid collisions with consumer CSS @keyframes rules.
     expect(css).not.toMatch(/@keyframes\s+scroll\b/);
     expect(css).not.toMatch(/@keyframes\s+marquee\b/);

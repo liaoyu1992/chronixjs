@@ -7,7 +7,7 @@ import {
   computeSliderValueOnKey,
 } from './compute-slider-value.js';
 
-describe('computeSliderValueAtPosition — Phase 97', () => {
+describe('computeSliderValueAtPosition', () => {
   it('midpoint position returns midpoint value snapped to step', () => {
     const result = computeSliderValueAtPosition({
       positionPx: 50,
@@ -126,7 +126,7 @@ describe('computeSliderValueAtPosition — Phase 97', () => {
   });
 });
 
-describe('computeSliderPositionForValue — Phase 97', () => {
+describe('computeSliderPositionForValue', () => {
   it('midpoint value returns midpoint position', () => {
     const result = computeSliderPositionForValue({
       value: 50,
@@ -198,7 +198,7 @@ describe('computeSliderPositionForValue — Phase 97', () => {
   });
 });
 
-describe('computeSliderValueOnKey — Phase 97 W3C ARIA APG semantics', () => {
+describe('computeSliderValueOnKey — W3C ARIA APG semantics', () => {
   it('ArrowLeft decrements by step', () => {
     const result = computeSliderValueOnKey({
       key: 'ArrowLeft',

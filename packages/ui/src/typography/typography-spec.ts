@@ -1,5 +1,5 @@
 /**
- * Typography IR — Phase 24 (2026-06-03). Tier A text-element
+ * Typography IR — . Tier A text-element
  * surface — single component with `variant` discriminator covering
  * surface — single component with `variant` discriminator covering
  * Text / Title / P / Blockquote / Hr.

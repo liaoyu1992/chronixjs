@@ -48,7 +48,7 @@ const groupedColumns: readonly ColumnSpec[] = [
   { key: 'name', label: '车间', width: 80 },
 ];
 
-describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () => {
+describe('@chronixjs/gantt-react ChronixGantt — sidebar pane ', () => {
   describe('with `columns` prop (3-pane mode)', () => {
     it('renders cx-gantt-sidebar-pane + cx-gantt-sidebar-header-pane DOM', () => {
       const { container } = render(
@@ -78,8 +78,10 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
       const sidebarHeader = container.querySelector<HTMLDivElement>(
         'div.cx-gantt-sidebar-header-pane',
       )!;
-      expect(sidebar.style.overflow).toBe('auto');
+      expect(sidebar.style.overflowX).toBe('auto');
+      expect(sidebar.style.overflowY).toBe('auto');
       expect(sidebarHeader.style.overflow).toBe('hidden');
+      expect(sidebarHeader.style.scrollbarGutter).toBe('stable');
     });
 
     it('wrapper grid-template-columns becomes 2 tracks (sidebarWidth + auto) when sidebar is rendered', () => {
@@ -93,8 +95,8 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
       );
       const wrapper = container.querySelector<HTMLDivElement>('div.cx-gantt-wrapper')!;
       // 60 + 100 + 80 = 240 px sidebar.
-      // Phase 50: sidebar(240) + divider(8) + chart(auto) = 3-column grid.
-      expect(wrapper.style.gridTemplateColumns).toBe('240px 8px auto');
+      // sidebar(240) + divider(8) + chart(auto) = 3-column grid.
+      expect(wrapper.style.gridTemplateColumns).toBe('240px 4px auto');
     });
 
     it('chart-pane gridColumn = 2 when sidebar is rendered (default 1 otherwise)', () => {
@@ -107,7 +109,7 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
         />,
       );
       const chartPane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-pane')!;
-      // Phase 50: chart-pane shifts to column 3 (sidebar=1, divider=2, chart=3).
+      // chart-pane shifts to column 3 (sidebar=1, divider=2, chart=3).
       expect(chartPane.style.gridColumn).toBe('3');
     });
 
@@ -198,7 +200,7 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
       expect(cols[2]!.style.width).toBe('80px');
     });
 
-    it('vertical scroll on chart-pane mirrors to sidebar-pane (lockstep via useScrollSync)', () => {
+    it('vertical scroll on sidebar-pane translates the chart body SVG (transform sync — chart owns no vertical scrollbar)', () => {
       const { container } = render(
         <ChronixGantt
           bars={[makeBar('a', 'w1')]}
@@ -207,33 +209,35 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
           columns={groupedColumns}
         />,
       );
-      const chartPane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-pane')!;
       const sidebarPane = container.querySelector<HTMLDivElement>('div.cx-gantt-sidebar-pane')!;
+      const bodySvg = container.querySelector<SVGSVGElement>('svg.cx-gantt-body')!;
+      // On mount the sync writes the initial transform (scrollTop = 0).
+      expect(bodySvg.style.transform).toBe('translateY(-0px)');
       act(() => {
-        chartPane.scrollTop = 50;
-        fireEvent.scroll(chartPane);
-      });
-      expect(sidebarPane.scrollTop).toBe(50);
-    });
-
-    it('vertical scroll on sidebar-pane mirrors to chart-pane (reverse lockstep)', async () => {
-      const { container } = render(
-        <ChronixGantt
-          bars={[makeBar('a', 'w1')]}
-          rows={groupedRows}
-          axisInput={baseAxisInput()}
-          columns={groupedColumns}
-        />,
-      );
-      const chartPane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-pane')!;
-      const sidebarPane = container.querySelector<HTMLDivElement>('div.cx-gantt-sidebar-pane')!;
-      // Wait a rAF tick to clear any source flag from any prior interaction.
-      await new Promise<void>((r) => requestAnimationFrame(() => r()));
-      act(() => {
-        sidebarPane.scrollTop = 25;
+        sidebarPane.scrollTop = 50;
         fireEvent.scroll(sidebarPane);
       });
-      expect(chartPane.scrollTop).toBe(25);
+      // The body SVG tracks the sidebar's scrollTop via translateY (the
+      // chart-pane is overflow-y: hidden so it has no scrollbar).
+      expect(bodySvg.style.transform).toBe('translateY(-50px)');
+    });
+
+    it('wheel over the chart forwards to the sidebar-pane scrollTop (chart is overflow-y: hidden)', () => {
+      const { container } = render(
+        <ChronixGantt
+          bars={[makeBar('a', 'w1')]}
+          rows={groupedRows}
+          axisInput={baseAxisInput()}
+          columns={groupedColumns}
+        />,
+      );
+      const chartPane = container.querySelector<HTMLDivElement>('div.cx-gantt-chart-pane')!;
+      const sidebarPane = container.querySelector<HTMLDivElement>('div.cx-gantt-sidebar-pane')!;
+      expect(sidebarPane.scrollTop).toBe(0);
+      act(() => {
+        chartPane.dispatchEvent(new WheelEvent('wheel', { deltaY: 60 }));
+      });
+      expect(sidebarPane.scrollTop).toBe(60);
     });
 
     it('sidebar-pane horizontal scroll writes translateX to sidebar-header-inner', () => {
@@ -309,7 +313,7 @@ describe('@chronixjs/gantt-react ChronixGantt — sidebar pane (Phase 48)', () =
     });
   });
 
-  // Phase 49: the `computeRowSpans` pure-function tests previously
+  // the `computeRowSpans` pure-function tests previously
   // lived here have been migrated to `packages/gantt/src/api/
   // column-spec.test.ts` alongside the helper itself (Decision B.2).
   // Adapter-level sidebar tests above exercise the helper through the

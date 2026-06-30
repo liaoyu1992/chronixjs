@@ -3,7 +3,7 @@ import type { BreadcrumbProps } from './breadcrumb-spec.js';
 /**
  * Compute class set for the Breadcrumb root `<nav>` element.
  *
- * Phase 19 (2026-06-02).
+ * .
  *
  * `hasSeparatorSlot` comes from the adapter — `true` when the Vue
  * `separator` slot OR React `separatorNode` prop resolved to non-

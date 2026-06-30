@@ -1,5 +1,5 @@
 /**
- * Pagination page computation — Phase 33 (2026-06-05).
+ * Pagination page computation — .
  *
  * Pure helpers to compute page number arrays with ellipsis logic,
  * and derive page count from item count + page size.

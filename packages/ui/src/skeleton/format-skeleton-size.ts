@@ -2,7 +2,7 @@
  * Pure helper — convert a Skeleton `width` / `height` prop into a CSS
  * length string suitable for inline `style.width` / `style.height`.
  *
- * Phase 16 (2026-06-02). Shared across vue3 / vue2 / react adapters so
+ * . Shared across vue3 / vue2 / react adapters so
  * the rendered inline-style string is byte-identical across adapters.
  *
  * Contract:
@@ -11,7 +11,7 @@
  *   entirely; the shape's CSS-default sizing applies).
  * - Numeric value → `"${value}px"` (`0` → `"0px"`, `200` → `"200px"`).
  *   Negative numbers are passed through verbatim with `px` suffix
- *   (caller responsibility — no clamping; matches Phase 14
+ *   (caller responsibility — no clamping; matches
  *   formatBadgeValue's "no special-casing below zero" precedent).
  * - String value → returned verbatim (consumer-supplied CSS length
  *   like `"100%"`, `"3em"`, `"clamp(100px, 50%, 400px)"`). Empty

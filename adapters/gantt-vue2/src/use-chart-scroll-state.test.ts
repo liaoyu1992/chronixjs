@@ -50,7 +50,7 @@ function mountHost() {
   return { wrapper, captured };
 }
 
-describe('useChartScrollState — Phase 31.5.2', () => {
+describe('useChartScrollState', () => {
   let originalResizeObserver: typeof globalThis.ResizeObserver | undefined;
 
   beforeEach(() => {

@@ -2,7 +2,7 @@ import type { CellRef } from './compute-cell-range-envelope.js';
 import type { ColumnSpec } from '../ir/index.js';
 
 /**
- * Direction subset of `NavigationDirection` (Phase 26) — Phase 29 only
+ * Direction subset of `NavigationDirection` — only
  * supports the 4 arrow directions. Home / End / PageUp / PageDown have
  * their own corner-jump semantics that aren't data-region-aware.
  */
@@ -21,7 +21,7 @@ function isEmptyCell(value: unknown): boolean {
 }
 
 /**
- * Phase 29 (2026-05-28): pure boundary-scanning helper for Excel-style
+ * pure boundary-scanning helper for Excel-style
  * Ctrl+Arrow / Ctrl+Shift+Arrow data-region navigation.
  *
  * **Empty detection** (Decision A.1): a cell is empty iff its value is

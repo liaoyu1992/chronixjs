@@ -1,6 +1,6 @@
 /**
- * Tag IR — Phase 13 (2026-06-02). Second Tier A component through the
- * full chronix-ui pipeline. Mirrors the Phase 11 Button pattern:
+ * Tag IR — . Second Tier A component through the
+ * full chronix-ui pipeline. Mirrors the Button pattern:
  * adapter SFC/component → `resolveTagClassList` pure helper → static
  * CSS via `ensureChronixTagStyles` → theme tokens via CSS-var fallback.
  *
@@ -16,7 +16,7 @@
  *   for cross-adapter class-set consistency.
  *
  * Theme tokens live in the `tag` slice of `ChronixUITheme`. Adapters
- * apply tokens via CSS-var fallback in static CSS rules (Phase 0.1
+ * apply tokens via CSS-var fallback in static CSS rules (
  * Decision A.1).
  */
 
@@ -35,7 +35,7 @@ export interface TagProps {
   /** Semantic type. Default `'default'`. */
   readonly type: TagType;
   /**
-   * Sizing token. Default falls back to `ctx.size` (Phase 2
+   * Sizing token. Default falls back to `ctx.size` (
    * `ChronixUIContext.size`); when context is unavailable, defaults
    * to `'medium'`. The default-prop constant uses `'medium'`.
    */

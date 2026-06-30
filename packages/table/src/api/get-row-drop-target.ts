@@ -1,5 +1,5 @@
 /**
- * Phase 44 (2026-05-29): resolved drop target for an in-flight
+ * resolved drop target for an in-flight
  * row-drag-reorder session. Produced by `getRowDropTarget` on every
  * `pointermove` during a drag session, consumed by the SFC's
  * drop-indicator render (the 2px horizontal line at the candidate
@@ -11,7 +11,7 @@
  * by which half (top vs. bottom) of the target row the cursor is in.
  * This mirrors the universal file-manager / task-list reorder
  * convention (drag to the upper half drops "above"; lower half drops
- * "below"). Cross-axis equivalent of Phase 14 column move's
+ * "below"). Cross-axis equivalent column move's
  * before/after.
  */
 export interface RowDropTarget {
@@ -20,7 +20,7 @@ export interface RowDropTarget {
 }
 
 /**
- * Phase 44 (2026-05-29): rect data for a single body row. The adapter
+ * rect data for a single body row. The adapter
  * measures DOM via `getBoundingClientRect()` then passes
  * `{ top, bottom }` per visible row id. Kept as a separate type (not
  * just `DOMRect`) so the helper stays framework-agnostic + the test
@@ -32,9 +32,9 @@ export interface RowRect {
 }
 
 /**
- * Phase 44 (2026-05-29): optional Set filter for `getRowDropTarget`.
+ * optional Set filter for `getRowDropTarget`.
  * When `pinnedRowIds` is supplied, the resolver skips those rows from
- * its hit-test loop — pinned rows are sticky-by-design (Phase 31) and
+ * its hit-test loop — pinned rows are sticky-by-design and
  * must not be drop targets per Decision D.1.
  *
  * The set is a `ReadonlySet<string>` of row ids whose `RowSpec.pinned`
@@ -49,7 +49,7 @@ export interface GetRowDropTargetOptions {
 }
 
 /**
- * Phase 44 (2026-05-29): resolve the candidate drop target for a
+ * resolve the candidate drop target for a
  * row-drag-reorder session given the current `pointerClientY`. Iterates
  * the supplied row-rect map, skipping `excludeRowId` (the row being
  * dragged never drops onto itself) plus any pinned rows passed via
@@ -69,8 +69,8 @@ export interface GetRowDropTargetOptions {
  * (i.e. `getBoundingClientRect().top` / `.bottom`); `pointerClientY` is
  * the live `PointerEvent.clientY`. Pure function — no DOM access.
  *
- * Mirrors `getColumnDropTarget` (Phase 14) on the Y-axis, with the
- * pinned-row option playing the same role as Phase 18's
+ * Mirrors `getColumnDropTarget` on the Y-axis, with the
+ * pinned-row option playing the same role as
  * `pinnedZoneByColId` extension.
  */
 export function getRowDropTarget(

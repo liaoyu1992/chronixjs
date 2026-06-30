@@ -1,13 +1,13 @@
 import type { RowSpec } from '../ir/index.js';
 
 /**
- * Input to `treeFlattenPass` (Phase 30, 2026-05-28).
+ * Input to `treeFlattenPass` (2026-05-28).
  *
  * `rows` is the tree-shaped row list straight from the consumer (each
  * row may carry `children?: readonly RowSpec[]` to declare descendants).
  * `expandedRowIds` is the set of row IDs whose children are visible —
  * adapters typically union the user's expand state with any forced-
- * expand IDs from `filterPass` (Phase 30 decision F.1) before passing.
+ * expand IDs from `filterPass` (decision F.1) before passing.
  */
 export interface TreeFlattenInput {
   /** Tree-shaped input rows in display order. */
@@ -39,7 +39,7 @@ export interface TreeFlattenResult {
 }
 
 /**
- * Phase 30 (2026-05-28): flatten a tree-shaped row list to a visible-
+ * flatten a tree-shaped row list to a visible-
  * only flat list, tagging each output row with `depth` + `groupKey`.
  *
  * Algorithm (explicit-stack DFS in display order):

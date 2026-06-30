@@ -11,7 +11,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixDescriptions>` — Vue 2.7 port of the Phase 21
+ * `<ChronixDescriptions>` — Vue 2.7 port of the
  * Descriptions.
  *
  * Runtime differences from the vue3 sibling: `h()` second-arg data

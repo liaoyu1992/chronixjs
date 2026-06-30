@@ -376,7 +376,7 @@ describe('createServerSideRowSource', () => {
     );
   });
 
-  describe('Phase 45.2 — invalidateBlocks (partial cache invalidation)', () => {
+  describe('invalidateBlocks (partial cache invalidation)', () => {
     it('invalidateBlocks([0]) on a loaded block returns it to IDLE; next getRowAt redispatches', async () => {
       const { source, calls } = makeControlledSource();
       const session = createServerSideRowSource(source, { cacheBlockSize: 10 });
@@ -496,7 +496,7 @@ describe('createServerSideRowSource', () => {
     });
   });
 
-  describe('Phase 45.3 — peekRowAt (no-side-effect read)', () => {
+  describe('peekRowAt (no-side-effect read)', () => {
     it('peekRowAt on an idle block returns null WITHOUT dispatching', () => {
       const { source, calls } = makeControlledSource();
       const session = createServerSideRowSource(source);

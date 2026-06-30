@@ -11,7 +11,7 @@ import {
 import { computed, defineComponent, h, type PropType, type VNode } from 'vue';
 
 /**
- * `<ChronixSteps>` — Vue 2.7 port of the Phase 20 Steps.
+ * `<ChronixSteps>` — Vue 2.7 port of the Steps.
  *
  * Runtime differences from the vue3 sibling: `h()` second-arg data
  * object uses nested `attrs:` for HTML attributes (`aria-hidden`).

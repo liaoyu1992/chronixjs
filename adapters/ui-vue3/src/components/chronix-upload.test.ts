@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixUpload } from './chronix-upload.js';
 
 /**
- * Phase 35 (2026-06-05) — Upload mount tests (vue3).
+ * — Upload mount tests (vue3).
  */
 describe('ChronixUpload', () => {
   it('renders a div with base class and data-testid', () => {

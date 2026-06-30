@@ -19,7 +19,7 @@ import {
 } from 'vue';
 
 /**
- * `<ChronixCountdown>` — Vue 2.7 port of the Phase 18 Countdown.
+ * `<ChronixCountdown>` — Vue 2.7 port of the Countdown.
  *
  * Same timer-lifecycle contract as the vue3 sibling — runtime
  * differences are confined to Vue 2's `attrs:` / `on:` data-object

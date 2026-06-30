@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ChronixEmpty } from './chronix-empty.js';
 
 /**
- * Phase 15 (2026-06-02) — Empty mount tests (vue3).
+ * — Empty mount tests (vue3).
  */
 
 describe('ChronixEmpty — default rendering', () => {

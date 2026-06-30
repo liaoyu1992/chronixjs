@@ -31,7 +31,7 @@ const MONTH_NAMES = [
 
 /**
  * `<ChronixCalendar>` — Vue 2 standalone calendar.
- * Phase 32 (2026-06-05). Always visible, no popup.
+ * . Always visible, no popup.
  */
 export const ChronixCalendar = defineComponent({
   name: 'ChronixCalendar',

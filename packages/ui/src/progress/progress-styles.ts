@@ -1,5 +1,5 @@
 /**
- * Progress stylesheet — Phase 16 (2026-06-02). Line variant only.
+ * Progress stylesheet — . Line variant only.
  *
  * Layout:
  *

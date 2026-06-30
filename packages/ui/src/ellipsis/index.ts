@@ -1,5 +1,5 @@
 /**
- * chronix-ui ellipsis module — Phase 23 (2026-06-03).
+ * chronix-ui ellipsis module — .
  */
 
 export type { EllipsisProps } from './ellipsis-spec.js';

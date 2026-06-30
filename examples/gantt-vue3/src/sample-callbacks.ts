@@ -9,7 +9,7 @@ import type {
 } from '@chronixjs/gantt';
 
 /**
- * **Phase 20.6: sample predicate / callback domain code.**
+ * **sample predicate / callback domain code.**
  *
  * Extracted from `App.vue` so the component file holds plumbing
  * (config / template / event handlers) and this file holds the

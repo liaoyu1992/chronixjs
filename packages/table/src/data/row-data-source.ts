@@ -3,7 +3,7 @@ import type { RowSpec } from '../ir/index.js';
 /**
  * Row collection interface with id-keyed lookup.
  *
- * The shape every chronix-table row source implements. Phase 1
+ * The shape every chronix-table row source implements.
  * ships the in-memory `ClientSide` variant; future phases add
  * `ServerSide` (lazy-load remote pages) at Phase ~82.
  *
@@ -33,7 +33,7 @@ export interface RowDataSource {
  */
 export function createClientSideRowSource(rows: readonly RowSpec[]): RowDataSource {
   const byId = new Map<string, RowSpec>();
-  // Phase 30 (2026-05-28): recursively index `children` so getById
+  // recursively index `children` so getById
   // works for any row in a tree-data hierarchy, not just top-level
   // rows. The walk uses an explicit stack to avoid call-stack
   // overflow on pathologically deep trees. Pre-Phase-30 flat datasets

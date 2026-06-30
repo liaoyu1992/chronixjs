@@ -31,7 +31,7 @@ const barClick = (barId: string, shiftKey: boolean): BarClickPayload => ({
 const emptyClick = (rowId: string | null): EmptyAreaClickPayload => ({
   rowId,
   jsEvent: pe(false),
-  // Phase 54 — required field; unselectAuto path doesn't read it.
+  // required field; unselectAuto path doesn't read it.
   time: new Date('2026-05-18T00:00:00'),
 });
 

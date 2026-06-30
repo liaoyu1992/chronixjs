@@ -1,11 +1,11 @@
 /**
- * Countdown IR — Phase 18 (2026-06-02). Tier A "live" display.
+ * Countdown IR — . Tier A "live" display.
  *
  * Renders a `(label, prefix, remaining-time, suffix)` block that
  * ticks down to 0. Same DOM shape as Statistic but the `__value`
  * text is computed by the adapter via `formatCountdownDuration` on
  * each tick. The adapter owns its own `setInterval` lifecycle per
- * Phase 18 Decision D.1 — IR is pure data + helpers.
+ * Decision D.1 — IR is pure data + helpers.
  *
  * Public surface:
  *
@@ -41,7 +41,7 @@ export interface CountdownProps {
    * When `true` (default), the timer runs. When `false`, the adapter
    * stops the interval. Flipping back to `true` restarts from
    * `duration` (no pause/resume preserve-state in v0.1.0 per
-   * Phase 18 Decision E.1).
+   * Decision E.1).
    */
   readonly active: boolean;
 }
