@@ -249,10 +249,11 @@ def main():
     claude_dir = sys.argv[1]
     paths = get_paths(claude_dir)
 
-    # Step 1: Load all active instincts
+    # Step 1: Load all active instincts. No early-return on empty: an empty
+    # corpus must still flow through to write_evolved_rules(), which deletes a
+    # stale auto-evolved.md when there are no valid domains — otherwise outdated
+    # rules would linger and keep getting injected.
     all_instincts = load_all_instincts(paths["instincts_dir"])
-    if not all_instincts:
-        return
 
     # Step 2: Filter by confidence >= 0.7
     high_conf = [i for i in all_instincts if i.get("confidence", 0) >= 0.7]
