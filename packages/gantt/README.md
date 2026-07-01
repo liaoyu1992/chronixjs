@@ -15,7 +15,7 @@ Most consumers want a framework adapter instead:
 ```bash
 pnpm add @chronixjs/gantt-vue3@alpha vue                          # Vue 3
 pnpm add @chronixjs/gantt-vue2@alpha vue@^2.7                     # Vue 2.7
-pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18     # React 18
+pnpm add @chronixjs/gantt-react@alpha react react-dom     # React 18 / 19
 ```
 
 The adapter depends on this core; installing the adapter pulls it transitively. Install this core package directly only when consuming the types / IR / pure helpers in non-Vue/non-React code (canvas renderer, custom SVG layer, headless test harness, etc.).

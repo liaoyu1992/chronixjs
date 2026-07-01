@@ -1,18 +1,18 @@
 # @chronixjs/gantt-react
 
-React 18 component + hooks built on [`@chronixjs/gantt`](https://www.npmjs.com/package/@chronixjs/gantt). The React surface; same feature parity as `@chronixjs/gantt-vue3` and `@chronixjs/gantt-vue2`.
+React 18 / 19 component + hooks built on [`@chronixjs/gantt`](https://www.npmjs.com/package/@chronixjs/gantt). The React surface; same feature parity as `@chronixjs/gantt-vue3` and `@chronixjs/gantt-vue2`.
 
 > **Status: alpha.** Published under the `alpha` npm dist-tag. Install with `@alpha`. APIs may shift before `1.0.0`; SemVer stability commitment begins at `1.0`.
 
 ## Install
 
 ```bash
-pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/gantt-react@alpha react react-dom
 ```
 
 The `@chronixjs/gantt` core is pulled transitively — you don't install it separately unless you also consume the framework-agnostic types / IR / pure helpers in non-React code.
 
-`react` (`^18.0.0`) and `react-dom` (`^18.0.0`) are peer dependencies; bring your own. React 17 is not supported in v0; React 19 will be evaluated when it ships its stable production build.
+`react` (`^18.0.0 || ^19.0.0`) and `react-dom` (`^18.0.0 || ^19.0.0`) are peer dependencies; bring your own. React 17 is not supported.
 
 ## Quickstart
 

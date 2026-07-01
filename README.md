@@ -19,17 +19,17 @@ Source: [github.com/liaoyu1992/chronixjs](https://github.com/liaoyu1992/chronixj
 
 ### Adapters (per-framework)
 
-| Package                                            | Framework | Install                                                         |
-| -------------------------------------------------- | --------- | --------------------------------------------------------------- |
-| [`@chronixjs/gantt-vue3`](./adapters/gantt-vue3)   | Vue 3     | `pnpm add @chronixjs/gantt-vue3@alpha vue`                      |
-| [`@chronixjs/gantt-vue2`](./adapters/gantt-vue2)   | Vue 2.7   | `pnpm add @chronixjs/gantt-vue2@alpha vue@^2.7`                 |
-| [`@chronixjs/gantt-react`](./adapters/gantt-react) | React 18  | `pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18` |
-| [`@chronixjs/table-vue3`](./adapters/table-vue3)   | Vue 3     | `pnpm add @chronixjs/table-vue3@alpha vue`                      |
-| [`@chronixjs/table-vue2`](./adapters/table-vue2)   | Vue 2.7   | `pnpm add @chronixjs/table-vue2@alpha vue@^2.7`                 |
-| [`@chronixjs/table-react`](./adapters/table-react) | React 18  | `pnpm add @chronixjs/table-react@alpha react@^18 react-dom@^18` |
-| [`@chronixjs/ui-vue3`](./adapters/ui-vue3)         | Vue 3     | `pnpm add @chronixjs/ui-vue3@alpha vue`                         |
-| [`@chronixjs/ui-vue2`](./adapters/ui-vue2)         | Vue 2.7   | `pnpm add @chronixjs/ui-vue2@alpha vue@^2.7`                    |
-| [`@chronixjs/ui-react`](./adapters/ui-react)       | React 18  | `pnpm add @chronixjs/ui-react@alpha react@^18 react-dom@^18`    |
+| Package                                            | Framework     | Install                                                 |
+| -------------------------------------------------- | ------------- | ------------------------------------------------------- |
+| [`@chronixjs/gantt-vue3`](./adapters/gantt-vue3)   | Vue 3         | `pnpm add @chronixjs/gantt-vue3@alpha vue`              |
+| [`@chronixjs/gantt-vue2`](./adapters/gantt-vue2)   | Vue 2.7       | `pnpm add @chronixjs/gantt-vue2@alpha vue@^2.7`         |
+| [`@chronixjs/gantt-react`](./adapters/gantt-react) | React 18 / 19 | `pnpm add @chronixjs/gantt-react@alpha react react-dom` |
+| [`@chronixjs/table-vue3`](./adapters/table-vue3)   | Vue 3         | `pnpm add @chronixjs/table-vue3@alpha vue`              |
+| [`@chronixjs/table-vue2`](./adapters/table-vue2)   | Vue 2.7       | `pnpm add @chronixjs/table-vue2@alpha vue@^2.7`         |
+| [`@chronixjs/table-react`](./adapters/table-react) | React 18 / 19 | `pnpm add @chronixjs/table-react@alpha react react-dom` |
+| [`@chronixjs/ui-vue3`](./adapters/ui-vue3)         | Vue 3         | `pnpm add @chronixjs/ui-vue3@alpha vue`                 |
+| [`@chronixjs/ui-vue2`](./adapters/ui-vue2)         | Vue 2.7       | `pnpm add @chronixjs/ui-vue2@alpha vue@^2.7`            |
+| [`@chronixjs/ui-react`](./adapters/ui-react)       | React 18 / 19 | `pnpm add @chronixjs/ui-react@alpha react react-dom`    |
 
 Each adapter re-exports the runtime component layer and depends on its core package transitively. Install the core package directly only when consuming types / IR / pure helpers in non-framework code.
 
@@ -75,7 +75,7 @@ Each adapter re-exports the runtime component layer and depends on its core pack
 
 ## Features (ui)
 
-- **85 components** across 5 tiers, each × 3 adapters (Vue 3 / Vue 2.7 / React 18)
+- **85 components** across 5 tiers, each × 3 adapters (Vue 3 / Vue 2.7 / React 18 / 19)
 - **Tier A** (40): Button, Tag, Badge, Typography, Avatar, Input, Checkbox, Switch, Radio, etc.
 - **Tier B** (33): Modal, Drawer, Dropdown, Menu, Tabs, Carousel, Collapse, etc.
 - **Tier C** (12): Tree, Select, DatePicker, TimePicker, Calendar, Form, Upload, etc.
@@ -100,7 +100,7 @@ Requires Node >= 20 and pnpm >= 9.
 
 ### Demo apps
 
-| Product | Vue 3            | Vue 2.7          | React 18         |
+| Product | Vue 3            | Vue 2.7          | React 18 / 19    |
 | ------- | ---------------- | ---------------- | ---------------- |
 | Gantt   | `localhost:8702` | `localhost:8703` | `localhost:8704` |
 | Table   | `localhost:8711` | `localhost:8712` | `localhost:8713` |

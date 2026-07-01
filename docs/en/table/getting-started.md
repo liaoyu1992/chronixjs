@@ -15,7 +15,7 @@ pnpm add @chronixjs/table-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/table-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/table-react@alpha react react-dom
 ```
 
 :::

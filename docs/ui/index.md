@@ -5,7 +5,7 @@
 ## 特性
 
 - **85 个组件** — A 级 (40)、B 级 (33)、C 级 (12)
-- **3 个框架适配器** — Vue 3、Vue 2.7、React 18
+- **3 个框架适配器** — Vue 3、Vue 2.7、React 18 / 19
 - **主题系统** — 基于 CSS 自定义属性，采用 BEM 命名（`cx-ui-*` 前缀）
 - **弹出层系统** — modal、drawer、popover、tooltip、confirm dialog
 - **框架无关的核心** — `@chronixjs/ui` 中包含纯辅助函数 + 类型 + CSS
@@ -24,7 +24,7 @@ pnpm add @chronixjs/ui-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/ui-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/ui-react@alpha react react-dom
 ```
 
 :::

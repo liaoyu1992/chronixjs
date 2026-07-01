@@ -12,7 +12,7 @@ pnpm add @chronixjs/gantt-vue3@alpha vue
 
 The `@chronixjs/gantt` core is pulled transitively — you don't install it separately unless you also consume the framework-agnostic types / IR / pure helpers in non-Vue code.
 
-`vue` is a peer dependency (`^3.4`); bring your own.
+`vue` is a peer dependency (`^3.5.0`); bring your own.
 
 ## Quickstart
 

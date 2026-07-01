@@ -192,7 +192,7 @@ For full demos of cell-style editor + typeahead + all 22 extensions, see [`examp
 - Core types + IR + pure helpers: [`@chronixjs/table`](https://www.npmjs.com/package/@chronixjs/table)
 - Headless UI primitives: [`@chronixjs/cx-kit`](https://www.npmjs.com/package/@chronixjs/cx-kit)
 - Vue 3 sibling: [`@chronixjs/table-vue3`](https://www.npmjs.com/package/@chronixjs/table-vue3)
-- React 18 sibling: [`@chronixjs/table-react`](https://www.npmjs.com/package/@chronixjs/table-react)
+- React 18 / 19 sibling: [`@chronixjs/table-react`](https://www.npmjs.com/package/@chronixjs/table-react)
 - Live example: [`examples/table-vue2`](https://github.com/liaoyu1992/chronixjs/tree/master/examples/table-vue2) in the monorepo
 - 3-adapter parity verdict: [`audit/TABLE_PUBLISH_PARITY_SWEEP_v0.1.0.md`](https://github.com/liaoyu1992/chronixjs/blob/master/audit/TABLE_PUBLISH_PARITY_SWEEP_v0.1.0.md)
 

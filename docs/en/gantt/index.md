@@ -16,7 +16,7 @@ A high-performance, framework-agnostic Gantt chart component with drag/resize, d
 - **Dependency Lines** — finish-to-start, start-to-start, finish-to-finish, start-to-finish
 - **Theme Tokens** — fully customizable via CSS custom properties
 - **Slot Registry** — extendable rendering slots for custom bar content
-- **3 Framework Adapters** — Vue 3, Vue 2.7, React 18
+- **3 Framework Adapters** — Vue 3, Vue 2.7, React 18 / 19
 
 ## Install
 
@@ -31,7 +31,7 @@ pnpm add @chronixjs/gantt-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/gantt-react@alpha react react-dom
 ```
 
 :::

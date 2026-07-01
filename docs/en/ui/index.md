@@ -5,7 +5,7 @@ A comprehensive UI component library with **85 components** across 3 framework a
 ## Features
 
 - **85 Components** — Tier A (40), Tier B (33), Tier C (12)
-- **3 Framework Adapters** — Vue 3, Vue 2.7, React 18
+- **3 Framework Adapters** — Vue 3, Vue 2.7, React 18 / 19
 - **Theme System** — CSS custom properties with BEM naming (`cx-ui-*` prefix)
 - **Popup System** — modal, drawer, popover, tooltip, confirm dialog
 - **Framework-Agnostic Core** — pure helpers + types + CSS in `@chronixjs/ui`
@@ -24,7 +24,7 @@ pnpm add @chronixjs/ui-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/ui-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/ui-react@alpha react react-dom
 ```
 
 :::

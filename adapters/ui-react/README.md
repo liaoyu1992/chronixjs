@@ -1,6 +1,6 @@
 # @chronixjs/ui-react
 
-React 18 adapter for [`@chronixjs/ui`](../../packages/ui/) — 85 React components wrapping the framework-agnostic UI IR.
+React 18 / 19 adapter for [`@chronixjs/ui`](../../packages/ui/) — 85 React components wrapping the framework-agnostic UI IR.
 
 ## Install
 
@@ -8,7 +8,7 @@ React 18 adapter for [`@chronixjs/ui`](../../packages/ui/) — 85 React componen
 pnpm add @chronixjs/ui-react @chronixjs/ui react react-dom
 ```
 
-`react` and `react-dom` are peer dependencies (`^18.0.0`); `@chronixjs/ui` is a regular dependency.
+`react` and `react-dom` are peer dependencies (`^18.0.0 || ^19.0.0`); `@chronixjs/ui` is a regular dependency.
 
 ## Quick start
 

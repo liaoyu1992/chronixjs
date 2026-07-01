@@ -18,7 +18,7 @@ import tableBasicReact from './demos/TableBasic.react?raw';
 - **固定列/行** — 冻结表头和关键列
 - **CSV 导出** — 客户端数据导出
 - **58 个命令式方法** — 完整的编程控制
-- **3 个框架适配器** — Vue 3、Vue 2.7、React 18
+- **3 个框架适配器** — Vue 3、Vue 2.7、React 18 / 19
 
 ## 安装
 
@@ -33,7 +33,7 @@ pnpm add @chronixjs/table-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/table-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/table-react@alpha react react-dom
 ```
 
 :::

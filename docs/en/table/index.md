@@ -18,7 +18,7 @@ A high-performance, framework-agnostic data table with virtual scrolling, tree d
 - **Pinned Columns/Rows** — freeze headers and key columns
 - **CSV Export** — client-side data export
 - **58 Imperative Methods** — full programmatic control
-- **3 Framework Adapters** — Vue 3, Vue 2.7, React 18
+- **3 Framework Adapters** — Vue 3, Vue 2.7, React 18 / 19
 
 ## Install
 
@@ -33,7 +33,7 @@ pnpm add @chronixjs/table-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/table-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/table-react@alpha react react-dom
 ```
 
 :::

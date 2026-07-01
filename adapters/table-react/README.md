@@ -1,19 +1,19 @@
 # @chronixjs/table-react
 
-React 18 component + hooks built on [`@chronixjs/table`](https://www.npmjs.com/package/@chronixjs/table). Feature-symmetric with [`@chronixjs/table-vue3`](https://www.npmjs.com/package/@chronixjs/table-vue3) and [`@chronixjs/table-vue2`](https://www.npmjs.com/package/@chronixjs/table-vue2).
+React 18 / 19 component + hooks built on [`@chronixjs/table`](https://www.npmjs.com/package/@chronixjs/table). Feature-symmetric with [`@chronixjs/table-vue3`](https://www.npmjs.com/package/@chronixjs/table-vue3) and [`@chronixjs/table-vue2`](https://www.npmjs.com/package/@chronixjs/table-vue2).
 
 > **Status.** Currently published under the `alpha` npm dist-tag (`@alpha`). After v0.1.0 GA lands, the `@alpha` suffix can be omitted (the default `latest` tag will point to v0.1.0). APIs may shift before `1.0.0`; SemVer stability commitment begins at `1.0`.
 
 ## Install
 
 ```bash
-pnpm add @chronixjs/table-react@alpha react@^18 react-dom@^18    # currently
-pnpm add @chronixjs/table-react react@^18 react-dom@^18          # after v0.1.0 GA
+pnpm add @chronixjs/table-react@alpha react react-dom    # currently
+pnpm add @chronixjs/table-react react react-dom          # after v0.1.0 GA
 ```
 
 The `@chronixjs/table` core is pulled transitively — you don't install it separately unless you also consume the framework-agnostic types / IR / pure helpers in non-React code.
 
-`react` and `react-dom` are peer dependencies (`^18`); bring your own.
+`react` and `react-dom` are peer dependencies (`^18.0.0 || ^19.0.0`); bring your own.
 
 ## Quickstart
 
@@ -158,7 +158,7 @@ Wire the `onColumnsChange` callback to swap state atomically:
 
 ## React-specific notes
 
-- The default surface uses React 18's automatic batching — synchronous `setState` calls inside chronix-table emit handlers are batched as expected.
+- The default surface uses React's automatic batching (since React 18) — synchronous `setState` calls inside chronix-table emit handlers are batched as expected.
 - Pointer-driven gestures (range select, drag-fill) pre-settle pointer position by ~50ms to give React state updates a chance to commit before the next frame's hit-test reads the new state — this is internal to the adapter; consumers don't need to mirror it.
 - Callback props use camelCase (`onCellValueChange`) — equivalent to the kebab-case emits (`@cell-value-change`) on the Vue 3 / Vue 2.7 siblings.
 

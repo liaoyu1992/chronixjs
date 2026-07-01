@@ -13,7 +13,7 @@ pnpm add @chronixjs/table-vue3 vue             # after v0.1.0 GA
 
 The `@chronixjs/table` core is pulled transitively — you don't install it separately unless you also consume the framework-agnostic types / IR / pure helpers in non-Vue code.
 
-`vue` is a peer dependency (`^3.4`); bring your own.
+`vue` is a peer dependency (`^3.5.0`); bring your own.
 
 ## Quickstart
 
@@ -231,7 +231,7 @@ For full demos of cell-style editor + typeahead + all 22 extensions, see [`examp
 - Core types + IR + pure helpers: [`@chronixjs/table`](https://www.npmjs.com/package/@chronixjs/table)
 - Headless UI primitives: [`@chronixjs/cx-kit`](https://www.npmjs.com/package/@chronixjs/cx-kit)
 - Vue 2.7 sibling: [`@chronixjs/table-vue2`](https://www.npmjs.com/package/@chronixjs/table-vue2)
-- React 18 sibling: [`@chronixjs/table-react`](https://www.npmjs.com/package/@chronixjs/table-react)
+- React 18 / 19 sibling: [`@chronixjs/table-react`](https://www.npmjs.com/package/@chronixjs/table-react)
 - Live example: [`examples/table-vue3`](https://github.com/liaoyu1992/chronixjs/tree/master/examples/table-vue3) in the monorepo
 - 3-adapter parity verdict: [`audit/TABLE_PUBLISH_PARITY_SWEEP_v0.1.0.md`](https://github.com/liaoyu1992/chronixjs/blob/master/audit/TABLE_PUBLISH_PARITY_SWEEP_v0.1.0.md)
 

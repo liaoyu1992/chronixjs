@@ -1,6 +1,6 @@
 # Contributing to chronix
 
-Thanks for your interest. chronix is a monorepo of framework-agnostic component cores + per-framework adapters, with an emphasis on small surface-area pure helpers and feature-symmetric ports across Vue 3 + Vue 2.7 + React 18.
+Thanks for your interest. chronix is a monorepo of framework-agnostic component cores + per-framework adapters, with an emphasis on small surface-area pure helpers and feature-symmetric ports across Vue 3 + Vue 2.7 + React 18 / 19.
 
 ## Repository layout
 

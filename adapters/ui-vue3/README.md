@@ -8,7 +8,7 @@ Vue 3 adapter for [`@chronixjs/ui`](../../packages/ui/) — 85 Vue 3 components 
 pnpm add @chronixjs/ui-vue3 @chronixjs/ui vue
 ```
 
-`vue` is a peer dependency (`^3.4.0`); `@chronixjs/ui` is a regular dependency.
+`vue` is a peer dependency (`^3.5.0`); `@chronixjs/ui` is a regular dependency.
 
 ## Quick start
 

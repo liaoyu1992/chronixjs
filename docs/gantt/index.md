@@ -16,7 +16,7 @@ import ganttBasicReact from './demos/GanttBasic.react?raw';
 - **依赖连线** — 完成-开始、开始-开始、完成-完成、开始-完成
 - **主题令牌** — 通过 CSS 自定义属性完全可定制
 - **插槽注册** — 可扩展的渲染插槽，用于自定义条形内容
-- **3 个框架适配器** — Vue 3、Vue 2.7、React 18
+- **3 个框架适配器** — Vue 3、Vue 2.7、React 18 / 19
 
 ## 安装
 
@@ -31,7 +31,7 @@ pnpm add @chronixjs/gantt-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/gantt-react@alpha react react-dom
 ```
 
 :::

@@ -35,7 +35,7 @@ Phase 33 DONE (2026-06-05). **85×3** adapter components shipped (Tier A 40 + Ti
 
 ### Demo Ports
 
-| Product | Vue 3            | Vue 2.7          | React 18         |
+| Product | Vue 3            | Vue 2.7          | React 18 / 19    |
 | ------- | ---------------- | ---------------- | ---------------- |
 | Gantt   | `localhost:8702` | `localhost:8703` | `localhost:8704` |
 | Table   | `localhost:8711` | `localhost:8712` | `localhost:8713` |

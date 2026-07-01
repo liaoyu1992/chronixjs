@@ -6,11 +6,11 @@
 
 所有 Chronix 适配器共享相同的 API 接口。选择与你的框架匹配的适配器：
 
-| 框架     | 适配器包名           |
-| -------- | -------------------- |
-| Vue 3    | `@chronixjs/*-vue3`  |
-| Vue 2.7  | `@chronixjs/*-vue2`  |
-| React 18 | `@chronixjs/*-react` |
+| 框架          | 适配器包名           |
+| ------------- | -------------------- |
+| Vue 3         | `@chronixjs/*-vue3`  |
+| Vue 2.7       | `@chronixjs/*-vue2`  |
+| React 18 / 19 | `@chronixjs/*-react` |
 
 ## UI 组件
 
@@ -27,7 +27,7 @@ pnpm add @chronixjs/ui-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/ui-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/ui-react@alpha react react-dom
 ```
 
 :::
@@ -102,7 +102,7 @@ pnpm add @chronixjs/gantt-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/gantt-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/gantt-react@alpha react react-dom
 ```
 
 :::
@@ -188,7 +188,7 @@ pnpm add @chronixjs/table-vue2@alpha vue@^2.7
 ```
 
 ```bash [React]
-pnpm add @chronixjs/table-react@alpha react@^18 react-dom@^18
+pnpm add @chronixjs/table-react@alpha react react-dom
 ```
 
 :::
