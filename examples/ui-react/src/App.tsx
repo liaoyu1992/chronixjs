@@ -111,7 +111,7 @@ import {
   ChronixScrollbar,
   ChronixUpload,
 } from '@chronixjs/ui-react';
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 
 const PHASE25_RADIO_OPTIONS: readonly RadioOption[] = [
   { key: 'a', label: 'Option A', value: 'a', disabled: false },
@@ -433,7 +433,7 @@ const HEATMAP_CELLS = [
   [4, 6, 7, 1, 5],
 ];
 
-export function App(): JSX.Element {
+export function App(): ReactElement {
   const [clickCount, setClickCount] = useState(0);
   const [blockedClickCount, setBlockedClickCount] = useState(0);
   const [tagCloseCount, setTagCloseCount] = useState(0);

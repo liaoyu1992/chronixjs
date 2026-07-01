@@ -152,7 +152,7 @@ cd D:/work/chronix && pnpm ci-check
 ```
 
 If green:
-`✅ ci-check green (format / lint / typecheck / test / build / audit:names)`
+`✅ ci-check green (format / lint / typecheck / test / build)`
 
 If red, fail the gate with the failing step:
 `❌ ci-check failed at <step>. Resolve before closing.`
