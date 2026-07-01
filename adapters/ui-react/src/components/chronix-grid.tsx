@@ -18,7 +18,7 @@ export interface ChronixGridProps extends Omit<HTMLAttributes<HTMLDivElement>, '
 /**
  * `<ChronixGrid>` — React port of the Grid.
  */
-export function ChronixGrid(props: ChronixGridProps): JSX.Element {
+export function ChronixGrid(props: ChronixGridProps): React.ReactElement {
   const {
     cols = defaultGridProps.cols,
     xGap = defaultGridProps.xGap,

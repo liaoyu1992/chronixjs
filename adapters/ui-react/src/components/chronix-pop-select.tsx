@@ -35,7 +35,7 @@ export interface ChronixPopSelectProps extends Omit<
   readonly onChange?: (value: string) => void;
 }
 
-export function ChronixPopSelect(props: ChronixPopSelectProps): JSX.Element {
+export function ChronixPopSelect(props: ChronixPopSelectProps): React.ReactElement {
   const {
     value,
     options = defaultPopSelectProps.options,

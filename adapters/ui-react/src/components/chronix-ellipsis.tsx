@@ -26,7 +26,7 @@ export interface ChronixEllipsisProps extends Omit<
  * set on the `<span>` with the full `content`. When `tooltip=false`,
  * no `title` is passed (React strips `undefined` attribute values).
  */
-export function ChronixEllipsis(props: ChronixEllipsisProps): JSX.Element {
+export function ChronixEllipsis(props: ChronixEllipsisProps): React.ReactElement {
   const {
     content = defaultEllipsisProps.content,
     tooltip = defaultEllipsisProps.tooltip,

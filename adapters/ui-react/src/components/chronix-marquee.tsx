@@ -32,7 +32,7 @@ export interface ChronixMarqueeProps extends Omit<HTMLAttributes<HTMLDivElement>
  * `getBoundingClientRect`; `computeMarqueeAnimationDurationSec`
  * computes the inline `animation-duration` value.
  */
-export function ChronixMarquee(props: ChronixMarqueeProps): JSX.Element {
+export function ChronixMarquee(props: ChronixMarqueeProps): React.ReactElement {
   const {
     direction = defaultMarqueeProps.direction,
     speed = defaultMarqueeProps.speed,

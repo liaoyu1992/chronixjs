@@ -30,7 +30,7 @@ export interface ChronixAutoCompleteProps extends Omit<
   readonly onSelect?: (option: AutoCompleteOption) => void;
 }
 
-export function ChronixAutoComplete(props: ChronixAutoCompleteProps): JSX.Element {
+export function ChronixAutoComplete(props: ChronixAutoCompleteProps): React.ReactElement {
   const {
     value = defaultAutoCompleteProps.value,
     options = defaultAutoCompleteProps.options,

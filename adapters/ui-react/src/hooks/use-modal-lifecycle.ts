@@ -38,7 +38,7 @@ export interface UseModalLifecycleArgs {
 }
 
 export interface UseModalLifecycleReturn {
-  readonly panelRef: RefObject<HTMLDivElement>;
+  readonly panelRef: RefObject<HTMLDivElement | null>;
   readonly visible: boolean;
   readonly wrapperStyle: CSSProperties;
   readonly portalTarget: HTMLElement | null;

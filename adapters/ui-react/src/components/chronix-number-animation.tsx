@@ -25,7 +25,7 @@ export interface ChronixNumberAnimationProps extends Omit<
  * Animates a number from `from` to `to` over `duration` milliseconds using
  * requestAnimationFrame and the core IR tween/format helpers.
  */
-export function ChronixNumberAnimation(props: ChronixNumberAnimationProps): JSX.Element {
+export function ChronixNumberAnimation(props: ChronixNumberAnimationProps): React.ReactElement {
   const {
     from = defaultNumberAnimationProps.from,
     to = defaultNumberAnimationProps.to,

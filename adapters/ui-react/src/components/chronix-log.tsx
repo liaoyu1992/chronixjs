@@ -18,7 +18,7 @@ export interface ChronixLogProps extends Omit<HTMLAttributes<HTMLDivElement>, 'c
  * `<span class="__line-number" aria-hidden="true">` carrying the
  * integer text (D.1).
  */
-export function ChronixLog(props: ChronixLogProps): JSX.Element {
+export function ChronixLog(props: ChronixLogProps): React.ReactElement {
   const {
     lines = defaultLogProps.lines,
     lineNumbers = defaultLogProps.lineNumbers,

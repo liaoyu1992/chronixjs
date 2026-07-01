@@ -23,7 +23,7 @@ export interface ChronixDynamicInputProps extends Omit<
  * `<ChronixDynamicInput>` — React 18 port of the DynamicInput.
  * Renders a dynamic list of value entries with add/remove actions.
  */
-export function ChronixDynamicInput(props: ChronixDynamicInputProps): JSX.Element {
+export function ChronixDynamicInput(props: ChronixDynamicInputProps): React.ReactElement {
   const {
     value = defaultDynamicInputProps.value,
     min = defaultDynamicInputProps.min,

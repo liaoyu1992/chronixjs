@@ -25,7 +25,7 @@ export interface ChronixCollapseProps extends Omit<
   readonly onItemChange?: (key: string, expanded: boolean) => void;
 }
 
-export function ChronixCollapse(props: ChronixCollapseProps): JSX.Element {
+export function ChronixCollapse(props: ChronixCollapseProps): React.ReactElement {
   const {
     value,
     items = defaultCollapseProps.items,

@@ -21,7 +21,7 @@ export interface ChronixStatisticProps extends Omit<
 /**
  * `<ChronixStatistic>` — React port of the Statistic.
  */
-export function ChronixStatistic(props: ChronixStatisticProps): JSX.Element {
+export function ChronixStatistic(props: ChronixStatisticProps): React.ReactElement {
   const {
     label = defaultStatisticProps.label,
     value = defaultStatisticProps.value,

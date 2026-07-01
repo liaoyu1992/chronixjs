@@ -23,7 +23,7 @@ export interface ChronixSpinProps extends Omit<HTMLAttributes<HTMLDivElement>, '
  * mirror of the Vue adapters; size falls back to `ChronixUIContext.size`
  * per Decision A.1.
  */
-export function ChronixSpin(props: ChronixSpinProps): JSX.Element {
+export function ChronixSpin(props: ChronixSpinProps): React.ReactElement {
   const {
     size,
     show = defaultSpinProps.show,

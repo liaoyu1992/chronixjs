@@ -28,7 +28,7 @@ export interface ChronixBackTopProps extends Omit<
   readonly onClick?: (event: ReactMouseEvent<HTMLButtonElement>) => void;
 }
 
-export function ChronixBackTop(props: ChronixBackTopProps): JSX.Element | null {
+export function ChronixBackTop(props: ChronixBackTopProps): React.ReactElement | null {
   const {
     visibilityThreshold = defaultBackTopProps.visibilityThreshold,
     right = defaultBackTopProps.right,

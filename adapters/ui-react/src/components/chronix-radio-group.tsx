@@ -16,7 +16,7 @@ export interface ChronixRadioGroupProps extends Omit<HTMLAttributes<HTMLDivEleme
   readonly onChange?: (value: string) => void;
 }
 
-export function ChronixRadioGroup(props: ChronixRadioGroupProps): JSX.Element {
+export function ChronixRadioGroup(props: ChronixRadioGroupProps): React.ReactElement {
   const {
     value = defaultRadioGroupProps.value,
     options = defaultRadioGroupProps.options,

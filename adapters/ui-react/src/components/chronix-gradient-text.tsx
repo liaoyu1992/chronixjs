@@ -15,7 +15,7 @@ export interface ChronixGradientTextProps extends Omit<
   readonly direction?: number;
 }
 
-export function ChronixGradientText(props: ChronixGradientTextProps): JSX.Element {
+export function ChronixGradientText(props: ChronixGradientTextProps): React.ReactElement {
   const {
     value = defaultGradientTextProps.value,
     colors = defaultGradientTextProps.colors,

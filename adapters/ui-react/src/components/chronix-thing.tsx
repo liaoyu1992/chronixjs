@@ -33,7 +33,7 @@ export interface ChronixThingProps extends Omit<HTMLAttributes<HTMLDivElement>, 
  * / `descriptionNode`) mirror PageHeader's slot-equivalent
  * convention.
  */
-export function ChronixThing(props: ChronixThingProps): JSX.Element {
+export function ChronixThing(props: ChronixThingProps): React.ReactElement {
   const {
     title = defaultThingProps.title,
     description = defaultThingProps.description,

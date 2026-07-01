@@ -24,7 +24,7 @@ export interface ChronixProgressProps extends Omit<HTMLAttributes<HTMLDivElement
  * `<ChronixProgress>` — React port of the Progress (line
  * variant). Verbatim surface mirror of the Vue adapters.
  */
-export function ChronixProgress(props: ChronixProgressProps): JSX.Element {
+export function ChronixProgress(props: ChronixProgressProps): React.ReactElement {
   const {
     type = defaultProgressProps.type,
     percentage = defaultProgressProps.percentage,

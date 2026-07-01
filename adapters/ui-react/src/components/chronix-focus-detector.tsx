@@ -22,7 +22,7 @@ export interface ChronixFocusDetectorProps extends Omit<
   readonly onBlur?: (event: ReactFocusEvent<HTMLSpanElement>) => void;
 }
 
-export function ChronixFocusDetector(props: ChronixFocusDetectorProps): JSX.Element {
+export function ChronixFocusDetector(props: ChronixFocusDetectorProps): React.ReactElement {
   const {
     disabled = defaultFocusDetectorProps.disabled,
     children,

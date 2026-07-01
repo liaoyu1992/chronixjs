@@ -17,7 +17,7 @@ export interface ChronixAvatarGroupProps extends Omit<HTMLAttributes<HTMLDivElem
   readonly shape?: AvatarShape;
 }
 
-export function ChronixAvatarGroup(props: ChronixAvatarGroupProps): JSX.Element {
+export function ChronixAvatarGroup(props: ChronixAvatarGroupProps): React.ReactElement {
   const {
     items = defaultAvatarGroupProps.items,
     max = defaultAvatarGroupProps.max,

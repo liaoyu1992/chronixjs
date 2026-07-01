@@ -14,7 +14,7 @@ export interface ChronixHeatmapProps extends Omit<SVGAttributes<SVGElement>, 'ch
   readonly colorHigh?: string;
 }
 
-export function ChronixHeatmap(props: ChronixHeatmapProps): JSX.Element {
+export function ChronixHeatmap(props: ChronixHeatmapProps): React.ReactElement {
   const {
     cells = defaultHeatmapProps.cells,
     cellSize = defaultHeatmapProps.cellSize,

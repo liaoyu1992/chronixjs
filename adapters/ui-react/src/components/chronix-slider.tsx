@@ -23,7 +23,7 @@ export interface ChronixSliderProps extends Omit<
   readonly onChange?: (value: number) => void;
 }
 
-export function ChronixSlider(props: ChronixSliderProps): JSX.Element {
+export function ChronixSlider(props: ChronixSliderProps): React.ReactElement {
   const {
     value = defaultSliderProps.value as number,
     min = defaultSliderProps.min,

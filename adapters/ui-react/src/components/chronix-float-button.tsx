@@ -33,7 +33,7 @@ export interface ChronixFloatButtonProps extends Omit<
   readonly onClick?: (event: ReactMouseEvent<HTMLButtonElement>) => void;
 }
 
-export function ChronixFloatButton(props: ChronixFloatButtonProps): JSX.Element {
+export function ChronixFloatButton(props: ChronixFloatButtonProps): React.ReactElement {
   const {
     shape = defaultFloatButtonProps.shape,
     type = defaultFloatButtonProps.type,

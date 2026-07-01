@@ -12,7 +12,7 @@ export interface ChronixIconProps extends Omit<SVGAttributes<SVGElement>, 'name'
   readonly size?: number;
 }
 
-export function ChronixIcon(props: ChronixIconProps): JSX.Element {
+export function ChronixIcon(props: ChronixIconProps): React.ReactElement {
   const { name = defaultIconProps.name, size = defaultIconProps.size, ...rest } = props;
   useEffect(() => {
     ensureChronixIconStyles();

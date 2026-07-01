@@ -30,7 +30,7 @@ export interface ChronixAlertProps extends Omit<
 /**
  * `<ChronixAlert>` — React 18 port of the Alert.
  */
-export function ChronixAlert(props: ChronixAlertProps): JSX.Element {
+export function ChronixAlert(props: ChronixAlertProps): React.ReactElement {
   const {
     type = defaultAlertProps.type,
     title = defaultAlertProps.title,

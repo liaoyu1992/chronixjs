@@ -53,7 +53,7 @@ export interface ChronixDatePickerProps extends Omit<
   readonly onChange?: (value: Date | undefined) => void;
 }
 
-export function ChronixDatePicker(props: ChronixDatePickerProps): JSX.Element {
+export function ChronixDatePicker(props: ChronixDatePickerProps): React.ReactElement {
   const {
     value,
     format: fmt = defaultDatePickerProps.format,

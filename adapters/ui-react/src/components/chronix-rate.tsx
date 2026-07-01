@@ -19,7 +19,7 @@ export interface ChronixRateProps extends Omit<HTMLAttributes<HTMLDivElement>, '
   readonly onChange?: (value: number) => void;
 }
 
-export function ChronixRate(props: ChronixRateProps): JSX.Element {
+export function ChronixRate(props: ChronixRateProps): React.ReactElement {
   const {
     value = defaultRateProps.value,
     count = defaultRateProps.count,

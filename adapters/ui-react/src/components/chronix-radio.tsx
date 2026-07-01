@@ -9,7 +9,7 @@ export interface ChronixRadioProps extends Omit<HTMLAttributes<HTMLLabelElement>
   readonly onChange?: (value: string) => void;
 }
 
-export function ChronixRadio(props: ChronixRadioProps): JSX.Element {
+export function ChronixRadio(props: ChronixRadioProps): React.ReactElement {
   const {
     checked = defaultRadioProps.checked,
     value = defaultRadioProps.value,

@@ -5,7 +5,7 @@ export interface ChronixLayoutFooterProps extends Omit<HTMLAttributes<HTMLElemen
   readonly children?: ReactNode;
 }
 
-export function ChronixLayoutFooter(props: ChronixLayoutFooterProps): JSX.Element {
+export function ChronixLayoutFooter(props: ChronixLayoutFooterProps): React.ReactElement {
   const { children, ...rest } = props;
   useEffect(() => {
     ensureChronixLayoutStyles();

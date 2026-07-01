@@ -25,7 +25,7 @@ export interface ChronixTooltipProps extends Omit<
   readonly onShowChange?: (show: boolean) => void;
 }
 
-export function ChronixTooltip(props: ChronixTooltipProps): JSX.Element {
+export function ChronixTooltip(props: ChronixTooltipProps): React.ReactElement {
   const {
     content = defaultTooltipProps.content,
     show = undefined,

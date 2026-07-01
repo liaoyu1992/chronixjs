@@ -14,7 +14,7 @@ export interface ChronixTimelineProps extends Omit<HTMLAttributes<HTMLDivElement
 /**
  * `<ChronixTimeline>` — React port of the Timeline.
  */
-export function ChronixTimeline(props: ChronixTimelineProps): JSX.Element {
+export function ChronixTimeline(props: ChronixTimelineProps): React.ReactElement {
   const { items = defaultTimelineProps.items, ...rest } = props;
 
   useEffect(() => {

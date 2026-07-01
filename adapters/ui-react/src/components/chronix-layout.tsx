@@ -13,7 +13,7 @@ export interface ChronixLayoutProps extends Omit<HTMLAttributes<HTMLElement>, 'c
   readonly children?: ReactNode;
 }
 
-export function ChronixLayout(props: ChronixLayoutProps): JSX.Element {
+export function ChronixLayout(props: ChronixLayoutProps): React.ReactElement {
   const { hasSider, position = defaultLayoutProps.position, children, ...rest } = props;
   useEffect(() => {
     ensureChronixLayoutStyles();

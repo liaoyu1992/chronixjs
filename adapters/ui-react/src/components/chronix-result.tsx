@@ -21,7 +21,7 @@ export interface ChronixResultProps extends Omit<
 /**
  * `<ChronixResult>` — React port of the Result.
  */
-export function ChronixResult(props: ChronixResultProps): JSX.Element {
+export function ChronixResult(props: ChronixResultProps): React.ReactElement {
   const {
     status = defaultResultProps.status,
     title = defaultResultProps.title,

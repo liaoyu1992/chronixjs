@@ -88,7 +88,7 @@ function expandAllKeys(items: readonly TreeNodeSpec<TreeNodeData>[]): Set<string
   return keys;
 }
 
-export function ChronixTree(props: ChronixTreeProps): JSX.Element {
+export function ChronixTree(props: ChronixTreeProps): React.ReactElement {
   const {
     value,
     items = defaultTreeProps.items,

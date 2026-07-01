@@ -23,7 +23,7 @@ export interface ChronixAffixProps extends Omit<
   readonly onChange?: (affixed: boolean) => void;
 }
 
-export function ChronixAffix(props: ChronixAffixProps): JSX.Element {
+export function ChronixAffix(props: ChronixAffixProps): React.ReactElement {
   const {
     top = defaultAffixProps.top,
     bottom = defaultAffixProps.bottom,

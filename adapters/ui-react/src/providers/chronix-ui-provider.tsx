@@ -44,7 +44,7 @@ export interface ChronixUIProviderProps extends ChronixUIContextOverrides {
  *
  * .
  */
-export function ChronixUIProvider(props: ChronixUIProviderProps): JSX.Element {
+export function ChronixUIProvider(props: ChronixUIProviderProps): React.ReactElement {
   const parent = useContext(UIContext);
   const overrides = useMemo(
     (): ChronixUIContextOverrides => collectOverrides(props),

@@ -19,7 +19,7 @@ export interface ChronixStepsProps extends Omit<HTMLAttributes<HTMLDivElement>, 
 /**
  * `<ChronixSteps>` — React port of the Steps.
  */
-export function ChronixSteps(props: ChronixStepsProps): JSX.Element {
+export function ChronixSteps(props: ChronixStepsProps): React.ReactElement {
   const {
     items = defaultStepsProps.items,
     current = defaultStepsProps.current,

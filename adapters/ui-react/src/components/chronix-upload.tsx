@@ -35,7 +35,7 @@ export interface ChronixUploadProps extends Omit<
  * Renders a hidden file input, a trigger element, and a file list
  * with status tracking per file.
  */
-export function ChronixUpload(props: ChronixUploadProps): JSX.Element {
+export function ChronixUpload(props: ChronixUploadProps): React.ReactElement {
   const {
     action: _action,
     fileList = [],

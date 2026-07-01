@@ -23,7 +23,7 @@ export interface ChronixDividerProps extends Omit<HTMLAttributes<HTMLDivElement>
  * resolution uses React's `Children.count` to mirror Vue's
  * "did the default slot resolve to any nodes?" semantic.
  */
-export function ChronixDivider(props: ChronixDividerProps): JSX.Element {
+export function ChronixDivider(props: ChronixDividerProps): React.ReactElement {
   const {
     vertical = defaultDividerProps.vertical,
     titlePlacement = defaultDividerProps.titlePlacement,

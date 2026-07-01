@@ -17,7 +17,7 @@ export interface ChronixSwitchProps extends Omit<
   readonly onChange?: (checked: boolean) => void;
 }
 
-export function ChronixSwitch(props: ChronixSwitchProps): JSX.Element {
+export function ChronixSwitch(props: ChronixSwitchProps): React.ReactElement {
   const {
     checked = defaultSwitchProps.checked,
     disabled = defaultSwitchProps.disabled,

@@ -20,7 +20,7 @@ export interface ChronixPaginationProps extends Omit<
   readonly onChange?: (page: number) => void;
 }
 
-export function ChronixPagination(props: ChronixPaginationProps): JSX.Element {
+export function ChronixPagination(props: ChronixPaginationProps): React.ReactElement {
   const {
     page = defaultPaginationProps.page,
     pageCount = defaultPaginationProps.pageCount,

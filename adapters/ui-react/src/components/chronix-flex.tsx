@@ -24,7 +24,7 @@ export interface ChronixFlexProps extends Omit<HTMLAttributes<HTMLDivElement>, '
 /**
  * `<ChronixFlex>` — React port of the Flex.
  */
-export function ChronixFlex(props: ChronixFlexProps): JSX.Element {
+export function ChronixFlex(props: ChronixFlexProps): React.ReactElement {
   const {
     direction = defaultFlexProps.direction,
     wrap = defaultFlexProps.wrap,

@@ -91,7 +91,7 @@ export interface ChronixFormProps extends Omit<
   readonly onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-export function ChronixForm(props: ChronixFormProps): JSX.Element {
+export function ChronixForm(props: ChronixFormProps): React.ReactElement {
   const {
     model = {},
     rules = {},
@@ -211,7 +211,7 @@ export interface ChronixFormItemProps extends Omit<HTMLAttributes<HTMLDivElement
   readonly children?: ReactNode;
 }
 
-export function ChronixFormItem(props: ChronixFormItemProps): JSX.Element {
+export function ChronixFormItem(props: ChronixFormItemProps): React.ReactElement {
   const {
     label,
     path,

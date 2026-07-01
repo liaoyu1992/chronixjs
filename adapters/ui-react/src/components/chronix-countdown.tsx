@@ -29,7 +29,7 @@ export interface ChronixCountdownProps extends Omit<
  * previous interval and starts a fresh one. `onFinish` is called
  * once when remaining reaches 0.
  */
-export function ChronixCountdown(props: ChronixCountdownProps): JSX.Element {
+export function ChronixCountdown(props: ChronixCountdownProps): React.ReactElement {
   const {
     label = defaultCountdownProps.label,
     duration = defaultCountdownProps.duration,

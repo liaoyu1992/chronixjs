@@ -15,7 +15,7 @@ export interface ChronixWaveProps extends Omit<HTMLAttributes<HTMLSpanElement>, 
   readonly children?: ReactNode;
 }
 
-export function ChronixWave(props: ChronixWaveProps): JSX.Element {
+export function ChronixWave(props: ChronixWaveProps): React.ReactElement {
   const {
     color,
     duration = defaultWaveProps.duration,

@@ -40,7 +40,7 @@ export interface ChronixTreeSelectProps extends Omit<
   readonly onExpandedKeysChange?: (keys: string[]) => void;
 }
 
-export function ChronixTreeSelect(props: ChronixTreeSelectProps): JSX.Element {
+export function ChronixTreeSelect(props: ChronixTreeSelectProps): React.ReactElement {
   const {
     value,
     data = defaultTreeSelectProps.data,
@@ -155,7 +155,7 @@ export function ChronixTreeSelect(props: ChronixTreeSelectProps): JSX.Element {
   }, [disabled, lifecycle.visible, onShowChange]);
 
   // trigger children
-  const triggerChildren: JSX.Element[] = [];
+  const triggerChildren: React.ReactElement[] = [];
   if (multiple && normalizedValue.length > 0) {
     for (let i = 0; i < normalizedValue.length; i++) {
       const val = normalizedValue[i]!;
@@ -196,7 +196,7 @@ export function ChronixTreeSelect(props: ChronixTreeSelectProps): JSX.Element {
   );
 
   // tree rows
-  const treeContent: JSX.Element[] = [];
+  const treeContent: React.ReactElement[] = [];
   if (visibleRows.length === 0) {
     treeContent.push(
       <div key="empty" className={resolveTreeSelectEmptyClassList().join(' ')}>

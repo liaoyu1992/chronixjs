@@ -21,7 +21,7 @@ export interface ChronixInputOtpProps extends Omit<HTMLAttributes<HTMLDivElement
   readonly onComplete?: (value: string) => void;
 }
 
-export function ChronixInputOtp(props: ChronixInputOtpProps): JSX.Element {
+export function ChronixInputOtp(props: ChronixInputOtpProps): React.ReactElement {
   const {
     value = defaultInputOtpProps.value,
     length = defaultInputOtpProps.length,

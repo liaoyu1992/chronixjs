@@ -33,7 +33,7 @@ export interface ChronixCarouselProps extends Omit<
   readonly onChange?: (item: CarouselItem, index: number) => void;
 }
 
-export function ChronixCarousel(props: ChronixCarouselProps): JSX.Element {
+export function ChronixCarousel(props: ChronixCarouselProps): React.ReactElement {
   const {
     value,
     items,

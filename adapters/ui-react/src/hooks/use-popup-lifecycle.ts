@@ -41,8 +41,8 @@ export interface UsePopupLifecycleArgs {
 }
 
 export interface UsePopupLifecycleReturn {
-  readonly triggerRef: RefObject<HTMLElement>;
-  readonly popupRef: RefObject<HTMLDivElement>;
+  readonly triggerRef: RefObject<HTMLElement | null>;
+  readonly popupRef: RefObject<HTMLDivElement | null>;
   readonly visible: boolean;
   readonly actualPlacement: PopupPlacement;
   readonly popupStyle: CSSProperties;

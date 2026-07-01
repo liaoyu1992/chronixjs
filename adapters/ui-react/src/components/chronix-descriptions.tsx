@@ -29,7 +29,7 @@ export interface ChronixDescriptionsProps extends Omit<HTMLAttributes<HTMLDivEle
  * shadowed by the chronix prop (`Omit<HTMLAttributes, 'title'>`);
  * pass-through HTML attributes via spread otherwise.
  */
-export function ChronixDescriptions(props: ChronixDescriptionsProps): JSX.Element {
+export function ChronixDescriptions(props: ChronixDescriptionsProps): React.ReactElement {
   const {
     items = defaultDescriptionsProps.items,
     columns = defaultDescriptionsProps.columns,
