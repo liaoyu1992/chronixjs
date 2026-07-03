@@ -178,13 +178,14 @@ function planMonthView(input: AxisRangePlanInput): PlannedAxis {
   const slotCount = countVisibleDaysAcrossMonths(start, 1, input.weekendsVisible);
   const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE.month);
 
-  // `weekday: 'narrow'` emits a one-char weekday in zh-CN ("一" … "六" / "日"),
-  // matching the original DOM's `"DD日<wd>"` tick-label format. The previous
-  // `'short'` value emitted `"周X"` which is wider and looks wrong above
-  // narrow day slots. See `audit/journal/2026-05-13.md` .
+  // Tick label shows the day number only (`8`). Weekday is intentionally
+  // omitted: in narrow slots the weekday char collided with the day's own
+  // "日" unit (zh-CN Sunday narrow "日" + "5日" → "5日日"), and the weekend
+  // distinction is already carried by the cell-state-classes weekend
+  // highlight (cx-gantt-day-sat/sun). See `audit/journal/2026-05-13.md`
+  // for the prior narrow-vs-short reasoning.
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
     day: 'numeric',
-    weekday: 'narrow',
   });
   const monthFmt = new Intl.DateTimeFormat(input.locale, {
     year: 'numeric',
@@ -237,10 +238,11 @@ function planMonthBandedAxis(
   const slotCount = countVisibleDaysAcrossMonths(start, monthCount, input.weekendsVisible);
   const slotWidth = deriveSlotWidth(input.viewportWidth, slotCount, IS_TIME_SCALE[input.viewId]);
 
-  // `weekday: 'narrow'` — see `planMonthView` for the rationale.
+  // Day-only label — see `planMonthView` for the rationale (weekday
+  // dropped to avoid the narrow-slot "5日日" collision; weekend carried
+  // by cell-state-classes highlight).
   const dayFmt = new Intl.DateTimeFormat(input.locale, {
     day: 'numeric',
-    weekday: 'narrow',
   });
   // Season / half-year / year views render each month band with the
   // short month name only (`"五月"`, `"六月"`, …) — no year, no leading
