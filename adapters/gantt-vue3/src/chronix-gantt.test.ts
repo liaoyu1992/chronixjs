@@ -918,12 +918,14 @@ describe('<ChronixGantt> header rows', () => {
     });
     expect(wrapper.findAll('.cx-gantt-header-cell')).toHaveLength(1);
     // Day-resolution ticks: between 28 and 31 depending on month. zh-CN
-    // day labels emitted by `weekday: 'narrow'` are `"DD日<wd>"`, e.g.
-    // "1日五" — matching the original DOM exactly.
+    // day label is `"DD日"` (day number + 日 unit); weekday is dropped
+    // from the tick label — weekend distinction is carried by the
+    // cell-state-classes highlight instead, avoiding the narrow-slot
+    // collision (Sunday "日" + "5日" → "5日日").
     const tickLabels = wrapper.findAll('.cx-gantt-tick-label');
     expect(tickLabels.length).toBeGreaterThanOrEqual(28);
     expect(tickLabels.length).toBeLessThanOrEqual(31);
-    expect(tickLabels[0]!.text()).toMatch(/^1日[一二三四五六日]$/u);
+    expect(tickLabels[0]!.text()).toMatch(/^1日$/u);
   });
 
   it('year view: 12 outer header cells (one per month) covering the year', () => {
