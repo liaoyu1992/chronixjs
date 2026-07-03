@@ -1632,7 +1632,7 @@ describe('<ChronixGantt> resource-panel sidebar', () => {
       },
     });
     const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
-    expect(sidebarPane.style.overflowX).toBe('auto');
+    expect(sidebarPane.style.overflowX).toBe('scroll');
     expect(sidebarPane.style.overflowY).toBe('auto');
     const body = wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement;
     expect(body.style.position).toBe('');
@@ -1809,7 +1809,7 @@ describe('<ChronixGantt> sidebar vGrouping (rowspan merge)', () => {
       props: { bars: [], rows: groupedRows, axisInput, columns: groupedColumns },
     });
     const sidebarPane = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
-    expect(sidebarPane.style.overflowX).toBe('auto');
+    expect(sidebarPane.style.overflowX).toBe('scroll');
     expect(sidebarPane.style.overflowY).toBe('auto');
     const body = wrapper.find('.cx-gantt-sidebar-body').element as HTMLElement;
     expect(body.style.position).toBe('');

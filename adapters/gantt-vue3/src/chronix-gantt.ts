@@ -3603,11 +3603,18 @@ export const ChronixGantt = defineComponent({
               // (it sits on the sidebar/chart boundary). The chart-pane is
               // overflow-y: hidden; its body SVG is translated to follow
               // this pane's scrollTop (useChartBodyVerticalSync). overflow-x
-              // auto so a narrowed sidebar can still scroll its columns.
-              // scrollbar-gutter: stable keeps the content width constant
-              // whether or not the vertical scrollbar is showing, so the
-              // header columns stay aligned with the body columns.
-              overflowX: 'auto',
+              // is scroll (not auto): ALWAYS reserve a horizontal-scrollbar
+              // strip so it matches the chart-pane's bottom scrollbar
+              // thickness (same browser default → equal clientHeight). The
+              // 1:1 translateY sync then keeps the last row above the chart's
+              // scrollbar; with `auto` the sidebar shows no bar (its table is
+              // width:100%), the panes' heights diverge and the chart's
+              // bottom bar is occluded. A narrowed sidebar that overflows its
+              // columns gets a draggable bar; otherwise the thumb fills the
+              // track (disabled-looking). scrollbar-gutter: stable keeps the
+              // content width constant whether or not the vertical scrollbar
+              // is showing, so header columns stay aligned with the body.
+              overflowX: 'scroll',
               overflowY: 'auto',
               scrollbarGutter: 'stable',
               minWidth: '0',
