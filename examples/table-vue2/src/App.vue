@@ -152,7 +152,7 @@ function buildInitialColumns(): ColumnSpec[] {
       id: 'price',
       field: 'price',
       headerName: '单价',
-      width: 100,
+      width: 110,
       type: 'number',
       editable: true,
       headerGroup: ['财务', '订单'],

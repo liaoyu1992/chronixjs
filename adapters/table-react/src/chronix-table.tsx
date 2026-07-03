@@ -8410,6 +8410,27 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           }
       : {};
 
+    // row-drag rail sticky style — mirrors the selection rail but one
+    // z-layer below so the selection rail wins on overlap. Applied to
+    // the row-drag placeholder cells in the header / header-group /
+    // filter / footer rows; the body row uses `buildRowDragGripCell`
+    // which carries its own copy.
+    const rowDragRailStickyStyle: CSSProperties = rowDragColumnShow
+      ? rowDragColumnSide === 'left'
+        ? {
+            position: 'sticky',
+            left: '0px',
+            zIndex: 2,
+            background: 'var(--cx-table-row-drag-rail-bg, #f8fafc)',
+          }
+        : {
+            position: 'sticky',
+            right: '0px',
+            zIndex: 2,
+            background: 'var(--cx-table-row-drag-rail-bg, #f8fafc)',
+          }
+      : {};
+
     const headerCellNodes = headerCells.map((cell) => {
       // + 49.1 (vue3 + 8.1 equivalent): per-cell sort
       // state + sortable lookup drive className modifiers + aria-sort
@@ -8792,11 +8813,18 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     });
 
     const headerRowStyle: CSSProperties = { width: `${totalWithRowDrag}px` };
-    const headerChildren = selectionColShow
+    const headerChildrenWithSelection = selectionColShow
       ? selectionColSide === 'left'
         ? [buildHeaderSelectionCell(), ...headerCellNodes]
         : [...headerCellNodes, buildHeaderSelectionCell()]
       : headerCellNodes;
+    // prepend / append the row-drag rail placeholder so the header's
+    // column boundaries align with the body's (body carries the grip).
+    const headerChildren = rowDragColumnShow
+      ? rowDragColumnSide === 'left'
+        ? [buildHeaderRowDragCell(), ...headerChildrenWithSelection]
+        : [...headerChildrenWithSelection, buildHeaderRowDragCell()]
+      : headerChildrenWithSelection;
     const headerRow = (
       <div
         className="cx-table-row cx-table-row--header"
@@ -8885,12 +8913,30 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             }}
           />
         ) : null;
+        const rowDragPlaceholder: ReactNode = rowDragColumnShow ? (
+          <div
+            key={`header-group-row-drag-L${levelIdx}`}
+            className="cx-table-header-group cx-table-header-group--empty cx-table-row-drag-cell"
+            role="columnheader"
+            style={{
+              width: `${rowDragColumnWidth}px`,
+              height: `${t.headerGroupHeight}px`,
+              background: 'transparent',
+              ...rowDragRailStickyStyle,
+            }}
+          />
+        ) : null;
         const orderedZoneCells: ReactNode[] = [...leftCells, ...centerCells, ...rightCells];
-        const rowChildren: ReactNode[] = selectionColShow
+        const rowChildrenWithSelection: ReactNode[] = selectionColShow
           ? selectionColSide === 'left'
             ? [selectionPlaceholder, ...orderedZoneCells]
             : [...orderedZoneCells, selectionPlaceholder]
           : orderedZoneCells;
+        const rowChildren: ReactNode[] = rowDragPlaceholder
+          ? rowDragColumnSide === 'left'
+            ? [rowDragPlaceholder, ...rowChildrenWithSelection]
+            : [...rowChildrenWithSelection, rowDragPlaceholder]
+          : rowChildrenWithSelection;
         headerGroupRowsJsx.push(
           <div
             key={`header-group-row-L${levelIdx}`}
@@ -8945,6 +8991,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         style={{ overflowX: 'hidden' }}
       >
         <div className="cx-table-filter-row-content" style={{ width: `${totalWithRowDrag}px` }}>
+          {rowDragColumnShow && rowDragColumnSide === 'left' && buildFilterRowDragCell()}
           {(selectionColShow && selectionColSide === 'left'
             ? [buildFilterRowSelectionCell()]
             : []
@@ -9692,6 +9739,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             }),
           )}
           {selectionColShow && selectionColSide === 'right' && buildFilterRowSelectionCell()}
+          {rowDragColumnShow && rowDragColumnSide === 'right' && buildFilterRowDragCell()}
         </div>
       </div>
     ) : null;
@@ -9710,6 +9758,26 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // (Note: selectAllCheckboxRef + its useEffect are hoisted up
     // above the header render block so build* helpers can reference
     // them without hitting TDZ.)
+
+    function buildHeaderRowDragCell(): ReactElement {
+      // Empty placeholder reserving the row-drag rail's width in the
+      // header row so the header's column boundaries align with the
+      // body's (body renders the actual grip here).
+      const cellStyle: CSSProperties = {
+        width: `${rowDragColumnWidth}px`,
+        height: `${t.headerHeight}px`,
+        ...rowDragRailStickyStyle,
+      };
+      return (
+        <div
+          key="header-row-drag"
+          className="cx-table-header-cell cx-table-row-drag-cell"
+          role="columnheader"
+          data-col-id="__cx_row_drag__"
+          style={cellStyle}
+        />
+      );
+    }
 
     function buildHeaderSelectionCell(): ReactElement {
       const checked = selectAllState === 'checked';
@@ -9753,6 +9821,23 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           key="filter-selection"
           className="cx-table-filter-cell cx-table-selection-cell"
           data-col-id="__cx_selection__"
+          style={cellStyle}
+        />
+      );
+    }
+
+    function buildFilterRowDragCell(): ReactElement {
+      // Empty placeholder reserving the row-drag rail's width in the
+      // filter row so filter inputs align with the body's grip column.
+      const cellStyle: CSSProperties = {
+        width: `${rowDragColumnWidth}px`,
+        ...rowDragRailStickyStyle,
+      };
+      return (
+        <div
+          key="filter-row-drag"
+          className="cx-table-filter-cell cx-table-row-drag-cell"
+          data-col-id="__cx_row_drag__"
           style={cellStyle}
         />
       );
@@ -10930,6 +11015,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           cellClasses.push(`cx-table-footer-cell${suffix}`);
         }
         const style: CSSProperties = {
+          // border-box keeps `width` inclusive of the horizontal
+          // padding below, matching header / body cells so the footer
+          // does not overflow its row width and trigger a flex-shrink
+          // that would misalign aggregate cells with the body.
+          boxSizing: 'border-box',
           width: `${width}px`,
           height: `${t.footerHeight}px`,
           paddingLeft: `${t.cellPaddingX}px`,
@@ -10985,12 +11075,29 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           }}
         />
       ) : null;
+      const footerRowDragPlaceholder: ReactElement | null = rowDragColumnShow ? (
+        <div
+          key="footer-row-drag-rail"
+          className="cx-table-footer-cell cx-table-row-drag-cell"
+          style={{
+            width: `${rowDragColumnWidth}px`,
+            height: `${t.footerHeight}px`,
+            background: 'var(--cx-table-row-drag-rail-bg, #f8fafc)',
+            ...rowDragRailStickyStyle,
+          }}
+        />
+      ) : null;
       const orderedZoneCells: ReactElement[] = [...leftCells, ...centerCells, ...rightCells];
-      const rowChildren: ReactElement[] = selectionColShow
+      const rowChildrenWithSelection: ReactElement[] = selectionColShow
         ? selectionColSide === 'left'
           ? [selectionPlaceholder!, ...orderedZoneCells]
           : [...orderedZoneCells, selectionPlaceholder!]
         : orderedZoneCells;
+      const rowChildren: ReactElement[] = footerRowDragPlaceholder
+        ? rowDragColumnSide === 'left'
+          ? [footerRowDragPlaceholder, ...rowChildrenWithSelection]
+          : [...rowChildrenWithSelection, footerRowDragPlaceholder]
+        : rowChildrenWithSelection;
       footer = (
         <div
           ref={footerRef}

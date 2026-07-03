@@ -7574,6 +7574,41 @@ export const ChronixTable = defineComponent({
       //   - `on: { click: ... }` for handlers
       //   - `ref:` function callback (as never cast) for indeterminate
       //     write — DOM `.indeterminate` has no HTML attribute analog.
+      const rowDragRailStickyStyle: Record<string, string> = rowDragColumnShow
+        ? rowDragColumnSide === 'left'
+          ? {
+              position: 'sticky',
+              left: '0px',
+              zIndex: '2',
+              background: 'var(--cx-table-row-drag-rail-bg, #f8fafc)',
+            }
+          : {
+              position: 'sticky',
+              right: '0px',
+              zIndex: '2',
+              background: 'var(--cx-table-row-drag-rail-bg, #f8fafc)',
+            }
+        : {};
+
+      function buildHeaderRowDragCell(): VNode {
+        // Empty placeholder reserving the row-drag rail's width in the
+        // header row so the header's column boundaries align with the
+        // body's (body renders the actual grip here).
+        return h('div', {
+          key: 'header-row-drag',
+          class: 'cx-table-header-cell cx-table-row-drag-cell',
+          attrs: {
+            role: 'columnheader',
+            'data-col-id': '__cx_row_drag__',
+          },
+          style: {
+            width: `${rowDragColumnWidth}px`,
+            height: `${t.headerHeight}px`,
+            ...rowDragRailStickyStyle,
+          },
+        });
+      }
+
       function buildHeaderSelectionCell(): VNode {
         return h(
           'div',
@@ -7618,6 +7653,17 @@ export const ChronixTable = defineComponent({
           class: 'cx-table-filter-cell cx-table-selection-cell',
           attrs: { 'data-col-id': '__cx_selection__' },
           style: { width: `${selectionColWidth}px`, ...selectionRailStickyStyle },
+        });
+      }
+
+      function buildFilterRowDragCell(): VNode {
+        // Empty placeholder reserving the row-drag rail's width in the
+        // filter row so filter inputs align with the body's grip column.
+        return h('div', {
+          key: 'filter-row-drag',
+          class: 'cx-table-filter-cell cx-table-row-drag-cell',
+          attrs: { 'data-col-id': '__cx_row_drag__' },
+          style: { width: `${rowDragColumnWidth}px`, ...rowDragRailStickyStyle },
         });
       }
 
@@ -8241,6 +8287,13 @@ export const ChronixTable = defineComponent({
           ? [buildHeaderSelectionCell(), ...headerCellNodes]
           : [...headerCellNodes, buildHeaderSelectionCell()]
         : headerCellNodes;
+      // prepend / append the row-drag rail placeholder so the header's
+      // column boundaries align with the body's (body carries the grip).
+      const headerCellNodesWithRails: VNode[] = rowDragColumnShow
+        ? rowDragColumnSide === 'left'
+          ? [buildHeaderRowDragCell(), ...headerCellNodesWithSelection]
+          : [...headerCellNodesWithSelection, buildHeaderRowDragCell()]
+        : headerCellNodesWithSelection;
 
       const headerRow: VNode = h(
         'div',
@@ -8249,7 +8302,7 @@ export const ChronixTable = defineComponent({
           attrs: { role: 'row', 'aria-rowindex': '1' },
           style: { width: `${totalWithRowDrag}px` },
         },
-        headerCellNodesWithSelection,
+        headerCellNodesWithRails,
       );
 
       // (2026-05-27 — vue2 port): when ANY visible
@@ -8323,12 +8376,32 @@ export const ChronixTable = defineComponent({
                 },
               })
             : null;
+          // row-drag rail placeholder keeping this group row's edge
+          // aligned with the body's grip column.
+          const rowDragPlaceholder: VNode | null = rowDragColumnShow
+            ? h('div', {
+                key: `header-group-row-drag-L${levelIdx}`,
+                class: 'cx-table-header-group cx-table-header-group--empty cx-table-row-drag-cell',
+                attrs: { role: 'columnheader' },
+                style: {
+                  width: `${rowDragColumnWidth}px`,
+                  height: `${t.headerGroupHeight}px`,
+                  background: 'transparent',
+                  ...rowDragRailStickyStyle,
+                },
+              })
+            : null;
           const orderedZoneCells: VNode[] = [...leftCells, ...centerCells, ...rightCells];
-          const rowChildren: VNode[] = selectionColShow
+          const rowChildrenWithSelection: VNode[] = selectionColShow
             ? selectionColSide === 'left'
               ? [selectionPlaceholder!, ...orderedZoneCells]
               : [...orderedZoneCells, selectionPlaceholder!]
             : orderedZoneCells;
+          const rowChildren: VNode[] = rowDragPlaceholder
+            ? rowDragColumnSide === 'left'
+              ? [rowDragPlaceholder, ...rowChildrenWithSelection]
+              : [...rowChildrenWithSelection, rowDragPlaceholder]
+            : rowChildrenWithSelection;
           headerGroupRows.push(
             h(
               'div',
@@ -9287,13 +9360,21 @@ export const ChronixTable = defineComponent({
         : [];
       // filter row also gets a (placeholder) selection cell
       // so columns stay aligned vertically with the header + body.
-      const filterRowChildren: VNode[] = !props.showFilterRow
+      const filterRowWithSelection: VNode[] = !props.showFilterRow
         ? []
         : selectionColShow
           ? selectionColSide === 'left'
             ? [buildFilterSelectionCell(), ...filterColumnNodes]
             : [...filterColumnNodes, buildFilterSelectionCell()]
           : filterColumnNodes;
+      // row-drag rail placeholder so the filter row's inputs stay
+      // aligned with the body's grip column.
+      const filterRowChildren: VNode[] =
+        !props.showFilterRow || !rowDragColumnShow
+          ? filterRowWithSelection
+          : rowDragColumnSide === 'left'
+            ? [buildFilterRowDragCell(), ...filterRowWithSelection]
+            : [...filterRowWithSelection, buildFilterRowDragCell()];
       const filterRow: VNode | null = props.showFilterRow
         ? h(
             'div',
@@ -10472,6 +10553,11 @@ export const ChronixTable = defineComponent({
                 cellClasses.push(`cx-table-footer-cell${suffix}`);
               }
               const style: Record<string, string> = {
+                // border-box keeps `width` inclusive of the horizontal
+                // padding below, matching header / body cells so the
+                // footer does not overflow its row width and trigger a
+                // flex-shrink that would misalign aggregate cells.
+                boxSizing: 'border-box',
                 width: `${width}px`,
                 height: `${t.footerHeight}px`,
                 paddingLeft: `${t.cellPaddingX}px`,
@@ -10529,12 +10615,31 @@ export const ChronixTable = defineComponent({
                   },
                 })
               : null;
+            // row-drag rail placeholder so the footer's aggregate cells
+            // line up with the body's grip column.
+            const footerRowDragPlaceholder: VNode | null = rowDragColumnShow
+              ? h('div', {
+                  key: 'footer-row-drag-rail',
+                  class: 'cx-table-footer-cell cx-table-row-drag-cell',
+                  style: {
+                    width: `${rowDragColumnWidth}px`,
+                    height: `${t.footerHeight}px`,
+                    background: 'var(--cx-table-row-drag-rail-bg, #f8fafc)',
+                    ...rowDragRailStickyStyle,
+                  },
+                })
+              : null;
             const orderedZoneCells: VNode[] = [...leftCells, ...centerCells, ...rightCells];
-            const rowChildren: VNode[] = selectionColShow
+            const rowChildrenWithSelection: VNode[] = selectionColShow
               ? selectionColSide === 'left'
                 ? [selectionPlaceholder!, ...orderedZoneCells]
                 : [...orderedZoneCells, selectionPlaceholder!]
               : orderedZoneCells;
+            const rowChildren: VNode[] = footerRowDragPlaceholder
+              ? rowDragColumnSide === 'left'
+                ? [footerRowDragPlaceholder, ...rowChildrenWithSelection]
+                : [...rowChildrenWithSelection, footerRowDragPlaceholder]
+              : rowChildrenWithSelection;
             const footerRow: VNode = h(
               'div',
               {
