@@ -78,7 +78,7 @@ describe('<ChronixGantt> dual-scrollport architecture', () => {
     expect(chartHeaderPane.style.overflow).toBe('hidden');
   });
 
-  it('sidebar-pane has overflow-x: auto / overflow-y: auto; sidebar-header-pane has overflow: hidden', () => {
+  it('sidebar-pane has overflow-x: scroll / overflow-y: auto; sidebar-header-pane has overflow: hidden', () => {
     const wrapper = mount(ChronixGantt, {
       props: { bars: [], rows, axisInput, columns: sidebarColumns },
     });
@@ -86,9 +86,12 @@ describe('<ChronixGantt> dual-scrollport architecture', () => {
     const sidebarHeaderPane = wrapper.find('div.cx-gantt-sidebar-header-pane')
       .element as HTMLElement;
     // overflow-y: auto — the sidebar owns the vertical scrollbar (it sits
-    // on the sidebar/chart boundary — the resource area). overflow-x auto
-    // so a narrowed sidebar can still scroll its columns.
-    expect(sidebarPane.style.overflowX).toBe('auto');
+    // on the sidebar/chart boundary — the resource area). overflow-x scroll
+    // (not auto) so the sidebar always reserves a horizontal-scrollbar strip
+    // matching the chart-pane's bottom scrollbar thickness → equal
+    // clientHeight → the body translateY sync keeps the last row above the
+    // chart's scrollbar (otherwise the chart's bottom bar is occluded).
+    expect(sidebarPane.style.overflowX).toBe('scroll');
     expect(sidebarPane.style.overflowY).toBe('auto');
     // overflow: hidden — the header shows no scrollbar of its own;
     // scrollbar-gutter: stable still reserves the body's scrollbar

@@ -74,7 +74,7 @@ describe('<ChronixGantt> sidebar pane ', () => {
       });
       const sidebar = wrapper.find('div.cx-gantt-sidebar-pane').element as HTMLElement;
       const sidebarHeader = wrapper.find('div.cx-gantt-sidebar-header-pane').element as HTMLElement;
-      expect(sidebar.style.overflowX).toBe('auto');
+      expect(sidebar.style.overflowX).toBe('scroll');
       expect(sidebar.style.overflowY).toBe('auto');
       expect(sidebarHeader.style.overflow).toBe('hidden');
       expect(sidebarHeader.style.scrollbarGutter).toBe('stable');
