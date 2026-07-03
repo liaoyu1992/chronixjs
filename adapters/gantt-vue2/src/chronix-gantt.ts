@@ -1966,8 +1966,9 @@ export const ChronixGantt = defineComponent({
                 key: `tick-label-${tick.x}`,
                 class: tickClassAttr,
                 attrs: {
-                  x: tick.x + 2,
+                  x: tick.x + a.slotWidth / 2,
                   y: hh - 6,
+                  'text-anchor': 'middle',
                   fill: t.headerTickLabel,
                   'font-size': t.tickLabelFontSize,
                 },

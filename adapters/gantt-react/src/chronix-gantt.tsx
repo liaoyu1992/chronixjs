@@ -2505,8 +2505,9 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                     />
                     <text
                       className={tickLabelClassName}
-                      x={tick.x + 2}
+                      x={tick.x + axis.slotWidth / 2}
                       y={hh - 6}
+                      textAnchor="middle"
                       fill={t.headerTickLabel}
                       fontSize={t.tickLabelFontSize}
                     >
