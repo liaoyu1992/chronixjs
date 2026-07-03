@@ -2227,7 +2227,7 @@ export const ChronixGantt = forwardRef<GanttHandle, ChronixGanttProps>(function 
                       borderRight: `1px solid ${t.sidebarBodyCellBorder}`,
                       borderBottom: `1px solid ${t.sidebarBodyCellBorder}`,
                       verticalAlign: 'middle',
-                      textAlign: isMerged ? 'center' : 'left',
+                      textAlign: 'left',
                       boxSizing: 'border-box',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
