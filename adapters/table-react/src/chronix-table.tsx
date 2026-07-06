@@ -8877,7 +8877,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const cellStyle: CSSProperties = {
         width: `${spanWidth}px`,
         height: `${t.headerGroupHeight}px`,
-        background: isEmpty ? 'transparent' : 'var(--cx-table-header-group-bg, #e8ecf0)',
+        boxSizing: 'border-box',
+        background:
+          isEmpty && zoneKey === 'C' ? 'transparent' : 'var(--cx-table-header-group-bg, #e8ecf0)',
         paddingLeft: `${t.cellPaddingX}px`,
         paddingRight: `${t.cellPaddingX}px`,
         ...groupStickyStyle,
