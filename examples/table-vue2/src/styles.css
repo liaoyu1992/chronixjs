@@ -13,20 +13,17 @@ html,
 #app {
   margin: 0;
   padding: 0;
-  height: 100%;
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', sans-serif;
   color: #202124;
-  background: #fff;
+  background: #f5f6f8;
 }
 
 .demo-page {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 1rem 1.25rem;
-  gap: 0.75rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
 }
 
 .demo-page__header h1 {
@@ -36,17 +33,18 @@ html,
 }
 
 .demo-page__header p {
-  margin: 0;
-  color: #555a66;
+  margin: 0 0 8px;
+  color: #5c6773;
   font-size: 0.875rem;
   line-height: 1.5;
 }
 
 .demo-page__table {
-  flex: 1;
-  min-height: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
   border: 1px solid #d9dde2;
-  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   /* (2026-05-26 — vue2 port of vue3): cap the
    * demo's table width so combined column widths overflow horizontally
    * + the body's new `overflowX: auto` exposes a horizontal scrollbar —
@@ -59,7 +57,6 @@ html,
 }
 
 .cx-table-wrapper {
-  height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -80,14 +77,22 @@ html,
 }
 
 .cx-table-header .cx-table-row {
+  /* `background: inherit` lets pinned header cells (whose inline style
+   * falls back to `var(--cx-table-pinned-zone-bg, inherit)`) pick up the
+   * header container's opaque background. Without this the header row is
+   * transparent and pinned header cells fail to occlude center header
+   * cells sliding underneath during horizontal scroll. Mirrors vue3. */
+  background: inherit;
   border-bottom: none;
 }
 
 .cx-table-body {
-  flex: 1;
-  /* SFC sets `overflow-y: auto` inline; the wider `overflow: auto`
-   * here is a fallback for older consumers that still use wiring. */
-  overflow: auto;
+  /* cap body height so the demo exercises virtualization
+   * (totalBodyHeight = 50 rows × 28 = 1400px; viewport ~ 320px shows
+   * ~11 rows + overscan at a time). Verbatim port of vue3 demo —
+   * SFC sets `overflow-y: auto` inline; this max-height is the
+   * virtualization constraint that was missing in the vue2 port. */
+  max-height: 320px;
 }
 
 /* rows live one level deeper now (inside `.cx-table-body-content`).
