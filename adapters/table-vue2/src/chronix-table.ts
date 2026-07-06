@@ -8324,6 +8324,26 @@ export const ChronixTable = defineComponent({
         const isEmpty = span.groupName == null;
         const cellClass =
           'cx-table-header-group' + (isEmpty ? ' cx-table-header-group--empty' : '');
+        // pinned-zone group cells stick to their edge so the group label
+        // stays aligned with its pinned columns during horizontal scroll
+        // (mirrors the leaf-cell pinned style). center groups scroll.
+        let groupStickyStyle: Record<string, string> = {};
+        if (zoneKey === 'L' && span.colIds.length > 0) {
+          const firstOffset = pinnedResult.leftOffsetByColId[span.colIds[0] ?? ''] ?? 0;
+          groupStickyStyle = {
+            position: 'sticky',
+            left: `${firstOffset + selectionRailLeftShift}px`,
+            zIndex: '2',
+          };
+        } else if (zoneKey === 'R' && span.colIds.length > 0) {
+          const lastColId = span.colIds[span.colIds.length - 1] ?? '';
+          const lastOffset = pinnedResult.rightOffsetByColId[lastColId] ?? 0;
+          groupStickyStyle = {
+            position: 'sticky',
+            right: `${lastOffset + selectionRailRightShift}px`,
+            zIndex: '2',
+          };
+        }
         const cellAttrs: Record<string, unknown> = {
           role: 'columnheader',
           'data-header-group-level': String(levelIdx),
@@ -8345,6 +8365,7 @@ export const ChronixTable = defineComponent({
               background: isEmpty ? 'transparent' : 'var(--cx-table-header-group-bg, #e8ecf0)',
               paddingLeft: `${t.cellPaddingX}px`,
               paddingRight: `${t.cellPaddingX}px`,
+              ...groupStickyStyle,
             },
           },
           isEmpty ? [] : [h('span', { class: 'cx-table-header-group-label' }, [span.groupName])],

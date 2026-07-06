@@ -10081,6 +10081,30 @@ export const ChronixTable = defineComponent({
         const isEmpty = span.groupName == null;
         const baseClass =
           'cx-table-header-group' + (isEmpty ? ' cx-table-header-group--empty' : '');
+        // pinned-zone group cells stick to their edge so the group label
+        // stays aligned with its pinned columns during horizontal scroll
+        // (mirrors `pinnedCellStyle` for leaf header cells). center groups
+        // scroll with the body. Without this, a group spanning pinned-left
+        // columns (e.g. 基础信息 over ID+名称) slides off-screen when the
+        // body is scrolled horizontally, leaving the pinned columns under a
+        // wrong (or empty) group label — and adjacent groups overlap.
+        let groupStickyStyle: Record<string, string> = {};
+        if (zoneKey === 'L' && span.colIds.length > 0) {
+          const firstOffset = pinnedResult.leftOffsetByColId[span.colIds[0] ?? ''] ?? 0;
+          groupStickyStyle = {
+            position: 'sticky',
+            left: `${firstOffset + selectionRailLeftShift}px`,
+            zIndex: '2',
+          };
+        } else if (zoneKey === 'R' && span.colIds.length > 0) {
+          const lastColId = span.colIds[span.colIds.length - 1] ?? '';
+          const lastOffset = pinnedResult.rightOffsetByColId[lastColId] ?? 0;
+          groupStickyStyle = {
+            position: 'sticky',
+            right: `${lastOffset + selectionRailRightShift}px`,
+            zIndex: '2',
+          };
+        }
         const cellAttrs: Record<string, unknown> = {
           key: `header-group-${zoneKey}-L${levelIdx}-${span.startColIdx}-${span.endColIdx}`,
           class: baseClass,
@@ -10095,6 +10119,7 @@ export const ChronixTable = defineComponent({
             background: isEmpty ? 'transparent' : 'var(--cx-table-header-group-bg, #e8ecf0)',
             paddingLeft: `${t.cellPaddingX}px`,
             paddingRight: `${t.cellPaddingX}px`,
+            ...groupStickyStyle,
           },
         };
         if (!isEmpty) {
