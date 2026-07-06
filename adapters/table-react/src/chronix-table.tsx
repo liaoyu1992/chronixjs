@@ -8480,6 +8480,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         (suffix) => `cx-table-header-cell${suffix}`,
       );
       const cellStyle: CSSProperties = {
+        // border-box keeps this cell's flex basis at its declared width so
+        // the header row's column edges stay aligned with the body / filter
+        // / group rows even when consumer CSS omits a box-sizing rule.
+        boxSizing: 'border-box',
         width: `${widthByColId[cell.colId] ?? 0}px`,
         height: `${t.headerHeight}px`,
         paddingLeft: `${t.cellPaddingX}px`,
@@ -8854,12 +8858,35 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const isEmpty = span.groupName == null;
       const cellClassName =
         'cx-table-header-group' + (isEmpty ? ' cx-table-header-group--empty' : '');
+      // pinned-zone group cells stick to their edge so the group label
+      // stays aligned with its pinned columns during horizontal scroll
+      // (mirrors the leaf-cell pinned style). center groups scroll.
+      let groupStickyStyle: Partial<CSSProperties> = {};
+      if (zoneKey === 'L' && span.colIds.length > 0) {
+        const firstOffset = pinnedColsResult.leftOffsetByColId[span.colIds[0] ?? ''] ?? 0;
+        groupStickyStyle = {
+          position: 'sticky',
+          left: `${firstOffset + selectionRailLeftShift}px`,
+          zIndex: 2,
+        };
+      } else if (zoneKey === 'R' && span.colIds.length > 0) {
+        const lastColId = span.colIds[span.colIds.length - 1] ?? '';
+        const lastOffset = pinnedColsResult.rightOffsetByColId[lastColId] ?? 0;
+        groupStickyStyle = {
+          position: 'sticky',
+          right: `${lastOffset + selectionRailRightShift}px`,
+          zIndex: 2,
+        };
+      }
       const cellStyle: CSSProperties = {
         width: `${spanWidth}px`,
         height: `${t.headerGroupHeight}px`,
-        background: isEmpty ? 'transparent' : 'var(--cx-table-header-group-bg, #e8ecf0)',
+        boxSizing: 'border-box',
+        background:
+          isEmpty && zoneKey === 'C' ? 'transparent' : 'var(--cx-table-header-group-bg, #e8ecf0)',
         paddingLeft: `${t.cellPaddingX}px`,
         paddingRight: `${t.cellPaddingX}px`,
+        ...groupStickyStyle,
       };
       if (isEmpty) {
         return (
@@ -9095,6 +9122,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     data-col-id={col.id}
                     data-filter-ui="set"
                     style={{
+                      boxSizing: 'border-box',
                       width: `${widthByColId[col.id] ?? 0}px`,
                       paddingLeft: `${t.cellPaddingX}px`,
                       paddingRight: `${t.cellPaddingX}px`,
@@ -9505,6 +9533,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     data-col-id={col.id}
                     data-filter-ui="multi"
                     style={{
+                      boxSizing: 'border-box',
                       width: `${widthByColId[col.id] ?? 0}px`,
                       paddingLeft: `${t.cellPaddingX}px`,
                       paddingRight: `${t.cellPaddingX}px`,
@@ -9710,6 +9739,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                   }
                   data-col-id={col.id}
                   style={{
+                    boxSizing: 'border-box',
                     width: `${widthByColId[col.id] ?? 0}px`,
                     paddingLeft: `${t.cellPaddingX}px`,
                     paddingRight: `${t.cellPaddingX}px`,
@@ -10246,6 +10276,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 data-row-id={row.id}
                 aria-colindex={ariaColIndexFor(col.id)}
                 style={{
+                  boxSizing: 'border-box',
                   width: `${widthByColId[col.id] ?? 0}px`,
                   height: `${rowH}px`,
                   paddingLeft: `${t.cellPaddingX}px`,
@@ -10359,6 +10390,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         // consumer-supplied and may include legitimate-but-unmodeled
         // values like 'groove' or 'inherit').
         const cellStyle = {
+          boxSizing: 'border-box',
           width: `${widthByColId[col.id] ?? 0}px`,
           ...(enableRowAutoHeight ? { minHeight: `${rowH}px` } : { height: `${rowH}px` }),
           paddingLeft: `${t.cellPaddingX + treeIndentLeft}px`,
@@ -10719,6 +10751,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         // cast bypasses strict per-side CSSProperty
         // literal-union checking — same rationale as body cell renderer.
         const cellStyle = {
+          boxSizing: 'border-box',
           width: `${widthByColId[col.id] ?? 0}px`,
           height: `${rowH}px`,
           paddingLeft: `${t.cellPaddingX}px`,

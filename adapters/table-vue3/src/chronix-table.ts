@@ -9940,6 +9940,10 @@ export const ChronixTable = defineComponent({
               direction === 'asc' ? 'ascending' : direction === 'desc' ? 'descending' : 'none',
             'aria-describedby': headerDescribedById,
             style: {
+              // border-box keeps this cell's flex basis at its declared width so
+              // the header row's column edges stay aligned with the body / filter
+              // / group rows even when consumer CSS omits a box-sizing rule.
+              boxSizing: 'border-box',
               width: `${widths[cell.colId] ?? 0}px`,
               height: `${t.headerHeight}px`,
               paddingLeft: `${t.cellPaddingX}px`,
@@ -10081,6 +10085,30 @@ export const ChronixTable = defineComponent({
         const isEmpty = span.groupName == null;
         const baseClass =
           'cx-table-header-group' + (isEmpty ? ' cx-table-header-group--empty' : '');
+        // pinned-zone group cells stick to their edge so the group label
+        // stays aligned with its pinned columns during horizontal scroll
+        // (mirrors `pinnedCellStyle` for leaf header cells). center groups
+        // scroll with the body. Without this, a group spanning pinned-left
+        // columns (e.g. 基础信息 over ID+名称) slides off-screen when the
+        // body is scrolled horizontally, leaving the pinned columns under a
+        // wrong (or empty) group label — and adjacent groups overlap.
+        let groupStickyStyle: Record<string, string> = {};
+        if (zoneKey === 'L' && span.colIds.length > 0) {
+          const firstOffset = pinnedResult.leftOffsetByColId[span.colIds[0] ?? ''] ?? 0;
+          groupStickyStyle = {
+            position: 'sticky',
+            left: `${firstOffset + selectionRailLeftShift}px`,
+            zIndex: '2',
+          };
+        } else if (zoneKey === 'R' && span.colIds.length > 0) {
+          const lastColId = span.colIds[span.colIds.length - 1] ?? '';
+          const lastOffset = pinnedResult.rightOffsetByColId[lastColId] ?? 0;
+          groupStickyStyle = {
+            position: 'sticky',
+            right: `${lastOffset + selectionRailRightShift}px`,
+            zIndex: '2',
+          };
+        }
         const cellAttrs: Record<string, unknown> = {
           key: `header-group-${zoneKey}-L${levelIdx}-${span.startColIdx}-${span.endColIdx}`,
           class: baseClass,
@@ -10092,9 +10120,14 @@ export const ChronixTable = defineComponent({
           style: {
             width: `${spanWidth}px`,
             height: `${t.headerGroupHeight}px`,
-            background: isEmpty ? 'transparent' : 'var(--cx-table-header-group-bg, #e8ecf0)',
+            boxSizing: 'border-box',
+            background:
+              isEmpty && zoneKey === 'C'
+                ? 'transparent'
+                : 'var(--cx-table-header-group-bg, #e8ecf0)',
             paddingLeft: `${t.cellPaddingX}px`,
             paddingRight: `${t.cellPaddingX}px`,
+            ...groupStickyStyle,
           },
         };
         if (!isEmpty) {
@@ -10497,6 +10530,8 @@ export const ChronixTable = defineComponent({
                   'data-col-id': col.id,
                   'data-filter-ui': 'set',
                   style: {
+                    // border-box: flex basis alignment (see leaf header cell).
+                    boxSizing: 'border-box',
                     width: `${widths[col.id] ?? 0}px`,
                     paddingLeft: `${t.cellPaddingX}px`,
                     paddingRight: `${t.cellPaddingX}px`,
@@ -11013,6 +11048,8 @@ export const ChronixTable = defineComponent({
                   'data-col-id': col.id,
                   'data-filter-ui': 'multi',
                   style: {
+                    // border-box: flex basis alignment (see leaf header cell).
+                    boxSizing: 'border-box',
                     width: `${widths[col.id] ?? 0}px`,
                     paddingLeft: `${t.cellPaddingX}px`,
                     paddingRight: `${t.cellPaddingX}px`,
@@ -11088,6 +11125,8 @@ export const ChronixTable = defineComponent({
                 class: ['cx-table-filter-cell', ...pinnedClassList].join(' '),
                 'data-col-id': col.id,
                 style: {
+                  // border-box: flex basis alignment (see leaf header cell).
+                  boxSizing: 'border-box',
                   width: `${widths[col.id] ?? 0}px`,
                   paddingLeft: `${t.cellPaddingX}px`,
                   paddingRight: `${t.cellPaddingX}px`,
@@ -11161,6 +11200,8 @@ export const ChronixTable = defineComponent({
                 'data-row-id': row.id,
                 'aria-colindex': String(ariaColIndexFor(col.id)),
                 style: {
+                  // border-box: flex basis alignment (see leaf header cell).
+                  boxSizing: 'border-box',
                   width: `${widths[col.id] ?? 0}px`,
                   height: `${rowH}px`,
                   paddingLeft: `${t.cellPaddingX}px`,
@@ -11366,6 +11407,9 @@ export const ChronixTable = defineComponent({
               ...(isInvalidCell ? { 'data-cell-invalid': 'true', 'aria-invalid': 'true' } : {}),
               ...(isValidatingCell ? { 'data-cell-validating': 'true', 'aria-busy': 'true' } : {}),
               style: {
+                // border-box: see leaf header cell — keeps body column edges
+                // aligned with the header / filter / group rows.
+                boxSizing: 'border-box',
                 width: `${widths[col.id] ?? 0}px`,
                 ...cellHeightStyle,
                 paddingLeft: `${t.cellPaddingX + treeIndentLeft}px`,
@@ -11786,6 +11830,8 @@ export const ChronixTable = defineComponent({
               'data-row-id': row.id,
               'aria-colindex': String(ariaColIndexFor(col.id)),
               style: {
+                // border-box: flex basis alignment (see leaf header cell).
+                boxSizing: 'border-box',
                 width: `${widths[col.id] ?? 0}px`,
                 height: `${rowH}px`,
                 paddingLeft: `${t.cellPaddingX}px`,

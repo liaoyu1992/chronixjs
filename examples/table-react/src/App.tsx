@@ -1298,56 +1298,6 @@ export function App(): ReactElement {
     <main className="demo-page">
       <header className="demo-page__header">
         <h1>@chronixjs/table-react</h1>
-        <p>
-          -54 demo (FEATURE-COMPLETE 17/17 vue3 phases ported) — 50 行 × 6 列 + 滚动虚拟化 + cell
-          args + 8 交互回调 + 主题 CSS 变量 + 表头排序 (Shift+点击 追加多列) + filter row (数字列
-          prefix syntax: &gt;10 / 5..50 / !=3) + 行选择 (多选 + Ctrl/Cmd 切换 + Shift 范围) +
-          复选框栏 + 3-state select-all + 分页 (每页 20 / 50 / 100 + 页码 bar with ellipsis) +
-          双击编辑 (备注 文本 / 单价 number; Tab 自动跳到下一个 editable 单元格 + 跨行; Shift+Tab
-          反向; Esc 取消; 非法数字 reject-and-keep) + 拖拽列宽 (4px 表头右边缘; 状态 列 resizable:
-          false 不可拖拽) + 拖拽列序 (表头单元格拖拽 ≥ 5px Chebyshev 触发；状态 列 reorderable:
-          false 不可拖拽)。{' '}
-          <strong>
-            双击表头列右边缘 4px autosize 列宽 (Canvas measureText + computeAutosizeWidth
-            clamp)；或点击下方按钮触发 imperative autosizeColumn(colId) / autosizeAllColumns()。
-            column-width-change 回调与拖拽 resize 同一渠道；状态 列 resizable:false 隐式禁用；备注
-            列 autosizeable:false 显式 opt-out。
-          </strong>{' '}
-          <strong>
-            cell 上 pointerdown + drag 选区 → 矩形 cell-range；shift+click 在已有 range 上延伸
-            focus；按钮可程序化设定/清空。cellRangeSelection=&quot;enabled&quot; 开启 — 默认
-            &quot;none&quot; 保留原有 cell-click / row-select / dblclick-edit 行为不变。矩形内的
-            cell 带 cx-table-cell--in-cell-range modifier (淡蓝高亮)。
-          </strong>{' '}
-          <strong>
-            (react port of vue3)：pinned=&quot;left&quot; (ID + 名称) / &quot;right&quot; (备注)
-            把列粘在 body 的左/右边缘 — 缩窄窗口或滚动表格时保持可见。 pinnedColsPass 在
-            columnLayoutPass 之后计算累积偏移；per-cell position: sticky 在已有 flat
-            行布局上加位，无 wrapper / 无列重排。单元格交互 (cell-click / cell-range / dblclick-edit
-            / 行选高亮) 在 pinned + center 两 zone 行为完全一致 — 委托事件无视 CSS 定位。boundary
-            cell 自带 --pinned-left-last / --pinned-right-first modifier 供 CSS 阴影钩取；selection
-            rail 也 sticky 在同一侧，与 pinned 列并排。
-          </strong>{' '}
-          <strong>
-            (react port of vue3)：cell-range 激活时按 Ctrl+C (Mac: Cmd+C) → 复制为 TSV → 写入
-            navigator.clipboard → 粘到 Excel / Sheets / Notion / VS Code
-            保留单元格结构。valueFormatter 在复制时生效 (e.g. 数量 列以 N 件 形式输出)。 新增
-            onCellRangeCopy 回调 + copyCellRangeToClipboard() TableHandle
-            方法，按钮可程序化触发同一路径。
-          </strong>{' '}
-          <strong>
-            (react port of vue3)：cell-range 激活时按 Ctrl+V (Mac: Cmd+V) → 从 navigator.clipboard
-            读 TSV → 解析为 2D 网格 → 映射到选区 (1×1 → fill-all；N×M → clamp-overflow) → 按
-            column.type coerce (数字列空 → null / 非法 → silently skip) → onCellRangePaste 回调一次
-            carry mutations 数组；consumer 用 Map 批量回写 rows。
-          </strong>{' '}
-          <strong>
-            (react port of vue3)：cell-range 激活时其右下角出现 8×8 蓝色 drag-fill 小方块。drag 该
-            handle 向下 / 向右 → 沿主导轴 axis-lock 扩展选区 → pointerup 时 constant-fill (modulo
-            copy) → onCellRangeFill 回调 carry mutations 数组 (与 paste 同形状)，consumer 同样 Map
-            批量回写。fillCellRange(targetCell) handle 方法 + 按钮可程序化触发同一路径。
-          </strong>
-        </p>
         <p className="demo-page__sort-state">当前排序: {describeSort(currentSort)}</p>
         <p className="demo-page__sort-state">{describeFilter(currentFilter)}</p>
         <p className="demo-page__sort-state" data-testid="quick-find-state">
