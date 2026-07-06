@@ -8480,6 +8480,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         (suffix) => `cx-table-header-cell${suffix}`,
       );
       const cellStyle: CSSProperties = {
+        // border-box keeps this cell's flex basis at its declared width so
+        // the header row's column edges stay aligned with the body / filter
+        // / group rows even when consumer CSS omits a box-sizing rule.
+        boxSizing: 'border-box',
         width: `${widthByColId[cell.colId] ?? 0}px`,
         height: `${t.headerHeight}px`,
         paddingLeft: `${t.cellPaddingX}px`,
@@ -9118,6 +9122,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     data-col-id={col.id}
                     data-filter-ui="set"
                     style={{
+                      boxSizing: 'border-box',
                       width: `${widthByColId[col.id] ?? 0}px`,
                       paddingLeft: `${t.cellPaddingX}px`,
                       paddingRight: `${t.cellPaddingX}px`,
@@ -9528,6 +9533,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     data-col-id={col.id}
                     data-filter-ui="multi"
                     style={{
+                      boxSizing: 'border-box',
                       width: `${widthByColId[col.id] ?? 0}px`,
                       paddingLeft: `${t.cellPaddingX}px`,
                       paddingRight: `${t.cellPaddingX}px`,
@@ -9733,6 +9739,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                   }
                   data-col-id={col.id}
                   style={{
+                    boxSizing: 'border-box',
                     width: `${widthByColId[col.id] ?? 0}px`,
                     paddingLeft: `${t.cellPaddingX}px`,
                     paddingRight: `${t.cellPaddingX}px`,
@@ -10269,6 +10276,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 data-row-id={row.id}
                 aria-colindex={ariaColIndexFor(col.id)}
                 style={{
+                  boxSizing: 'border-box',
                   width: `${widthByColId[col.id] ?? 0}px`,
                   height: `${rowH}px`,
                   paddingLeft: `${t.cellPaddingX}px`,
@@ -10382,6 +10390,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         // consumer-supplied and may include legitimate-but-unmodeled
         // values like 'groove' or 'inherit').
         const cellStyle = {
+          boxSizing: 'border-box',
           width: `${widthByColId[col.id] ?? 0}px`,
           ...(enableRowAutoHeight ? { minHeight: `${rowH}px` } : { height: `${rowH}px` }),
           paddingLeft: `${t.cellPaddingX + treeIndentLeft}px`,
@@ -10742,6 +10751,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         // cast bypasses strict per-side CSSProperty
         // literal-union checking — same rationale as body cell renderer.
         const cellStyle = {
+          boxSizing: 'border-box',
           width: `${widthByColId[col.id] ?? 0}px`,
           height: `${rowH}px`,
           paddingLeft: `${t.cellPaddingX}px`,

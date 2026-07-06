@@ -8266,6 +8266,10 @@ export const ChronixTable = defineComponent({
               'aria-describedby': headerDescribedById,
             },
             style: {
+              // border-box keeps this cell's flex basis at its declared width so
+              // the header row's column edges stay aligned with the body / filter
+              // / group rows even when consumer CSS omits a box-sizing rule.
+              boxSizing: 'border-box',
               width: `${widths[cell.colId] ?? 0}px`,
               height: `${t.headerHeight}px`,
               paddingLeft: `${t.cellPaddingX}px`,
@@ -8856,6 +8860,8 @@ export const ChronixTable = defineComponent({
                     'data-filter-ui': 'set',
                   },
                   style: {
+                    // border-box: flex basis alignment (see leaf header cell).
+                    boxSizing: 'border-box',
                     width: `${widths[col.id] ?? 0}px`,
                     paddingLeft: `${t.cellPaddingX}px`,
                     paddingRight: `${t.cellPaddingX}px`,
@@ -9295,6 +9301,8 @@ export const ChronixTable = defineComponent({
                     'data-filter-ui': 'multi',
                   },
                   style: {
+                    // border-box: flex basis alignment (see leaf header cell).
+                    boxSizing: 'border-box',
                     width: `${widths[col.id] ?? 0}px`,
                     paddingLeft: `${t.cellPaddingX}px`,
                     paddingRight: `${t.cellPaddingX}px`,
@@ -9373,6 +9381,8 @@ export const ChronixTable = defineComponent({
                   : 'cx-table-filter-cell',
                 attrs: { 'data-col-id': col.id },
                 style: {
+                  // border-box: flex basis alignment (see leaf header cell).
+                  boxSizing: 'border-box',
                   width: `${widths[col.id] ?? 0}px`,
                   paddingLeft: `${t.cellPaddingX}px`,
                   paddingRight: `${t.cellPaddingX}px`,
@@ -9773,6 +9783,8 @@ export const ChronixTable = defineComponent({
                   'aria-colindex': String(ariaColIndexFor(col.id)),
                 },
                 style: {
+                  // border-box: flex basis alignment (see leaf header cell).
+                  boxSizing: 'border-box',
                   width: `${widths[col.id] ?? 0}px`,
                   height: `${rowH}px`,
                   paddingLeft: `${t.cellPaddingX}px`,
@@ -9997,6 +10009,8 @@ export const ChronixTable = defineComponent({
                   : {}),
               },
               style: {
+                // border-box: flex basis alignment (see leaf header cell).
+                boxSizing: 'border-box',
                 width: `${widths[col.id] ?? 0}px`,
                 // -C (2026-05-30 — vue2 port): auto-height
                 // cells use min-height to allow content growth.
@@ -10374,6 +10388,8 @@ export const ChronixTable = defineComponent({
                 'aria-colindex': String(ariaColIndexFor(col.id)),
               },
               style: {
+                // border-box: flex basis alignment (see leaf header cell).
+                boxSizing: 'border-box',
                 width: `${widths[col.id] ?? 0}px`,
                 height: `${rowH}px`,
                 paddingLeft: `${t.cellPaddingX}px`,
