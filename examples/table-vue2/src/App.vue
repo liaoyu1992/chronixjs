@@ -1337,68 +1337,6 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
   <main class="demo-page">
     <header class="demo-page__header">
       <h1>@chronixjs/table-vue2</h1>
-      <p>
-        → 46.1 demo — verbatim port of vue3 → 12.1. 50 行 × 6 列 + checkbox 选择列 + 分页 + 备注 /
-        单价列双击编辑 + 表头拖拽改列宽 + 表头拖拽改列序。 排序：点击表头 (循环 null → 升序 → 降序 →
-        null)，Shift+点击 追加副排序。 过滤：在表头下方输入框中输入。 字符串列 (名称 / 状态 / 备注)
-        走 case-insensitive contains 匹配。 数量 列 (type:'number') 走前缀语法：`5` / `>10` / `<20`
-        / `>=5` / `<=10` / `!=3` / `5..50`。 多列输入即 AND 组合；Filter 先于 Sort。 行选择：点击行
-        单选；Ctrl/Cmd+点击 多选切换；Shift+点击 范围选择；左侧 checkbox 列 + 表头三态 select-all。
-        分页：底部 « » + 可点击页码列表（>7 页时自动 ellipsis）+ 共 X 行 + 每页 select。 编辑：双击
-        备注 (文本) / 单价 (数字) 列 cell → 输入 → Enter / Tab / Blur 提交，Esc 取消。 单价 列走
-        &lt;input type="number"&gt; + coerceEditDraftValue — 空输入提交为 null，非数字 (如 `abc`)
-        拒提交并保持编辑态。 Tab / Shift+Tab 提交当前 cell 并跨列+跨行自动跳到下一/上一可编辑 单元格
-        (单价 → 备注 → 下一行单价 → ...)；末尾关闭编辑器；非法输入拒提交时停留原 cell。
-        悬浮任意表头列右边缘 4px 区域 → 拖动调整列宽 (实时反馈)；pointerup 提交
-        `column-width-change` emit，consumer 回写 columns prop。 状态 列设 `resizable:false`，无
-        resize 把手。 拖动表头单元格 ≥ 5px (Chebyshev) 阈值触发列移动 — 实时 gap-line 落点指示
-        (落点单元格左/右 半边决定 before/after)；pointerup 提交并通过 `column-order-change` emit
-        回写 columns prop；状态 列设 `reorderable:false`，不响应拖拽；header click 仍触发排序循环。
-        **双击表头列右边缘 4px 区域** autosize 列宽到内容；或调用 imperative `autosizeColumn(colId)`
-        / `autosizeAllColumns()`。`备注` 列 `autosizeable:false` 显式 opt-out dbl-click 行为
-        (resizer 仍可拖)。
-        <strong>
-          cell 上 pointerdown + drag 选区 → 矩形 cell-range；shift+click 在已有 range 上延伸
-          focus；按钮可程序化设定/清空。`cellRangeSelection: 'enabled'` 开启 — 默认 `'none'`
-          保留原有 cell-click / row-select / dblclick-edit 行为不变。 矩形内的 cell 带
-          `cx-table-cell--in-cell-range` modifier (淡蓝高亮)。
-        </strong>
-        <strong>
-          `pinned: 'left'` (ID + 名称) / `'right'` (备注) 把列粘在 body 的左/右边缘 — 缩窄窗口或
-          滚动表格时保持可见。`pinnedColsPass` 在 `columnLayoutPass` 之后计算累积偏移；per-cell
-          `position: sticky` 在已有 flat 行布局上加位，无 wrapper / 无列重排。 单元格交互
-          (cell-click / cell-range / dblclick-edit / 行选高亮) 在 pinned + center 两 zone
-          行为完全一致 — 委托 事件无视 CSS 定位。boundary cell 自带 `--pinned-left-last` /
-          `--pinned-right-first` modifier 供 CSS 阴影钩取；selection rail 也 sticky 在同一侧，与
-          pinned 列并排。
-        </strong>
-        <strong>
-          cell-range 激活时按 Ctrl+C (Mac: Cmd+C) → 复制为 TSV → 写入 `navigator.clipboard` → 粘到
-          Excel / Sheets / Notion / VS Code 保留单元格结构。`valueFormatter` 在复制时生效 (例如 数量
-          列以 `N 件` 形式输出)。 新增 `cell-range-copy` emit + `copyCellRangeToClipboard()`
-          TableHandle 方法，按钮可程序化触发同一路径。
-        </strong>
-        <strong>
-          cell-range 激活时按 Ctrl+V (Mac: Cmd+V) → 从 `navigator.clipboard` 读 TSV → 解析为 2D 网格
-          → 映射到选区 (1×1 → fill-all；N×M → clamp-overflow) → 按 `column.type` coerce (数字列空 →
-          null / 非法 → silently skip) → `cell-range-paste` emit 一次 carry mutations 数组；consumer
-          用 Map 批量回写 `rows`。
-        </strong>
-        <strong>
-          cell-range 激活时其右下角出现 8×8 蓝色 drag-fill 小方块。drag 该 handle 向下 / 向右 → 沿
-          主导轴 axis-lock 扩展选区 → pointerup 时 constant-fill (modulo copy) → `cell-range-fill`
-          emit carry mutations 数组 (与 paste 同形状)，consumer 同样 Map 批量回写。
-          `fillCellRange(targetCell)` handle 方法 + 按钮可程序化触发同一路径。
-        </strong>
-        <strong>
-          `enableUndoHistory: true` 启用 undo/redo 栈。 Ctrl+Z (Mac: Cmd+Z) 撤销最新 batch
-          (cell-edit / paste / fill 任意 gesture 均自动 record) → SFC fire `history-replay` 携带
-          REVERSED mutations → consumer 用 Map 批量回写。 Ctrl+Y / Ctrl+Shift+Z 重做 → fire
-          `history-replay` 携带 ORIGINAL mutations。 `undo() / redo() / canUndo() / canRedo() /
-          clearHistory() / getHistory() / recordMutationBatch()` 7 个 handle 方法；`history-change`
-          emit 让外部 UI 跟踪 past/future 长度。
-        </strong>
-      </p>
       <p class="demo-page__sort-pill">
         {{ currentSortLabel || '未排序 (点击表头切换；Shift+点击 追加列)' }}
       </p>
