@@ -94,6 +94,29 @@ body,
   font-weight: 600;
 }
 
+/* The header / filter-row / footer mirror the body's horizontal scroll, so the
+ * adapter sets `overflow-y: scroll` on them to reserve the SAME vertical-
+ * scrollbar gutter the body's scrollbar occupies — keeping a pinned-right
+ * column's sticky `right:0` on the same edge across all four rows. These three
+ * rows never overflow vertically, so their scrollbar is an empty/disabled track.
+ * Hide its track + thumb (the gutter + default width stay) so the gutter just
+ * reads as the row's background colour. The body keeps its real, visible bar. */
+.cx-table-header,
+.cx-table-filter-row,
+.cx-table-footer {
+  scrollbar-color: transparent transparent;
+}
+.cx-table-header::-webkit-scrollbar,
+.cx-table-filter-row::-webkit-scrollbar,
+.cx-table-footer::-webkit-scrollbar {
+  background: transparent;
+}
+.cx-table-header::-webkit-scrollbar-thumb,
+.cx-table-filter-row::-webkit-scrollbar-thumb,
+.cx-table-footer::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
 .cx-table-header .cx-table-row {
   background: inherit;
 }
