@@ -9003,7 +9003,19 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         // `onHeaderRowgroupClick` extended with
         // a `[data-group-name]` ancestor walk so the same delegate also
         // fires `onHeaderGroupClick` for the group row's labelled cells.
-        style={{ overflowX: 'hidden', overflowY: 'scroll' }}
+        //
+        // `--cx-table-header-group-rows-h` exposes the group-rows total height
+        // so the demo CSS can paint the 15px scrollbar gutter with a split
+        // background (group bg over the group rows, leaf bg over the leaf row).
+        // Without it the gutter shows the leaf bg alone and mismatches the group
+        // row it sits beside.
+        style={
+          {
+            overflowX: 'hidden',
+            overflowY: 'scroll',
+            '--cx-table-header-group-rows-h': `${tableMaxHeaderDepth * t.headerGroupHeight}px`,
+          } as CSSProperties
+        }
         onClick={onHeaderRowgroupClick}
       >
         {headerGroupRowsJsx}

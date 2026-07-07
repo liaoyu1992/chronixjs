@@ -69,7 +69,18 @@ html,
  * unchanged when no `theme` prop is passed. Consumers can override
  * via the `theme` prop, which the SFC threads through cssVarsForTheme. */
 .cx-table-header {
-  background: var(--cx-table-header-bg, #f7f8fa);
+  /* Split background so the 15px scrollbar gutter (which shows this container's
+   * bg through the transparent scrollbar) matches the row beside it: group bg
+   * over the group rows, leaf bg over the leaf row. --cx-table-header-group-rows-h
+   * is set inline by the adapter (0 when no groups → solid leaf bg). The cells
+   * cover this gradient everywhere except the gutter. */
+  background: linear-gradient(
+    to bottom,
+    var(--cx-table-header-group-bg, #e8ecf0) 0,
+    var(--cx-table-header-group-bg, #e8ecf0) var(--cx-table-header-group-rows-h, 0px),
+    var(--cx-table-header-bg, #f7f8fa) var(--cx-table-header-group-rows-h, 0px),
+    var(--cx-table-header-bg, #f7f8fa)
+  );
   border-bottom: 1px solid var(--cx-table-header-border-color, #d9dde2);
   position: sticky;
   top: 0;
@@ -100,12 +111,14 @@ html,
 }
 
 .cx-table-header .cx-table-row {
-  /* `background: inherit` lets pinned header cells (whose inline style
-   * falls back to `var(--cx-table-pinned-zone-bg, inherit)`) pick up the
-   * header container's opaque background. Without this the header row is
-   * transparent and pinned header cells fail to occlude center header
-   * cells sliding underneath during horizontal scroll. Mirrors vue3. */
-  background: inherit;
+  /* Solid leaf-coloured background (NOT `inherit`) so the row does NOT pick up
+   * the header container's split gutter gradient — that gradient exists only to
+   * colour the scrollbar gutter, and inheriting it would tint every leaf cell
+   * with the group band's first colour. Group cells carry their own explicit bg
+   * on top; pinned header cells (whose inline style falls back to
+   * `var(--cx-table-pinned-zone-bg, inherit)`) inherit THIS solid bg for opaque
+   * occlusion of center cells sliding underneath during horizontal scroll. */
+  background: var(--cx-table-header-bg, #f7f8fa);
   border-bottom: none;
 }
 

@@ -8480,7 +8480,17 @@ export const ChronixTable = defineComponent({
           // the body's ~15px classic scrollbar shifts the body's pinned
           // column left of the header's by the scrollbar width (filter
           // row + footer mirror this for the same reason).
-          style: { overflowX: 'hidden', overflowY: 'scroll' },
+          //
+          // `--cx-table-header-group-rows-h` exposes the group-rows total
+          // height so the demo CSS can paint the 15px scrollbar gutter with a
+          // split background (group bg over the group rows, leaf bg over the
+          // leaf row). Without it the gutter shows the leaf bg alone and
+          // mismatches the group row it sits beside.
+          style: {
+            overflowX: 'hidden',
+            overflowY: 'scroll',
+            '--cx-table-header-group-rows-h': `${tableMaxHeaderDepth.value * t.headerGroupHeight}px`,
+          },
           on: { click: onHeaderClick },
         },
         headerRows,

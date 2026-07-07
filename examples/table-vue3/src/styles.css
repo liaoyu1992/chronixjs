@@ -92,7 +92,18 @@ body,
 }
 
 .cx-table-header {
-  background: var(--cx-table-header-bg, #f1f3f5);
+  /* Split background so the 15px scrollbar gutter (which shows this container's
+   * bg through the transparent scrollbar) matches the row beside it: group bg
+   * over the group rows, leaf bg over the leaf row. --cx-table-header-group-rows-h
+   * is set inline by the adapter (0 when no groups → solid leaf bg). The cells
+   * cover this gradient everywhere except the gutter. */
+  background: linear-gradient(
+    to bottom,
+    var(--cx-table-header-group-bg, #e8ecf0) 0,
+    var(--cx-table-header-group-bg, #e8ecf0) var(--cx-table-header-group-rows-h, 0px),
+    var(--cx-table-header-bg, #f1f3f5) var(--cx-table-header-group-rows-h, 0px),
+    var(--cx-table-header-bg, #f1f3f5)
+  );
   font-weight: 600;
 }
 
@@ -120,7 +131,12 @@ body,
 }
 
 .cx-table-header .cx-table-row {
-  background: inherit;
+  /* Solid leaf-coloured background (NOT `inherit`) so the row does NOT pick up
+   * the header container's split gutter gradient — that gradient exists only to
+   * colour the scrollbar gutter, and inheriting it would tint every leaf cell
+   * with the group band's first colour. Group cells carry their own explicit bg
+   * on top; pinned cells inherit THIS solid bg for opaque occlusion. */
+  background: var(--cx-table-header-bg, #f1f3f5);
 }
 
 .cx-table-row {
