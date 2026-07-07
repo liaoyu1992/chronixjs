@@ -10121,10 +10121,12 @@ export const ChronixTable = defineComponent({
             width: `${spanWidth}px`,
             height: `${t.headerGroupHeight}px`,
             boxSizing: 'border-box',
-            background:
-              isEmpty && zoneKey === 'C'
-                ? 'transparent'
-                : 'var(--cx-table-header-group-bg, #e8ecf0)',
+            // Every group-row cell uses the group bg — including empty cells
+            // over columns that have no parent group — so the group strip reads
+            // as one uniform band. (Center empty cells used to be transparent,
+            // letting the leaf bg show through, which made grouped vs ungrouped
+            // columns look inconsistent.)
+            background: 'var(--cx-table-header-group-bg, #e8ecf0)',
             paddingLeft: `${t.cellPaddingX}px`,
             paddingRight: `${t.cellPaddingX}px`,
             ...groupStickyStyle,
@@ -10223,7 +10225,25 @@ export const ChronixTable = defineComponent({
           // `body.scrollLeft → headerEl.scrollLeft` so the header row
           // visually scrolls in lockstep with body cells. Without
           // `overflow: hidden`, `scrollLeft` assignment is a no-op.
-          style: { overflowX: 'hidden' },
+          //
+          // `overflowY: 'scroll'` reserves the same vertical-scrollbar
+          // gutter the body's `overflowY` scrollbar occupies, so a
+          // pinned-right column's sticky `right: 0` anchors to the SAME
+          // right content edge in the header as in the body. Without it,
+          // the body's ~15px classic scrollbar shifts the body's pinned
+          // column left of the header's by exactly the scrollbar width
+          // (the filter row + footer mirror this for the same reason).
+          //
+          // `--cx-table-header-group-rows-h` exposes the group-rows total
+          // height so the demo CSS can paint the 15px scrollbar gutter with a
+          // split background (group bg over the group rows, leaf bg over the
+          // leaf row). Without it the gutter shows the leaf bg alone and
+          // mismatches the group row it sits beside.
+          style: {
+            overflowX: 'hidden',
+            overflowY: 'scroll',
+            '--cx-table-header-group-rows-h': `${tableMaxHeaderDepth.value * t.headerGroupHeight}px`,
+          },
           // delegated header click — emits header-click with
           // resolved ColumnSpec when the click target's ancestor chain
           // includes [data-col-id]. adds a sibling delegate
@@ -11167,7 +11187,10 @@ export const ChronixTable = defineComponent({
               // inner-content-row structure so the body's `scrollLeft`
               // can be programmatically mirrored to `filterRowEl.scrollLeft`
               // (default `overflow: visible` ignores `scrollLeft`).
-              style: { overflowX: 'hidden' },
+              // `overflowY: 'scroll'` reserves the body-matching scrollbar
+              // gutter so a pinned-right filter cell aligns with its body
+              // cell (see the header container comment above).
+              style: { overflowX: 'hidden', overflowY: 'scroll' },
             },
             [
               h(
@@ -11964,8 +11987,16 @@ export const ChronixTable = defineComponent({
           // horizontal scrollbar appears + pinned cells' sticky
           // positioning has a scrolling ancestor to anchor against. No
           // visible change when columns fit (no scrollbar materializes).
+          //
+          // `overflowY: 'scroll'` (not `auto`) reserves a STABLE
+          // vertical-scrollbar gutter whether the body overflows or not,
+          // matching the header / filter / footer's reserved gutter so a
+          // pinned-right column's sticky `right: 0` lands on the same
+          // right edge across all four rows. With `auto`, a short body
+          // drops the scrollbar + shifts its pinned column ~15px right
+          // of the header's; `scroll` keeps the edges identical.
           style: {
-            overflowY: 'auto',
+            overflowY: 'scroll',
             overflowX: 'auto',
             position: 'relative',
           },
@@ -12147,7 +12178,10 @@ export const ChronixTable = defineComponent({
                 // `overflowX: hidden` makes the footer's
                 // `scrollLeft` setter meaningful so the body's
                 // onScroll mirror works (same trick as the header).
-                style: { overflowX: 'hidden' },
+                // `overflowY: 'scroll'` reserves the body-matching
+                // scrollbar gutter so pinned-right footer cells align
+                // (see the header container comment above).
+                style: { overflowX: 'hidden', overflowY: 'scroll' },
               },
               [footerRow],
             );

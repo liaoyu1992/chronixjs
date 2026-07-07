@@ -305,12 +305,28 @@ describe('<ChronixTable> (react).1 rowLayoutPass + absolute body rows (vue3)', (
 });
 
 describe('<ChronixTable> (react).1 virtualRowsPass + scrollport (vue3)', () => {
-  it('body scrollport carries overflow-y:auto + overflow-x:auto (flipped from hidden)', () => {
+  // overflow-y is 'scroll' (not 'auto') so the body reserves a STABLE
+  // vertical-scrollbar gutter that the header / filter / footer mirror —
+  // keeps a pinned-right column's sticky `right:0` on the same right edge
+  // across all four rows. With 'auto' a real ~15px classic scrollbar shifts
+  // the body's pinned column left of the header's by the scrollbar width.
+  it('body scrollport carries overflow-y:scroll + overflow-x:auto', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     const body = container.querySelector('.cx-table-body');
     const style = body?.getAttribute('style') ?? '';
-    expect(style).toMatch(/overflow-y:\s*auto/i);
+    expect(style).toMatch(/overflow-y:\s*scroll/i);
     expect(style).toMatch(/overflow-x:\s*auto/i);
+  });
+
+  it('header / filter / footer mirror the body scrollbar gutter (overflow-y:scroll)', () => {
+    const { container } = render(
+      <ChronixTable columns={columns} rows={rows} showFilterRow showFooterRow />,
+    );
+    for (const sel of ['.cx-table-header', '.cx-table-filter-row', '.cx-table-footer']) {
+      const el = container.querySelector(sel);
+      const style = el?.getAttribute('style') ?? '';
+      expect(style).toMatch(/overflow-y:\s*scroll/i);
+    }
   });
 
   it('body-content layer carries explicit totalBodyHeight + width:totalWidth', () => {

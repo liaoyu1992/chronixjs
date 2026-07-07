@@ -139,11 +139,26 @@ describe('<ChronixTable>', () => {
     expect(bodyCells.map((c) => c.attributes('data-col-id'))).toEqual(['a', 'c']);
   });
 
-  it('.cx-table-body is the scrollport with overflow-y:auto', () => {
+  // overflow-y is 'scroll' (not 'auto') so the body reserves a STABLE
+  // vertical-scrollbar gutter that the header / filter / footer mirror —
+  // keeps a pinned-right column's sticky `right:0` on the same right edge
+  // across all four rows. With 'auto' a real ~15px classic scrollbar shifts
+  // the body's pinned column left of the header's by the scrollbar width.
+  it('.cx-table-body is the scrollport with overflow-y:scroll', () => {
     const wrapper = mount(ChronixTable, { props: { columns, rows } });
     const body = wrapper.find('.cx-table-body');
     const style = body.attributes('style');
-    expect(style).toMatch(/overflow-y:\s*auto/i);
+    expect(style).toMatch(/overflow-y:\s*scroll/i);
+  });
+
+  it('header / filter / footer mirror the body scrollbar gutter (overflow-y:scroll)', () => {
+    const wrapper = mount(ChronixTable, {
+      props: { columns, rows, showFilterRow: true, showFooterRow: true },
+    });
+    for (const sel of ['.cx-table-header', '.cx-table-filter-row', '.cx-table-footer']) {
+      const style = wrapper.find(sel).attributes('style') ?? '';
+      expect(style).toMatch(/overflow-y:\s*scroll/i);
+    }
   });
 
   it('.cx-table-body-content is the virtual content layer with position:relative + totalBodyHeight', () => {
