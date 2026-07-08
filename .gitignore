@@ -41,7 +41,19 @@ goldens/.cache
 .claude/memory/raw/
 .claude/settings.local.json
 
-# Python bytecode (claude-smart scripts)
+# qoder self-evolution system — runtime + personal data stays local.
+# System code (.qoder/bin, .qoder/hooks, .qoder/memory/*.py) and team
+# instincts (.qoder/homunculus/instincts/team/) ARE tracked for portability.
+.qoder/data/
+.qoder/config/ai-gateway.env
+.qoder/homunculus/instincts/personal/
+.qoder/homunculus/instincts/promote-candidates.md
+.qoder/rules/auto-evolved.md
+.qoder/rules/injected-memory.md
+.qoder/memory/raw/
+.qoder/settings.local.json
+
+# Python bytecode (self-evolution scripts)
 __pycache__/
 *.py[cod]
 
