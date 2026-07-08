@@ -5,22 +5,24 @@ import { h } from 'vue';
 import { ChronixTable } from './chronix-table.js';
 
 import type {
-  BlockState,
   CollectUniqueColumnValuesResult,
   ColumnSpec,
   FilterExpression,
   FilterSpec,
-  GetRowsParams,
-  GetRowsResult,
   MultiFilterEntry,
   MultiFilterSpec,
   NumberFilterSpec,
   ParseFilterExpressionResult,
   RowSpec,
-  ServerSideDataSource,
   SortSpec,
   TextFilterSpec,
 } from '@chronixjs/table';
+import type {
+  BlockState,
+  GetRowsParams,
+  GetRowsResult,
+  ServerSideDataSource,
+} from '@chronixjs/table-server-side';
 
 const columns: readonly ColumnSpec[] = [
   { id: 'id', field: 'id', headerName: 'ID', width: 80 },

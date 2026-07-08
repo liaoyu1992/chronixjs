@@ -66,30 +66,8 @@ export {
 } from './ir/index.js';
 
 // Data sources
-export type {
-  BlockState,
-  ColumnTable,
-  CreateServerSideRowSourceOptions,
-  GetRowsParams,
-  GetRowsResult,
-  RowDataSource,
-  ServerSideDataSource,
-  ServerSideRowSource,
-  ServerSideViewParams,
-} from './data/index.js';
-export {
-  BLOCK_KIND_ERROR,
-  BLOCK_KIND_IDLE,
-  BLOCK_KIND_LOADED,
-  BLOCK_KIND_LOADING,
-  createClientSideRowSource,
-  createColumnTable,
-  createServerSideRowSource,
-  DEFAULT_CACHE_BLOCK_SIZE,
-  DEFAULT_SERVER_SIDE_MAX_BLOCKS_IN_CACHE,
-  isServerSideSkeletonRowId,
-  SERVER_SIDE_SKELETON_ID_PREFIX,
-} from './data/index.js';
+export type { ColumnTable, RowDataSource } from './data/index.js';
+export { createClientSideRowSource, createColumnTable } from './data/index.js';
 
 // Layout passes
 export type {

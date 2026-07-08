@@ -95,16 +95,18 @@ import type {
   FilterSpec,
   MultiFilterEntry,
   MultiFilterSpec,
-  GetRowsParams,
-  GetRowsResult,
   ParseFilterExpressionResult,
   RowSpec,
-  ServerSideDataSource,
   SortSpec,
   TableViewState,
   TextFilterSpec,
   ToolPanelConfig,
 } from '@chronixjs/table';
+import type {
+  GetRowsParams,
+  GetRowsResult,
+  ServerSideDataSource,
+} from '@chronixjs/table-server-side';
 
 const columns: readonly ColumnSpec[] = [
   { id: 'id', field: 'id', headerName: 'ID', width: 80 },

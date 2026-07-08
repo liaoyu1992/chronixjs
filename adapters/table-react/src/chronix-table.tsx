@@ -26,15 +26,6 @@ import {
   computeScrollIntoView,
   computeVisiblePageNumbers,
   createClientSideRowSource,
-  createServerSideRowSource,
-  BLOCK_KIND_IDLE,
-  DEFAULT_CACHE_BLOCK_SIZE,
-  DEFAULT_SERVER_SIDE_MAX_BLOCKS_IN_CACHE,
-  SERVER_SIDE_SKELETON_ID_PREFIX,
-  isServerSideSkeletonRowId,
-  type BlockState,
-  type ServerSideDataSource,
-  type ServerSideRowSource,
   deriveShiftArrowCellRange,
   findDataRegionBoundary,
   type CellValueFn,
@@ -131,6 +122,17 @@ import {
   type SortSpec,
   type TextFilterSpec,
 } from '@chronixjs/table';
+import {
+  createServerSideRowSource,
+  BLOCK_KIND_IDLE,
+  DEFAULT_CACHE_BLOCK_SIZE,
+  DEFAULT_SERVER_SIDE_MAX_BLOCKS_IN_CACHE,
+  SERVER_SIDE_SKELETON_ID_PREFIX,
+  isServerSideSkeletonRowId,
+  type BlockState,
+  type ServerSideDataSource,
+  type ServerSideRowSource,
+} from '@chronixjs/table-server-side';
 import {
   DEFAULT_VIRTUAL_WINDOW_OVERSCAN,
   computeHsvAtSquarePosition,
