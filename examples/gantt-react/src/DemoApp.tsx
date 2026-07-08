@@ -337,6 +337,31 @@ export const DemoApp: FC = () => {
 
   return (
     <div className="cx-demo-app">
+      <aside className="cx-demo-side">
+        <h2>events</h2>
+        {events.length > 0 ? (
+          <ul className="cx-demo-events">
+            {events.map((event) => (
+              <li key={event.id} className={`cx-demo-event kind-${event.kind}`}>
+                <div className="cx-demo-event-kind">{event.kind}</div>
+                <div className="cx-demo-event-detail">{event.detail}</div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="cx-demo-empty">
+            Drag a bar body to move, drag a bar edge to resize, or drag an empty row to select a
+            range.
+          </div>
+        )}
+        <footer className="cx-demo-footer">
+          <code>{bars.length}</code> bars across <code>{rowsList.length}</code> rows. Day axis from
+          local midnight.
+          <br />
+          Commit events update the bar state in place — drag, then drag again to see the new
+          baseline.
+        </footer>
+      </aside>
       <main className="cx-demo-main">
         {cfg.values.parity ? (
           <div className="cx-demo-parity-banner" data-parity-mode="true">
@@ -547,31 +572,6 @@ export const DemoApp: FC = () => {
           </p>
         </details>
       </main>
-      <aside className="cx-demo-side">
-        <h2>events</h2>
-        {events.length > 0 ? (
-          <ul className="cx-demo-events">
-            {events.map((event) => (
-              <li key={event.id} className={`cx-demo-event kind-${event.kind}`}>
-                <div className="cx-demo-event-kind">{event.kind}</div>
-                <div className="cx-demo-event-detail">{event.detail}</div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="cx-demo-empty">
-            Drag a bar body to move, drag a bar edge to resize, or drag an empty row to select a
-            range.
-          </div>
-        )}
-        <footer className="cx-demo-footer">
-          <code>{bars.length}</code> bars across <code>{rowsList.length}</code> rows. Day axis from
-          local midnight.
-          <br />
-          Commit events update the bar state in place — drag, then drag again to see the new
-          baseline.
-        </footer>
-      </aside>
     </div>
   );
 };

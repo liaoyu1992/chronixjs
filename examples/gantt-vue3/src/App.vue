@@ -375,6 +375,29 @@ function resetBars(): void {
 
 <template>
   <div class="cx-demo-app">
+    <aside class="cx-demo-side">
+      <h2>events</h2>
+      <ul v-if="events.length > 0" class="cx-demo-events">
+        <li
+          v-for="event in events"
+          :key="event.id"
+          class="cx-demo-event"
+          :class="`kind-${event.kind}`"
+        >
+          <div class="cx-demo-event-kind">{{ event.kind }}</div>
+          <div class="cx-demo-event-detail">{{ event.detail }}</div>
+        </li>
+      </ul>
+      <div v-else class="cx-demo-empty">
+        Drag a bar body to move, drag a bar edge to resize, or drag an empty row to select a range.
+      </div>
+      <footer class="cx-demo-footer">
+        <code>{{ bars.length }}</code> bars across <code>{{ initialRows.length }}</code> rows. Day
+        axis from local midnight.
+        <br />
+        Commit events update the bar state in place — drag, then drag again to see the new baseline.
+      </footer>
+    </aside>
     <main class="cx-demo-main">
       <div v-if="cfg.parity.value" class="cx-demo-parity-banner" data-parity-mode="true">
         Parity mode active — sample data mirrors the original spec demo ({{
@@ -522,28 +545,5 @@ function resetBars(): void {
         </p>
       </details>
     </main>
-    <aside class="cx-demo-side">
-      <h2>events</h2>
-      <ul v-if="events.length > 0" class="cx-demo-events">
-        <li
-          v-for="event in events"
-          :key="event.id"
-          class="cx-demo-event"
-          :class="`kind-${event.kind}`"
-        >
-          <div class="cx-demo-event-kind">{{ event.kind }}</div>
-          <div class="cx-demo-event-detail">{{ event.detail }}</div>
-        </li>
-      </ul>
-      <div v-else class="cx-demo-empty">
-        Drag a bar body to move, drag a bar edge to resize, or drag an empty row to select a range.
-      </div>
-      <footer class="cx-demo-footer">
-        <code>{{ bars.length }}</code> bars across <code>{{ initialRows.length }}</code> rows. Day
-        axis from local midnight.
-        <br />
-        Commit events update the bar state in place — drag, then drag again to see the new baseline.
-      </footer>
-    </aside>
   </div>
 </template>

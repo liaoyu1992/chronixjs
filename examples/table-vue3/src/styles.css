@@ -3,6 +3,8 @@ body,
 #app {
   margin: 0;
   padding: 0;
+  height: 100%;
+  overflow: hidden;
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -16,10 +18,36 @@ body,
   background: #f5f6f8;
 }
 
-.demo-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px;
+.demo-app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.demo-app-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #eaf9ff;
+  border-right: 1px solid #d3e2e8;
+  padding: 12px;
+}
+
+.demo-app-main {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 24px;
+}
+
+@media print {
+  .demo-app-sidebar {
+    display: none;
+  }
 }
 
 .demo-page__header h1 {
@@ -67,15 +95,6 @@ body,
   background: #fff;
   border: 1px solid #d9dde2;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  /* cap the demo's table width so that the
-   * combined column widths overflow horizontally + the body's new
-   * `overflowX: auto` exposes a horizontal scrollbar — exercising the
-   * pinned-column sticky behavior. With the column minWidth clamps
-   * (id=80 + name=120 + qty=100 + price=110 + status=120 + note=160 →
-   * total ≥ 690px), the table overflows any container narrower than
-   * that. Capping at 680px reliably puts the demo into the scroll
-   * regime even on wide screens. */
-  max-width: 680px;
 }
 
 .cx-table-wrapper {
@@ -771,12 +790,21 @@ body,
   border: 0;
 }
 
-/* pinned row hover state + shadow accent.
- * Matches the pinned-column accent so pinned rows feel like
- * the row-axis equivalent. CSS-only — no new theme tokens. */
+/* pinned row opaque background via the SFC's inline token.
+ * The SFC sets `background: var(--cx-table-pinned-zone-bg, inherit)` INLINE
+ * on pinned rows — inline beats any CSS `background-color`, and the
+ * `inherit` fallback is transparent over a transparent body, so rows
+ * scrolling underneath bleed through. Define the token at ROW scope
+ * (scoped — NOT global: pinned columns reuse the same token with their own
+ * zebra fallback) to an opaque color, in default + hover states. */
+.cx-table-row--pinned-top,
+.cx-table-row--pinned-bottom {
+  --cx-table-pinned-zone-bg: var(--cx-table-odd-row-bg, #ffffff);
+}
+
 .cx-table-row--pinned-top:hover,
 .cx-table-row--pinned-bottom:hover {
-  background-color: var(--cx-table-row-hover-bg, rgba(15, 23, 42, 0.04));
+  --cx-table-pinned-zone-bg: var(--cx-table-even-row-bg, #fafbfc);
 }
 
 .cx-table-row--pinned-top {

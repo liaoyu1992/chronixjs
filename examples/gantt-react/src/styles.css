@@ -20,6 +20,8 @@ body,
 #root {
   margin: 0;
   padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* chronix-react demo chrome mirrors chronix-vue3
@@ -28,29 +30,33 @@ body,
    same visual structure across adapters. */
 
 .cx-demo-app {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  min-height: 100vh;
-  width: 100vw;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
   gap: 1px;
   background: #d1d5db;
 }
 
 .cx-demo-main {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow: auto;
   background: #ffffff;
   padding: 16px 24px;
-  overflow: auto;
-  min-width: 0;
 }
 
 .cx-demo-side {
+  width: 300px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: #ffffff;
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  overflow-y: auto;
-  max-height: 100vh;
 }
 
 .cx-demo-header {

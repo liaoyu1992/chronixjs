@@ -3,6 +3,8 @@ body,
 #root {
   margin: 0;
   padding: 0;
+  height: 100%;
+  overflow: hidden;
   font-family:
     -apple-system,
     BlinkMacSystemFont,
@@ -16,10 +18,36 @@ body,
   background: #f5f6f8;
 }
 
-.demo-page {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px;
+.demo-app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.demo-app-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #eaf9ff;
+  border-right: 1px solid #d3e2e8;
+  padding: 12px;
+}
+
+.demo-app-main {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 24px;
+}
+
+@media print {
+  .demo-app-sidebar {
+    display: none;
+  }
 }
 
 .demo-page__header h1 {
@@ -68,11 +96,6 @@ body,
   border: 1px solid #d9dde2;
   border-radius: 6px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  /* (2026-05-26 — react port of vue3): cap table
-   * width so combined column widths overflow horizontally + the body's
-   * new overflowX: auto materializes a scrollbar — exercising pinned-
-   * column sticky behavior. */
-  max-width: 680px;
   overflow: hidden;
 }
 
@@ -712,10 +735,19 @@ body,
   border: 0;
 }
 
-/* (2026-05-29 — react port): pinned row hover + shadow accent. */
+/* (2026-05-29 — react port): pinned row opaque background via inline token.
+ * The SFC sets `background: var(--cx-table-pinned-zone-bg, inherit)` inline;
+ * inline beats CSS background-color, and `inherit` is transparent over a
+ * transparent body. Define the token at row scope (scoped, not global —
+ * pinned columns reuse it) to an opaque color, default + hover. */
+.cx-table-row--pinned-top,
+.cx-table-row--pinned-bottom {
+  --cx-table-pinned-zone-bg: var(--cx-table-odd-row-bg, #ffffff);
+}
+
 .cx-table-row--pinned-top:hover,
 .cx-table-row--pinned-bottom:hover {
-  background-color: var(--cx-table-row-hover-bg, rgba(15, 23, 42, 0.04));
+  --cx-table-pinned-zone-bg: var(--cx-table-even-row-bg, #fafbfc);
 }
 
 .cx-table-row--pinned-top {

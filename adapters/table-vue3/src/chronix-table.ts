@@ -11905,7 +11905,7 @@ export const ChronixTable = defineComponent({
               width: `${totalWithRowDrag}px`,
               height: `${rowH}px`,
               zIndex: String(t.pinnedRowZIndex),
-              background: 'var(--cx-table-pinned-zone-bg, inherit)',
+              background: 'var(--cx-table-pinned-zone-bg, var(--cx-table-odd-row-bg, #ffffff))',
             },
           },
           rowChildren,

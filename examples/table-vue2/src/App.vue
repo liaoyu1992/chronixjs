@@ -1334,371 +1334,382 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
 </script>
 
 <template>
-  <main class="demo-page">
-    <header class="demo-page__header">
-      <h1>@chronixjs/table-vue2</h1>
-      <p class="demo-page__sort-pill">
-        {{ currentSortLabel || '未排序 (点击表头切换；Shift+点击 追加列)' }}
-      </p>
-      <p class="demo-page__filter-pill">
-        {{ currentFilterLabel || '无过滤 (在表头下方输入框中输入)' }}
-      </p>
-      <p data-testid="quick-find-state" class="demo-page__filter-pill">
-        {{
-          currentQuickFindText
-            ? `quick-find "${currentQuickFindText}" → ${currentQuickFindMatchCount} 行匹配`
-            : '无 quick-find (输入框为空)'
-        }}
-      </p>
-      <p class="demo-page__selection-pill">{{ currentSelectionLabel }}</p>
-      <p class="demo-page__page-pill">{{ currentPageLabel }}</p>
-      <p class="demo-page__edit-pill">
-        {{ currentEditLabel || '未编辑 (双击 备注 列 → 输入 → Enter 提交)' }}
-      </p>
-      <p class="demo-page__resize-pill">
-        {{ currentResizeLabel || '未调整列宽 (悬浮表头右边缘 → 拖动)' }}
-      </p>
-      <p class="demo-page__reorder-pill">
-        {{ currentReorderLabel || '未拖拽列序 (拖动表头单元格 ≥ 5px → 落点 gap-line 显示)' }}
-      </p>
-      <p class="demo-page__range-pill">
-        {{
-          currentRangeLabel ||
-          '未选择 cell 区域 (在 cell 上 pointerdown + drag 选区；shift+click 延伸；按钮可程序化设定/清空)'
-        }}
-      </p>
-      <p class="demo-page__copy-pill">
-        {{
-          currentCopiedTsv || '未复制 cell-range (cell-range 激活后按 Ctrl+C / Cmd+C 复制为 TSV)'
-        }}
-      </p>
-      <p class="demo-page__paste-pill">
-        {{
-          currentPasteSummary ||
-          '未粘贴 cell-range (cell-range 激活后按 Ctrl+V / Cmd+V → 粘贴 TSV 到选区)'
-        }}
-      </p>
-      <p class="demo-page__fill-pill">
-        {{
-          currentFillSummary ||
-          '未触发 drag-fill (cell-range 激活后 drag 右下角小方块 → 沿主导轴 axis-lock)'
-        }}
-      </p>
-      <p class="demo-page__history-pill">
-        undo stack: past={{ currentUndoHistoryState.past.length }} future={{
-          currentUndoHistoryState.future.length
-        }}
-        (Ctrl+Z/Y or buttons)
-      </p>
-      <p class="demo-page__history-replay-pill">
-        {{
-          currentHistoryReplay ? `最近 history-replay: ${currentHistoryReplay}` : '未触发 undo/redo'
-        }}
-      </p>
-      <p class="demo-page__history-replay-pill">
-        {{
-          currentHeaderGroupClick
-            ? `最近 header-group-click: ${currentHeaderGroupClick}`
-            : '未触发 header-group-click'
-        }}
-      </p>
-    </header>
-    <section class="demo-page__table">
-      <div class="demo-page__autosize-actions">
-        <label class="demo-page__inline-toggle">
-          Quick-find:
-          <input
-            type="text"
-            data-testid="quick-find-input"
-            class="demo-page__quick-find-input"
-            placeholder="搜索全表 (跨列 OR)"
-            :value="currentQuickFindText"
-            @input="onQuickFindInput"
-          />
-        </label>
-        <label class="demo-page__inline-toggle demo-page__advanced-filter">
-          高级 filter (DSL):
-          <input
-            type="text"
-            data-testid="advanced-filter-input"
-            class="demo-page__advanced-filter-input"
-            placeholder='qty > 10 AND name CONTAINS "alpha"'
-            :value="advancedFilterText"
-            @input="onAdvancedFilterInput"
-          />
-          <button type="button" @click="onAdvancedFilterApply">应用</button>
-          <button type="button" @click="onAdvancedFilterFillExample">示例</button>
-          <button type="button" @click="onAdvancedFilterClear">清空</button>
-        </label>
-        <p
-          v-if="advancedFilterErrors.length > 0"
-          class="demo-page__advanced-filter-errors"
-          data-testid="advanced-filter-errors"
-        >
-          解析错误:
-          <span v-for="(err, i) in advancedFilterErrors" :key="i">
-            [pos {{ err.position }}] {{ err.message }};
-          </span>
+  <div class="demo-app">
+    <aside class="demo-app-sidebar">
+      <header class="demo-page__header">
+        <h1>@chronixjs/table-vue2</h1>
+        <p class="demo-page__sort-pill">
+          {{ currentSortLabel || '未排序 (点击表头切换；Shift+点击 追加列)' }}
         </p>
-        <p v-if="advancedFilterStatus !== ''" class="demo-page__advanced-filter-status">
-          {{ advancedFilterStatus }}
+        <p class="demo-page__filter-pill">
+          {{ currentFilterLabel || '无过滤 (在表头下方输入框中输入)' }}
         </p>
-        <button type="button" @click="onAutosizeAll">全部 autosize</button>
-        <button type="button" @click="onAutosizeQty">autosize 数量 列</button>
-        <button type="button" @click="onSetCellRange">setCellRange r1/name..r5/price</button>
-        <button type="button" @click="onClearCellRange">clearCellRange</button>
-        <button type="button" @click="onCopyCellRange">copyCellRangeToClipboard</button>
-        <button type="button" @click="onPasteCellRange">pasteCellRangeFromClipboard</button>
-        <button type="button" @click="onFillToR10Qty">fillCellRange r1/qty → r10/qty</button>
-        <button type="button" :disabled="!canUndoNow" @click="onUndoClick">Undo (Ctrl+Z)</button>
-        <button type="button" :disabled="!canRedoNow" @click="onRedoClick">Redo (Ctrl+Y)</button>
-        <button type="button" @click="onClearHistoryClick">clearHistory</button>
-        <label class="demo-page__inline-toggle">
-          <input v-model="enableAutoScroll" type="checkbox" />
-          enableKeyboardAutoScroll
-        </label>
-        <button type="button" @click="onJumpFarActiveCell">setActiveCell r19/qty</button>
-        <button type="button" data-testid="csv-export-btn" @click="onExportCsv">Export CSV</button>
-        <button
-          type="button"
-          data-testid="xlsx-export-btn"
-          :disabled="xlsxBusy"
-          @click="onExportXlsx"
-        >
-          {{ xlsxBusy ? 'Exporting…' : 'Export XLSX' }}
-        </button>
-        <button
-          type="button"
-          data-testid="xlsx-multisheet-btn"
-          :disabled="xlsxBusy"
-          @click="onExportXlsxMultiSheet"
-        >
-          {{ xlsxBusy ? 'Exporting…' : 'Export 3-sheet XLSX' }}
-        </button>
-        <span v-if="xlsxError" data-testid="xlsx-error">{{ xlsxError }}</span>
-        <button type="button" data-testid="save-view-btn" @click="onSaveView">Save view</button>
-        <button type="button" data-testid="load-view-btn" @click="onLoadView">Load view</button>
-        <span v-if="savedViewStatus" data-testid="saved-view-status">{{ savedViewStatus }}</span>
-      </div>
-      <ChronixTable
-        ref="table"
-        :show-status-bar="true"
-        :columns="columns"
-        :rows="rows"
-        :show-filter-row="true"
-        :show-footer-row="true"
-        :show-column-visibility-menu="true"
-        :show-column-header-menu="true"
-        :context-menu="phase83ContextMenuConfig"
-        @column-header-menu-action="onColumnHeaderMenuAction"
-        :enable-keyboard-navigation="true"
-        :enable-keyboard-auto-scroll="enableAutoScroll"
-        selection-mode="multi"
-        :selection-column="{ show: true, side: 'left' }"
-        :row-drag-column="{ show: true, side: 'left' }"
-        :pagination-enabled="true"
-        :initial-page-size="20"
-        cell-range-selection="enabled"
-        :enable-undo-history="true"
-        @sort-change="onSortChange"
-        @filter-change="onFilterChange"
-        @quick-find-text-change="onQuickFindTextChange"
-        @selection-change="onSelectionChange"
-        @page-change="onPageChange"
-        @cell-value-change="onCellValueChange"
-        @column-width-change="onColumnWidthChange"
-        @column-order-change="onColumnOrderChange"
-        @row-order-change="onRowOrderChange"
-        @column-visibility-change="onColumnVisibilityChange"
-        @columns-change="onColumnsChange"
-        @cell-range-start="onCellRangeStart"
-        @cell-range-change="onCellRangeChange"
-        @cell-range-stop="onCellRangeStop"
-        @cell-range-copy="onCellRangeCopy"
-        @cell-range-paste="onCellRangePaste"
-        @cell-range-fill="onCellRangeFill"
-        @history-replay="onHistoryReplay"
-        @history-change="onHistoryChange"
-        @header-group-click="onHeaderGroupClick"
-      />
-    </section>
-    <section class="demo-page__table demo-page__tree-table">
-      <header class="demo-page__tree-header">
-        <h2>Tree data (vue2 port)</h2>
-        <p>
-          File-tree demo: ~85 行 nested 4 levels (project → module → folder → file). 单击 chevron
-          切换展开 / 折叠；activeCell 在 <code>名称</code> 列时 <strong>Enter</strong> /
-          <strong>Space</strong> 切换；<strong>ArrowRight</strong> 展开折叠节点；<strong
-            >ArrowLeft</strong
+        <p data-testid="quick-find-state" class="demo-page__filter-pill">
+          {{
+            currentQuickFindText
+              ? `quick-find "${currentQuickFindText}" → ${currentQuickFindMatchCount} 行匹配`
+              : '无 quick-find (输入框为空)'
+          }}
+        </p>
+        <p class="demo-page__selection-pill">{{ currentSelectionLabel }}</p>
+        <p class="demo-page__page-pill">{{ currentPageLabel }}</p>
+        <p class="demo-page__edit-pill">
+          {{ currentEditLabel || '未编辑 (双击 备注 列 → 输入 → Enter 提交)' }}
+        </p>
+        <p class="demo-page__resize-pill">
+          {{ currentResizeLabel || '未调整列宽 (悬浮表头右边缘 → 拖动)' }}
+        </p>
+        <p class="demo-page__reorder-pill">
+          {{ currentReorderLabel || '未拖拽列序 (拖动表头单元格 ≥ 5px → 落点 gap-line 显示)' }}
+        </p>
+        <p class="demo-page__range-pill">
+          {{
+            currentRangeLabel ||
+            '未选择 cell 区域 (在 cell 上 pointerdown + drag 选区；shift+click 延伸；按钮可程序化设定/清空)'
+          }}
+        </p>
+        <p class="demo-page__copy-pill">
+          {{
+            currentCopiedTsv || '未复制 cell-range (cell-range 激活后按 Ctrl+C / Cmd+C 复制为 TSV)'
+          }}
+        </p>
+        <p class="demo-page__paste-pill">
+          {{
+            currentPasteSummary ||
+            '未粘贴 cell-range (cell-range 激活后按 Ctrl+V / Cmd+V → 粘贴 TSV 到选区)'
+          }}
+        </p>
+        <p class="demo-page__fill-pill">
+          {{
+            currentFillSummary ||
+            '未触发 drag-fill (cell-range 激活后 drag 右下角小方块 → 沿主导轴 axis-lock)'
+          }}
+        </p>
+        <p class="demo-page__history-pill">
+          undo stack: past={{ currentUndoHistoryState.past.length }} future={{
+            currentUndoHistoryState.future.length
+          }}
+          (Ctrl+Z/Y or buttons)
+        </p>
+        <p class="demo-page__history-replay-pill">
+          {{
+            currentHistoryReplay
+              ? `最近 history-replay: ${currentHistoryReplay}`
+              : '未触发 undo/redo'
+          }}
+        </p>
+        <p class="demo-page__history-replay-pill">
+          {{
+            currentHeaderGroupClick
+              ? `最近 header-group-click: ${currentHeaderGroupClick}`
+              : '未触发 header-group-click'
+          }}
+        </p>
+      </header>
+    </aside>
+    <main class="demo-app-main">
+      <section class="demo-page__table">
+        <div class="demo-page__autosize-actions">
+          <label class="demo-page__inline-toggle">
+            Quick-find:
+            <input
+              type="text"
+              data-testid="quick-find-input"
+              class="demo-page__quick-find-input"
+              placeholder="搜索全表 (跨列 OR)"
+              :value="currentQuickFindText"
+              @input="onQuickFindInput"
+            />
+          </label>
+          <label class="demo-page__inline-toggle demo-page__advanced-filter">
+            高级 filter (DSL):
+            <input
+              type="text"
+              data-testid="advanced-filter-input"
+              class="demo-page__advanced-filter-input"
+              placeholder='qty > 10 AND name CONTAINS "alpha"'
+              :value="advancedFilterText"
+              @input="onAdvancedFilterInput"
+            />
+            <button type="button" @click="onAdvancedFilterApply">应用</button>
+            <button type="button" @click="onAdvancedFilterFillExample">示例</button>
+            <button type="button" @click="onAdvancedFilterClear">清空</button>
+          </label>
+          <p
+            v-if="advancedFilterErrors.length > 0"
+            class="demo-page__advanced-filter-errors"
+            data-testid="advanced-filter-errors"
           >
-          折叠展开节点 (折叠态 + 有父则跳到父行)。
-        </p>
-        <div class="demo-page__autosize-actions">
-          <button type="button" @click="onTreeExpandAll">全展开</button>
-          <button type="button" @click="onTreeCollapseAll">全折叠</button>
-          <span class="demo-page__sort-pill">当前展开: {{ treeExpandedCount }} 个节点</span>
-        </div>
-      </header>
-      <ChronixTable
-        ref="treeTable"
-        :columns="treeColumns"
-        :rows="treeRows"
-        :enable-keyboard-navigation="true"
-        :default-expanded-depth="1"
-        selection-mode="multi"
-        :selection-column="{ show: true, side: 'left' }"
-        @expanded-change="onTreeExpandedChange"
-      />
-    </section>
-    <section class="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
-      <header>
-        <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
-        <p>
-          <strong>Pinned rows</strong>：顶端 ⭐ + 底端 合计 (RowSpec.pinned)；不参与 sort / filter /
-          page / virtualization。 <strong>Tooltip</strong>：悬停 备注 列 250ms 出 popover。
-          <strong>Overlay</strong>：loading / 空状态。
-        </p>
-        <div class="demo-page__autosize-actions">
-          <button type="button" data-testid="tier2-loading-toggle" @click="onTier2ToggleLoading">
-            {{ tier2Loading ? '停止加载' : '显示 Loading' }}
-          </button>
-          <button type="button" data-testid="tier2-empty-toggle" @click="onTier2ToggleEmpty">
-            {{ tier2EmptyMode ? '恢复数据' : '清空数据' }}
-          </button>
-        </div>
-      </header>
-      <ChronixTable
-        :columns="tier2Columns"
-        :rows="tier2Rows"
-        :loading="tier2Loading"
-        data-testid="tier2-table"
-      />
-    </section>
-    <section class="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
-      <header>
-        <h2>Lazy-load tree children</h2>
-        <p>
-          <strong>Lazy load</strong>：<code>hasChildren: true</code> → 首次展开调用
-          <code>childrenLoader</code>；500ms 模拟延迟；<code>lazy-fail-1</code> 失败 + 重试。
-        </p>
-        <div class="demo-page__autosize-actions">
-          <button type="button" data-testid="lazy-invalidate-all" @click="onLazyInvalidateAll">
-            Reload All
-          </button>
-          <span class="demo-page__sort-pill">
-            start: {{ lazyLoadCounts.start }} / success: {{ lazyLoadCounts.success }} / error:
-            {{ lazyLoadCounts.error }}
-          </span>
-        </div>
-      </header>
-      <ChronixTable
-        ref="lazyTable"
-        :columns="lazyColumns"
-        :rows="lazyRoots"
-        :children-loader="lazyChildrenLoader"
-        data-testid="lazy-table"
-        @lazy-load-start="onLazyStart"
-        @lazy-load-success="onLazySuccess"
-        @lazy-load-error="onLazyError"
-      />
-    </section>
-    <section
-      class="demo-page__table demo-page__server-side-table"
-      data-testid="server-side-section"
-    >
-      <header>
-        <h2>Server-side row model (vue2)</h2>
-        <p>
-          <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per request.
-          <strong>Skeleton rows</strong>: unloaded indices render shimmer bars.
-          <strong>pagination</strong>: toggle ON → <code>pageSize</code> becomes block size, body
-          renders only current page slice. <strong>invalidate</strong>: block 0 only — preserves
-          <code>totalRowCount</code> + other blocks. <strong>Toggle</strong>: switch to
-          <code>clientSide</code> mode to compare.
-        </p>
-        <div class="demo-page__autosize-actions">
-          <button type="button" data-testid="server-side-toggle" @click="onToggleRowModelType">
-            模式: {{ rowModelType === 'serverSide' ? 'server-side' : 'client-side' }} (点击切换)
-          </button>
-          <button type="button" data-testid="server-side-refresh" @click="onRefreshServerSide">
-            Refresh
+            解析错误:
+            <span v-for="(err, i) in advancedFilterErrors" :key="i">
+              [pos {{ err.position }}] {{ err.message }};
+            </span>
+          </p>
+          <p v-if="advancedFilterStatus !== ''" class="demo-page__advanced-filter-status">
+            {{ advancedFilterStatus }}
+          </p>
+          <button type="button" @click="onAutosizeAll">全部 autosize</button>
+          <button type="button" @click="onAutosizeQty">autosize 数量 列</button>
+          <button type="button" @click="onSetCellRange">setCellRange r1/name..r5/price</button>
+          <button type="button" @click="onClearCellRange">clearCellRange</button>
+          <button type="button" @click="onCopyCellRange">copyCellRangeToClipboard</button>
+          <button type="button" @click="onPasteCellRange">pasteCellRangeFromClipboard</button>
+          <button type="button" @click="onFillToR10Qty">fillCellRange r1/qty → r10/qty</button>
+          <button type="button" :disabled="!canUndoNow" @click="onUndoClick">Undo (Ctrl+Z)</button>
+          <button type="button" :disabled="!canRedoNow" @click="onRedoClick">Redo (Ctrl+Y)</button>
+          <button type="button" @click="onClearHistoryClick">clearHistory</button>
+          <label class="demo-page__inline-toggle">
+            <input v-model="enableAutoScroll" type="checkbox" />
+            enableKeyboardAutoScroll
+          </label>
+          <button type="button" @click="onJumpFarActiveCell">setActiveCell r19/qty</button>
+          <button type="button" data-testid="csv-export-btn" @click="onExportCsv">
+            Export CSV
           </button>
           <button
             type="button"
-            data-testid="server-side-pagination-toggle"
-            @click="onToggleServerSidePagination"
+            data-testid="xlsx-export-btn"
+            :disabled="xlsxBusy"
+            @click="onExportXlsx"
           >
-            Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }}
+            {{ xlsxBusy ? 'Exporting…' : 'Export XLSX' }}
           </button>
           <button
             type="button"
-            data-testid="server-side-invalidate-block-0"
-            @click="onInvalidateServerSideBlock0"
+            data-testid="xlsx-multisheet-btn"
+            :disabled="xlsxBusy"
+            @click="onExportXlsxMultiSheet"
           >
-            invalidateServerSideBlocks([0])
+            {{ xlsxBusy ? 'Exporting…' : 'Export 3-sheet XLSX' }}
           </button>
+          <span v-if="xlsxError" data-testid="xlsx-error">{{ xlsxError }}</span>
+          <button type="button" data-testid="save-view-btn" @click="onSaveView">Save view</button>
+          <button type="button" data-testid="load-view-btn" @click="onLoadView">Load view</button>
+          <span v-if="savedViewStatus" data-testid="saved-view-status">{{ savedViewStatus }}</span>
         </div>
-      </header>
-      <ChronixTable
-        ref="serverSideTable"
-        data-testid="server-side-table"
-        :columns="serverSideColumns"
-        :rows="emptyServerSideRows"
-        :row-model-type="rowModelType"
-        :server-side-data-source="mockServerSideDataSource"
-        :pagination-enabled="serverSidePaginationEnabled"
-        :initial-page-size="25"
-        :show-filter-row="true"
-      />
-    </section>
-    <section
-      class="demo-page__table demo-page__tier3-finale-table"
-      data-testid="tier3-finale-section"
-    >
-      <header>
-        <h2>Tier 3 finale (vue2 — row number + actions + auto-height)</h2>
-        <p>
-          <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code>.
-          <strong>Actions</strong>: <code>ColumnSpec.actions</code>; <code>task-2</code>'s 删除 is
-          disabled. <strong>Row auto-height</strong>: <code>enableRowAutoHeight: true</code> +
-          <code>wrapText: true</code>.
-        </p>
-        <div class="demo-page__autosize-actions">
-          <span class="demo-page__sort-pill" data-testid="tier3-edit-count">
-            编辑点击次数: {{ tier3LastEditCount }}
-          </span>
-          <span class="demo-page__sort-pill" data-testid="tier3-delete-count">
-            删除点击次数: {{ tier3LastDeleteCount }}
-          </span>
-        </div>
-      </header>
-      <ChronixTable
-        data-testid="tier3-finale-table"
-        :columns="tier3Columns"
-        :rows="tier3Rows"
-        :enable-row-auto-height="true"
-      />
-    </section>
-    <section class="demo-page__table demo-page__tool-panel-table" data-testid="tool-panel-section">
-      <header>
-        <h2>Tool-panel container (vue2 — chronix-NEW)</h2>
-        <p>
-          <strong>chronix-NEW container</strong>: composable descriptor-array API. 2 panels +
-          drag-to-resize + click-to-collapse.
-        </p>
-        <div class="demo-page__autosize-actions">
-          <span class="demo-page__sort-pill" data-testid="tool-panel-width">
-            Container width: {{ toolPanelLastWidth }}px
-          </span>
-        </div>
-      </header>
-      <ChronixTable
-        data-testid="tool-panel-table"
-        :columns="columns"
-        :rows="rows"
-        :tool-panel="toolPanelConfig"
-        @tool-panel-width-change="onToolPanelWidthChange"
-      />
-    </section>
-  </main>
+        <ChronixTable
+          ref="table"
+          :show-status-bar="true"
+          :columns="columns"
+          :rows="rows"
+          :show-filter-row="true"
+          :show-footer-row="true"
+          :show-column-visibility-menu="true"
+          :show-column-header-menu="true"
+          :context-menu="phase83ContextMenuConfig"
+          @column-header-menu-action="onColumnHeaderMenuAction"
+          :enable-keyboard-navigation="true"
+          :enable-keyboard-auto-scroll="enableAutoScroll"
+          selection-mode="multi"
+          :selection-column="{ show: true, side: 'left' }"
+          :row-drag-column="{ show: true, side: 'left' }"
+          :pagination-enabled="true"
+          :initial-page-size="20"
+          cell-range-selection="enabled"
+          :enable-undo-history="true"
+          @sort-change="onSortChange"
+          @filter-change="onFilterChange"
+          @quick-find-text-change="onQuickFindTextChange"
+          @selection-change="onSelectionChange"
+          @page-change="onPageChange"
+          @cell-value-change="onCellValueChange"
+          @column-width-change="onColumnWidthChange"
+          @column-order-change="onColumnOrderChange"
+          @row-order-change="onRowOrderChange"
+          @column-visibility-change="onColumnVisibilityChange"
+          @columns-change="onColumnsChange"
+          @cell-range-start="onCellRangeStart"
+          @cell-range-change="onCellRangeChange"
+          @cell-range-stop="onCellRangeStop"
+          @cell-range-copy="onCellRangeCopy"
+          @cell-range-paste="onCellRangePaste"
+          @cell-range-fill="onCellRangeFill"
+          @history-replay="onHistoryReplay"
+          @history-change="onHistoryChange"
+          @header-group-click="onHeaderGroupClick"
+        />
+      </section>
+      <section class="demo-page__table demo-page__tree-table">
+        <header class="demo-page__tree-header">
+          <h2>Tree data (vue2 port)</h2>
+          <p>
+            File-tree demo: ~85 行 nested 4 levels (project → module → folder → file). 单击 chevron
+            切换展开 / 折叠；activeCell 在 <code>名称</code> 列时 <strong>Enter</strong> /
+            <strong>Space</strong> 切换；<strong>ArrowRight</strong> 展开折叠节点；<strong
+              >ArrowLeft</strong
+            >
+            折叠展开节点 (折叠态 + 有父则跳到父行)。
+          </p>
+          <div class="demo-page__autosize-actions">
+            <button type="button" @click="onTreeExpandAll">全展开</button>
+            <button type="button" @click="onTreeCollapseAll">全折叠</button>
+            <span class="demo-page__sort-pill">当前展开: {{ treeExpandedCount }} 个节点</span>
+          </div>
+        </header>
+        <ChronixTable
+          ref="treeTable"
+          :columns="treeColumns"
+          :rows="treeRows"
+          :enable-keyboard-navigation="true"
+          :default-expanded-depth="1"
+          selection-mode="multi"
+          :selection-column="{ show: true, side: 'left' }"
+          @expanded-change="onTreeExpandedChange"
+        />
+      </section>
+      <section class="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
+        <header>
+          <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
+          <p>
+            <strong>Pinned rows</strong>：顶端 ⭐ + 底端 合计 (RowSpec.pinned)；不参与 sort / filter
+            / page / virtualization。 <strong>Tooltip</strong>：悬停 备注 列 250ms 出 popover。
+            <strong>Overlay</strong>：loading / 空状态。
+          </p>
+          <div class="demo-page__autosize-actions">
+            <button type="button" data-testid="tier2-loading-toggle" @click="onTier2ToggleLoading">
+              {{ tier2Loading ? '停止加载' : '显示 Loading' }}
+            </button>
+            <button type="button" data-testid="tier2-empty-toggle" @click="onTier2ToggleEmpty">
+              {{ tier2EmptyMode ? '恢复数据' : '清空数据' }}
+            </button>
+          </div>
+        </header>
+        <ChronixTable
+          :columns="tier2Columns"
+          :rows="tier2Rows"
+          :loading="tier2Loading"
+          data-testid="tier2-table"
+        />
+      </section>
+      <section class="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
+        <header>
+          <h2>Lazy-load tree children</h2>
+          <p>
+            <strong>Lazy load</strong>：<code>hasChildren: true</code> → 首次展开调用
+            <code>childrenLoader</code>；500ms 模拟延迟；<code>lazy-fail-1</code> 失败 + 重试。
+          </p>
+          <div class="demo-page__autosize-actions">
+            <button type="button" data-testid="lazy-invalidate-all" @click="onLazyInvalidateAll">
+              Reload All
+            </button>
+            <span class="demo-page__sort-pill">
+              start: {{ lazyLoadCounts.start }} / success: {{ lazyLoadCounts.success }} / error:
+              {{ lazyLoadCounts.error }}
+            </span>
+          </div>
+        </header>
+        <ChronixTable
+          ref="lazyTable"
+          :columns="lazyColumns"
+          :rows="lazyRoots"
+          :children-loader="lazyChildrenLoader"
+          data-testid="lazy-table"
+          @lazy-load-start="onLazyStart"
+          @lazy-load-success="onLazySuccess"
+          @lazy-load-error="onLazyError"
+        />
+      </section>
+      <section
+        class="demo-page__table demo-page__server-side-table"
+        data-testid="server-side-section"
+      >
+        <header>
+          <h2>Server-side row model (vue2)</h2>
+          <p>
+            <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per request.
+            <strong>Skeleton rows</strong>: unloaded indices render shimmer bars.
+            <strong>pagination</strong>: toggle ON → <code>pageSize</code> becomes block size, body
+            renders only current page slice. <strong>invalidate</strong>: block 0 only — preserves
+            <code>totalRowCount</code> + other blocks. <strong>Toggle</strong>: switch to
+            <code>clientSide</code> mode to compare.
+          </p>
+          <div class="demo-page__autosize-actions">
+            <button type="button" data-testid="server-side-toggle" @click="onToggleRowModelType">
+              模式: {{ rowModelType === 'serverSide' ? 'server-side' : 'client-side' }} (点击切换)
+            </button>
+            <button type="button" data-testid="server-side-refresh" @click="onRefreshServerSide">
+              Refresh
+            </button>
+            <button
+              type="button"
+              data-testid="server-side-pagination-toggle"
+              @click="onToggleServerSidePagination"
+            >
+              Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }}
+            </button>
+            <button
+              type="button"
+              data-testid="server-side-invalidate-block-0"
+              @click="onInvalidateServerSideBlock0"
+            >
+              invalidateServerSideBlocks([0])
+            </button>
+          </div>
+        </header>
+        <ChronixTable
+          ref="serverSideTable"
+          data-testid="server-side-table"
+          :columns="serverSideColumns"
+          :rows="emptyServerSideRows"
+          :row-model-type="rowModelType"
+          :server-side-data-source="mockServerSideDataSource"
+          :pagination-enabled="serverSidePaginationEnabled"
+          :initial-page-size="25"
+          :show-filter-row="true"
+        />
+      </section>
+      <section
+        class="demo-page__table demo-page__tier3-finale-table"
+        data-testid="tier3-finale-section"
+      >
+        <header>
+          <h2>Tier 3 finale (vue2 — row number + actions + auto-height)</h2>
+          <p>
+            <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code>.
+            <strong>Actions</strong>: <code>ColumnSpec.actions</code>; <code>task-2</code>'s 删除 is
+            disabled. <strong>Row auto-height</strong>: <code>enableRowAutoHeight: true</code> +
+            <code>wrapText: true</code>.
+          </p>
+          <div class="demo-page__autosize-actions">
+            <span class="demo-page__sort-pill" data-testid="tier3-edit-count">
+              编辑点击次数: {{ tier3LastEditCount }}
+            </span>
+            <span class="demo-page__sort-pill" data-testid="tier3-delete-count">
+              删除点击次数: {{ tier3LastDeleteCount }}
+            </span>
+          </div>
+        </header>
+        <ChronixTable
+          data-testid="tier3-finale-table"
+          :columns="tier3Columns"
+          :rows="tier3Rows"
+          :enable-row-auto-height="true"
+        />
+      </section>
+      <section
+        class="demo-page__table demo-page__tool-panel-table"
+        data-testid="tool-panel-section"
+      >
+        <header>
+          <h2>Tool-panel container (vue2 — chronix-NEW)</h2>
+          <p>
+            <strong>chronix-NEW container</strong>: composable descriptor-array API. 2 panels +
+            drag-to-resize + click-to-collapse.
+          </p>
+          <div class="demo-page__autosize-actions">
+            <span class="demo-page__sort-pill" data-testid="tool-panel-width">
+              Container width: {{ toolPanelLastWidth }}px
+            </span>
+          </div>
+        </header>
+        <ChronixTable
+          data-testid="tool-panel-table"
+          :columns="columns"
+          :rows="rows"
+          :tool-panel="toolPanelConfig"
+          @tool-panel-width-change="onToolPanelWidthChange"
+        />
+      </section>
+    </main>
+  </div>
 </template>

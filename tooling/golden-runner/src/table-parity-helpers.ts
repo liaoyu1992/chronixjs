@@ -71,9 +71,9 @@ async function hideTableDemoChrome(page: Page): Promise<void> {
   await page.addStyleTag({
     content: `
       body { background: #ffffff !important; margin: 0 !important; }
-      .demo-page__header, .demo-page__nav { display: none !important; }
-      .demo-page > * + * { display: none !important; }
-      .demo-page > .demo-page__table:first-of-type { display: block !important; }
+      .demo-app-sidebar, .demo-page__header, .demo-page__nav { display: none !important; }
+      .demo-app-main > * + * { display: none !important; }
+      .demo-app-main > .demo-page__table:first-of-type { display: block !important; }
       .demo-page__table:first-of-type { padding: 0 !important; }
     `,
   });

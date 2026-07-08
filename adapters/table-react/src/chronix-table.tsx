@@ -10919,7 +10919,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         width: `${totalWithRowDrag}px`,
         height: `${rowH}px`,
         zIndex: t.pinnedRowZIndex,
-        background: 'var(--cx-table-pinned-zone-bg, inherit)',
+        background: 'var(--cx-table-pinned-zone-bg, var(--cx-table-odd-row-bg, #ffffff))',
       };
       return (
         <div

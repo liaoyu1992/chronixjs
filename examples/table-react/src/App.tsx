@@ -1295,396 +1295,401 @@ export function App(): ReactElement {
   }
 
   return (
-    <main className="demo-page">
-      <header className="demo-page__header">
-        <h1>@chronixjs/table-react</h1>
-        <p className="demo-page__sort-state">当前排序: {describeSort(currentSort)}</p>
-        <p className="demo-page__sort-state">{describeFilter(currentFilter)}</p>
-        <p className="demo-page__sort-state" data-testid="quick-find-state">
-          {describeQuickFind(currentQuickFindText, currentQuickFindMatchCount)}
-        </p>
-        <p className="demo-page__sort-state">{describeSelection(currentSelection)}</p>
-        <p className="demo-page__sort-state">当前分页: {describePage(currentPage)}</p>
-        <p className="demo-page__sort-state">{describeEdit(lastEdit)}</p>
-        <p className="demo-page__sort-state">{describeResize(lastResize)}</p>
-        <p className="demo-page__sort-state">{describeReorder(lastReorder)}</p>
-        <p className="demo-page__sort-state">{describeRange(lastRange)}</p>
-        <p className="demo-page__sort-state">{describeCopiedTsv(lastCopiedTsv)}</p>
-        <p className="demo-page__sort-state">{describePasteSummary(lastPasteSummary)}</p>
-        <p className="demo-page__sort-state">{describeFillSummary(lastFillSummary)}</p>
-        <p className="demo-page__sort-state">{describeUndoHistoryState(undoHistoryState)}</p>
-        <p className="demo-page__sort-state">{describeHistoryReplay(lastHistoryReplay)}</p>
-        <p className="demo-page__sort-state">
-          {describeLastHeaderGroupClick(lastHeaderGroupClick)}
-        </p>
-        <p className="demo-page__sort-state">{describeCellClick(lastCellClick)}</p>
-        <p className="demo-page__sort-state">{describeHeaderClick(lastHeaderClick)}</p>
-        <p className="demo-page__sort-state">{describeRowDblclick(lastRowDblclick)}</p>
-        <p className="demo-page__sort-state">{describeEmptyAreaClick(lastEmptyAreaClick)}</p>
-        <div className="demo-page__autosize-actions">
-          <label className="demo-page__inline-toggle">
-            Quick-find:
-            <input
-              type="text"
-              data-testid="quick-find-input"
-              className="demo-page__quick-find-input"
-              placeholder="搜索全表 (跨列 OR)"
-              value={currentQuickFindText}
-              onChange={onQuickFindInput}
-            />
-          </label>
-          <label className="demo-page__inline-toggle demo-page__advanced-filter">
-            高级 filter (DSL):
-            <input
-              type="text"
-              data-testid="advanced-filter-input"
-              className="demo-page__advanced-filter-input"
-              placeholder='qty > 10 AND name CONTAINS "alpha"'
-              value={advancedFilterText}
-              onChange={onAdvancedFilterInput}
-            />
-            <button type="button" onClick={onAdvancedFilterApply}>
-              应用
+    <div className="demo-app">
+      <aside className="demo-app-sidebar">
+        <header className="demo-page__header">
+          <h1>@chronixjs/table-react</h1>
+          <p className="demo-page__sort-state">当前排序: {describeSort(currentSort)}</p>
+          <p className="demo-page__sort-state">{describeFilter(currentFilter)}</p>
+          <p className="demo-page__sort-state" data-testid="quick-find-state">
+            {describeQuickFind(currentQuickFindText, currentQuickFindMatchCount)}
+          </p>
+          <p className="demo-page__sort-state">{describeSelection(currentSelection)}</p>
+          <p className="demo-page__sort-state">当前分页: {describePage(currentPage)}</p>
+          <p className="demo-page__sort-state">{describeEdit(lastEdit)}</p>
+          <p className="demo-page__sort-state">{describeResize(lastResize)}</p>
+          <p className="demo-page__sort-state">{describeReorder(lastReorder)}</p>
+          <p className="demo-page__sort-state">{describeRange(lastRange)}</p>
+          <p className="demo-page__sort-state">{describeCopiedTsv(lastCopiedTsv)}</p>
+          <p className="demo-page__sort-state">{describePasteSummary(lastPasteSummary)}</p>
+          <p className="demo-page__sort-state">{describeFillSummary(lastFillSummary)}</p>
+          <p className="demo-page__sort-state">{describeUndoHistoryState(undoHistoryState)}</p>
+          <p className="demo-page__sort-state">{describeHistoryReplay(lastHistoryReplay)}</p>
+          <p className="demo-page__sort-state">
+            {describeLastHeaderGroupClick(lastHeaderGroupClick)}
+          </p>
+          <p className="demo-page__sort-state">{describeCellClick(lastCellClick)}</p>
+          <p className="demo-page__sort-state">{describeHeaderClick(lastHeaderClick)}</p>
+          <p className="demo-page__sort-state">{describeRowDblclick(lastRowDblclick)}</p>
+          <p className="demo-page__sort-state">{describeEmptyAreaClick(lastEmptyAreaClick)}</p>
+          <div className="demo-page__autosize-actions">
+            <label className="demo-page__inline-toggle">
+              Quick-find:
+              <input
+                type="text"
+                data-testid="quick-find-input"
+                className="demo-page__quick-find-input"
+                placeholder="搜索全表 (跨列 OR)"
+                value={currentQuickFindText}
+                onChange={onQuickFindInput}
+              />
+            </label>
+            <label className="demo-page__inline-toggle demo-page__advanced-filter">
+              高级 filter (DSL):
+              <input
+                type="text"
+                data-testid="advanced-filter-input"
+                className="demo-page__advanced-filter-input"
+                placeholder='qty > 10 AND name CONTAINS "alpha"'
+                value={advancedFilterText}
+                onChange={onAdvancedFilterInput}
+              />
+              <button type="button" onClick={onAdvancedFilterApply}>
+                应用
+              </button>
+              <button type="button" onClick={onAdvancedFilterFillExample}>
+                示例
+              </button>
+              <button type="button" onClick={onAdvancedFilterClear}>
+                清空
+              </button>
+            </label>
+            {advancedFilterErrors.length > 0 && (
+              <p className="demo-page__advanced-filter-errors" data-testid="advanced-filter-errors">
+                解析错误:{' '}
+                {advancedFilterErrors.map((err, i) => (
+                  <span key={i}>
+                    [pos {err.position}] {err.message};{' '}
+                  </span>
+                ))}
+              </p>
+            )}
+            {advancedFilterStatus !== '' && (
+              <p className="demo-page__advanced-filter-status">{advancedFilterStatus}</p>
+            )}
+            <button type="button" onClick={onAutosizeAll}>
+              全部 autosize
             </button>
-            <button type="button" onClick={onAdvancedFilterFillExample}>
-              示例
+            <button type="button" onClick={onAutosizeQty}>
+              autosize 数量 列
             </button>
-            <button type="button" onClick={onAdvancedFilterClear}>
-              清空
+            <button type="button" onClick={onSetCellRange}>
+              setCellRange r1/name..r5/price
             </button>
-          </label>
-          {advancedFilterErrors.length > 0 && (
-            <p className="demo-page__advanced-filter-errors" data-testid="advanced-filter-errors">
-              解析错误:{' '}
-              {advancedFilterErrors.map((err, i) => (
-                <span key={i}>
-                  [pos {err.position}] {err.message};{' '}
-                </span>
-              ))}
+            <button type="button" onClick={onClearCellRange}>
+              clearCellRange
+            </button>
+            <button type="button" onClick={onCopyCellRange}>
+              copyCellRangeToClipboard
+            </button>
+            <button type="button" onClick={onPasteCellRange}>
+              pasteCellRangeFromClipboard
+            </button>
+            <button type="button" onClick={onFillToR10Qty}>
+              fillCellRange r1/qty → r10/qty
+            </button>
+            <button type="button" disabled={!canUndoNow} onClick={onUndoClick}>
+              Undo (Ctrl+Z)
+            </button>
+            <button type="button" disabled={!canRedoNow} onClick={onRedoClick}>
+              Redo (Ctrl+Y)
+            </button>
+            <button type="button" onClick={onClearHistoryClick}>
+              clearHistory
+            </button>
+            <label className="demo-page__inline-toggle">
+              <input
+                type="checkbox"
+                checked={enableAutoScroll}
+                onChange={(e) => setEnableAutoScroll(e.target.checked)}
+              />
+              enableKeyboardAutoScroll
+            </label>
+            <button type="button" onClick={onJumpFarActiveCell}>
+              setActiveCell r19/qty
+            </button>
+            <button type="button" data-testid="csv-export-btn" onClick={onExportCsv}>
+              Export CSV
+            </button>
+            <button
+              type="button"
+              data-testid="xlsx-export-btn"
+              disabled={xlsxBusy}
+              onClick={() => {
+                void onExportXlsx();
+              }}
+            >
+              {xlsxBusy ? 'Exporting…' : 'Export XLSX'}
+            </button>
+            <button
+              type="button"
+              data-testid="xlsx-multisheet-btn"
+              disabled={xlsxBusy}
+              onClick={() => {
+                void onExportXlsxMultiSheet();
+              }}
+            >
+              {xlsxBusy ? 'Exporting…' : 'Export 3-sheet XLSX'}
+            </button>
+            {xlsxError && <span data-testid="xlsx-error">{xlsxError}</span>}
+            <button type="button" data-testid="save-view-btn" onClick={onSaveView}>
+              Save view
+            </button>
+            <button type="button" data-testid="load-view-btn" onClick={onLoadView}>
+              Load view
+            </button>
+            {savedViewStatus && <span data-testid="saved-view-status">{savedViewStatus}</span>}
+          </div>
+        </header>
+      </aside>
+      <main className="demo-app-main">
+        <section className="demo-page__table">
+          <ChronixTable
+            ref={tableRef}
+            showStatusBar
+            columns={columns}
+            rows={rows}
+            showFilterRow
+            showFooterRow
+            showColumnVisibilityMenu
+            showColumnHeaderMenu
+            contextMenu={phase83ContextMenuConfig}
+            onColumnHeaderMenuAction={onColumnHeaderMenuAction}
+            enableKeyboardNavigation
+            enableKeyboardAutoScroll={enableAutoScroll}
+            selectionMode="multi"
+            selectionColumn={{ show: true, side: 'left' }}
+            paginationEnabled
+            initialPageSize={20}
+            cellRangeSelection="enabled"
+            enableUndoHistory={true}
+            onCellClick={onCellClick}
+            onHeaderClick={onHeaderClick}
+            onRowDblclick={onRowDblclick}
+            onEmptyAreaClick={onEmptyAreaClick}
+            onSortChange={onSortChange}
+            onFilterChange={onFilterChange}
+            onQuickFindTextChange={onQuickFindTextChange}
+            onSelectionChange={onSelectionChange}
+            onPageChange={onPageChange}
+            onCellValueChange={onCellValueChange}
+            onColumnWidthChange={onColumnWidthChange}
+            onColumnOrderChange={onColumnOrderChange}
+            rowDragColumn={{ show: true, side: 'left' }}
+            onRowOrderChange={onRowOrderChange}
+            onColumnVisibilityChange={onColumnVisibilityChange}
+            onColumnsChange={onColumnsChange}
+            onCellRangeStart={onCellRangeStart}
+            onCellRangeChange={onCellRangeChange}
+            onCellRangeStop={onCellRangeStop}
+            onCellRangeCopy={onCellRangeCopy}
+            onCellRangePaste={onCellRangePaste}
+            onCellRangeFill={onCellRangeFill}
+            onHistoryReplay={onHistoryReplay}
+            onHistoryChange={onHistoryChange}
+            onHeaderGroupClick={onHeaderGroupClick}
+          />
+        </section>
+        <section className="demo-page__table demo-page__tree-table">
+          <header className="demo-page__tree-header">
+            <h2>Tree data (react port)</h2>
+            <p>
+              File-tree demo: ~85 行 nested 4 levels (project → module → folder → file). 单击
+              chevron 切换展开 / 折叠；activeCell 在 <code>名称</code> 列时 <strong>Enter</strong> /{' '}
+              <strong>Space</strong> 切换；<strong>ArrowRight</strong> 展开折叠节点；
+              <strong>ArrowLeft</strong> 折叠展开节点 (折叠态 + 有父则跳到父行)。
             </p>
-          )}
-          {advancedFilterStatus !== '' && (
-            <p className="demo-page__advanced-filter-status">{advancedFilterStatus}</p>
-          )}
-          <button type="button" onClick={onAutosizeAll}>
-            全部 autosize
-          </button>
-          <button type="button" onClick={onAutosizeQty}>
-            autosize 数量 列
-          </button>
-          <button type="button" onClick={onSetCellRange}>
-            setCellRange r1/name..r5/price
-          </button>
-          <button type="button" onClick={onClearCellRange}>
-            clearCellRange
-          </button>
-          <button type="button" onClick={onCopyCellRange}>
-            copyCellRangeToClipboard
-          </button>
-          <button type="button" onClick={onPasteCellRange}>
-            pasteCellRangeFromClipboard
-          </button>
-          <button type="button" onClick={onFillToR10Qty}>
-            fillCellRange r1/qty → r10/qty
-          </button>
-          <button type="button" disabled={!canUndoNow} onClick={onUndoClick}>
-            Undo (Ctrl+Z)
-          </button>
-          <button type="button" disabled={!canRedoNow} onClick={onRedoClick}>
-            Redo (Ctrl+Y)
-          </button>
-          <button type="button" onClick={onClearHistoryClick}>
-            clearHistory
-          </button>
-          <label className="demo-page__inline-toggle">
-            <input
-              type="checkbox"
-              checked={enableAutoScroll}
-              onChange={(e) => setEnableAutoScroll(e.target.checked)}
-            />
-            enableKeyboardAutoScroll
-          </label>
-          <button type="button" onClick={onJumpFarActiveCell}>
-            setActiveCell r19/qty
-          </button>
-          <button type="button" data-testid="csv-export-btn" onClick={onExportCsv}>
-            Export CSV
-          </button>
-          <button
-            type="button"
-            data-testid="xlsx-export-btn"
-            disabled={xlsxBusy}
-            onClick={() => {
-              void onExportXlsx();
-            }}
-          >
-            {xlsxBusy ? 'Exporting…' : 'Export XLSX'}
-          </button>
-          <button
-            type="button"
-            data-testid="xlsx-multisheet-btn"
-            disabled={xlsxBusy}
-            onClick={() => {
-              void onExportXlsxMultiSheet();
-            }}
-          >
-            {xlsxBusy ? 'Exporting…' : 'Export 3-sheet XLSX'}
-          </button>
-          {xlsxError && <span data-testid="xlsx-error">{xlsxError}</span>}
-          <button type="button" data-testid="save-view-btn" onClick={onSaveView}>
-            Save view
-          </button>
-          <button type="button" data-testid="load-view-btn" onClick={onLoadView}>
-            Load view
-          </button>
-          {savedViewStatus && <span data-testid="saved-view-status">{savedViewStatus}</span>}
-        </div>
-      </header>
-      <section className="demo-page__table">
-        <ChronixTable
-          ref={tableRef}
-          showStatusBar
-          columns={columns}
-          rows={rows}
-          showFilterRow
-          showFooterRow
-          showColumnVisibilityMenu
-          showColumnHeaderMenu
-          contextMenu={phase83ContextMenuConfig}
-          onColumnHeaderMenuAction={onColumnHeaderMenuAction}
-          enableKeyboardNavigation
-          enableKeyboardAutoScroll={enableAutoScroll}
-          selectionMode="multi"
-          selectionColumn={{ show: true, side: 'left' }}
-          paginationEnabled
-          initialPageSize={20}
-          cellRangeSelection="enabled"
-          enableUndoHistory={true}
-          onCellClick={onCellClick}
-          onHeaderClick={onHeaderClick}
-          onRowDblclick={onRowDblclick}
-          onEmptyAreaClick={onEmptyAreaClick}
-          onSortChange={onSortChange}
-          onFilterChange={onFilterChange}
-          onQuickFindTextChange={onQuickFindTextChange}
-          onSelectionChange={onSelectionChange}
-          onPageChange={onPageChange}
-          onCellValueChange={onCellValueChange}
-          onColumnWidthChange={onColumnWidthChange}
-          onColumnOrderChange={onColumnOrderChange}
-          rowDragColumn={{ show: true, side: 'left' }}
-          onRowOrderChange={onRowOrderChange}
-          onColumnVisibilityChange={onColumnVisibilityChange}
-          onColumnsChange={onColumnsChange}
-          onCellRangeStart={onCellRangeStart}
-          onCellRangeChange={onCellRangeChange}
-          onCellRangeStop={onCellRangeStop}
-          onCellRangeCopy={onCellRangeCopy}
-          onCellRangePaste={onCellRangePaste}
-          onCellRangeFill={onCellRangeFill}
-          onHistoryReplay={onHistoryReplay}
-          onHistoryChange={onHistoryChange}
-          onHeaderGroupClick={onHeaderGroupClick}
-        />
-      </section>
-      <section className="demo-page__table demo-page__tree-table">
-        <header className="demo-page__tree-header">
-          <h2>Tree data (react port)</h2>
-          <p>
-            File-tree demo: ~85 行 nested 4 levels (project → module → folder → file). 单击 chevron
-            切换展开 / 折叠；activeCell 在 <code>名称</code> 列时 <strong>Enter</strong> /{' '}
-            <strong>Space</strong> 切换；<strong>ArrowRight</strong> 展开折叠节点；
-            <strong>ArrowLeft</strong> 折叠展开节点 (折叠态 + 有父则跳到父行)。
-          </p>
-          <div className="demo-page__autosize-actions">
-            <button type="button" onClick={onTreeExpandAll}>
-              全展开
-            </button>
-            <button type="button" onClick={onTreeCollapseAll}>
-              全折叠
-            </button>
-            <span className="demo-page__sort-state">当前展开: {treeExpandedCount} 个节点</span>
-          </div>
-        </header>
-        <ChronixTable
-          ref={treeTableRef}
-          columns={treeColumns}
-          rows={treeRowsInitial}
-          enableKeyboardNavigation
-          defaultExpandedDepth={1}
-          selectionMode="multi"
-          selectionColumn={{ show: true, side: 'left' }}
-          onExpandedChange={onTreeExpandedChange}
-        />
-      </section>
-      <section className="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
-        <header>
-          <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
-          <p>
-            <strong>Pinned rows</strong>: ⭐ top + 合计 bottom (RowSpec.pinned), never
-            sort/filter/paginate.
-            <strong> Tooltip</strong>: hover 备注 column 250ms.
-            <strong> Overlay</strong>: loading / no-rows toggle.
-          </p>
-          <div className="demo-page__autosize-actions">
-            <button
-              type="button"
-              data-testid="tier2-loading-toggle"
-              onClick={() => {
-                setTier2Loading((v) => !v);
-              }}
-            >
-              {tier2Loading ? '停止加载' : '显示 Loading'}
-            </button>
-            <button
-              type="button"
-              data-testid="tier2-empty-toggle"
-              onClick={() => {
-                setTier2EmptyMode((v) => !v);
-              }}
-            >
-              {tier2EmptyMode ? '恢复数据' : '清空数据'}
-            </button>
-          </div>
-        </header>
-        <ChronixTable
-          columns={tier2Columns}
-          rows={tier2Rows}
-          loading={tier2Loading}
-          data-testid="tier2-table"
-        />
-      </section>
-      <section className="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
-        <header>
-          <h2>Lazy-load tree children</h2>
-          <p>
-            <strong>Lazy load</strong>: <code>hasChildren: true</code> → first expand calls
-            <code>childrenLoader</code>; 500ms simulated latency; <code>lazy-fail-1</code>
-            always rejects + retry on error icon click.
-          </p>
-          <div className="demo-page__autosize-actions">
-            <button type="button" data-testid="lazy-invalidate-all" onClick={onLazyInvalidateAll}>
-              Reload All
-            </button>
-            <span className="demo-page__sort-state">
-              start: {lazyLoadCounts.start} / success: {lazyLoadCounts.success} / error:{' '}
-              {lazyLoadCounts.error}
-            </span>
-          </div>
-        </header>
-        <ChronixTable
-          ref={lazyTableRef}
-          columns={lazyColumns}
-          rows={lazyRoots}
-          childrenLoader={lazyChildrenLoader}
-          onLazyLoadStart={onLazyStart}
-          onLazyLoadSuccess={onLazySuccess}
-          onLazyLoadError={onLazyError}
-          data-testid="lazy-table"
-        />
-      </section>
-      <section
-        className="demo-page__table demo-page__server-side-table"
-        data-testid="server-side-section"
-      >
-        <header>
-          <h2>Server-side row model (react)</h2>
-          <p>
-            <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per request.
-            <strong>Skeleton rows</strong>: unloaded indices render shimmer bars.
-            <strong>pagination</strong>: toggle ON → <code>pageSize</code> (25) becomes block size,
-            body renders only current page slice. <strong>invalidate</strong>: block 0 only —
-            preserves <code>totalRowCount</code> + other blocks (contrast with whole-cache{' '}
-            <code>Refresh</code>). <strong>Toggle</strong>: switch to <code>clientSide</code> mode
-            to compare.
-          </p>
-          <div className="demo-page__autosize-actions">
-            <button type="button" data-testid="server-side-toggle" onClick={onToggleRowModelType}>
-              模式: {rowModelType === 'serverSide' ? 'server-side' : 'client-side'} (点击切换)
-            </button>
-            <button type="button" data-testid="server-side-refresh" onClick={onRefreshServerSide}>
-              Refresh
-            </button>
-            <button
-              type="button"
-              data-testid="server-side-pagination-toggle"
-              onClick={onToggleServerSidePagination}
-            >
-              Pagination: {serverSidePaginationEnabled ? 'ON' : 'OFF'}
-            </button>
-            <button
-              type="button"
-              data-testid="server-side-invalidate-block-0"
-              onClick={onInvalidateServerSideBlock0}
-            >
-              invalidateServerSideBlocks([0])
-            </button>
-          </div>
-        </header>
-        <ChronixTable
-          ref={serverSideTableRef}
-          columns={serverSideColumns}
-          rows={[]}
-          rowModelType={rowModelType}
-          serverSideDataSource={mockServerSideDataSource}
-          paginationEnabled={serverSidePaginationEnabled}
-          initialPageSize={25}
-          showFilterRow
-          data-testid="server-side-table"
-        />
-      </section>
-      <section
-        className="demo-page__table demo-page__tier3-finale-table"
-        data-testid="tier3-finale-section"
-      >
-        <header>
-          <h2>Tier 3 finale (react — row number + actions + auto-height)</h2>
-          <p>
-            <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code>.
-            <strong>Actions</strong>: <code>ColumnSpec.actions</code>; <code>task-2</code>&apos;s
-            删除 is disabled. <strong>Row auto-height</strong>:
-            <code>enableRowAutoHeight: true</code> + <code>wrapText: true</code>.
-          </p>
-          <div className="demo-page__autosize-actions">
-            <span className="demo-page__sort-state" data-testid="tier3-edit-count">
-              编辑点击次数: {tier3LastEditCount}
-            </span>
-            <span className="demo-page__sort-state" data-testid="tier3-delete-count">
-              删除点击次数: {tier3LastDeleteCount}
-            </span>
-          </div>
-        </header>
-        <ChronixTable
-          columns={tier3Columns}
-          rows={tier3Rows}
-          enableRowAutoHeight
-          data-testid="tier3-finale-table"
-        />
-      </section>
-      <section
-        className="demo-page__table demo-page__tool-panel-table"
-        data-testid="tool-panel-section"
-      >
-        <header>
-          <h2>Tool-panel container (react — chronix-NEW)</h2>
-          <p>
-            <strong>chronix-NEW container</strong>: composable descriptor-array API. 2 panels +
-            drag-to-resize + click-to-collapse.
-          </p>
-          <div className="demo-page__autosize-actions">
-            <span className="demo-page__sort-state" data-testid="tool-panel-width">
-              Container width: {toolPanelLastWidth}px
-            </span>
-          </div>
-        </header>
-        <ChronixTable
-          columns={columns}
-          rows={rows}
-          toolPanel={toolPanelConfig}
-          onToolPanelWidthChange={onToolPanelWidthChange}
-          data-testid="tool-panel-table"
-        />
-      </section>
-    </main>
+            <div className="demo-page__autosize-actions">
+              <button type="button" onClick={onTreeExpandAll}>
+                全展开
+              </button>
+              <button type="button" onClick={onTreeCollapseAll}>
+                全折叠
+              </button>
+              <span className="demo-page__sort-state">当前展开: {treeExpandedCount} 个节点</span>
+            </div>
+          </header>
+          <ChronixTable
+            ref={treeTableRef}
+            columns={treeColumns}
+            rows={treeRowsInitial}
+            enableKeyboardNavigation
+            defaultExpandedDepth={1}
+            selectionMode="multi"
+            selectionColumn={{ show: true, side: 'left' }}
+            onExpandedChange={onTreeExpandedChange}
+          />
+        </section>
+        <section className="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
+          <header>
+            <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
+            <p>
+              <strong>Pinned rows</strong>: ⭐ top + 合计 bottom (RowSpec.pinned), never
+              sort/filter/paginate.
+              <strong> Tooltip</strong>: hover 备注 column 250ms.
+              <strong> Overlay</strong>: loading / no-rows toggle.
+            </p>
+            <div className="demo-page__autosize-actions">
+              <button
+                type="button"
+                data-testid="tier2-loading-toggle"
+                onClick={() => {
+                  setTier2Loading((v) => !v);
+                }}
+              >
+                {tier2Loading ? '停止加载' : '显示 Loading'}
+              </button>
+              <button
+                type="button"
+                data-testid="tier2-empty-toggle"
+                onClick={() => {
+                  setTier2EmptyMode((v) => !v);
+                }}
+              >
+                {tier2EmptyMode ? '恢复数据' : '清空数据'}
+              </button>
+            </div>
+          </header>
+          <ChronixTable
+            columns={tier2Columns}
+            rows={tier2Rows}
+            loading={tier2Loading}
+            data-testid="tier2-table"
+          />
+        </section>
+        <section className="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
+          <header>
+            <h2>Lazy-load tree children</h2>
+            <p>
+              <strong>Lazy load</strong>: <code>hasChildren: true</code> → first expand calls
+              <code>childrenLoader</code>; 500ms simulated latency; <code>lazy-fail-1</code>
+              always rejects + retry on error icon click.
+            </p>
+            <div className="demo-page__autosize-actions">
+              <button type="button" data-testid="lazy-invalidate-all" onClick={onLazyInvalidateAll}>
+                Reload All
+              </button>
+              <span className="demo-page__sort-state">
+                start: {lazyLoadCounts.start} / success: {lazyLoadCounts.success} / error:{' '}
+                {lazyLoadCounts.error}
+              </span>
+            </div>
+          </header>
+          <ChronixTable
+            ref={lazyTableRef}
+            columns={lazyColumns}
+            rows={lazyRoots}
+            childrenLoader={lazyChildrenLoader}
+            onLazyLoadStart={onLazyStart}
+            onLazyLoadSuccess={onLazySuccess}
+            onLazyLoadError={onLazyError}
+            data-testid="lazy-table"
+          />
+        </section>
+        <section
+          className="demo-page__table demo-page__server-side-table"
+          data-testid="server-side-section"
+        >
+          <header>
+            <h2>Server-side row model (react)</h2>
+            <p>
+              <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per
+              request.
+              <strong>Skeleton rows</strong>: unloaded indices render shimmer bars.
+              <strong>pagination</strong>: toggle ON → <code>pageSize</code> (25) becomes block
+              size, body renders only current page slice. <strong>invalidate</strong>: block 0 only
+              — preserves <code>totalRowCount</code> + other blocks (contrast with whole-cache{' '}
+              <code>Refresh</code>). <strong>Toggle</strong>: switch to <code>clientSide</code> mode
+              to compare.
+            </p>
+            <div className="demo-page__autosize-actions">
+              <button type="button" data-testid="server-side-toggle" onClick={onToggleRowModelType}>
+                模式: {rowModelType === 'serverSide' ? 'server-side' : 'client-side'} (点击切换)
+              </button>
+              <button type="button" data-testid="server-side-refresh" onClick={onRefreshServerSide}>
+                Refresh
+              </button>
+              <button
+                type="button"
+                data-testid="server-side-pagination-toggle"
+                onClick={onToggleServerSidePagination}
+              >
+                Pagination: {serverSidePaginationEnabled ? 'ON' : 'OFF'}
+              </button>
+              <button
+                type="button"
+                data-testid="server-side-invalidate-block-0"
+                onClick={onInvalidateServerSideBlock0}
+              >
+                invalidateServerSideBlocks([0])
+              </button>
+            </div>
+          </header>
+          <ChronixTable
+            ref={serverSideTableRef}
+            columns={serverSideColumns}
+            rows={[]}
+            rowModelType={rowModelType}
+            serverSideDataSource={mockServerSideDataSource}
+            paginationEnabled={serverSidePaginationEnabled}
+            initialPageSize={25}
+            showFilterRow
+            data-testid="server-side-table"
+          />
+        </section>
+        <section
+          className="demo-page__table demo-page__tier3-finale-table"
+          data-testid="tier3-finale-section"
+        >
+          <header>
+            <h2>Tier 3 finale (react — row number + actions + auto-height)</h2>
+            <p>
+              <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code>.
+              <strong>Actions</strong>: <code>ColumnSpec.actions</code>; <code>task-2</code>&apos;s
+              删除 is disabled. <strong>Row auto-height</strong>:
+              <code>enableRowAutoHeight: true</code> + <code>wrapText: true</code>.
+            </p>
+            <div className="demo-page__autosize-actions">
+              <span className="demo-page__sort-state" data-testid="tier3-edit-count">
+                编辑点击次数: {tier3LastEditCount}
+              </span>
+              <span className="demo-page__sort-state" data-testid="tier3-delete-count">
+                删除点击次数: {tier3LastDeleteCount}
+              </span>
+            </div>
+          </header>
+          <ChronixTable
+            columns={tier3Columns}
+            rows={tier3Rows}
+            enableRowAutoHeight
+            data-testid="tier3-finale-table"
+          />
+        </section>
+        <section
+          className="demo-page__table demo-page__tool-panel-table"
+          data-testid="tool-panel-section"
+        >
+          <header>
+            <h2>Tool-panel container (react — chronix-NEW)</h2>
+            <p>
+              <strong>chronix-NEW container</strong>: composable descriptor-array API. 2 panels +
+              drag-to-resize + click-to-collapse.
+            </p>
+            <div className="demo-page__autosize-actions">
+              <span className="demo-page__sort-state" data-testid="tool-panel-width">
+                Container width: {toolPanelLastWidth}px
+              </span>
+            </div>
+          </header>
+          <ChronixTable
+            columns={columns}
+            rows={rows}
+            toolPanel={toolPanelConfig}
+            onToolPanelWidthChange={onToolPanelWidthChange}
+            data-testid="tool-panel-table"
+          />
+        </section>
+      </main>
+    </div>
   );
 }

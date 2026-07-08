@@ -1290,337 +1290,350 @@ function onColumnHeaderMenuAction(payload: {
 </script>
 
 <template>
-  <main class="demo-page">
-    <header class="demo-page__header">
-      <h1>@chronixjs/table-vue3</h1>
-      <p class="demo-page__sort-state">当前排序：{{ describeSort(currentSort) }}</p>
-      <p class="demo-page__sort-state">{{ describeFilter(currentFilter) }}</p>
-      <p class="demo-page__sort-state" data-testid="quick-find-state">
-        {{ describeQuickFind(currentQuickFindText, currentQuickFindMatchCount) }}
-      </p>
-      <p class="demo-page__sort-state">{{ describeSelection(currentSelection) }}</p>
-      <p class="demo-page__sort-state">{{ describePage(currentPage, currentPageSize) }}</p>
-      <p class="demo-page__sort-state">{{ describeLastEdit(lastEdit) }}</p>
-      <p class="demo-page__sort-state">{{ describeLastResize(lastResize) }}</p>
-      <p class="demo-page__sort-state">{{ describeLastReorder(lastReorder) }}</p>
-      <p class="demo-page__sort-state">{{ describeRange(lastRange) }}</p>
-      <p class="demo-page__sort-state">{{ describeCopiedTsv(lastCopiedTsv) }}</p>
-      <p class="demo-page__sort-state">{{ describePasteSummary(lastPasteSummary) }}</p>
-      <p class="demo-page__sort-state">{{ describeFillSummary(lastFillSummary) }}</p>
-      <p class="demo-page__sort-state">{{ describeHistoryState(undoHistoryState) }}</p>
-      <p class="demo-page__sort-state">{{ describeHistoryReplay(lastHistoryReplay) }}</p>
-      <p class="demo-page__sort-state">{{ describeLastHeaderGroupClick(lastHeaderGroupClick) }}</p>
-    </header>
-    <section class="demo-page__table">
-      <div class="demo-page__autosize-actions">
-        <label class="demo-page__inline-toggle">
-          Quick-find:
-          <input
-            type="text"
-            data-testid="quick-find-input"
-            class="demo-page__quick-find-input"
-            placeholder="搜索全表 (跨列 OR)"
-            :value="currentQuickFindText"
-            @input="onQuickFindInput"
-          />
-        </label>
-        <label class="demo-page__inline-toggle demo-page__advanced-filter">
-          高级 filter (DSL):
-          <input
-            type="text"
-            data-testid="advanced-filter-input"
-            class="demo-page__advanced-filter-input"
-            placeholder='qty > 10 AND name CONTAINS "alpha"'
-            :value="advancedFilterText"
-            @input="onAdvancedFilterInput"
-          />
-          <button type="button" @click="onAdvancedFilterApply">应用</button>
-          <button type="button" @click="onAdvancedFilterFillExample">示例</button>
-          <button type="button" @click="onAdvancedFilterClear">清空</button>
-        </label>
-        <p
-          v-if="advancedFilterErrors.length > 0"
-          class="demo-page__advanced-filter-errors"
-          data-testid="advanced-filter-errors"
-        >
-          解析错误:
-          <span v-for="(err, i) in advancedFilterErrors" :key="i">
-            [pos {{ err.position }}] {{ err.message }};
-          </span>
+  <div class="demo-app">
+    <aside class="demo-app-sidebar">
+      <header class="demo-page__header">
+        <h1>@chronixjs/table-vue3</h1>
+        <p class="demo-page__sort-state">当前排序：{{ describeSort(currentSort) }}</p>
+        <p class="demo-page__sort-state">{{ describeFilter(currentFilter) }}</p>
+        <p class="demo-page__sort-state" data-testid="quick-find-state">
+          {{ describeQuickFind(currentQuickFindText, currentQuickFindMatchCount) }}
         </p>
-        <p v-if="advancedFilterStatus !== ''" class="demo-page__advanced-filter-status">
-          {{ advancedFilterStatus }}
+        <p class="demo-page__sort-state">{{ describeSelection(currentSelection) }}</p>
+        <p class="demo-page__sort-state">{{ describePage(currentPage, currentPageSize) }}</p>
+        <p class="demo-page__sort-state">{{ describeLastEdit(lastEdit) }}</p>
+        <p class="demo-page__sort-state">{{ describeLastResize(lastResize) }}</p>
+        <p class="demo-page__sort-state">{{ describeLastReorder(lastReorder) }}</p>
+        <p class="demo-page__sort-state">{{ describeRange(lastRange) }}</p>
+        <p class="demo-page__sort-state">{{ describeCopiedTsv(lastCopiedTsv) }}</p>
+        <p class="demo-page__sort-state">{{ describePasteSummary(lastPasteSummary) }}</p>
+        <p class="demo-page__sort-state">{{ describeFillSummary(lastFillSummary) }}</p>
+        <p class="demo-page__sort-state">{{ describeHistoryState(undoHistoryState) }}</p>
+        <p class="demo-page__sort-state">{{ describeHistoryReplay(lastHistoryReplay) }}</p>
+        <p class="demo-page__sort-state">
+          {{ describeLastHeaderGroupClick(lastHeaderGroupClick) }}
         </p>
-        <button type="button" @click="onAutosizeAll">全部 autosize</button>
-        <button type="button" @click="onAutosizeQty">autosize 数量 列</button>
-        <button type="button" @click="onSetCellRange">setCellRange r1/name..r5/price</button>
-        <button type="button" @click="onClearCellRange">clearCellRange</button>
-        <button type="button" @click="onCopyCellRange">copyCellRangeToClipboard</button>
-        <button type="button" @click="onPasteCellRange">pasteCellRangeFromClipboard</button>
-        <button type="button" @click="onFillToR10Qty">fillCellRange r1/qty → r10/qty</button>
-        <button type="button" :disabled="!canUndoNow" @click="onUndoClick">Undo (Ctrl+Z)</button>
-        <button type="button" :disabled="!canRedoNow" @click="onRedoClick">Redo (Ctrl+Y)</button>
-        <button type="button" @click="onClearHistoryClick">clearHistory</button>
-        <label class="demo-page__inline-toggle">
-          <input v-model="enableAutoScroll" type="checkbox" />
-          enableKeyboardAutoScroll
-        </label>
-        <button type="button" @click="onJumpFarActiveCell">setActiveCell r19/qty</button>
-        <button type="button" data-testid="csv-export-btn" @click="onExportCsv">Export CSV</button>
-        <button
-          type="button"
-          data-testid="xlsx-export-btn"
-          :disabled="xlsxBusy"
-          @click="onExportXlsx"
-        >
-          {{ xlsxBusy ? 'Exporting…' : 'Export XLSX' }}
-        </button>
-        <button
-          type="button"
-          data-testid="xlsx-multisheet-btn"
-          :disabled="xlsxBusy"
-          @click="onExportXlsxMultiSheet"
-        >
-          {{ xlsxBusy ? 'Exporting…' : 'Export 3-sheet XLSX' }}
-        </button>
-        <span v-if="xlsxError" data-testid="xlsx-error">{{ xlsxError }}</span>
-        <button type="button" data-testid="save-view-btn" @click="onSaveView">Save view</button>
-        <button type="button" data-testid="load-view-btn" @click="onLoadView">Load view</button>
-        <span v-if="savedViewStatus" data-testid="saved-view-status">{{ savedViewStatus }}</span>
-      </div>
-      <ChronixTable
-        ref="table"
-        :show-status-bar="true"
-        :columns="columns"
-        :rows="rows"
-        :show-filter-row="true"
-        :show-footer-row="true"
-        :show-column-visibility-menu="true"
-        :show-column-header-menu="true"
-        :context-menu="phase83ContextMenuConfig"
-        @column-header-menu-action="onColumnHeaderMenuAction"
-        :enable-keyboard-navigation="true"
-        :enable-keyboard-auto-scroll="enableAutoScroll"
-        selection-mode="multi"
-        :selection-column="{ show: true, side: 'left' }"
-        :row-drag-column="{ show: true, side: 'left' }"
-        @row-order-change="onRowOrderChange"
-        :pagination-enabled="true"
-        :initial-page-size="20"
-        cell-range-selection="enabled"
-        :enable-undo-history="true"
-        @column-width-change="onColumnWidthChange"
-        @column-order-change="onColumnOrderChange"
-        @column-visibility-change="onColumnVisibilityChange"
-        @columns-change="onColumnsChange"
-        @sort-change="onSortChange"
-        @filter-change="onFilterChange"
-        @quick-find-text-change="onQuickFindTextChange"
-        @selection-change="onSelectionChange"
-        @page-change="onPageChange"
-        @cell-value-change="onCellValueChange"
-        @cell-range-start="onCellRangeStart"
-        @cell-range-change="onCellRangeChange"
-        @cell-range-stop="onCellRangeStop"
-        @cell-range-copy="onCellRangeCopy"
-        @cell-range-paste="onCellRangePaste"
-        @cell-range-fill="onCellRangeFill"
-        @history-replay="onHistoryReplay"
-        @history-change="onHistoryChange"
-        @header-group-click="onHeaderGroupClick"
-      />
-    </section>
-    <section class="demo-page__table demo-page__tree-table">
-      <header class="demo-page__tree-header">
-        <h2>Tree data (vue3 baseline)</h2>
-        <p>
-          File-tree demo with ~85 rows nested 4 levels (project → module → folder → file). 单击
-          chevron 展开 / 折叠；activeCell 在 <code>名称</code> 列时: <strong>Enter</strong> /
-          <strong>Space</strong> 切换；<strong>ArrowRight</strong> 展开折叠节点；<strong
-            >ArrowLeft</strong
+      </header>
+    </aside>
+    <main class="demo-app-main">
+      <section class="demo-page__table">
+        <div class="demo-page__autosize-actions">
+          <label class="demo-page__inline-toggle">
+            Quick-find:
+            <input
+              type="text"
+              data-testid="quick-find-input"
+              class="demo-page__quick-find-input"
+              placeholder="搜索全表 (跨列 OR)"
+              :value="currentQuickFindText"
+              @input="onQuickFindInput"
+            />
+          </label>
+          <label class="demo-page__inline-toggle demo-page__advanced-filter">
+            高级 filter (DSL):
+            <input
+              type="text"
+              data-testid="advanced-filter-input"
+              class="demo-page__advanced-filter-input"
+              placeholder='qty > 10 AND name CONTAINS "alpha"'
+              :value="advancedFilterText"
+              @input="onAdvancedFilterInput"
+            />
+            <button type="button" @click="onAdvancedFilterApply">应用</button>
+            <button type="button" @click="onAdvancedFilterFillExample">示例</button>
+            <button type="button" @click="onAdvancedFilterClear">清空</button>
+          </label>
+          <p
+            v-if="advancedFilterErrors.length > 0"
+            class="demo-page__advanced-filter-errors"
+            data-testid="advanced-filter-errors"
           >
-          折叠展开节点 (折叠态 + 有父则跳到父行)。 控件: 全展开 / 全折叠 通过 imperative
-          <code>expandRow</code> / <code>collapseRow</code> handle 方法。
-        </p>
-        <div class="demo-page__autosize-actions">
-          <button type="button" @click="onTreeExpandAll">全展开</button>
-          <button type="button" @click="onTreeCollapseAll">全折叠</button>
-          <span class="demo-page__sort-state">当前展开: {{ treeExpandedCount }} 个节点</span>
-        </div>
-      </header>
-      <ChronixTable
-        ref="treeTable"
-        :columns="treeColumns"
-        :rows="treeRows"
-        :enable-keyboard-navigation="true"
-        :default-expanded-depth="1"
-        selection-mode="multi"
-        :selection-column="{ show: true, side: 'left' }"
-        @expanded-change="onTreeExpandedChange"
-      />
-    </section>
-    <section class="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
-      <header>
-        <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
-        <p>
-          <strong>Pinned rows</strong>：顶端常驻 ⭐ 行 + 底端 合计 行 (RowSpec.pinned: 'top' /
-          'bottom')，不参与排序 / 过滤 / 分页 / 虚拟化。 <strong>Tooltip</strong>：悬停 备注 列
-          250ms 出 popover (tooltipField: 'note')。 <strong>Overlay</strong>：loading / 空状态浮层。
-        </p>
-        <div class="demo-page__autosize-actions">
-          <button type="button" data-testid="tier2-loading-toggle" @click="onTier2ToggleLoading">
-            {{ tier2Loading ? '停止加载' : '显示 Loading' }}
-          </button>
-          <button type="button" data-testid="tier2-empty-toggle" @click="onTier2ToggleEmpty">
-            {{ tier2EmptyMode ? '恢复数据' : '清空数据' }}
-          </button>
-        </div>
-      </header>
-      <ChronixTable
-        :columns="tier2Columns"
-        :rows="tier2Rows"
-        :loading="tier2Loading"
-        data-testid="tier2-table"
-      />
-    </section>
-    <section class="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
-      <header>
-        <h2>Lazy-load tree children</h2>
-        <p>
-          <strong>Lazy load</strong>：<code>hasChildren: true</code> + 无 <code>children</code> →
-          首次展开调用 <code>childrenLoader</code>；500ms 模拟延迟；<code>lazy-fail-1</code>
-          行强制失败。 <strong>Cache</strong>: 加载后缓存，二次展开瞬时。 <strong>Cancel</strong>:
-          加载中折叠 → AbortSignal 触发。
-        </p>
-        <div class="demo-page__autosize-actions">
-          <button type="button" data-testid="lazy-invalidate-all" @click="onLazyInvalidateAll">
-            Reload All
-          </button>
-          <span class="demo-page__sort-state">
-            start: {{ lazyLoadCounts.start }} / success: {{ lazyLoadCounts.success }} / error:
-            {{ lazyLoadCounts.error }}
-          </span>
-        </div>
-      </header>
-      <ChronixTable
-        ref="lazyTable"
-        :columns="lazyColumns"
-        :rows="lazyRoots"
-        :children-loader="lazyChildrenLoader"
-        data-testid="lazy-table"
-        @lazy-load-start="onLazyStart"
-        @lazy-load-success="onLazySuccess"
-        @lazy-load-error="onLazyError"
-      />
-    </section>
-    <section
-      class="demo-page__table demo-page__server-side-table"
-      data-testid="server-side-section"
-    >
-      <header>
-        <h2>Server-side row model</h2>
-        <p>
-          <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per request.
-          <strong>Skeleton rows</strong>: unloaded indices render shimmer bars; virtualization
-          computes the full Y range from the server-reported <code>totalRowCount</code>.
-          <strong>Sort / filter</strong>: change triggers <code>applyView</code> → in-flight blocks
-          abort via <code>AbortSignal</code> → fresh dispatch. <strong>pagination</strong>: toggle
-          ON → <code>pageSize</code> (25) becomes the effective <code>cacheBlockSize</code>, page N
-          maps 1:1 to block N, the body renders only the current page's slice.
-          <strong>invalidate</strong>: <code>invalidateServerSideBlocks([0])</code> returns block 0
-          to IDLE state; <code>totalRowCount</code> + other blocks + sort/filter are PRESERVED
-          (contrast with <code>refreshServerSideRows()</code> = whole-cache nuke).
-          <strong>Toggle</strong>: switch to <code>clientSide</code> mode to compare against the
-          same column set without server-side wiring.
-        </p>
-        <div class="demo-page__autosize-actions">
-          <button type="button" data-testid="server-side-toggle" @click="onToggleRowModelType">
-            模式: {{ rowModelType === 'serverSide' ? 'server-side' : 'client-side' }} (点击切换)
-          </button>
-          <button type="button" data-testid="server-side-refresh" @click="onRefreshServerSide">
-            Refresh
+            解析错误:
+            <span v-for="(err, i) in advancedFilterErrors" :key="i">
+              [pos {{ err.position }}] {{ err.message }};
+            </span>
+          </p>
+          <p v-if="advancedFilterStatus !== ''" class="demo-page__advanced-filter-status">
+            {{ advancedFilterStatus }}
+          </p>
+          <button type="button" @click="onAutosizeAll">全部 autosize</button>
+          <button type="button" @click="onAutosizeQty">autosize 数量 列</button>
+          <button type="button" @click="onSetCellRange">setCellRange r1/name..r5/price</button>
+          <button type="button" @click="onClearCellRange">clearCellRange</button>
+          <button type="button" @click="onCopyCellRange">copyCellRangeToClipboard</button>
+          <button type="button" @click="onPasteCellRange">pasteCellRangeFromClipboard</button>
+          <button type="button" @click="onFillToR10Qty">fillCellRange r1/qty → r10/qty</button>
+          <button type="button" :disabled="!canUndoNow" @click="onUndoClick">Undo (Ctrl+Z)</button>
+          <button type="button" :disabled="!canRedoNow" @click="onRedoClick">Redo (Ctrl+Y)</button>
+          <button type="button" @click="onClearHistoryClick">clearHistory</button>
+          <label class="demo-page__inline-toggle">
+            <input v-model="enableAutoScroll" type="checkbox" />
+            enableKeyboardAutoScroll
+          </label>
+          <button type="button" @click="onJumpFarActiveCell">setActiveCell r19/qty</button>
+          <button type="button" data-testid="csv-export-btn" @click="onExportCsv">
+            Export CSV
           </button>
           <button
             type="button"
-            data-testid="server-side-pagination-toggle"
-            @click="onToggleServerSidePagination"
+            data-testid="xlsx-export-btn"
+            :disabled="xlsxBusy"
+            @click="onExportXlsx"
           >
-            Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }}
+            {{ xlsxBusy ? 'Exporting…' : 'Export XLSX' }}
           </button>
           <button
             type="button"
-            data-testid="server-side-invalidate-block-0"
-            @click="onInvalidateServerSideBlock0"
+            data-testid="xlsx-multisheet-btn"
+            :disabled="xlsxBusy"
+            @click="onExportXlsxMultiSheet"
           >
-            invalidateServerSideBlocks([0])
+            {{ xlsxBusy ? 'Exporting…' : 'Export 3-sheet XLSX' }}
           </button>
+          <span v-if="xlsxError" data-testid="xlsx-error">{{ xlsxError }}</span>
+          <button type="button" data-testid="save-view-btn" @click="onSaveView">Save view</button>
+          <button type="button" data-testid="load-view-btn" @click="onLoadView">Load view</button>
+          <span v-if="savedViewStatus" data-testid="saved-view-status">{{ savedViewStatus }}</span>
         </div>
-      </header>
-      <ChronixTable
-        ref="serverSideTable"
-        data-testid="server-side-table"
-        :columns="serverSideColumns"
-        :rows="[]"
-        :row-model-type="rowModelType"
-        :server-side-data-source="mockServerSideDataSource"
-        :pagination-enabled="serverSidePaginationEnabled"
-        :initial-page-size="25"
-        :show-filter-row="true"
-      />
-    </section>
-    <section
-      class="demo-page__table demo-page__tier3-finale-table"
-      data-testid="tier3-finale-section"
-    >
-      <header>
-        <h2>Tier 3 finale (Row number + Actions + Row auto-height)</h2>
-        <p>
-          <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code> pinned-left auto
-          renders <code>1, 2, 3</code>. <strong>Actions</strong>:
-          <code>ColumnSpec.actions</code> renders 编辑 + 删除 buttons; <code>task-2</code> 's 删除
-          is disabled via <code>disabled?(row)</code>. <strong>Row auto-height</strong>:
-          <code>enableRowAutoHeight: true</code> + <code>wrapText: true</code> on 说明 column lets
-          multi-line rows grow to fit content.
-        </p>
-        <div class="demo-page__autosize-actions">
-          <span class="demo-page__sort-state" data-testid="tier3-edit-count">
-            编辑点击次数: {{ tier3LastEditCount }}
-          </span>
-          <span class="demo-page__sort-state" data-testid="tier3-delete-count">
-            删除点击次数: {{ tier3LastDeleteCount }}
-          </span>
-        </div>
-      </header>
-      <ChronixTable
-        data-testid="tier3-finale-table"
-        :columns="tier3Columns"
-        :rows="tier3Rows"
-        :enable-row-auto-height="true"
-      />
-    </section>
-    <section class="demo-page__table demo-page__tool-panel-table" data-testid="tool-panel-section">
-      <header>
-        <h2>Tool-panel container (chronix-NEW)</h2>
-        <p>
-          <strong>chronix-NEW container</strong>: replaces reference's sidebar with a composable
-          descriptor-array API. <strong>2 panels</strong>: Info (live row/column count) + Help
-          (keyboard shortcuts). <strong>Resizable</strong>: drag the inner edge of the rail to widen
-          / narrow. <strong>Toggleable</strong>: click the active icon to collapse the content area;
-          rail stays visible.
-        </p>
-        <div class="demo-page__autosize-actions">
-          <span class="demo-page__sort-state" data-testid="tool-panel-width">
-            Container width: {{ toolPanelLastWidth }}px
-          </span>
-        </div>
-      </header>
-      <ChronixTable
-        data-testid="tool-panel-table"
-        :columns="columns"
-        :rows="rows"
-        :tool-panel="toolPanelConfig"
-        @tool-panel-width-change="onToolPanelWidthChange"
-      />
-    </section>
-  </main>
+        <ChronixTable
+          ref="table"
+          :show-status-bar="true"
+          :columns="columns"
+          :rows="rows"
+          :show-filter-row="true"
+          :show-footer-row="true"
+          :show-column-visibility-menu="true"
+          :show-column-header-menu="true"
+          :context-menu="phase83ContextMenuConfig"
+          @column-header-menu-action="onColumnHeaderMenuAction"
+          :enable-keyboard-navigation="true"
+          :enable-keyboard-auto-scroll="enableAutoScroll"
+          selection-mode="multi"
+          :selection-column="{ show: true, side: 'left' }"
+          :row-drag-column="{ show: true, side: 'left' }"
+          @row-order-change="onRowOrderChange"
+          :pagination-enabled="true"
+          :initial-page-size="20"
+          cell-range-selection="enabled"
+          :enable-undo-history="true"
+          @column-width-change="onColumnWidthChange"
+          @column-order-change="onColumnOrderChange"
+          @column-visibility-change="onColumnVisibilityChange"
+          @columns-change="onColumnsChange"
+          @sort-change="onSortChange"
+          @filter-change="onFilterChange"
+          @quick-find-text-change="onQuickFindTextChange"
+          @selection-change="onSelectionChange"
+          @page-change="onPageChange"
+          @cell-value-change="onCellValueChange"
+          @cell-range-start="onCellRangeStart"
+          @cell-range-change="onCellRangeChange"
+          @cell-range-stop="onCellRangeStop"
+          @cell-range-copy="onCellRangeCopy"
+          @cell-range-paste="onCellRangePaste"
+          @cell-range-fill="onCellRangeFill"
+          @history-replay="onHistoryReplay"
+          @history-change="onHistoryChange"
+          @header-group-click="onHeaderGroupClick"
+        />
+      </section>
+      <section class="demo-page__table demo-page__tree-table">
+        <header class="demo-page__tree-header">
+          <h2>Tree data (vue3 baseline)</h2>
+          <p>
+            File-tree demo with ~85 rows nested 4 levels (project → module → folder → file). 单击
+            chevron 展开 / 折叠；activeCell 在 <code>名称</code> 列时: <strong>Enter</strong> /
+            <strong>Space</strong> 切换；<strong>ArrowRight</strong> 展开折叠节点；<strong
+              >ArrowLeft</strong
+            >
+            折叠展开节点 (折叠态 + 有父则跳到父行)。 控件: 全展开 / 全折叠 通过 imperative
+            <code>expandRow</code> / <code>collapseRow</code> handle 方法。
+          </p>
+          <div class="demo-page__autosize-actions">
+            <button type="button" @click="onTreeExpandAll">全展开</button>
+            <button type="button" @click="onTreeCollapseAll">全折叠</button>
+            <span class="demo-page__sort-state">当前展开: {{ treeExpandedCount }} 个节点</span>
+          </div>
+        </header>
+        <ChronixTable
+          ref="treeTable"
+          :columns="treeColumns"
+          :rows="treeRows"
+          :enable-keyboard-navigation="true"
+          :default-expanded-depth="1"
+          selection-mode="multi"
+          :selection-column="{ show: true, side: 'left' }"
+          @expanded-change="onTreeExpandedChange"
+        />
+      </section>
+      <section class="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
+        <header>
+          <h2>+ 32 + 33 — Pinned rows + tooltip + overlay</h2>
+          <p>
+            <strong>Pinned rows</strong>：顶端常驻 ⭐ 行 + 底端 合计 行 (RowSpec.pinned: 'top' /
+            'bottom')，不参与排序 / 过滤 / 分页 / 虚拟化。 <strong>Tooltip</strong>：悬停 备注 列
+            250ms 出 popover (tooltipField: 'note')。 <strong>Overlay</strong>：loading /
+            空状态浮层。
+          </p>
+          <div class="demo-page__autosize-actions">
+            <button type="button" data-testid="tier2-loading-toggle" @click="onTier2ToggleLoading">
+              {{ tier2Loading ? '停止加载' : '显示 Loading' }}
+            </button>
+            <button type="button" data-testid="tier2-empty-toggle" @click="onTier2ToggleEmpty">
+              {{ tier2EmptyMode ? '恢复数据' : '清空数据' }}
+            </button>
+          </div>
+        </header>
+        <ChronixTable
+          :columns="tier2Columns"
+          :rows="tier2Rows"
+          :loading="tier2Loading"
+          data-testid="tier2-table"
+        />
+      </section>
+      <section class="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
+        <header>
+          <h2>Lazy-load tree children</h2>
+          <p>
+            <strong>Lazy load</strong>：<code>hasChildren: true</code> + 无 <code>children</code> →
+            首次展开调用 <code>childrenLoader</code>；500ms 模拟延迟；<code>lazy-fail-1</code>
+            行强制失败。 <strong>Cache</strong>: 加载后缓存，二次展开瞬时。 <strong>Cancel</strong>:
+            加载中折叠 → AbortSignal 触发。
+          </p>
+          <div class="demo-page__autosize-actions">
+            <button type="button" data-testid="lazy-invalidate-all" @click="onLazyInvalidateAll">
+              Reload All
+            </button>
+            <span class="demo-page__sort-state">
+              start: {{ lazyLoadCounts.start }} / success: {{ lazyLoadCounts.success }} / error:
+              {{ lazyLoadCounts.error }}
+            </span>
+          </div>
+        </header>
+        <ChronixTable
+          ref="lazyTable"
+          :columns="lazyColumns"
+          :rows="lazyRoots"
+          :children-loader="lazyChildrenLoader"
+          data-testid="lazy-table"
+          @lazy-load-start="onLazyStart"
+          @lazy-load-success="onLazySuccess"
+          @lazy-load-error="onLazyError"
+        />
+      </section>
+      <section
+        class="demo-page__table demo-page__server-side-table"
+        data-testid="server-side-section"
+      >
+        <header>
+          <h2>Server-side row model</h2>
+          <p>
+            <strong>Mock server</strong>: 250 rows fetched in blocks with 500ms latency per request.
+            <strong>Skeleton rows</strong>: unloaded indices render shimmer bars; virtualization
+            computes the full Y range from the server-reported <code>totalRowCount</code>.
+            <strong>Sort / filter</strong>: change triggers <code>applyView</code> → in-flight
+            blocks abort via <code>AbortSignal</code> → fresh dispatch. <strong>pagination</strong>:
+            toggle ON → <code>pageSize</code> (25) becomes the effective
+            <code>cacheBlockSize</code>, page N maps 1:1 to block N, the body renders only the
+            current page's slice. <strong>invalidate</strong>:
+            <code>invalidateServerSideBlocks([0])</code> returns block 0 to IDLE state;
+            <code>totalRowCount</code> + other blocks + sort/filter are PRESERVED (contrast with
+            <code>refreshServerSideRows()</code> = whole-cache nuke). <strong>Toggle</strong>:
+            switch to <code>clientSide</code> mode to compare against the same column set without
+            server-side wiring.
+          </p>
+          <div class="demo-page__autosize-actions">
+            <button type="button" data-testid="server-side-toggle" @click="onToggleRowModelType">
+              模式: {{ rowModelType === 'serverSide' ? 'server-side' : 'client-side' }} (点击切换)
+            </button>
+            <button type="button" data-testid="server-side-refresh" @click="onRefreshServerSide">
+              Refresh
+            </button>
+            <button
+              type="button"
+              data-testid="server-side-pagination-toggle"
+              @click="onToggleServerSidePagination"
+            >
+              Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }}
+            </button>
+            <button
+              type="button"
+              data-testid="server-side-invalidate-block-0"
+              @click="onInvalidateServerSideBlock0"
+            >
+              invalidateServerSideBlocks([0])
+            </button>
+          </div>
+        </header>
+        <ChronixTable
+          ref="serverSideTable"
+          data-testid="server-side-table"
+          :columns="serverSideColumns"
+          :rows="[]"
+          :row-model-type="rowModelType"
+          :server-side-data-source="mockServerSideDataSource"
+          :pagination-enabled="serverSidePaginationEnabled"
+          :initial-page-size="25"
+          :show-filter-row="true"
+        />
+      </section>
+      <section
+        class="demo-page__table demo-page__tier3-finale-table"
+        data-testid="tier3-finale-section"
+      >
+        <header>
+          <h2>Tier 3 finale (Row number + Actions + Row auto-height)</h2>
+          <p>
+            <strong>Row number</strong>: <code>ColumnSpec.rowNumber: true</code> pinned-left auto
+            renders <code>1, 2, 3</code>. <strong>Actions</strong>:
+            <code>ColumnSpec.actions</code> renders 编辑 + 删除 buttons; <code>task-2</code> 's 删除
+            is disabled via <code>disabled?(row)</code>. <strong>Row auto-height</strong>:
+            <code>enableRowAutoHeight: true</code> + <code>wrapText: true</code> on 说明 column lets
+            multi-line rows grow to fit content.
+          </p>
+          <div class="demo-page__autosize-actions">
+            <span class="demo-page__sort-state" data-testid="tier3-edit-count">
+              编辑点击次数: {{ tier3LastEditCount }}
+            </span>
+            <span class="demo-page__sort-state" data-testid="tier3-delete-count">
+              删除点击次数: {{ tier3LastDeleteCount }}
+            </span>
+          </div>
+        </header>
+        <ChronixTable
+          data-testid="tier3-finale-table"
+          :columns="tier3Columns"
+          :rows="tier3Rows"
+          :enable-row-auto-height="true"
+        />
+      </section>
+      <section
+        class="demo-page__table demo-page__tool-panel-table"
+        data-testid="tool-panel-section"
+      >
+        <header>
+          <h2>Tool-panel container (chronix-NEW)</h2>
+          <p>
+            <strong>chronix-NEW container</strong>: replaces reference's sidebar with a composable
+            descriptor-array API. <strong>2 panels</strong>: Info (live row/column count) + Help
+            (keyboard shortcuts). <strong>Resizable</strong>: drag the inner edge of the rail to
+            widen / narrow. <strong>Toggleable</strong>: click the active icon to collapse the
+            content area; rail stays visible.
+          </p>
+          <div class="demo-page__autosize-actions">
+            <span class="demo-page__sort-state" data-testid="tool-panel-width">
+              Container width: {{ toolPanelLastWidth }}px
+            </span>
+          </div>
+        </header>
+        <ChronixTable
+          data-testid="tool-panel-table"
+          :columns="columns"
+          :rows="rows"
+          :tool-panel="toolPanelConfig"
+          @tool-panel-width-change="onToolPanelWidthChange"
+        />
+      </section>
+    </main>
+  </div>
 </template>
