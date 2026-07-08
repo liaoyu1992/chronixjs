@@ -1,4 +1,4 @@
-import type { FilterSpec, RowSpec, SortSpec } from '../ir/index.js';
+import type { FilterSpec, RowSpec, SortSpec } from '@chronixjs/table';
 
 /**
  * Default block size for `createServerSideRowSource`. Rows are

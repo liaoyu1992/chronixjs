@@ -11,7 +11,7 @@ import {
   type ServerSideDataSource,
 } from './server-side-row-source.js';
 
-import type { FilterSpec, RowSpec, SortSpec } from '../ir/index.js';
+import type { FilterSpec, RowSpec, SortSpec } from '@chronixjs/table';
 
 function makeRow(id: string): RowSpec {
   return { id, data: { name: id } };

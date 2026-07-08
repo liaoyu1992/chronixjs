@@ -1,27 +1,25 @@
 {
-  "name": "@chronixjs/table-vue3",
+  "name": "@chronixjs/table-server-side",
   "version": "0.1.0",
-  "description": "Vue 3 adapter for @chronixjs/table — composable + component wrappers over the framework-agnostic core",
+  "description": "Server-side row model for @chronixjs/table — block cache + LRU + AbortSignal + skeleton markers",
   "license": "MIT",
   "author": "liaoyu1992",
-  "homepage": "https://github.com/liaoyu1992/chronixjs/tree/master/adapters/table-vue3#readme",
+  "homepage": "https://github.com/liaoyu1992/chronixjs/tree/master/packages/table-server-side#readme",
   "bugs": {
     "url": "https://github.com/liaoyu1992/chronixjs/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/liaoyu1992/chronixjs.git",
-    "directory": "adapters/table-vue3"
+    "directory": "packages/table-server-side"
   },
   "keywords": [
     "table",
-    "grid",
-    "datagrid",
-    "vue",
-    "vue3",
-    "composable",
-    "adapter",
-    "component-library"
+    "server-side",
+    "row-model",
+    "virtualization",
+    "pagination",
+    "block-cache"
   ],
   "type": "module",
   "sideEffects": false,
@@ -48,29 +46,22 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest run --passWithNoTests",
+    "test": "vitest run --passWithNoTests --retry=2",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "clean": "rimraf dist .turbo"
   },
   "dependencies": {
-    "@chronixjs/cx-kit": "workspace:*",
-    "@chronixjs/table": "workspace:*",
-    "@chronixjs/table-server-side": "workspace:*"
-  },
-  "peerDependencies": {
-    "vue": "^3.5.0"
+    "@chronixjs/table": "workspace:*"
   },
   "devDependencies": {
     "@chronixjs/eslint-config": "workspace:*",
     "@types/node": "^26.1.0",
-    "@vue/test-utils": "^2.4.6",
     "happy-dom": "^20.10.6",
     "rimraf": "^6.0.1",
     "tsup": "^8.3.0",
     "typescript": "^5.6.3",
-    "vitest": "^4.1.10",
-    "vue": "^3.5.0"
+    "vitest": "^4.1.10"
   }
 }

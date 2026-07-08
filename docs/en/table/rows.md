@@ -252,7 +252,7 @@ For large datasets, use server-side row model:
 
 <script setup lang="ts">
 import { ChronixTable } from '@chronixjs/table-vue3';
-import type { ServerSideDataSource } from '@chronixjs/table';
+import type { ServerSideDataSource } from '@chronixjs/table-server-side';
 
 const dataSource: ServerSideDataSource = {
   async getRows(params) {

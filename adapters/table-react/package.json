@@ -56,7 +56,8 @@
   },
   "dependencies": {
     "@chronixjs/cx-kit": "workspace:*",
-    "@chronixjs/table": "workspace:*"
+    "@chronixjs/table": "workspace:*",
+    "@chronixjs/table-server-side": "workspace:*"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
