@@ -101,10 +101,8 @@ import {
   type PasteMutation,
   type PasteValidatorGate,
   type PinnedColsResult,
-  DEFAULT_TOOL_PANEL_MAX_WIDTH_PX,
-  DEFAULT_TOOL_PANEL_MIN_WIDTH_PX,
-  DEFAULT_TOOL_PANEL_WIDTH_PX,
-  TOOL_PANEL_ICON_RAIL_WIDTH_PX,
+  DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
+  DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
   type RowAction,
   type RowDataSource,
   type RowSpec,
@@ -113,7 +111,6 @@ import {
   type ToolPanelChangePayload,
   type ToolPanelConfig,
   type ToolPanelDescriptor,
-  type ToolPanelWidthChangePayload,
   type ContextMenuConfig,
   type ContextMenuContext,
   type ContextMenuItem,
@@ -454,11 +451,20 @@ export interface TableHandle {
   getServerSideTotalRowCount(): number;
   /** (2026-05-29 — react port). Verbatim mirror of vue3. */
   getServerSideBlockState(blockIndex: number): BlockState;
-  /** (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** open the settings popover with the given panel active. No-op
+   * when the id doesn't exist in `props.toolPanel.panels` or when
+   * `toolPanel` is not configured. Fires `tool-panel-change`.
+   */
   openToolPanel(id: string): void;
-  /** (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** close the settings popover. The active panel id persists
+   * so the next open resumes the same panel. Fires
+   * `tool-panel-change` with `activePanelId: null`.
+   */
   closeToolPanel(): void;
-  /** (2026-05-30 — react port). Verbatim mirror of vue3. */
+  /** read the currently active tool-panel id.
+   * Returns `null` when the popover is closed or when
+   * `toolPanel` is not configured.
+   */
   getActiveToolPanelId(): string | null;
   /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
   openColumnHeaderMenu(colId: string): void;
@@ -2097,8 +2103,14 @@ export interface ChronixTableProps {
    */
   readonly maxRowAutoHeightPx?: number;
   /**
-   * (2026-05-30 — react port): tool-panel container config.
-   * Verbatim mirror of vue3 prop.
+   * tool-panel popover config. When
+   * `show: true` + non-empty `panels`, the SFC renders a settings
+   * (gear) icon in the action column header. Clicking the icon
+   * opens a floating popover hosting consumer-supplied tool panels
+   * via each descriptor's `renderer` callback. When the action
+   * column has no action buttons (`actions: []`), the header shows
+   * only the settings icon (no "操作" text). Defaults to
+   * `undefined` — no settings icon, no popover.
    */
   readonly toolPanel?: ToolPanelConfig;
   /**
@@ -2107,11 +2119,6 @@ export interface ChronixTableProps {
    * closeToolPanel / initialOpenId-driven mount).
    */
   readonly onToolPanelChange?: (payload: ToolPanelChangePayload) => void;
-  /**
-   * (2026-05-30 — react port): fires on pointer-up after a
-   * tool-panel resize drag completes.
-   */
-  readonly onToolPanelWidthChange?: (payload: ToolPanelWidthChangePayload) => void;
   /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
   readonly showColumnHeaderMenu?: boolean;
   /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
@@ -2538,7 +2545,6 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       maxRowAutoHeightPx,
       toolPanel,
       onToolPanelChange,
-      onToolPanelWidthChange,
       showColumnHeaderMenu = false,
       contextMenu = null,
       onColumnHeaderMenuAction,
@@ -3348,70 +3354,53 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, [enableRowAutoHeight, measuredRowHeightVersion]);
 
     /**
-     * (2026-05-30 — react port): tool-panel container state.
-     * Verbatim mirror of vue3 wiring with React useState +
-     * useRef idioms. Stale callback refs avoid re-creating handlers
-     * when only the panel state changes.
+     * tool-panel popover reactive state.
+     * `activeToolPanelId` holds the id of the active panel (persists
+     * across open/close cycles). `settingsPopoverOpenRef` controls
+     * popover visibility. `settingsIconButtonRef` anchors the popover
+     * position to the settings icon button in the action column header.
      */
     const [activeToolPanelId, setActiveToolPanelId] = useState<string | null>(
       toolPanel?.initialOpenId ?? null,
     );
     const activeToolPanelIdRef = useRef(activeToolPanelId);
     activeToolPanelIdRef.current = activeToolPanelId;
-    const [toolPanelWidth, setToolPanelWidth] = useState<number>(
-      toolPanel?.initialWidth ?? DEFAULT_TOOL_PANEL_WIDTH_PX,
-    );
-    const [resizingToolPanel, setResizingToolPanel] = useState(false);
+    const [settingsPopoverOpen, setSettingsPopoverOpen] = useState<boolean>(false);
+    const settingsPopoverOpenRef = useRef(settingsPopoverOpen);
+    settingsPopoverOpenRef.current = settingsPopoverOpen;
+    const settingsIconButtonRef = useRef<HTMLElement | null>(null);
+    const settingsPopoverRef = useRef<HTMLElement | null>(null);
     const toolPanelRef = useRef(toolPanel);
     toolPanelRef.current = toolPanel;
-    const toolPanelWidthRef = useRef(toolPanelWidth);
-    toolPanelWidthRef.current = toolPanelWidth;
     const onToolPanelChangeRef = useRef(onToolPanelChange);
     onToolPanelChangeRef.current = onToolPanelChange;
-    const onToolPanelWidthChangeRef = useRef(onToolPanelWidthChange);
-    onToolPanelWidthChangeRef.current = onToolPanelWidthChange;
 
     const applyToolPanelChange = useCallback((nextId: string | null) => {
       setActiveToolPanelId((prev) => {
-        if (prev === nextId) return prev;
+        if (prev === nextId && settingsPopoverOpenRef.current) return prev;
         onToolPanelChangeRef.current?.({ activePanelId: nextId });
         return nextId;
       });
+      setSettingsPopoverOpen(nextId != null);
     }, []);
 
-    const applyToolPanelWidthChange = useCallback((nextWidth: number) => {
-      const cfg = toolPanelRef.current;
-      const min = cfg?.minWidth ?? DEFAULT_TOOL_PANEL_MIN_WIDTH_PX;
-      const max = cfg?.maxWidth ?? DEFAULT_TOOL_PANEL_MAX_WIDTH_PX;
-      const clamped = Math.max(min, Math.min(max, nextWidth));
-      setToolPanelWidth((prev) => (prev === clamped ? prev : clamped));
-    }, []);
-
-    const onToolPanelResizePointerDown = useCallback(
-      (e: ReactPointerEvent<HTMLDivElement>) => {
+    const toggleSettingsPopover = useCallback(() => {
+      if (settingsPopoverOpenRef.current) {
+        setSettingsPopoverOpen(false);
+        onToolPanelChangeRef.current?.({ activePanelId: null });
+      } else {
         const cfg = toolPanelRef.current;
-        if (cfg == null) return;
-        e.preventDefault();
-        setResizingToolPanel(true);
-        const startX = e.clientX;
-        const startWidth = toolPanelWidthRef.current;
-        const side = cfg.side ?? 'right';
-        const sign = side === 'right' ? -1 : 1;
-        function onMove(ev: PointerEvent): void {
-          const dx = (ev.clientX - startX) * sign;
-          applyToolPanelWidthChange(startWidth + dx);
-        }
-        function onUp(): void {
-          setResizingToolPanel(false);
-          document.removeEventListener('pointermove', onMove);
-          document.removeEventListener('pointerup', onUp);
-          onToolPanelWidthChangeRef.current?.({ width: toolPanelWidthRef.current });
-        }
-        document.addEventListener('pointermove', onMove);
-        document.addEventListener('pointerup', onUp);
-      },
-      [applyToolPanelWidthChange],
-    );
+        if (cfg == null || !cfg.show || cfg.panels.length === 0) return;
+        const id =
+          activeToolPanelIdRef.current != null &&
+          cfg.panels.some((p) => p.id === activeToolPanelIdRef.current)
+            ? activeToolPanelIdRef.current
+            : (cfg.panels[0]?.id ?? null);
+        setActiveToolPanelId(id);
+        setSettingsPopoverOpen(true);
+        if (id != null) onToolPanelChangeRef.current?.({ activePanelId: id });
+      }
+    }, []);
 
     /** -A (2026-05-30 — react port). Verbatim mirror of vue3. */
     const [openColumnHeaderMenuColId, setOpenColumnHeaderMenuColId] = useState<string | null>(null);
@@ -3930,7 +3919,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // `activeIndex` + ArrowDown/Up/Home/End handler scoped to its
     // menu container. Items lists are useMemo'd over the surfaces'
     // reactive state. Verbatim react port of the vue3 wiring.
-    const toolPanelRailRef = useRef<HTMLDivElement | null>(null);
+    const settingsPopoverTabsRef = useRef<HTMLDivElement | null>(null);
     const columnHeaderMenuRef = useRef<HTMLDivElement | null>(null);
     const cellContextMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -3938,11 +3927,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       if (toolPanel?.show !== true) return EMPTY_MENU_KBD_ITEMS;
       return toolPanel.panels.map((p) => ({ id: p.id }));
     }, [toolPanel]);
-    const toolPanelKbdIsOpen = toolPanel != null && toolPanel.show && toolPanel.panels.length > 0;
-    const toolPanelKbdNav = useMenuKeyboardNav({
-      menuRef: toolPanelRailRef,
+    const settingsPopoverKbdNav = useMenuKeyboardNav({
+      menuRef: settingsPopoverTabsRef,
       items: toolPanelKbdItems,
-      isOpen: toolPanelKbdIsOpen,
+      isOpen: settingsPopoverOpen,
+      orientation: 'horizontal',
     });
 
     const columnHeaderMenuKbdItems = useMemo<readonly MenuKeyboardNavItem[]>(() => {
@@ -4862,6 +4851,15 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             cellStyleHueDragRef.current = false;
           }
         }
+        // close settings popover on outside click
+        if (settingsPopoverOpenRef.current) {
+          const insidePopover = target.closest('.cx-table-settings-popover') != null;
+          const insideSettingsBtn = target.closest('.cx-table-header-settings-button') != null;
+          if (!insidePopover && !insideSettingsBtn) {
+            setSettingsPopoverOpen(false);
+            onToolPanelChangeRef.current?.({ activePanelId: null });
+          }
+        }
       }
       function onPhase83DocKeydown(e: KeyboardEvent): void {
         if (e.key !== 'Escape') return;
@@ -4878,6 +4876,12 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           setCellStyleEditorOpen(null);
           cellStyleSquareDragRef.current = false;
           cellStyleHueDragRef.current = false;
+          e.stopPropagation();
+        }
+        // Escape closes settings popover.
+        if (settingsPopoverOpenRef.current) {
+          setSettingsPopoverOpen(false);
+          onToolPanelChangeRef.current?.({ activePanelId: null });
           e.stopPropagation();
         }
       }
@@ -8668,7 +8672,51 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           style={cellStyle}
           {...moveHandlers}
         >
-          <span className="cx-table-header-cell-label">{cell.label}</span>
+          {/* Settings icon for the action column header. Renders only
+           * when toolPanel.show is true AND this column has `actions`
+           * defined (even an empty array). When actions is non-empty,
+           * the label text ("操作") is shown alongside the icon. When
+           * actions is empty, only the icon is shown (no label). */}
+          {(() => {
+            const colForSettings = columnTable.getById(cell.colId);
+            const isActionsColForSettings =
+              toolPanel?.show === true && colForSettings?.actions != null;
+            const showHeaderLabel =
+              !isActionsColForSettings || (colForSettings?.actions?.length ?? 0) > 0;
+            return (
+              <>
+                {showHeaderLabel && (
+                  <span className="cx-table-header-cell-label">{cell.label}</span>
+                )}
+                {isActionsColForSettings && (
+                  <button
+                    ref={(el: HTMLButtonElement | null) => {
+                      settingsIconButtonRef.current = el;
+                    }}
+                    type="button"
+                    className={[
+                      'cx-table-header-settings-button',
+                      settingsPopoverOpen && 'cx-table-header-settings-button--open',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-haspopup="dialog"
+                    aria-expanded={settingsPopoverOpen ? 'true' : 'false'}
+                    aria-label="设置"
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSettingsPopover();
+                    }}
+                  >
+                    ⚙
+                  </button>
+                )}
+              </>
+            );
+          })()}
           <span className={indicatorClassName} data-sort-direction={direction ?? ''}>
             {indicatorText}
             {showPosition && (
@@ -10331,8 +10379,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         // -A (2026-05-30 — react port): row-number column override.
         const isRowNumberCol = col.rowNumber === true;
         const rowNumberIndex = isRowNumberCol ? displayedRowIndexByRowId[row.id] : undefined;
-        // -B (2026-05-30 — react port): actions column flag.
-        const isActionsCol = col.actions != null && col.actions.length > 0;
+        // -B (2026-05-30 — react port): actions column flag. When
+        // `col.actions` is defined (even an empty array), the cell
+        // gets the `cx-table-cell--actions` modifier. The action-
+        // button strip is only rendered when `actions.length > 0`;
+        // an empty array means the column exists solely to host the
+        // settings icon in the header.
+        const isActionsCol = col.actions != null;
         const text = isRowNumberCol
           ? rowNumberIndex != null
             ? String(rowNumberIndex + 1)
@@ -10578,7 +10631,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 }
               : {})}
           >
-            {isActionsCol && col.actions != null ? (
+            {isActionsCol && col.actions != null && col.actions.length > 0 ? (
               renderActionsCellChildren(col.actions, row)
             ) : editingThisCell != null ? (
               buildCellEditorInput(editingThisCell)
@@ -11412,106 +11465,101 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         />
       ) : null;
 
-    // (2026-05-30 — react port): tool-panel container side-by-
-    // side layout. Verbatim mirror of vue3 root render branch.
-    const toolPanelCfg = toolPanel;
-    const toolPanelEnabled =
-      toolPanelCfg != null && toolPanelCfg.show && toolPanelCfg.panels.length > 0;
-    const toolPanelSide: 'left' | 'right' = toolPanelCfg?.side ?? 'right';
-    const toolPanelActiveDescriptor: ToolPanelDescriptor | undefined = toolPanelEnabled
-      ? toolPanelCfg.panels.find((p) => p.id === activeToolPanelId)
-      : undefined;
-    const toolPanelContainerActualWidth =
-      toolPanelActiveDescriptor != null ? toolPanelWidth : TOOL_PANEL_ICON_RAIL_WIDTH_PX;
-    const toolPanelIconRail = toolPanelEnabled ? (
-      <div
-        key="rail"
-        ref={toolPanelRailRef}
-        className="cx-table-tool-panel-rail"
-        role="tablist"
-        aria-orientation="vertical"
-        style={{ width: `${TOOL_PANEL_ICON_RAIL_WIDTH_PX}px` }}
-        onKeyDown={(e) => toolPanelKbdNav.handleKeydown(e)}
-      >
-        {toolPanelCfg.panels.map((descriptor, idx) => {
-          const isActive = descriptor.id === activeToolPanelId;
-          // roving tabindex via composable's activeIndex.
-          const isKbdActive = toolPanelKbdNav.activeIndex === idx;
-          return (
-            <button
-              key={descriptor.id}
-              type="button"
-              className={[
-                'cx-table-tool-panel-icon',
-                isActive && 'cx-table-tool-panel-icon--active',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-              role="tab"
-              tabIndex={isKbdActive ? 0 : -1}
-              data-tool-panel-id={descriptor.id}
-              data-menu-item-index={String(idx)}
-              aria-selected={isActive ? 'true' : 'false'}
-              aria-controls={`cx-table-tool-panel-content-${descriptor.id}`}
-              aria-label={descriptor.ariaLabel ?? descriptor.label}
-              title={descriptor.label}
-              onClick={() => {
-                applyToolPanelChange(isActive ? null : descriptor.id);
-              }}
-            >
-              {descriptor.icon ?? descriptor.label.charAt(0)}
-            </button>
-          );
-        })}
-      </div>
-    ) : null;
-    const toolPanelContentArea =
-      toolPanelEnabled && toolPanelActiveDescriptor != null ? (
-        <div
-          key="content"
-          className="cx-table-tool-panel-content"
-          id={`cx-table-tool-panel-content-${toolPanelActiveDescriptor.id}`}
-          role="tabpanel"
-          data-tool-panel-id={toolPanelActiveDescriptor.id}
-          style={{ width: `${toolPanelWidth - TOOL_PANEL_ICON_RAIL_WIDTH_PX}px` }}
-        >
-          {toolPanelActiveDescriptor.renderer() as ReactNode}
-        </div>
-      ) : null;
-    const toolPanelResizer = toolPanelEnabled ? (
-      <div
-        key="resizer"
-        className={[
-          'cx-table-tool-panel-resizer',
-          resizingToolPanel && 'cx-table-tool-panel-resizer--active',
-        ]
-          .filter(Boolean)
-          .join(' ')}
-        role="separator"
-        aria-orientation="vertical"
-        data-testid="cx-tool-panel-resizer"
-        onPointerDown={onToolPanelResizePointerDown}
-      />
-    ) : null;
-    const toolPanelContainerChildren =
-      toolPanelSide === 'right'
-        ? toolPanelActiveDescriptor != null
-          ? [toolPanelResizer, toolPanelContentArea, toolPanelIconRail]
-          : [toolPanelResizer, toolPanelIconRail]
-        : toolPanelActiveDescriptor != null
-          ? [toolPanelIconRail, toolPanelContentArea, toolPanelResizer]
-          : [toolPanelIconRail, toolPanelResizer];
-    const toolPanelContainer = toolPanelEnabled ? (
-      <div
-        className="cx-table-tool-panel-container"
-        data-tool-panel-side={toolPanelSide}
-        role="region"
-        aria-label="Tool panels"
-        style={{ width: `${toolPanelContainerActualWidth}px` }}
-      >
-        {toolPanelContainerChildren}
-      </div>
-    ) : null;
+    // Settings popover. Renders only when settingsPopoverOpen is
+    // true AND toolPanel is configured. Fixed-position anchored to the
+    // settings icon button in the action column header. Contains a
+    // horizontal tab bar (one tab per panel descriptor) + the active
+    // panel's renderer output below.
+    const settingsPopover =
+      settingsPopoverOpen && toolPanel != null && toolPanel.show && toolPanel.panels.length > 0
+        ? (() => {
+            const cfg = toolPanel;
+            const btnEl = settingsIconButtonRef.current;
+            const rect = btnEl?.getBoundingClientRect();
+            const popoverWidth = cfg.popoverWidth ?? DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX;
+            const maxHeight = cfg.popoverMaxHeight ?? DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX;
+            const btnBottom = rect?.bottom ?? 0;
+            const btnRight = rect?.right ?? 0;
+            const spaceBelow = window.innerHeight - btnBottom;
+            const showBelow = spaceBelow >= 200 || spaceBelow >= window.innerHeight / 2;
+            const top = showBelow ? btnBottom + 4 : (rect?.top ?? 0) - maxHeight - 4;
+            const rightAligned = btnRight;
+            const left = Math.max(
+              8,
+              Math.min(rightAligned - popoverWidth, window.innerWidth - popoverWidth - 8),
+            );
+            const activeId = activeToolPanelId;
+            const activeDescriptor: ToolPanelDescriptor | undefined =
+              cfg.panels.find((p) => p.id === activeId) ?? cfg.panels[0];
+            const popoverActiveIdx = settingsPopoverKbdNav.activeIndex;
+            return (
+              <div
+                ref={(el: HTMLDivElement | null) => {
+                  settingsPopoverRef.current = el;
+                }}
+                className="cx-table-settings-popover"
+                role="dialog"
+                aria-label="设置面板"
+                style={{
+                  position: 'fixed',
+                  left: `${left}px`,
+                  top: `${top}px`,
+                  width: `${popoverWidth}px`,
+                  zIndex: 8,
+                }}
+              >
+                <div
+                  ref={settingsPopoverTabsRef}
+                  className="cx-table-settings-popover__tabs"
+                  role="tablist"
+                  aria-orientation="horizontal"
+                  onKeyDown={(e) => settingsPopoverKbdNav.handleKeydown(e)}
+                >
+                  {cfg.panels.map((descriptor, idx) => {
+                    const isActive = descriptor.id === (activeDescriptor?.id ?? '');
+                    const isKbdActive = popoverActiveIdx === idx;
+                    return (
+                      <button
+                        key={descriptor.id}
+                        type="button"
+                        className={[
+                          'cx-table-settings-popover-tab',
+                          isActive && 'cx-table-settings-popover-tab--active',
+                        ]
+                          .filter(Boolean)
+                          .join(' ')}
+                        role="tab"
+                        tabIndex={isKbdActive ? 0 : -1}
+                        data-tool-panel-id={descriptor.id}
+                        data-menu-item-index={String(idx)}
+                        aria-selected={isActive ? 'true' : 'false'}
+                        aria-label={descriptor.ariaLabel ?? descriptor.label}
+                        title={descriptor.label}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveToolPanelId(descriptor.id);
+                          onToolPanelChangeRef.current?.({ activePanelId: descriptor.id });
+                        }}
+                      >
+                        {descriptor.icon ?? descriptor.label.charAt(0)}
+                      </button>
+                    );
+                  })}
+                </div>
+                {activeDescriptor != null ? (
+                  <div
+                    className="cx-table-settings-popover__content"
+                    role="tabpanel"
+                    data-tool-panel-id={activeDescriptor.id}
+                    style={{ maxHeight: `${maxHeight}px`, overflowY: 'auto' }}
+                  >
+                    {activeDescriptor.renderer() as ReactNode}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })()
+        : null;
 
     const tableWrapper = (
       <div
@@ -12795,15 +12843,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             {tooltipActive.text}
           </div>
         )}
+        {settingsPopover}
       </div>
     );
 
-    if (!toolPanelEnabled) return tableWrapper;
-    return (
-      <div className="cx-table-with-tool-panel" data-tool-panel-side={toolPanelSide}>
-        {toolPanelSide === 'right' ? tableWrapper : toolPanelContainer}
-        {toolPanelSide === 'right' ? toolPanelContainer : tableWrapper}
-      </div>
-    );
+    return tableWrapper;
   },
 );

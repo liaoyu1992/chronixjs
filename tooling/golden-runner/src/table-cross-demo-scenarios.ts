@@ -143,20 +143,25 @@ export const TABLE_VRT_SCENARIOS: readonly TableVrtScenario[] = [
   {
     id: 'tool-panel-columns-open',
     description:
-      'Tool-panel demo section: open the columns tool panel — captures sidebar + drag-handle paint (Phase 80).',
+      'Tool-panel popover demo section: open the settings popover via the action-column header gear icon, then activate the columns tab — captures popover paint (Phase 80).',
     setup: async (page) => {
       // The tool-panel section is the LAST <ChronixTable> on the
       // page, identified by data-testid="tool-panel-section".
       const toolPanelSection = page.locator('[data-testid="tool-panel-section"]');
       if ((await toolPanelSection.count()) > 0) {
         await toolPanelSection.scrollIntoViewIfNeeded();
-        // Activate the columns tool panel tab. The tool-panel container
-        // exposes a tablist; click the "columns" / "列" tab.
-        const columnsTab = toolPanelSection.locator(
-          '.cx-table-tool-panel-tab[data-tool-panel-id="columns"]',
-        );
-        if ((await columnsTab.count()) > 0) {
-          await columnsTab.first().click();
+        // Open the settings popover by clicking the gear icon in
+        // the action column header.
+        const settingsBtn = toolPanelSection.locator('.cx-table-header-settings-button');
+        if ((await settingsBtn.count()) > 0) {
+          await settingsBtn.first().click();
+          // Activate the columns tab inside the popover.
+          const columnsTab = toolPanelSection.locator(
+            '.cx-table-settings-popover-tab[data-tool-panel-id="columns"]',
+          );
+          if ((await columnsTab.count()) > 0) {
+            await columnsTab.first().click();
+          }
         }
       }
     },

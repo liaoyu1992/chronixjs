@@ -9376,7 +9376,7 @@ describe('Tier 3 finale (react)', () => {
   });
 });
 
-describe('tool-panel container (react)', () => {
+describe('tool-panel popover (react)', () => {
   const panelConfig: ToolPanelConfig = {
     show: true,
     panels: [
@@ -9385,78 +9385,112 @@ describe('tool-panel container (react)', () => {
     ],
   };
 
-  it('80-1: show:true + non-empty panels renders the container with icon rail (react)', () => {
+  const columnsWithActions: readonly ColumnSpec[] = [
+    ...columns,
+    {
+      id: 'actions',
+      headerName: '操作',
+      width: 120,
+      actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+    },
+  ];
+
+  it('80-1: show:true renders settings icon in action header; popover closed at mount (react)', () => {
     const { container } = render(
-      <ChronixTable columns={columns} rows={rows} toolPanel={panelConfig} />,
+      <ChronixTable columns={columnsWithActions} rows={rows} toolPanel={panelConfig} />,
     );
-    expect(container.querySelector('.cx-table-with-tool-panel')).toBeTruthy();
-    expect(container.querySelector('.cx-table-tool-panel-container')).toBeTruthy();
-    expect(container.querySelector('.cx-table-tool-panel-rail')).toBeTruthy();
-    const icons = container.querySelectorAll('button[data-tool-panel-id]');
-    expect(icons.length).toBe(2);
+    expect(container.querySelector('.cx-table-header-settings-button')).toBeTruthy();
+    expect(container.querySelector('.cx-table-settings-popover')).toBeFalsy();
   });
 
-  it('80-2: initialOpenId:info opens the info panel at mount + sets aria-selected=true (react)', () => {
+  it('80-2: clicking settings icon opens popover + activates initialOpenId panel (react)', async () => {
     const { container } = render(
       <ChronixTable
-        columns={columns}
+        columns={columnsWithActions}
         rows={rows}
         toolPanel={{ ...panelConfig, initialOpenId: 'info' }}
       />,
     );
-    expect(container.querySelector('.cx-table-tool-panel-content')).toBeTruthy();
-    const infoBtn = container.querySelector('button[data-tool-panel-id="info"]');
-    expect(infoBtn?.getAttribute('aria-selected')).toBe('true');
-    const helpBtn = container.querySelector('button[data-tool-panel-id="help"]');
-    expect(helpBtn?.getAttribute('aria-selected')).toBe('false');
+    const btn = container.querySelector<HTMLButtonElement>('.cx-table-header-settings-button')!;
+    fireEvent.click(btn);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(container.querySelector('.cx-table-settings-popover')).toBeTruthy();
+    expect(container.querySelector('.cx-table-settings-popover__content')).toBeTruthy();
+    expect(
+      container.querySelector('button[data-tool-panel-id="info"]')?.getAttribute('aria-selected'),
+    ).toBe('true');
+    expect(
+      container.querySelector('button[data-tool-panel-id="help"]')?.getAttribute('aria-selected'),
+    ).toBe('false');
   });
 
-  it('80-3: clicking an icon fires onToolPanelChange + toggles the active panel (react)', () => {
+  it('80-3: clicking a tab fires onToolPanelChange + sets active panel (react)', async () => {
     const calls: { activePanelId: string | null }[] = [];
     const { container } = render(
       <ChronixTable
-        columns={columns}
+        columns={columnsWithActions}
         rows={rows}
         toolPanel={panelConfig}
         onToolPanelChange={(p) => calls.push(p)}
       />,
     );
-    const infoBtn = container.querySelector<HTMLButtonElement>('button[data-tool-panel-id="info"]');
-    expect(infoBtn).toBeTruthy();
-    fireEvent.click(infoBtn!);
-    expect(calls.length).toBe(1);
-    expect(calls[0]?.activePanelId).toBe('info');
+    const btn = container.querySelector<HTMLButtonElement>('.cx-table-header-settings-button')!;
+    fireEvent.click(btn);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    const infoTab = container.querySelector<HTMLButtonElement>(
+      'button[data-tool-panel-id="info"]',
+    )!;
+    fireEvent.click(infoTab);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(calls.length).toBeGreaterThanOrEqual(1);
+    expect(calls[calls.length - 1]?.activePanelId).toBe('info');
     expect(
       container.querySelector('button[data-tool-panel-id="info"]')?.getAttribute('aria-selected'),
     ).toBe('true');
-    expect(container.querySelector('.cx-table-tool-panel-content')).toBeTruthy();
+    expect(container.querySelector('.cx-table-settings-popover__content')).toBeTruthy();
   });
 
-  it('80-4: clicking the active icon again closes the content area (react)', () => {
+  it('80-4: clicking settings icon again closes the popover (react)', async () => {
     const { container } = render(
       <ChronixTable
-        columns={columns}
+        columns={columnsWithActions}
         rows={rows}
         toolPanel={{ ...panelConfig, initialOpenId: 'info' }}
       />,
     );
-    const infoBtn = container.querySelector<HTMLButtonElement>('button[data-tool-panel-id="info"]');
-    fireEvent.click(infoBtn!);
-    expect(container.querySelector('.cx-table-tool-panel-content')).toBeFalsy();
-    expect(container.querySelector('.cx-table-tool-panel-rail')).toBeTruthy();
-    expect(
-      container.querySelector('button[data-tool-panel-id="info"]')?.getAttribute('aria-selected'),
-    ).toBe('false');
+    const btn = container.querySelector<HTMLButtonElement>('.cx-table-header-settings-button')!;
+    fireEvent.click(btn);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(container.querySelector('.cx-table-settings-popover')).toBeTruthy();
+    fireEvent.click(btn);
+    await act(async () => {
+      await Promise.resolve();
+    });
+    expect(container.querySelector('.cx-table-settings-popover')).toBeFalsy();
+    expect(container.querySelector('.cx-table-header-settings-button')).toBeTruthy();
   });
 
-  it('80-5: toolPanel.side:left dock renders the rail on the left side (react)', () => {
+  it('80-5: empty actions array shows settings icon but no header label (react)', () => {
+    const columnsEmptyActions: readonly ColumnSpec[] = [
+      ...columns,
+      { id: 'actions', headerName: '操作', width: 120, actions: [] },
+    ];
     const { container } = render(
-      <ChronixTable columns={columns} rows={rows} toolPanel={{ ...panelConfig, side: 'left' }} />,
+      <ChronixTable columns={columnsEmptyActions} rows={rows} toolPanel={panelConfig} />,
     );
-    const root = container.querySelector('.cx-table-with-tool-panel');
-    expect(root?.getAttribute('data-tool-panel-side')).toBe('left');
-    const cont = container.querySelector('.cx-table-tool-panel-container');
-    expect(cont?.getAttribute('data-tool-panel-side')).toBe('left');
+    expect(container.querySelector('.cx-table-header-settings-button')).toBeTruthy();
+    const actionHeaderLabel = container.querySelector(
+      '[data-col-id="actions"] .cx-table-header-cell-label',
+    );
+    expect(actionHeaderLabel).toBeFalsy();
   });
 });
 
@@ -9615,17 +9649,37 @@ describe('tool-panel tablist keyboard nav (react)', () => {
     ],
   };
 
+  const columnsWithActions: readonly ColumnSpec[] = [
+    ...columns,
+    {
+      id: 'actions',
+      headerName: '操作',
+      width: 120,
+      actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+    },
+  ];
+
   async function flush(): Promise<void> {
     await act(async () => {
       await Promise.resolve();
     });
   }
 
-  it('84-tablist-1: each tab renders data-menu-item-index and a roving tabindex (react)', () => {
+  async function openPopover(container: HTMLElement): Promise<HTMLElement> {
+    const btn = container.querySelector<HTMLButtonElement>('.cx-table-header-settings-button')!;
+    fireEvent.click(btn);
+    await flush();
+    return container.querySelector<HTMLDivElement>('.cx-table-settings-popover__tabs')!;
+  }
+
+  it('84-tablist-1: each tab renders data-menu-item-index and a roving tabindex (react)', async () => {
     const { container } = render(
-      <ChronixTable columns={columns} rows={rows} toolPanel={panelConfig} />,
+      <ChronixTable columns={columnsWithActions} rows={rows} toolPanel={panelConfig} />,
     );
-    const tabs = container.querySelectorAll<HTMLButtonElement>('button[data-tool-panel-id]');
+    await openPopover(container);
+    const tabs = container.querySelectorAll<HTMLButtonElement>(
+      '.cx-table-settings-popover__tabs button[data-tool-panel-id]',
+    );
     expect(tabs.length).toBe(3);
     expect(tabs[0]!.getAttribute('data-menu-item-index')).toBe('0');
     expect(tabs[2]!.getAttribute('data-menu-item-index')).toBe('2');
@@ -9633,53 +9687,61 @@ describe('tool-panel tablist keyboard nav (react)', () => {
     expect(tabs[1]!.getAttribute('tabindex')).toBe('-1');
   });
 
-  it('84-tablist-2: ArrowDown moves tabindex+focus to the next tab (react)', async () => {
+  it('84-tablist-2: ArrowRight moves tabindex+focus to the next tab (react)', async () => {
     const { container } = render(
-      <ChronixTable columns={columns} rows={rows} toolPanel={panelConfig} />,
+      <ChronixTable columns={columnsWithActions} rows={rows} toolPanel={panelConfig} />,
     );
-    const rail = container.querySelector<HTMLDivElement>('.cx-table-tool-panel-rail')!;
-    fireEvent.keyDown(rail, { key: 'ArrowDown' });
+    const tabsBar = await openPopover(container);
+    fireEvent.keyDown(tabsBar, { key: 'ArrowRight' });
     await flush();
-    const tabs = container.querySelectorAll<HTMLButtonElement>('button[data-tool-panel-id]');
+    const tabs = container.querySelectorAll<HTMLButtonElement>(
+      '.cx-table-settings-popover__tabs button[data-tool-panel-id]',
+    );
     expect(tabs[1]!.getAttribute('tabindex')).toBe('0');
     expect(document.activeElement).toBe(tabs[1]);
   });
 
-  it('84-tablist-3: ArrowUp at first tab wraps to last (react)', async () => {
+  it('84-tablist-3: ArrowLeft at first tab wraps to last (react)', async () => {
     const { container } = render(
-      <ChronixTable columns={columns} rows={rows} toolPanel={panelConfig} />,
+      <ChronixTable columns={columnsWithActions} rows={rows} toolPanel={panelConfig} />,
     );
-    const rail = container.querySelector<HTMLDivElement>('.cx-table-tool-panel-rail')!;
-    fireEvent.keyDown(rail, { key: 'ArrowUp' });
+    const tabsBar = await openPopover(container);
+    fireEvent.keyDown(tabsBar, { key: 'ArrowLeft' });
     await flush();
-    const tabs = container.querySelectorAll<HTMLButtonElement>('button[data-tool-panel-id]');
+    const tabs = container.querySelectorAll<HTMLButtonElement>(
+      '.cx-table-settings-popover__tabs button[data-tool-panel-id]',
+    );
     expect(tabs[2]!.getAttribute('tabindex')).toBe('0');
   });
 
   it('84-tablist-4: Home + End jump to first / last tab (react)', async () => {
     const { container } = render(
-      <ChronixTable columns={columns} rows={rows} toolPanel={panelConfig} />,
+      <ChronixTable columns={columnsWithActions} rows={rows} toolPanel={panelConfig} />,
     );
-    const rail = container.querySelector<HTMLDivElement>('.cx-table-tool-panel-rail')!;
-    fireEvent.keyDown(rail, { key: 'End' });
+    const tabsBar = await openPopover(container);
+    fireEvent.keyDown(tabsBar, { key: 'End' });
     await flush();
-    let tabs = container.querySelectorAll<HTMLButtonElement>('button[data-tool-panel-id]');
+    let tabs = container.querySelectorAll<HTMLButtonElement>(
+      '.cx-table-settings-popover__tabs button[data-tool-panel-id]',
+    );
     expect(tabs[2]!.getAttribute('tabindex')).toBe('0');
-    fireEvent.keyDown(rail, { key: 'Home' });
+    fireEvent.keyDown(tabsBar, { key: 'Home' });
     await flush();
-    tabs = container.querySelectorAll<HTMLButtonElement>('button[data-tool-panel-id]');
+    tabs = container.querySelectorAll<HTMLButtonElement>(
+      '.cx-table-settings-popover__tabs button[data-tool-panel-id]',
+    );
     expect(tabs[0]!.getAttribute('tabindex')).toBe('0');
   });
 
   it('84-tablist-5: Enter on a focused tab activates it via the existing click handler (react)', async () => {
     const { container } = render(
-      <ChronixTable columns={columns} rows={rows} toolPanel={panelConfig} />,
+      <ChronixTable columns={columnsWithActions} rows={rows} toolPanel={panelConfig} />,
     );
-    const rail = container.querySelector<HTMLDivElement>('.cx-table-tool-panel-rail')!;
-    fireEvent.keyDown(rail, { key: 'ArrowDown' });
+    const tabsBar = await openPopover(container);
+    fireEvent.keyDown(tabsBar, { key: 'ArrowRight' });
     await flush();
     const helpBtn = container.querySelector<HTMLButtonElement>(
-      'button[data-tool-panel-id="help"]',
+      '.cx-table-settings-popover__tabs button[data-tool-panel-id="help"]',
     )!;
     fireEvent.click(helpBtn);
     await flush();
@@ -9691,12 +9753,13 @@ describe('tool-panel tablist keyboard nav (react)', () => {
   it('84-tablist-6: empty tablist (toolPanel.show=false) ships no tablist DOM (react)', () => {
     const { container } = render(
       <ChronixTable
-        columns={columns}
+        columns={columnsWithActions}
         rows={rows}
         toolPanel={{ show: false, panels: [] as never[] }}
       />,
     );
-    expect(container.querySelector('.cx-table-tool-panel-rail')).toBeFalsy();
+    expect(container.querySelector('.cx-table-settings-popover__tabs')).toBeFalsy();
+    expect(container.querySelector('.cx-table-header-settings-button')).toBeFalsy();
   });
 });
 

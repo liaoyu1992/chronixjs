@@ -10,7 +10,6 @@ import {
   type GetRowsResult,
   type ServerSideDataSource,
   type ToolPanelConfig,
-  type ToolPanelWidthChangePayload,
   type CellClickPayload,
   type CellRangeChangePayload,
   type CellRangeCopyPayload,
@@ -160,6 +159,26 @@ const initialColumns: readonly ColumnSpec[] = [
     // note pinned right → glued to the body's
     // right edge during horizontal scroll.
     pinned: 'right',
+  },
+  {
+    id: 'actions',
+    headerName: '操作',
+    width: 160,
+    pinned: 'right',
+    actions: [
+      {
+        id: 'edit',
+        label: '编辑',
+        icon: '✏️',
+        onClick: () => {},
+      },
+      {
+        id: 'delete',
+        label: '删除',
+        icon: '🗑',
+        onClick: () => {},
+      },
+    ],
   },
 ];
 
@@ -918,14 +937,16 @@ export function App(): ReactElement {
     .filter(([k]) => k.endsWith('/delete'))
     .reduce((s, [, v]) => s + v, 0);
 
-  // (2026-05-30 — react port): Tool-panel container demo.
-  const [toolPanelLastWidth, setToolPanelLastWidth] = useState(280);
+  // Tool-panel popover demo. A settings icon in the
+  // action column header opens a floating popover hosting 4 panels
+  // (Info + Columns + Filters + Help). Renderers close over reactive
+  // state (rows.length, selection count) so the panels stay in
+  // sync with the table.
   const toolPanelConfig = useMemo<ToolPanelConfig>(
     () => ({
       show: true,
-      side: 'right',
       initialOpenId: 'info',
-      initialWidth: toolPanelLastWidth,
+      popoverWidth: 320,
       panels: [
         {
           id: 'info',
@@ -936,7 +957,7 @@ export function App(): ReactElement {
               <h4>表格信息</h4>
               <p>行数: {rows.length}</p>
               <p>列数: {columns.length}</p>
-              <p className="demo-tool-panel-hint">面板可以拖拽边缘调整宽度,关闭面板按图标。</p>
+              <p className="demo-tool-panel-hint">点击设置图标打开面板,点击外部关闭。</p>
             </div>
           ),
         },
@@ -977,11 +998,8 @@ export function App(): ReactElement {
         },
       ],
     }),
-    [rows.length, columns, currentFilter, toolPanelLastWidth],
+    [rows.length, columns, currentFilter],
   );
-  const onToolPanelWidthChange = (payload: ToolPanelWidthChangePayload): void => {
-    setToolPanelLastWidth(payload.width);
-  };
 
   // (2026-05-30 — react port): context menu + header menu wiring.
   const [phase83LastContextAction, setPhase83LastContextAction] = useState('—');
@@ -1670,22 +1688,19 @@ export function App(): ReactElement {
           data-testid="tool-panel-section"
         >
           <header>
-            <h2>Tool-panel container (react — chronix-NEW)</h2>
+            <h2>Tool-panel popover (chronix-NEW)</h2>
             <p>
-              <strong>chronix-NEW container</strong>: composable descriptor-array API. 2 panels +
-              drag-to-resize + click-to-collapse.
+              <strong>chronix-NEW popover</strong>: a settings (⚙) icon in the action column header
+              opens a floating popover. <strong>4 panels</strong>: Info (live row/column count),
+              Columns (visibility toggler), Filters (advanced filter DSL), + Help (keyboard
+              shortcuts). <strong>Toggleable</strong>: click the icon to open/close; click outside
+              or press Escape to dismiss.
             </p>
-            <div className="demo-page__autosize-actions">
-              <span className="demo-page__sort-state" data-testid="tool-panel-width">
-                Container width: {toolPanelLastWidth}px
-              </span>
-            </div>
           </header>
           <ChronixTable
             columns={columns}
             rows={rows}
             toolPanel={toolPanelConfig}
-            onToolPanelWidthChange={onToolPanelWidthChange}
             data-testid="tool-panel-table"
           />
         </section>

@@ -8813,7 +8813,7 @@ describe('Tier 3 finale (vue2)', () => {
   });
 });
 
-describe('tool-panel container (vue2)', () => {
+describe('tool-panel popover (vue2)', () => {
   const panelConfig = {
     show: true,
     panels: [
@@ -8822,63 +8822,93 @@ describe('tool-panel container (vue2)', () => {
     ],
   } as const;
 
-  it('80-1: show:true + non-empty panels renders the container with icon rail (vue2)', () => {
+  const columnsWithActions: readonly ColumnSpec[] = [
+    ...columns,
+    {
+      id: 'actions',
+      headerName: '操作',
+      width: 120,
+      actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+    },
+  ];
+
+  it('80-1: show:true renders settings icon in action header; popover closed at mount (vue2)', () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: panelConfig },
+      propsData: { columns: columnsWithActions, rows, toolPanel: panelConfig },
     });
-    expect(wrapper.find('.cx-table-with-tool-panel').exists()).toBe(true);
-    expect(wrapper.find('.cx-table-tool-panel-container').exists()).toBe(true);
-    expect(wrapper.find('.cx-table-tool-panel-rail').exists()).toBe(true);
-    const icons = wrapper.findAll('button[data-tool-panel-id]');
-    expect(icons.length).toBe(2);
+    expect(wrapper.find('.cx-table-header-settings-button').exists()).toBe(true);
+    expect(wrapper.find('.cx-table-settings-popover').exists()).toBe(false);
   });
 
-  it('80-2: initialOpenId:info opens the info panel at mount + sets aria-selected=true (vue2)', () => {
+  it('80-2: clicking settings icon opens popover + activates initialOpenId panel (vue2)', async () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: { ...panelConfig, initialOpenId: 'info' } },
+      propsData: {
+        columns: columnsWithActions,
+        rows,
+        toolPanel: { ...panelConfig, initialOpenId: 'info' },
+      },
     });
-    expect(wrapper.find('.cx-table-tool-panel-content').exists()).toBe(true);
-    const infoBtn = wrapper.find('button[data-tool-panel-id="info"]');
-    expect(infoBtn.attributes('aria-selected')).toBe('true');
-    const helpBtn = wrapper.find('button[data-tool-panel-id="help"]');
-    expect(helpBtn.attributes('aria-selected')).toBe('false');
-  });
-
-  it('80-3: clicking an icon emits tool-panel-change + toggles the active panel (vue2)', async () => {
-    const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: panelConfig },
-    });
-    await wrapper.find('button[data-tool-panel-id="info"]').trigger('click');
-    const emits = wrapper.emitted('tool-panel-change');
-    expect(emits).toBeTruthy();
-    const last = (emits as [{ activePanelId: string | null }][] | undefined)?.[0]?.[0];
-    expect(last?.activePanelId).toBe('info');
+    await wrapper.find('.cx-table-header-settings-button').trigger('click');
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('.cx-table-settings-popover').exists()).toBe(true);
+    expect(wrapper.find('.cx-table-settings-popover__content').exists()).toBe(true);
     expect(wrapper.find('button[data-tool-panel-id="info"]').attributes('aria-selected')).toBe(
       'true',
     );
-    expect(wrapper.find('.cx-table-tool-panel-content').exists()).toBe(true);
-  });
-
-  it('80-4: clicking the active icon again closes the content area (vue2)', async () => {
-    const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: { ...panelConfig, initialOpenId: 'info' } },
-    });
-    await wrapper.find('button[data-tool-panel-id="info"]').trigger('click');
-    expect(wrapper.find('.cx-table-tool-panel-content').exists()).toBe(false);
-    expect(wrapper.find('.cx-table-tool-panel-rail').exists()).toBe(true);
-    expect(wrapper.find('button[data-tool-panel-id="info"]').attributes('aria-selected')).toBe(
+    expect(wrapper.find('button[data-tool-panel-id="help"]').attributes('aria-selected')).toBe(
       'false',
     );
   });
 
-  it('80-5: toolPanel.side:left dock renders the rail on the left side (vue2)', () => {
+  it('80-3: clicking a tab emits tool-panel-change + sets active panel (vue2)', async () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: { ...panelConfig, side: 'left' } },
+      propsData: { columns: columnsWithActions, rows, toolPanel: panelConfig },
     });
-    const root = wrapper.find('.cx-table-with-tool-panel');
-    expect(root.attributes('data-tool-panel-side')).toBe('left');
-    const container = wrapper.find('.cx-table-tool-panel-container');
-    expect(container.attributes('data-tool-panel-side')).toBe('left');
+    await wrapper.find('.cx-table-header-settings-button').trigger('click');
+    await wrapper.vm.$nextTick();
+    await wrapper.find('button[data-tool-panel-id="info"]').trigger('click');
+    await wrapper.vm.$nextTick();
+    const emits = wrapper.emitted('tool-panel-change');
+    expect(emits).toBeTruthy();
+    const allEmits = (emits ?? []) as [{ activePanelId: string | null }][];
+    const last = allEmits[allEmits.length - 1]?.[0];
+    expect(last?.activePanelId).toBe('info');
+    expect(wrapper.find('button[data-tool-panel-id="info"]').attributes('aria-selected')).toBe(
+      'true',
+    );
+    expect(wrapper.find('.cx-table-settings-popover__content').exists()).toBe(true);
+  });
+
+  it('80-4: clicking settings icon again closes the popover (vue2)', async () => {
+    const wrapper = mount(TableForTest, {
+      propsData: {
+        columns: columnsWithActions,
+        rows,
+        toolPanel: { ...panelConfig, initialOpenId: 'info' },
+      },
+    });
+    await wrapper.find('.cx-table-header-settings-button').trigger('click');
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('.cx-table-settings-popover').exists()).toBe(true);
+    await wrapper.find('.cx-table-header-settings-button').trigger('click');
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('.cx-table-settings-popover').exists()).toBe(false);
+    expect(wrapper.find('.cx-table-header-settings-button').exists()).toBe(true);
+  });
+
+  it('80-5: empty actions array shows settings icon but no header label (vue2)', () => {
+    const columnsEmptyActions: readonly ColumnSpec[] = [
+      ...columns,
+      { id: 'actions', headerName: '操作', width: 120, actions: [] },
+    ];
+    const wrapper = mount(TableForTest, {
+      propsData: { columns: columnsEmptyActions, rows, toolPanel: panelConfig },
+    });
+    expect(wrapper.find('.cx-table-header-settings-button').exists()).toBe(true);
+    const actionHeaderLabel = wrapper.find(
+      '.cx-table-header-cell--actions .cx-table-header-cell-label',
+    );
+    expect(actionHeaderLabel.exists()).toBe(false);
   });
 });
 
@@ -9028,70 +9058,93 @@ describe('tool-panel tablist keyboard nav (vue2)', () => {
     ],
   } as const;
 
-  it('84-tablist-1: each tab renders data-menu-item-index and a roving tabindex (vue2)', () => {
+  const columnsWithActions: readonly ColumnSpec[] = [
+    ...columns,
+    {
+      id: 'actions',
+      headerName: '操作',
+      width: 120,
+      actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+    },
+  ];
+
+  async function openPopover(wrapper: ReturnType<typeof mount>): Promise<void> {
+    await wrapper.find('.cx-table-header-settings-button').trigger('click');
+    await wrapper.vm.$nextTick();
+  }
+
+  it('84-tablist-1: each tab renders data-menu-item-index and a roving tabindex (vue2)', async () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: panelConfig },
+      propsData: { columns: columnsWithActions, rows, toolPanel: panelConfig },
     });
-    const tabs = wrapper.findAll('button[data-tool-panel-id]');
+    await openPopover(wrapper);
+    const tabs = wrapper.findAll('.cx-table-settings-popover-tab');
     expect(tabs.length).toBe(3);
     expect(tabs.at(0).attributes('data-menu-item-index')).toBe('0');
+    expect(tabs.at(1).attributes('data-menu-item-index')).toBe('1');
     expect(tabs.at(2).attributes('data-menu-item-index')).toBe('2');
     expect(tabs.at(0).attributes('tabindex')).toBe('0');
     expect(tabs.at(1).attributes('tabindex')).toBe('-1');
+    expect(tabs.at(2).attributes('tabindex')).toBe('-1');
     wrapper.destroy();
   });
 
-  it('84-tablist-2: ArrowDown moves tabindex+focus to the next tab (vue2)', async () => {
+  it('84-tablist-2: ArrowRight on the tabs moves tabindex+focus to the next tab (vue2)', async () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: panelConfig },
+      propsData: { columns: columnsWithActions, rows, toolPanel: panelConfig },
       attachTo: document.body,
     });
-    const rail = wrapper.find('.cx-table-tool-panel-rail');
-    await rail.trigger('keydown', { key: 'ArrowDown' });
+    await openPopover(wrapper);
+    const tabsBar = wrapper.find('.cx-table-settings-popover__tabs');
+    await tabsBar.trigger('keydown', { key: 'ArrowRight' });
     await wrapper.vm.$nextTick();
-    const tabs = wrapper.findAll('button[data-tool-panel-id]');
+    const tabs = wrapper.findAll('.cx-table-settings-popover-tab');
+    expect(tabs.at(0).attributes('tabindex')).toBe('-1');
     expect(tabs.at(1).attributes('tabindex')).toBe('0');
     expect(document.activeElement).toBe(tabs.at(1).element);
     wrapper.destroy();
   });
 
-  it('84-tablist-3: ArrowUp at first tab wraps to last (vue2)', async () => {
+  it('84-tablist-3: ArrowLeft at first tab wraps to last (vue2)', async () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: panelConfig },
+      propsData: { columns: columnsWithActions, rows, toolPanel: panelConfig },
       attachTo: document.body,
     });
-    const rail = wrapper.find('.cx-table-tool-panel-rail');
-    await rail.trigger('keydown', { key: 'ArrowUp' });
+    await openPopover(wrapper);
+    const tabsBar = wrapper.find('.cx-table-settings-popover__tabs');
+    await tabsBar.trigger('keydown', { key: 'ArrowLeft' });
     await wrapper.vm.$nextTick();
-    const tabs = wrapper.findAll('button[data-tool-panel-id]');
+    const tabs = wrapper.findAll('.cx-table-settings-popover-tab');
     expect(tabs.at(2).attributes('tabindex')).toBe('0');
     wrapper.destroy();
   });
 
   it('84-tablist-4: Home + End jump to first / last tab (vue2)', async () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: panelConfig },
+      propsData: { columns: columnsWithActions, rows, toolPanel: panelConfig },
       attachTo: document.body,
     });
-    const rail = wrapper.find('.cx-table-tool-panel-rail');
-    await rail.trigger('keydown', { key: 'End' });
+    await openPopover(wrapper);
+    const tabsBar = wrapper.find('.cx-table-settings-popover__tabs');
+    await tabsBar.trigger('keydown', { key: 'End' });
     await wrapper.vm.$nextTick();
-    let tabs = wrapper.findAll('button[data-tool-panel-id]');
+    let tabs = wrapper.findAll('.cx-table-settings-popover-tab');
     expect(tabs.at(2).attributes('tabindex')).toBe('0');
-    await rail.trigger('keydown', { key: 'Home' });
+    await tabsBar.trigger('keydown', { key: 'Home' });
     await wrapper.vm.$nextTick();
-    tabs = wrapper.findAll('button[data-tool-panel-id]');
+    tabs = wrapper.findAll('.cx-table-settings-popover-tab');
     expect(tabs.at(0).attributes('tabindex')).toBe('0');
     wrapper.destroy();
   });
 
   it('84-tablist-5: Enter on a focused tab activates it via the existing click handler (vue2)', async () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: panelConfig },
+      propsData: { columns: columnsWithActions, rows, toolPanel: panelConfig },
       attachTo: document.body,
     });
-    const rail = wrapper.find('.cx-table-tool-panel-rail');
-    await rail.trigger('keydown', { key: 'ArrowDown' });
+    await openPopover(wrapper);
+    const tabsBar = wrapper.find('.cx-table-settings-popover__tabs');
+    await tabsBar.trigger('keydown', { key: 'ArrowRight' });
     await wrapper.vm.$nextTick();
     await wrapper.find('button[data-tool-panel-id="help"]').trigger('click');
     await wrapper.vm.$nextTick();
@@ -9103,9 +9156,14 @@ describe('tool-panel tablist keyboard nav (vue2)', () => {
 
   it('84-tablist-6: empty tablist (toolPanel.show=false) ships no tablist DOM (vue2)', () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows, toolPanel: { show: false, panels: [] as never[] } },
+      propsData: {
+        columns: columnsWithActions,
+        rows,
+        toolPanel: { show: false, panels: [] as never[] },
+      },
     });
-    expect(wrapper.find('.cx-table-tool-panel-rail').exists()).toBe(false);
+    expect(wrapper.find('.cx-table-settings-popover__tabs').exists()).toBe(false);
+    expect(wrapper.find('.cx-table-header-settings-button').exists()).toBe(false);
     wrapper.destroy();
   });
 });

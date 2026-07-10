@@ -52,17 +52,14 @@ export type {
   ToolPanelConfig,
   ToolPanelDescriptor,
   ToolPanelRenderer,
-  ToolPanelWidthChangePayload,
   ContextMenuConfig,
   ContextMenuContext,
   ContextMenuItem,
   ContextMenuOpenPayload,
 } from './ir/index.js';
 export {
-  DEFAULT_TOOL_PANEL_MAX_WIDTH_PX,
-  DEFAULT_TOOL_PANEL_MIN_WIDTH_PX,
-  DEFAULT_TOOL_PANEL_WIDTH_PX,
-  TOOL_PANEL_ICON_RAIL_WIDTH_PX,
+  DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
+  DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
 } from './ir/index.js';
 
 // Data sources

@@ -34,7 +34,6 @@ import {
   type SortChangePayload,
   type TableHandle,
   type ToolPanelConfig,
-  type ToolPanelWidthChangePayload,
 } from '@chronixjs/table-vue2';
 import { defineComponent, h } from 'vue';
 
@@ -203,6 +202,16 @@ function buildInitialColumns(): ColumnSpec[] {
       // note pinned right → glued to the
       // body's right edge during horizontal scroll.
       pinned: 'right',
+    },
+    {
+      id: 'actions',
+      headerName: '操作',
+      width: 160,
+      pinned: 'right',
+      actions: [
+        { id: 'edit', label: '编辑', icon: '✏️', onClick: () => {} },
+        { id: 'delete', label: '删除', icon: '🗑', onClick: () => {} },
+      ],
     },
   ];
 }
@@ -526,8 +535,6 @@ export default defineComponent({
       serverSidePaginationEnabled: false as boolean,
       // (2026-05-30 — vue2 port): Tier 3 finale demo data.
       tier3Counter: {} as Record<string, number>,
-      // (2026-05-30 — vue2 port): tool-panel container demo.
-      toolPanelLastWidth: 280 as number,
       // (2026-05-30 — vue2 port): context-menu last-action mirror.
       phase83LastContextAction: '—' as string,
       tier3Rows: [
@@ -624,14 +631,12 @@ export default defineComponent({
         currentFilter: readonly FilterSpec[];
         $refs: { table?: unknown };
       };
-      const lastWidth = (this as unknown as { toolPanelLastWidth: number }).toolPanelLastWidth;
       const getHandle = (): TableHandle | null =>
         (self.$refs.table as unknown as TableHandle | undefined) ?? null;
       return {
         show: true,
-        side: 'right',
         initialOpenId: 'info',
-        initialWidth: lastWidth,
+        popoverWidth: 320,
         panels: [
           {
             id: 'info',
@@ -642,11 +647,7 @@ export default defineComponent({
                 h('h4', '表格信息'),
                 h('p', `行数: ${self.rows.length}`),
                 h('p', `列数: ${self.columns.length}`),
-                h(
-                  'p',
-                  { class: 'demo-tool-panel-hint' },
-                  '面板可以拖拽边缘调整宽度,关闭面板按图标。',
-                ),
+                h('p', { class: 'demo-tool-panel-hint' }, '点击设置图标打开面板,点击外部关闭。'),
               ]),
           },
           {
@@ -1265,10 +1266,6 @@ export default defineComponent({
       const handle = this.$refs['serverSideTable'] as unknown as TableHandle | undefined;
       handle?.invalidateServerSideBlocks([0]);
     },
-    onToolPanelWidthChange(payload: ToolPanelWidthChangePayload): void {
-      const self = this as unknown as { toolPanelLastWidth: number };
-      self.toolPanelLastWidth = payload.width;
-    },
     onColumnHeaderMenuAction(payload: {
       colId: string;
       action: 'sort-asc' | 'sort-desc' | 'clear-sort' | 'hide' | 'autosize';
@@ -1691,23 +1688,20 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
         data-testid="tool-panel-section"
       >
         <header>
-          <h2>Tool-panel container (vue2 — chronix-NEW)</h2>
+          <h2>Tool-panel popover (vue2 — chronix-NEW)</h2>
           <p>
-            <strong>chronix-NEW container</strong>: composable descriptor-array API. 2 panels +
-            drag-to-resize + click-to-collapse.
+            <strong>chronix-NEW popover</strong>: a settings (⚙) icon in the action column header
+            opens a floating popover. <strong>4 panels</strong>: Info (live row/column count),
+            Columns (visibility toggler), Filters (advanced filter DSL), + Help (keyboard
+            shortcuts). <strong>Toggleable</strong>: click the icon to open/close; click outside or
+            press Escape to dismiss.
           </p>
-          <div class="demo-page__autosize-actions">
-            <span class="demo-page__sort-pill" data-testid="tool-panel-width">
-              Container width: {{ toolPanelLastWidth }}px
-            </span>
-          </div>
         </header>
         <ChronixTable
           data-testid="tool-panel-table"
           :columns="columns"
           :rows="rows"
           :tool-panel="toolPanelConfig"
-          @tool-panel-width-change="onToolPanelWidthChange"
         />
       </section>
     </main>

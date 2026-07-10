@@ -11,7 +11,6 @@ import {
   type GetRowsResult,
   type ServerSideDataSource,
   type ToolPanelConfig,
-  type ToolPanelWidthChangePayload,
   type CellRangeChangePayload,
   type CellRangeCopyPayload,
   type CellRangeFillPayload,
@@ -171,6 +170,26 @@ const columns = ref<readonly ColumnSpec[]>([
     // works inside the pinned cell (wiring is delegated +
     // position-agnostic).
     pinned: 'right',
+  },
+  {
+    id: 'actions',
+    headerName: '操作',
+    width: 160,
+    pinned: 'right',
+    actions: [
+      {
+        id: 'edit',
+        label: '编辑',
+        icon: '✏️',
+        onClick: () => {},
+      },
+      {
+        id: 'delete',
+        label: '删除',
+        icon: '🗑',
+        onClick: () => {},
+      },
+    ],
   },
 ]);
 
@@ -1188,16 +1207,15 @@ const tier3LastDeleteCount = computed(() =>
     .reduce((s, [, v]) => s + v, 0),
 );
 
-// Tool-panel container demo. The container
-// hosts 2 consumer-supplied tool panels (Info + Help). Renderers
-// close over reactive state (rows.value.length, selection count)
-// so the panels stay in sync with the table.
-const toolPanelLastWidth = ref<number>(280);
+// Tool-panel popover demo. A settings icon in the
+// action column header opens a floating popover hosting 4 panels
+// (Info + Columns + Filters + Help). Renderers close over reactive
+// state (rows.value.length, selection count) so the panels stay in
+// sync with the table.
 const toolPanelConfig = computed<ToolPanelConfig>(() => ({
   show: true,
-  side: 'right',
   initialOpenId: 'info',
-  initialWidth: toolPanelLastWidth.value,
+  popoverWidth: 320,
   panels: [
     {
       id: 'info',
@@ -1208,7 +1226,7 @@ const toolPanelConfig = computed<ToolPanelConfig>(() => ({
           h('h4', '表格信息'),
           h('p', `行数: ${rows.value.length}`),
           h('p', `列数: ${columns.value.length}`),
-          h('p', { class: 'demo-tool-panel-hint' }, '面板可以拖拽边缘调整宽度,关闭面板按图标。'),
+          h('p', { class: 'demo-tool-panel-hint' }, '点击设置图标打开面板,点击外部关闭。'),
         ]),
     },
     {
@@ -1248,9 +1266,6 @@ const toolPanelConfig = computed<ToolPanelConfig>(() => ({
     },
   ],
 }));
-function onToolPanelWidthChange(payload: ToolPanelWidthChangePayload): void {
-  toolPanelLastWidth.value = payload.width;
-}
 
 // context-menu config + last-action mirror so the
 // header strip can display what the user just picked from a cell right-click.
@@ -1612,26 +1627,20 @@ function onColumnHeaderMenuAction(payload: {
         data-testid="tool-panel-section"
       >
         <header>
-          <h2>Tool-panel container (chronix-NEW)</h2>
+          <h2>Tool-panel popover (chronix-NEW)</h2>
           <p>
-            <strong>chronix-NEW container</strong>: replaces reference's sidebar with a composable
-            descriptor-array API. <strong>2 panels</strong>: Info (live row/column count) + Help
-            (keyboard shortcuts). <strong>Resizable</strong>: drag the inner edge of the rail to
-            widen / narrow. <strong>Toggleable</strong>: click the active icon to collapse the
-            content area; rail stays visible.
+            <strong>chronix-NEW popover</strong>: a settings (⚙) icon in the action column header
+            opens a floating popover. <strong>4 panels</strong>: Info (live row/column count),
+            Columns (visibility toggler), Filters (advanced filter DSL), + Help (keyboard
+            shortcuts). <strong>Toggleable</strong>: click the icon to open/close; click outside or
+            press Escape to dismiss.
           </p>
-          <div class="demo-page__autosize-actions">
-            <span class="demo-page__sort-state" data-testid="tool-panel-width">
-              Container width: {{ toolPanelLastWidth }}px
-            </span>
-          </div>
         </header>
         <ChronixTable
           data-testid="tool-panel-table"
           :columns="columns"
           :rows="rows"
           :tool-panel="toolPanelConfig"
-          @tool-panel-width-change="onToolPanelWidthChange"
         />
       </section>
     </main>
