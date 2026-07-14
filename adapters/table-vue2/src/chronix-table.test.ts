@@ -8828,7 +8828,15 @@ describe('tool-panel popover (vue2)', () => {
       id: 'actions',
       headerName: '操作',
       width: 120,
-      actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+      actions: [
+        {
+          id: 'edit',
+          label: '编辑',
+          onClick: () => {
+            /* noop */
+          },
+        },
+      ],
     },
   ];
 
@@ -9064,7 +9072,15 @@ describe('tool-panel tablist keyboard nav (vue2)', () => {
       id: 'actions',
       headerName: '操作',
       width: 120,
-      actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+      actions: [
+        {
+          id: 'edit',
+          label: '编辑',
+          onClick: () => {
+            /* noop */
+          },
+        },
+      ],
     },
   ];
 

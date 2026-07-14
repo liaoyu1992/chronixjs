@@ -170,13 +170,17 @@ const initialColumns: readonly ColumnSpec[] = [
         id: 'edit',
         label: '编辑',
         icon: '✏️',
-        onClick: () => {},
+        onClick: () => {
+          /* noop */
+        },
       },
       {
         id: 'delete',
         label: '删除',
         icon: '🗑',
-        onClick: () => {},
+        onClick: () => {
+          /* noop */
+        },
       },
     ],
   },
