@@ -12,16 +12,16 @@ export default {
   data() {
     return {
       columns: [
-        { key: 'name', title: 'Name', width: 200, sortable: true },
-        { key: 'email', title: 'Email', width: 300 },
-        { key: 'role', title: 'Role', width: 150, sortable: true },
+        { id: 'name', field: 'name', headerName: 'Name', width: 200, sortable: true },
+        { id: 'email', field: 'email', headerName: 'Email', width: 300 },
+        { id: 'role', field: 'role', headerName: 'Role', width: 150, sortable: true },
       ],
       rows: [
-        { name: 'Alice', email: 'alice@example.com', role: 'Engineer' },
-        { name: 'Bob', email: 'bob@example.com', role: 'Designer' },
-        { name: 'Carol', email: 'carol@example.com', role: 'Manager' },
-        { name: 'Dave', email: 'dave@example.com', role: 'Engineer' },
-        { name: 'Eve', email: 'eve@example.com', role: 'Designer' },
+        { id: '1', data: { name: 'Alice', email: 'alice@example.com', role: 'Engineer' } },
+        { id: '2', data: { name: 'Bob', email: 'bob@example.com', role: 'Designer' } },
+        { id: '3', data: { name: 'Carol', email: 'carol@example.com', role: 'Manager' } },
+        { id: '4', data: { name: 'Dave', email: 'dave@example.com', role: 'Engineer' } },
+        { id: '5', data: { name: 'Eve', email: 'eve@example.com', role: 'Designer' } },
       ],
     };
   },

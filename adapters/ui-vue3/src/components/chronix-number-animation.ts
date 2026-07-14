@@ -5,7 +5,7 @@ import {
   formatAnimatedNumber,
   resolveNumberAnimationClassList,
 } from '@chronixjs/ui';
-import { computed, defineComponent, h, onBeforeUnmount, ref } from 'vue';
+import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref } from 'vue';
 
 /**
  * `<ChronixNumberAnimation>` — Vue 3 animated number display.
@@ -101,8 +101,9 @@ export const ChronixNumberAnimation = defineComponent({
       }
     }
 
-    // Start animation on mount
-    startAnimation();
+    onMounted(() => {
+      startAnimation();
+    });
 
     onBeforeUnmount(() => {
       stopAnimation();

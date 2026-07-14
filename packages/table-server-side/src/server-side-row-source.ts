@@ -44,8 +44,8 @@ export const SERVER_SIDE_SKELETON_ID_PREFIX = '__chx_skel__';
  *
  * .
  */
-export function isServerSideSkeletonRowId(rowId: string): boolean {
-  return rowId.startsWith(SERVER_SIDE_SKELETON_ID_PREFIX);
+export function isServerSideSkeletonRowId(rowId: string | undefined | null): boolean {
+  return typeof rowId === 'string' && rowId.startsWith(SERVER_SIDE_SKELETON_ID_PREFIX);
 }
 
 /**

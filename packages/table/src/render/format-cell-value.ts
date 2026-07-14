@@ -48,7 +48,7 @@ export function getCellValue(args: CellValueArgs): unknown {
   const { row, column } = args;
   if (column.valueGetter) return column.valueGetter({ row, column });
   const field = column.field ?? column.id;
-  return row.data[field];
+  return row.data?.[field];
 }
 
 /**
