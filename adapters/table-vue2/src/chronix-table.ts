@@ -9648,6 +9648,9 @@ export const ChronixTable = defineComponent({
                 cursor: 'pointer',
               },
               on: {
+                pointerdown: (e: PointerEvent) => {
+                  e.stopPropagation();
+                },
                 click: (e: MouseEvent) => {
                   e.stopPropagation();
                   applyLazyChevronClick(rowId);

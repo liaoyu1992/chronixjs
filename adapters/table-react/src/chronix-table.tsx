@@ -8757,6 +8757,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     aria-haspopup="menu"
                     aria-expanded={isOpen ? 'true' : 'false'}
                     aria-label="列操作菜单"
+                    onPointerDown={(e: ReactPointerEvent) => {
+                      e.stopPropagation();
+                    }}
                     onClick={(e: ReactMouseEvent) => {
                       e.stopPropagation();
                       applyOpenColumnHeaderMenu(isOpen ? null : cell.colId);

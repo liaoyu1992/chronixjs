@@ -9773,6 +9773,9 @@ export const ChronixTable = defineComponent({
                 'aria-haspopup': 'menu',
                 'aria-expanded': isOpen ? 'true' : 'false',
                 'aria-label': '列操作菜单',
+                onPointerdown: (e: PointerEvent) => {
+                  e.stopPropagation();
+                },
                 onClick: (e: MouseEvent) => {
                   e.stopPropagation();
                   applyOpenColumnHeaderMenu(isOpen ? null : cell.colId);
