@@ -425,9 +425,42 @@ importers:
       '@chronixjs/cx-kit':
         specifier: workspace:*
         version: link:../packages/cx-kit
+      '@chronixjs/gantt':
+        specifier: workspace:*
+        version: link:../packages/gantt
+      '@chronixjs/gantt-react':
+        specifier: workspace:*
+        version: link:../adapters/gantt-react
+      '@chronixjs/gantt-vue2':
+        specifier: workspace:*
+        version: link:../adapters/gantt-vue2
+      '@chronixjs/gantt-vue3':
+        specifier: workspace:*
+        version: link:../adapters/gantt-vue3
+      '@chronixjs/table':
+        specifier: workspace:*
+        version: link:../packages/table
+      '@chronixjs/table-react':
+        specifier: workspace:*
+        version: link:../adapters/table-react
+      '@chronixjs/table-server-side':
+        specifier: workspace:*
+        version: link:../packages/table-server-side
+      '@chronixjs/table-vue2':
+        specifier: workspace:*
+        version: link:../adapters/table-vue2
+      '@chronixjs/table-vue3':
+        specifier: workspace:*
+        version: link:../adapters/table-vue3
       '@chronixjs/ui':
         specifier: workspace:*
         version: link:../packages/ui
+      '@chronixjs/ui-react':
+        specifier: workspace:*
+        version: link:../adapters/ui-react
+      '@chronixjs/ui-vue2':
+        specifier: workspace:*
+        version: link:../adapters/ui-vue2
       '@chronixjs/ui-vue3':
         specifier: workspace:*
         version: link:../adapters/ui-vue3

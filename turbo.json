@@ -23,6 +23,7 @@
       "outputs": []
     },
     "docs:build": {
+      "dependsOn": ["^build"],
       "outputs": ["docs/.vitepress/dist/**"]
     },
     "docs:dev": {

@@ -15,7 +15,18 @@
   },
   "dependencies": {
     "@chronixjs/cx-kit": "workspace:*",
+    "@chronixjs/gantt": "workspace:*",
+    "@chronixjs/gantt-react": "workspace:*",
+    "@chronixjs/gantt-vue2": "workspace:*",
+    "@chronixjs/gantt-vue3": "workspace:*",
+    "@chronixjs/table": "workspace:*",
+    "@chronixjs/table-react": "workspace:*",
+    "@chronixjs/table-server-side": "workspace:*",
+    "@chronixjs/table-vue2": "workspace:*",
+    "@chronixjs/table-vue3": "workspace:*",
     "@chronixjs/ui": "workspace:*",
+    "@chronixjs/ui-react": "workspace:*",
+    "@chronixjs/ui-vue2": "workspace:*",
     "@chronixjs/ui-vue3": "workspace:*"
   }
 }
