@@ -13954,7 +13954,6 @@ export const ChronixTable = defineComponent({
         const maxHeight = cfg.popoverMaxHeight ?? DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX;
         const btnBottom = rect?.bottom ?? 0;
         const btnRight = rect?.right ?? 0;
-        const btnLeft = rect?.left ?? 0;
         const spaceBelow = window.innerHeight - btnBottom;
         const showBelow = spaceBelow >= 200 || spaceBelow >= window.innerHeight / 2;
         const top = showBelow ? btnBottom + 4 : (rect?.top ?? 0) - maxHeight - 4;
