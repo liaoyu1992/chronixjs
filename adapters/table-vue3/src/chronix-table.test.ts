@@ -9083,7 +9083,7 @@ describe('tool-panel popover (vue3)', () => {
 });
 
 describe('<ChronixTable> — -A column header menu (vue3)', () => {
-  it('83A-1: showColumnHeaderMenu:true renders a ▾ button in each column header', () => {
+  it('83A-1: showColumnHeaderMenu:true renders a ⋮ button in each column header', () => {
     const wrapper = mount(ChronixTable, {
       props: { columns, rows, showColumnHeaderMenu: true },
     });
@@ -9092,12 +9092,12 @@ describe('<ChronixTable> — -A column header menu (vue3)', () => {
     expect(buttons[0]!.attributes('data-col-id')).toBe('id');
   });
 
-  it('83A-2: showColumnHeaderMenu:false (default) renders no ▾ buttons', () => {
+  it('83A-2: showColumnHeaderMenu:false (default) renders no ⋮ buttons', () => {
     const wrapper = mount(ChronixTable, { props: { columns, rows } });
     expect(wrapper.findAll('.cx-table-column-header-menu-button')).toHaveLength(0);
   });
 
-  it('83A-3: clicking ▾ opens the menu; clicking another column closes the first', async () => {
+  it('83A-3: clicking ⋮ opens the menu; clicking another column closes the first', async () => {
     const wrapper = mount(ChronixTable, {
       props: { columns, rows, showColumnHeaderMenu: true },
     });

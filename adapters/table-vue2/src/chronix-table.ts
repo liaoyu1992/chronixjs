@@ -2850,6 +2850,10 @@ export const ChronixTable = defineComponent({
 
     /** -A (2026-05-30 — vue2 port). Verbatim mirror of vue3. */
     const openColumnHeaderMenuColIdRef = ref<string | null>(null);
+    // Position of the hoisted column-header menu, relative to the
+    // wrapper. The menu is rendered at wrapper level (not inside the
+    // header cell) so it escapes the cell's `overflow:hidden` clipping.
+    const columnHeaderMenuPosRef = ref<{ left: number; top: number } | null>(null);
     /** -B (2026-05-30 — vue2 port). Verbatim mirror of vue3. */
     const contextMenuPositionRef = ref<{
       readonly rowId: string | null;
@@ -2862,6 +2866,27 @@ export const ChronixTable = defineComponent({
       const prev = openColumnHeaderMenuColIdRef.value;
       if (prev === colId) return;
       openColumnHeaderMenuColIdRef.value = colId;
+      if (colId == null) {
+        columnHeaderMenuPosRef.value = null;
+        return;
+      }
+      // Compute the hoisted menu's left/top (relative to the wrapper)
+      // synchronously so the menu renders at the correct position on
+      // the same tick it opens (preserves keyboard-nav auto-focus).
+      const wrapper = wrapperRef.value;
+      if (wrapper == null) return;
+      const escaped =
+        typeof window !== 'undefined' ? (window.CSS?.escape?.(colId) ?? colId) : colId;
+      const cell = wrapper.querySelector<HTMLElement>(
+        `.cx-table-header-cell[data-col-id="${escaped}"]`,
+      );
+      if (cell == null) return;
+      const wRect = wrapper.getBoundingClientRect();
+      const cRect = cell.getBoundingClientRect();
+      columnHeaderMenuPosRef.value = {
+        left: Math.round(cRect.left - wRect.left),
+        top: Math.round(cRect.bottom - wRect.top),
+      };
     }
 
     function applyOpenContextMenu(
@@ -2975,13 +3000,22 @@ export const ChronixTable = defineComponent({
         e.stopPropagation();
       }
     }
+    // Close the hoisted menu on any scroll (capture-phase) so it never
+    // detaches from its anchor cell during horizontal/vertical scroll.
+    function onScrollCloseHeaderMenu(): void {
+      if (openColumnHeaderMenuColIdRef.value != null) {
+        applyOpenColumnHeaderMenu(null);
+      }
+    }
     onMounted(() => {
       document.addEventListener('pointerdown', onPhase83DocPointerdown, true);
       document.addEventListener('keydown', onPhase83DocKeydown);
+      window.addEventListener('scroll', onScrollCloseHeaderMenu, true);
     });
     onBeforeUnmount(() => {
       document.removeEventListener('pointerdown', onPhase83DocPointerdown, true);
       document.removeEventListener('keydown', onPhase83DocKeydown);
+      window.removeEventListener('scroll', onScrollCloseHeaderMenu, true);
     });
 
     // wire `useMenuKeyboardNav` into the 4 menu
@@ -8024,11 +8058,6 @@ export const ChronixTable = defineComponent({
         const columnHeaderMenuNodes: VNode[] = [];
         if (props.showColumnHeaderMenu === true) {
           const isOpen = openColumnHeaderMenuColIdRef.value === cell.colId;
-          const col = columnTable.value.getById(cell.colId);
-          const isSortableForMenu = col?.sortable !== false;
-          const isHideableForMenu = col != null;
-          const isAutosizeableForMenu = col?.autosizeable !== false && col?.resizable !== false;
-          const isCurrentlySorted = direction != null;
           columnHeaderMenuNodes.push(
             h(
               'button',
@@ -8047,150 +8076,36 @@ export const ChronixTable = defineComponent({
                   'aria-label': '列操作菜单',
                 },
                 on: {
+                  pointerdown: (e: PointerEvent) => {
+                    e.stopPropagation();
+                  },
                   click: (e: MouseEvent) => {
                     e.stopPropagation();
                     applyOpenColumnHeaderMenu(isOpen ? null : cell.colId);
                   },
                 },
               },
-              '▾',
+              [
+                h(
+                  'svg',
+                  {
+                    attrs: {
+                      width: 14,
+                      height: 16,
+                      viewBox: '0 0 14 16',
+                      fill: 'currentColor',
+                      'aria-hidden': 'true',
+                    },
+                  },
+                  [
+                    h('circle', { attrs: { cx: 7, cy: 2, r: 1.5 } }),
+                    h('circle', { attrs: { cx: 7, cy: 8, r: 1.5 } }),
+                    h('circle', { attrs: { cx: 7, cy: 14, r: 1.5 } }),
+                  ],
+                ),
+              ],
             ),
           );
-          if (isOpen) {
-            // roving tabindex over the 5 fixed action ids.
-            const headerMenuActiveIdx = columnHeaderMenuKbdNav.activeIndex.value;
-            const headerMenuItemKbdTabindex = (idx: number, disabled: boolean): number => {
-              if (disabled) return -1;
-              return headerMenuActiveIdx === idx ? 0 : -1;
-            };
-            const menuItems: VNode[] = [
-              h(
-                'button',
-                {
-                  class: 'cx-table-column-header-menu-item',
-                  attrs: {
-                    type: 'button',
-                    role: 'menuitem',
-                    tabindex: headerMenuItemKbdTabindex(0, !isSortableForMenu),
-                    'data-action': 'sort-asc',
-                    'data-menu-item-index': '0',
-                    disabled: !isSortableForMenu ? 'disabled' : undefined,
-                  },
-                  domProps: { disabled: !isSortableForMenu },
-                  on: {
-                    click: () => {
-                      if (!isSortableForMenu) return;
-                      onColumnHeaderMenuItemClick(cell.colId, 'sort-asc');
-                    },
-                  },
-                },
-                '升序',
-              ),
-              h(
-                'button',
-                {
-                  class: 'cx-table-column-header-menu-item',
-                  attrs: {
-                    type: 'button',
-                    role: 'menuitem',
-                    tabindex: headerMenuItemKbdTabindex(1, !isSortableForMenu),
-                    'data-action': 'sort-desc',
-                    'data-menu-item-index': '1',
-                  },
-                  domProps: { disabled: !isSortableForMenu },
-                  on: {
-                    click: () => {
-                      if (!isSortableForMenu) return;
-                      onColumnHeaderMenuItemClick(cell.colId, 'sort-desc');
-                    },
-                  },
-                },
-                '降序',
-              ),
-              h(
-                'button',
-                {
-                  class: 'cx-table-column-header-menu-item',
-                  attrs: {
-                    type: 'button',
-                    role: 'menuitem',
-                    tabindex: headerMenuItemKbdTabindex(2, !isCurrentlySorted),
-                    'data-action': 'clear-sort',
-                    'data-menu-item-index': '2',
-                  },
-                  domProps: { disabled: !isCurrentlySorted },
-                  on: {
-                    click: () => {
-                      if (!isCurrentlySorted) return;
-                      onColumnHeaderMenuItemClick(cell.colId, 'clear-sort');
-                    },
-                  },
-                },
-                '清除排序',
-              ),
-              h(
-                'button',
-                {
-                  class: 'cx-table-column-header-menu-item',
-                  attrs: {
-                    type: 'button',
-                    role: 'menuitem',
-                    tabindex: headerMenuItemKbdTabindex(3, !isHideableForMenu),
-                    'data-action': 'hide',
-                    'data-menu-item-index': '3',
-                  },
-                  domProps: { disabled: !isHideableForMenu },
-                  on: {
-                    click: () => {
-                      if (!isHideableForMenu) return;
-                      onColumnHeaderMenuItemClick(cell.colId, 'hide');
-                    },
-                  },
-                },
-                '隐藏',
-              ),
-              h(
-                'button',
-                {
-                  class: 'cx-table-column-header-menu-item',
-                  attrs: {
-                    type: 'button',
-                    role: 'menuitem',
-                    tabindex: headerMenuItemKbdTabindex(4, !isAutosizeableForMenu),
-                    'data-action': 'autosize',
-                    'data-menu-item-index': '4',
-                  },
-                  domProps: { disabled: !isAutosizeableForMenu },
-                  on: {
-                    click: () => {
-                      if (!isAutosizeableForMenu) return;
-                      onColumnHeaderMenuItemClick(cell.colId, 'autosize');
-                    },
-                  },
-                },
-                '自适应宽度',
-              ),
-            ];
-            columnHeaderMenuNodes.push(
-              h(
-                'div',
-                {
-                  ref: ((el: HTMLElement | null) => {
-                    columnHeaderMenuRef.value = el;
-                  }) as never,
-                  class: 'cx-table-column-header-menu',
-                  attrs: {
-                    role: 'menu',
-                    'data-col-id': cell.colId,
-                  },
-                  on: {
-                    keydown: (e: KeyboardEvent) => columnHeaderMenuKbdNav.handleKeydown(e),
-                  },
-                },
-                menuItems,
-              ),
-            );
-          }
         }
         // Settings icon for the action column header. Renders only
         // when toolPanel.show is true AND this column has `actions`
@@ -12674,6 +12589,162 @@ export const ChronixTable = defineComponent({
         );
       })();
 
+      // Hoisted column-header menu. Rendered as a direct child of the
+      // wrapper (not inside the header cell) so it escapes the cell's
+      // `overflow:hidden` clipping. Position is computed synchronously in
+      // `applyOpenColumnHeaderMenu`.
+      const openMenuColId = openColumnHeaderMenuColIdRef.value;
+      const menuPos = columnHeaderMenuPosRef.value;
+      const columnHeaderMenuOverlay: VNode | null =
+        props.showColumnHeaderMenu === true && openMenuColId != null && menuPos != null
+          ? (() => {
+              const col = columnTable.value.getById(openMenuColId);
+              const isSortableForMenu = col?.sortable !== false;
+              const isHideableForMenu = col != null;
+              const isAutosizeableForMenu = col?.autosizeable !== false && col?.resizable !== false;
+              const sortIdx = activeSort.findIndex((s) => s.colId === openMenuColId);
+              const direction = sortIdx >= 0 ? (activeSort[sortIdx]?.direction ?? null) : null;
+              const isCurrentlySorted = direction != null;
+              const headerMenuActiveIdx = columnHeaderMenuKbdNav.activeIndex.value;
+              const headerMenuItemKbdTabindex = (idx: number, disabled: boolean): number => {
+                if (disabled) return -1;
+                return headerMenuActiveIdx === idx ? 0 : -1;
+              };
+              const pos = menuPos;
+              const menuItems: VNode[] = [
+                h(
+                  'button',
+                  {
+                    class: 'cx-table-column-header-menu-item',
+                    attrs: {
+                      type: 'button',
+                      role: 'menuitem',
+                      tabindex: headerMenuItemKbdTabindex(0, !isSortableForMenu),
+                      'data-action': 'sort-asc',
+                      'data-menu-item-index': '0',
+                      disabled: !isSortableForMenu ? 'disabled' : undefined,
+                    },
+                    domProps: { disabled: !isSortableForMenu },
+                    on: {
+                      click: () => {
+                        if (!isSortableForMenu) return;
+                        onColumnHeaderMenuItemClick(openMenuColId, 'sort-asc');
+                      },
+                    },
+                  },
+                  '升序',
+                ),
+                h(
+                  'button',
+                  {
+                    class: 'cx-table-column-header-menu-item',
+                    attrs: {
+                      type: 'button',
+                      role: 'menuitem',
+                      tabindex: headerMenuItemKbdTabindex(1, !isSortableForMenu),
+                      'data-action': 'sort-desc',
+                      'data-menu-item-index': '1',
+                    },
+                    domProps: { disabled: !isSortableForMenu },
+                    on: {
+                      click: () => {
+                        if (!isSortableForMenu) return;
+                        onColumnHeaderMenuItemClick(openMenuColId, 'sort-desc');
+                      },
+                    },
+                  },
+                  '降序',
+                ),
+                h(
+                  'button',
+                  {
+                    class: 'cx-table-column-header-menu-item',
+                    attrs: {
+                      type: 'button',
+                      role: 'menuitem',
+                      tabindex: headerMenuItemKbdTabindex(2, !isCurrentlySorted),
+                      'data-action': 'clear-sort',
+                      'data-menu-item-index': '2',
+                    },
+                    domProps: { disabled: !isCurrentlySorted },
+                    on: {
+                      click: () => {
+                        if (!isCurrentlySorted) return;
+                        onColumnHeaderMenuItemClick(openMenuColId, 'clear-sort');
+                      },
+                    },
+                  },
+                  '清除排序',
+                ),
+                h(
+                  'button',
+                  {
+                    class: 'cx-table-column-header-menu-item',
+                    attrs: {
+                      type: 'button',
+                      role: 'menuitem',
+                      tabindex: headerMenuItemKbdTabindex(3, !isHideableForMenu),
+                      'data-action': 'hide',
+                      'data-menu-item-index': '3',
+                    },
+                    domProps: { disabled: !isHideableForMenu },
+                    on: {
+                      click: () => {
+                        if (!isHideableForMenu) return;
+                        onColumnHeaderMenuItemClick(openMenuColId, 'hide');
+                      },
+                    },
+                  },
+                  '隐藏',
+                ),
+                h(
+                  'button',
+                  {
+                    class: 'cx-table-column-header-menu-item',
+                    attrs: {
+                      type: 'button',
+                      role: 'menuitem',
+                      tabindex: headerMenuItemKbdTabindex(4, !isAutosizeableForMenu),
+                      'data-action': 'autosize',
+                      'data-menu-item-index': '4',
+                    },
+                    domProps: { disabled: !isAutosizeableForMenu },
+                    on: {
+                      click: () => {
+                        if (!isAutosizeableForMenu) return;
+                        onColumnHeaderMenuItemClick(openMenuColId, 'autosize');
+                      },
+                    },
+                  },
+                  '自适应宽度',
+                ),
+              ];
+              return h(
+                'div',
+                {
+                  ref: ((el: HTMLElement | null) => {
+                    columnHeaderMenuRef.value = el;
+                  }) as never,
+                  class: 'cx-table-column-header-menu',
+                  attrs: {
+                    role: 'menu',
+                    'data-col-id': openMenuColId,
+                  },
+                  style: {
+                    position: 'absolute',
+                    left: `${pos.left}px`,
+                    top: `${pos.top}px`,
+                    zIndex: 6,
+                  },
+                  on: {
+                    keydown: (e: KeyboardEvent) => columnHeaderMenuKbdNav.handleKeydown(e),
+                  },
+                },
+                menuItems,
+              );
+            })()
+          : null;
+
       const tableWrapper = h(
         'div',
         {
@@ -12707,6 +12778,7 @@ export const ChronixTable = defineComponent({
           ...(contextMenuOverlay != null ? [contextMenuOverlay] : []),
           ...(cellStyleEditorPopover != null ? [cellStyleEditorPopover] : []),
           ...(settingsPopover != null ? [settingsPopover] : []),
+          ...(columnHeaderMenuOverlay != null ? [columnHeaderMenuOverlay] : []),
         ],
       );
       return tableWrapper;

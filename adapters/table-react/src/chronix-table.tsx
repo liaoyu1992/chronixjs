@@ -3406,7 +3406,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const [openColumnHeaderMenuColId, setOpenColumnHeaderMenuColId] = useState<string | null>(null);
     const openColumnHeaderMenuColIdRef = useRef(openColumnHeaderMenuColId);
     openColumnHeaderMenuColIdRef.current = openColumnHeaderMenuColId;
-    /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
+    // Position of the hoisted column-header menu, relative to the
+    // wrapper. The menu is rendered at wrapper level (not inside the
+    // header cell) so it escapes the cell's `overflow:hidden` clipping.
+    const [columnHeaderMenuPos, setColumnHeaderMenuPos] = useState<{
+      left: number;
+      top: number;
+    } | null>(null);
     const [contextMenuPosition, setContextMenuPosition] = useState<{
       readonly rowId: string | null;
       readonly colId: string | null;
@@ -3428,7 +3434,40 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
 
     const applyOpenColumnHeaderMenu = useCallback((colId: string | null) => {
       setOpenColumnHeaderMenuColId((prev) => (prev === colId ? prev : colId));
+      if (colId == null) {
+        setColumnHeaderMenuPos(null);
+        return;
+      }
+      // Compute the hoisted menu's left/top (relative to the wrapper)
+      // synchronously so the menu renders at the correct position on
+      // the same tick it opens (preserves keyboard-nav auto-focus).
+      const wrapper = wrapperRef.current;
+      if (wrapper == null) return;
+      const escaped =
+        typeof window !== 'undefined' ? (window.CSS?.escape?.(colId) ?? colId) : colId;
+      const cell = wrapper.querySelector<HTMLElement>(
+        `.cx-table-header-cell[data-col-id="${escaped}"]`,
+      );
+      if (cell == null) return;
+      const wRect = wrapper.getBoundingClientRect();
+      const cRect = cell.getBoundingClientRect();
+      setColumnHeaderMenuPos({
+        left: Math.round(cRect.left - wRect.left),
+        top: Math.round(cRect.bottom - wRect.top),
+      });
     }, []);
+
+    // Close the hoisted menu on any scroll (capture-phase) so it never
+    // detaches from its anchor cell during horizontal/vertical scroll.
+    useEffect(() => {
+      function onScrollClose(): void {
+        if (openColumnHeaderMenuColIdRef.current != null) {
+          applyOpenColumnHeaderMenu(null);
+        }
+      }
+      window.addEventListener('scroll', onScrollClose, true);
+      return () => window.removeEventListener('scroll', onScrollClose, true);
+    }, [applyOpenColumnHeaderMenu]);
 
     const applyOpenContextMenu = useCallback(
       (rowId: string | null, colId: string | null, x: number, y: number) => {
@@ -8738,130 +8777,39 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           {showColumnHeaderMenu === true &&
             (() => {
               const isOpen = openColumnHeaderMenuColId === cell.colId;
-              const col = columnTable.getById(cell.colId);
-              const isSortableForMenu = col?.sortable !== false;
-              const isHideableForMenu = col != null;
-              const isAutosizeableForMenu = col?.autosizeable !== false && col?.resizable !== false;
-              const isCurrentlySorted = direction != null;
               return (
-                <>
-                  <button
-                    type="button"
-                    className={[
-                      'cx-table-column-header-menu-button',
-                      isOpen && 'cx-table-column-header-menu-button--open',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    data-col-id={cell.colId}
-                    aria-haspopup="menu"
-                    aria-expanded={isOpen ? 'true' : 'false'}
-                    aria-label="列操作菜单"
-                    onPointerDown={(e: ReactPointerEvent) => {
-                      e.stopPropagation();
-                    }}
-                    onClick={(e: ReactMouseEvent) => {
-                      e.stopPropagation();
-                      applyOpenColumnHeaderMenu(isOpen ? null : cell.colId);
-                    }}
+                <button
+                  type="button"
+                  className={[
+                    'cx-table-column-header-menu-button',
+                    isOpen && 'cx-table-column-header-menu-button--open',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                  data-col-id={cell.colId}
+                  aria-haspopup="menu"
+                  aria-expanded={isOpen ? 'true' : 'false'}
+                  aria-label="列操作菜单"
+                  onPointerDown={(e: ReactPointerEvent) => {
+                    e.stopPropagation();
+                  }}
+                  onClick={(e: ReactMouseEvent) => {
+                    e.stopPropagation();
+                    applyOpenColumnHeaderMenu(isOpen ? null : cell.colId);
+                  }}
+                >
+                  <svg
+                    width="14"
+                    height="16"
+                    viewBox="0 0 14 16"
+                    fill="currentColor"
+                    aria-hidden="true"
                   >
-                    ▾
-                  </button>
-                  {isOpen &&
-                    (() => {
-                      // roving tabindex over the 5 fixed actions.
-                      const headerMenuActiveIdx = columnHeaderMenuKbdNav.activeIndex;
-                      const tabForIdx = (idx: number, disabled: boolean): number => {
-                        if (disabled) return -1;
-                        return headerMenuActiveIdx === idx ? 0 : -1;
-                      };
-                      return (
-                        <div
-                          ref={columnHeaderMenuRef}
-                          className="cx-table-column-header-menu"
-                          role="menu"
-                          data-col-id={cell.colId}
-                          onKeyDown={(e) => columnHeaderMenuKbdNav.handleKeydown(e)}
-                        >
-                          <button
-                            type="button"
-                            className="cx-table-column-header-menu-item"
-                            role="menuitem"
-                            tabIndex={tabForIdx(0, !isSortableForMenu)}
-                            data-action="sort-asc"
-                            data-menu-item-index="0"
-                            disabled={!isSortableForMenu}
-                            onClick={() => {
-                              if (!isSortableForMenu) return;
-                              onColumnHeaderMenuItemClick(cell.colId, 'sort-asc');
-                            }}
-                          >
-                            升序
-                          </button>
-                          <button
-                            type="button"
-                            className="cx-table-column-header-menu-item"
-                            role="menuitem"
-                            tabIndex={tabForIdx(1, !isSortableForMenu)}
-                            data-action="sort-desc"
-                            data-menu-item-index="1"
-                            disabled={!isSortableForMenu}
-                            onClick={() => {
-                              if (!isSortableForMenu) return;
-                              onColumnHeaderMenuItemClick(cell.colId, 'sort-desc');
-                            }}
-                          >
-                            降序
-                          </button>
-                          <button
-                            type="button"
-                            className="cx-table-column-header-menu-item"
-                            role="menuitem"
-                            tabIndex={tabForIdx(2, !isCurrentlySorted)}
-                            data-action="clear-sort"
-                            data-menu-item-index="2"
-                            disabled={!isCurrentlySorted}
-                            onClick={() => {
-                              if (!isCurrentlySorted) return;
-                              onColumnHeaderMenuItemClick(cell.colId, 'clear-sort');
-                            }}
-                          >
-                            清除排序
-                          </button>
-                          <button
-                            type="button"
-                            className="cx-table-column-header-menu-item"
-                            role="menuitem"
-                            tabIndex={tabForIdx(3, !isHideableForMenu)}
-                            data-action="hide"
-                            data-menu-item-index="3"
-                            disabled={!isHideableForMenu}
-                            onClick={() => {
-                              if (!isHideableForMenu) return;
-                              onColumnHeaderMenuItemClick(cell.colId, 'hide');
-                            }}
-                          >
-                            隐藏
-                          </button>
-                          <button
-                            type="button"
-                            className="cx-table-column-header-menu-item"
-                            role="menuitem"
-                            tabIndex={tabForIdx(4, !isAutosizeableForMenu)}
-                            data-action="autosize"
-                            data-menu-item-index="4"
-                            disabled={!isAutosizeableForMenu}
-                            onClick={() => {
-                              if (!isAutosizeableForMenu) return;
-                              onColumnHeaderMenuItemClick(cell.colId, 'autosize');
-                            }}
-                          >
-                            自适应宽度
-                          </button>
-                        </div>
-                      );
-                    })()}
-                </>
+                    <circle cx="7" cy="2" r="1.5" />
+                    <circle cx="7" cy="8" r="1.5" />
+                    <circle cx="7" cy="14" r="1.5" />
+                  </svg>
+                </button>
               );
             })()}
           {resizerNode}
@@ -11564,6 +11512,122 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           })()
         : null;
 
+    // Hoisted column-header menu. Rendered as a direct child of the
+    // wrapper (not inside the header cell) so it escapes the cell's
+    // `overflow:hidden` clipping. Position is computed synchronously in
+    // `applyOpenColumnHeaderMenu`.
+    const columnHeaderMenuNode =
+      showColumnHeaderMenu === true &&
+      openColumnHeaderMenuColId != null &&
+      columnHeaderMenuPos != null
+        ? (() => {
+            const openMenuColId = openColumnHeaderMenuColId;
+            const col = columnTable.getById(openMenuColId);
+            const isSortableForMenu = col?.sortable !== false;
+            const isHideableForMenu = col != null;
+            const isAutosizeableForMenu = col?.autosizeable !== false && col?.resizable !== false;
+            const sortIdx = sortSpec.findIndex((s) => s.colId === openMenuColId);
+            const direction = sortIdx >= 0 ? (sortSpec[sortIdx]?.direction ?? null) : null;
+            const isCurrentlySorted = direction != null;
+            const headerMenuActiveIdx = columnHeaderMenuKbdNav.activeIndex;
+            const tabForIdx = (idx: number, disabled: boolean): number => {
+              if (disabled) return -1;
+              return headerMenuActiveIdx === idx ? 0 : -1;
+            };
+            return (
+              <div
+                ref={columnHeaderMenuRef}
+                className="cx-table-column-header-menu"
+                role="menu"
+                data-col-id={openMenuColId}
+                style={{
+                  position: 'absolute',
+                  left: columnHeaderMenuPos.left,
+                  top: columnHeaderMenuPos.top,
+                  zIndex: 6,
+                }}
+                onKeyDown={(e) => columnHeaderMenuKbdNav.handleKeydown(e)}
+              >
+                <button
+                  type="button"
+                  className="cx-table-column-header-menu-item"
+                  role="menuitem"
+                  tabIndex={tabForIdx(0, !isSortableForMenu)}
+                  data-action="sort-asc"
+                  data-menu-item-index="0"
+                  disabled={!isSortableForMenu}
+                  onClick={() => {
+                    if (!isSortableForMenu) return;
+                    onColumnHeaderMenuItemClick(openMenuColId, 'sort-asc');
+                  }}
+                >
+                  升序
+                </button>
+                <button
+                  type="button"
+                  className="cx-table-column-header-menu-item"
+                  role="menuitem"
+                  tabIndex={tabForIdx(1, !isSortableForMenu)}
+                  data-action="sort-desc"
+                  data-menu-item-index="1"
+                  disabled={!isSortableForMenu}
+                  onClick={() => {
+                    if (!isSortableForMenu) return;
+                    onColumnHeaderMenuItemClick(openMenuColId, 'sort-desc');
+                  }}
+                >
+                  降序
+                </button>
+                <button
+                  type="button"
+                  className="cx-table-column-header-menu-item"
+                  role="menuitem"
+                  tabIndex={tabForIdx(2, !isCurrentlySorted)}
+                  data-action="clear-sort"
+                  data-menu-item-index="2"
+                  disabled={!isCurrentlySorted}
+                  onClick={() => {
+                    if (!isCurrentlySorted) return;
+                    onColumnHeaderMenuItemClick(openMenuColId, 'clear-sort');
+                  }}
+                >
+                  清除排序
+                </button>
+                <button
+                  type="button"
+                  className="cx-table-column-header-menu-item"
+                  role="menuitem"
+                  tabIndex={tabForIdx(3, !isHideableForMenu)}
+                  data-action="hide"
+                  data-menu-item-index="3"
+                  disabled={!isHideableForMenu}
+                  onClick={() => {
+                    if (!isHideableForMenu) return;
+                    onColumnHeaderMenuItemClick(openMenuColId, 'hide');
+                  }}
+                >
+                  隐藏
+                </button>
+                <button
+                  type="button"
+                  className="cx-table-column-header-menu-item"
+                  role="menuitem"
+                  tabIndex={tabForIdx(4, !isAutosizeableForMenu)}
+                  data-action="autosize"
+                  data-menu-item-index="4"
+                  disabled={!isAutosizeableForMenu}
+                  onClick={() => {
+                    if (!isAutosizeableForMenu) return;
+                    onColumnHeaderMenuItemClick(openMenuColId, 'autosize');
+                  }}
+                >
+                  自适应宽度
+                </button>
+              </div>
+            );
+          })()
+        : null;
+
     const tableWrapper = (
       <div
         ref={wrapperRef}
@@ -12847,6 +12911,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           </div>
         )}
         {settingsPopover}
+        {columnHeaderMenuNode}
       </div>
     );
 

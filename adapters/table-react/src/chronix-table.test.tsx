@@ -9503,7 +9503,7 @@ describe('tool-panel popover (react)', () => {
 });
 
 describe('<ChronixTable> — -A column header menu (react)', () => {
-  it('83A-1: showColumnHeaderMenu:true renders a ▾ button in each column header (react)', () => {
+  it('83A-1: showColumnHeaderMenu:true renders a ⋮ button in each column header (react)', () => {
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} showColumnHeaderMenu={true} />,
     );
@@ -9512,12 +9512,12 @@ describe('<ChronixTable> — -A column header menu (react)', () => {
     expect(buttons[0]!.getAttribute('data-col-id')).toBe('id');
   });
 
-  it('83A-2: showColumnHeaderMenu default renders no ▾ buttons (react)', () => {
+  it('83A-2: showColumnHeaderMenu default renders no ⋮ buttons (react)', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     expect(container.querySelectorAll('.cx-table-column-header-menu-button')).toHaveLength(0);
   });
 
-  it('83A-3: clicking ▾ opens the menu; clicking another column closes the first (react)', () => {
+  it('83A-3: clicking ⋮ opens the menu; clicking another column closes the first (react)', () => {
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} showColumnHeaderMenu={true} />,
     );
