@@ -142,10 +142,12 @@ describe('<ChronixTable>', () => {
   });
 
   // overflow-y is 'scroll' (not 'auto') so the body reserves a STABLE
-  // vertical-scrollbar gutter that the header / filter / footer mirror —
+  // vertical-scrollbar gutter that the header / filter mirror -
   // keeps a pinned-right column's sticky `right:0` on the same right edge
-  // across all four rows. With 'auto' a real ~15px classic scrollbar shifts
-  // the body's pinned column left of the header's by the scrollbar width.
+  // across header, filter + body. The sticky footer lives INSIDE the body
+  // scrollport so it shares the body's gutter (no separate overflow needed).
+  // With 'auto' a real ~15px classic scrollbar shifts the body's pinned
+  // column left of the header's by the scrollbar width.
   it('.cx-table-body is the scrollport with overflow-y:scroll', () => {
     const wrapper = mount(ChronixTable, { props: { columns, rows } });
     const body = wrapper.find('.cx-table-body');
@@ -153,14 +155,22 @@ describe('<ChronixTable>', () => {
     expect(style).toMatch(/overflow-y:\s*scroll/i);
   });
 
-  it('header / filter / footer mirror the body scrollbar gutter (overflow-y:scroll)', () => {
+  it('header / filter mirror the body scrollbar gutter; footer is sticky inside body', () => {
     const wrapper = mount(ChronixTable, {
       props: { columns, rows, showFilterRow: true, showFooterRow: true },
     });
-    for (const sel of ['.cx-table-header', '.cx-table-filter-row', '.cx-table-footer']) {
+    // header + filter are external siblings that reserve a matching gutter.
+    for (const sel of ['.cx-table-header', '.cx-table-filter-row']) {
       const style = wrapper.find(sel).attributes('style') ?? '';
       expect(style).toMatch(/overflow-y:\s*scroll/i);
     }
+    // footer is now a sticky-bottom child of the body scrollport (not a
+    // sibling with its own overflow). Verify position:sticky + bottom:0.
+    const footerStyle = wrapper.find('.cx-table-footer').attributes('style') ?? '';
+    expect(footerStyle).toMatch(/position:\s*sticky/i);
+    expect(footerStyle).toMatch(/bottom:\s*0/i);
+    // footer should be a descendant of the body, not a sibling of it.
+    expect(wrapper.find('.cx-table-body .cx-table-footer').exists()).toBe(true);
   });
 
   it('.cx-table-body-content is the virtual content layer with position:relative + totalBodyHeight', () => {

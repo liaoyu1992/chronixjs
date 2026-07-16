@@ -126,26 +126,26 @@ body,
   font-weight: 600;
 }
 
-/* The header / filter-row / footer mirror the body's horizontal scroll, so the
- * adapter sets `overflow-y: scroll` on them to reserve the SAME vertical-
- * scrollbar gutter the body's scrollbar occupies — keeping a pinned-right
- * column's sticky `right:0` on the same edge across all four rows. These three
- * rows never overflow vertically, so their scrollbar is an empty/disabled track.
- * Hide its track + thumb (the gutter + default width stay) so the gutter just
- * reads as the row's background colour. The body keeps its real, visible bar. */
+/* The header + filter-row mirror the body's horizontal scroll, so the
+ * adapter sets overflow-y: scroll on them to reserve the SAME vertical-
+ * scrollbar gutter the body's scrollbar occupies - keeping a pinned-right
+ * column's sticky `right:0` on the same edge across header, filter + body.
+ * These two rows never overflow vertically, so their scrollbar is an
+ * empty/disabled track. Hide its track + thumb (the gutter + default width
+ * stay) so the gutter just reads as the row's background colour. The body
+ * keeps its real, visible bar. The footer now lives INSIDE the body
+ * scrollport (sticky-bottom) so it shares the body's scrollbar gutter -
+ * no separate overflow or gutter styling needed. */
 .cx-table-header,
-.cx-table-filter-row,
-.cx-table-footer {
+.cx-table-filter-row {
   scrollbar-color: transparent transparent;
 }
 .cx-table-header::-webkit-scrollbar,
-.cx-table-filter-row::-webkit-scrollbar,
-.cx-table-footer::-webkit-scrollbar {
+.cx-table-filter-row::-webkit-scrollbar {
   background: transparent;
 }
 .cx-table-header::-webkit-scrollbar-thumb,
-.cx-table-filter-row::-webkit-scrollbar-thumb,
-.cx-table-footer::-webkit-scrollbar-thumb {
+.cx-table-filter-row::-webkit-scrollbar-thumb {
   background: transparent;
 }
 

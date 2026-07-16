@@ -2863,7 +2863,6 @@ export const ChronixTable = defineComponent({
     // (default `overflow: visible` ignores `scrollLeft`).
     const headerRef = ref<HTMLElement | null>(null);
     const filterRowRef = ref<HTMLElement | null>(null);
-    const footerRef = ref<HTMLElement | null>(null);
     // per-column Set filter scroll state for
     // virtualized rendering. Lazily populated when a Set filter
     // dropdown crosses `setFilterVirtualizeThreshold`.
@@ -11777,16 +11776,18 @@ export const ChronixTable = defineComponent({
         position: 'top' | 'bottom',
         zoneIndex: number,
         zoneCount: number,
+        bottomOffset = 0,
       ): VNode {
         const rowH = row.heightHint ?? t.rowHeight;
         // Sticky offset: stack pinned rows of the same zone by row
-        // index × rowHeight. Top rows accumulate downward from `top: 0`;
+        // index x rowHeight. Top rows accumulate downward from `top: 0`;
         // bottom rows accumulate upward from `bottom: 0` (using the
-        // reverse zone index).
+        // reverse zone index). `bottomOffset` lifts bottom-pinned rows
+        // above the sticky footer when it is shown (footerHeight).
         const stickyAnchor: Record<string, string> =
           position === 'top'
             ? { top: `${zoneIndex * rowH}px` }
-            : { bottom: `${(zoneCount - 1 - zoneIndex) * rowH}px` };
+            : { bottom: `${(zoneCount - 1 - zoneIndex) * rowH + bottomOffset}px` };
         const cellNodes: VNode[] = visible.map((col) => {
           const value = getCellValue({ row, column: col });
           const text =
@@ -11874,8 +11875,11 @@ export const ChronixTable = defineComponent({
       const topPinnedRowNodes: VNode[] = topPinned.map((row, i) =>
         buildPinnedRowVNode(row, 'top', i, topPinned.length),
       );
+      // lift bottom-pinned rows above the sticky footer so they don't
+      // overlap (footerHeight when footer is shown, 0 otherwise).
+      const pinnedRowBottomOffset = props.showFooterRow ? t.footerHeight : 0;
       const bottomPinnedRowNodes: VNode[] = bottomPinned.map((row, i) =>
-        buildPinnedRowVNode(row, 'bottom', i, bottomPinned.length),
+        buildPinnedRowVNode(row, 'bottom', i, bottomPinned.length, pinnedRowBottomOffset),
       );
 
       // loading + no-rows overlays. Loading
@@ -11923,97 +11927,16 @@ export const ChronixTable = defineComponent({
         );
       })();
 
-      const body: VNode = h(
-        'div',
-        {
-          ref: (el: unknown) => {
-            bodyRef.value = el as HTMLElement | null;
-          },
-          class: 'cx-table-body',
-          role: 'rowgroup',
-          // make the body focusable so Ctrl+C
-          // keydown lands here. `tabIndex: 0` is the standard pattern
-          // for "div that should accept keyboard input"; the role
-          // (`rowgroup`) + the per-cell `gridcell` roles still
-          // describe semantics correctly for screen readers.
-          tabindex: 0,
-          onKeydown: onBodyKeydown,
-          // pointerleave on the body clears the
-          // tooltip timer + popover. This catches the case where the
-          // pointer exits the body through a non-cell edge (e.g., onto
-          // the scrollbar or out the bottom).
-          onPointerleave: onBodyTooltipPointerleave,
-          // `overflowX` flips to `auto` so that
-          // when the total column width exceeds the body's viewport
-          // width (e.g. with pinned columns + many center columns) a
-          // horizontal scrollbar appears + pinned cells' sticky
-          // positioning has a scrolling ancestor to anchor against. No
-          // visible change when columns fit (no scrollbar materializes).
-          //
-          // `overflowY: 'scroll'` (not `auto`) reserves a STABLE
-          // vertical-scrollbar gutter whether the body overflows or not,
-          // matching the header / filter / footer's reserved gutter so a
-          // pinned-right column's sticky `right: 0` lands on the same
-          // right edge across all four rows. With `auto`, a short body
-          // drops the scrollbar + shifts its pinned column ~15px right
-          // of the header's; `scroll` keeps the edges identical.
-          style: {
-            overflowY: 'scroll',
-            overflowX: 'auto',
-            position: 'relative',
-          },
-          // mirror body's horizontal scroll into
-          // the header + filter row's `scrollLeft` so the column-aligned
-          // strips track together. Imperative DOM mutation (no Vue state
-          // round-trip) — scroll events fire ~60Hz and a reactive ref
-          // update + render would add ~1-2ms per event. The handler is
-          // additive to (not replacing) the existing vertical-scroll
-          // tracking that `useTableBodyScroll` registers via
-          // addEventListener — both observers run.
-          onScroll: (e: Event) => {
-            const target = e.currentTarget as HTMLElement | null;
-            if (target == null) return;
-            const x = target.scrollLeft;
-            const headerEl = headerRef.value;
-            if (headerEl != null && headerEl.scrollLeft !== x) {
-              headerEl.scrollLeft = x;
-            }
-            const filterEl = filterRowRef.value;
-            if (filterEl != null && filterEl.scrollLeft !== x) {
-              filterEl.scrollLeft = x;
-            }
-            // mirror horizontal scroll into the
-            // optional sticky footer so its column-aligned cells track
-            // the body. Same imperative pattern as the header + filter
-            // mirror above (additive; not a replacement).
-            const footerEl = footerRef.value;
-            if (footerEl != null && footerEl.scrollLeft !== x) {
-              footerEl.scrollLeft = x;
-            }
-            // clear active tooltip on scroll —
-            // popover coordinates were captured pre-scroll and would
-            // misposition otherwise.
-            onBodyTooltipScroll();
-          },
-        },
-        [
-          ...topPinnedRowNodes,
-          bodyContent,
-          ...bottomPinnedRowNodes,
-          ...(overlayVNode != null ? [overlayVNode] : []),
-        ],
-      );
-
-      // opt-in sticky footer aggregate row
-      // beneath the body. Per Decision A.1, aggregators receive the
-      // post-filter rows; per Decision C.1, columns without an
-      // aggregator render empty placeholder cells sized to the
-      // column width so the row stays column-aligned with the body +
-      // header. Per-zone iteration mirrors the header strip (left
-      // pinned + selection rail placeholder + center + right pinned).
-      // Horizontal scroll is mirrored from the body's onScroll
-      // handler via `footerRef` (additive to the header + filter
-      // mirrors).
+      // opt-in sticky footer aggregate row rendered INSIDE the body
+      // scrollport as a sticky-bottom element so the body's horizontal
+      // scrollbar sits BELOW the footer (not above it). Per Decision
+      // A.1, aggregators receive the post-filter rows; per Decision
+      // C.1, columns without an aggregator render empty placeholder
+      // cells sized to the column width so the row stays column-aligned
+      // with the body + header. Per-zone iteration mirrors the header
+      // strip (left pinned + selection rail placeholder + center +
+      // right pinned). Horizontal scroll is automatic (the footer is a
+      // child of the body scrollport).
       const footer: VNode | null = props.showFooterRow
         ? (() => {
             const valuesByColId = footerValuesByColId.value;
@@ -12132,30 +12055,114 @@ export const ChronixTable = defineComponent({
             return h(
               'div',
               {
-                ref: (el: unknown) => {
-                  footerRef.value = el as HTMLElement | null;
-                },
                 class: 'cx-table-footer',
                 role: 'rowgroup',
-                // `overflowX: hidden` makes the footer's
-                // `scrollLeft` setter meaningful so the body's
-                // onScroll mirror works (same trick as the header).
-                // `overflowY: 'scroll'` reserves the body-matching
-                // scrollbar gutter so pinned-right footer cells align
-                // (see the header container comment above).
-                style: { overflowX: 'hidden', overflowY: 'scroll' },
+                // position: sticky; bottom: 0 keeps the footer pinned to
+                // the bottom of the body viewport (visible while the body
+                // scrolls vertically). The footer scrolls horizontally
+                // with the body naturally (sticky only applies to the
+                // block axis), so no scrollLeft mirror is needed. width
+                // matches total content width so footer cells track body
+                // columns. zIndex 3 sits above body rows (0) + pinned
+                // rows (2) but below the drag-fill handle (4).
+                style: {
+                  position: 'sticky',
+                  bottom: '0',
+                  width: `${totalWithRowDrag}px`,
+                  zIndex: '3',
+                },
               },
               [footerRow],
             );
           })()
         : null;
 
+      const body: VNode = h(
+        'div',
+        {
+          ref: (el: unknown) => {
+            bodyRef.value = el as HTMLElement | null;
+          },
+          class: 'cx-table-body',
+          role: 'rowgroup',
+          // make the body focusable so Ctrl+C
+          // keydown lands here. `tabIndex: 0` is the standard pattern
+          // for "div that should accept keyboard input"; the role
+          // (`rowgroup`) + the per-cell `gridcell` roles still
+          // describe semantics correctly for screen readers.
+          tabindex: 0,
+          onKeydown: onBodyKeydown,
+          // pointerleave on the body clears the
+          // tooltip timer + popover. This catches the case where the
+          // pointer exits the body through a non-cell edge (e.g., onto
+          // the scrollbar or out the bottom).
+          onPointerleave: onBodyTooltipPointerleave,
+          // `overflowX` flips to `auto` so that
+          // when the total column width exceeds the body's viewport
+          // width (e.g. with pinned columns + many center columns) a
+          // horizontal scrollbar appears + pinned cells' sticky
+          // positioning has a scrolling ancestor to anchor against. No
+          // visible change when columns fit (no scrollbar materializes).
+          //
+          // `overflowY: 'scroll'` (not `auto`) reserves a STABLE
+          // vertical-scrollbar gutter whether the body overflows or not,
+          // matching the header / filter's reserved gutter so a
+          // pinned-right column's sticky `right: 0` lands on the same
+          // right edge across header, filter, body + the sticky footer
+          // (which now lives inside the body scrollport). With `auto`, a short body
+          // drops the scrollbar + shifts its pinned column ~15px right
+          // of the header's; `scroll` keeps the edges identical.
+          style: {
+            overflowY: 'scroll',
+            overflowX: 'auto',
+            position: 'relative',
+          },
+          // mirror body's horizontal scroll into
+          // the header + filter row's `scrollLeft` so the column-aligned
+          // strips track together. Imperative DOM mutation (no Vue state
+          // round-trip) — scroll events fire ~60Hz and a reactive ref
+          // update + render would add ~1-2ms per event. The handler is
+          // additive to (not replacing) the existing vertical-scroll
+          // tracking that `useTableBodyScroll` registers via
+          // addEventListener — both observers run.
+          onScroll: (e: Event) => {
+            const target = e.currentTarget as HTMLElement | null;
+            if (target == null) return;
+            const x = target.scrollLeft;
+            const headerEl = headerRef.value;
+            if (headerEl != null && headerEl.scrollLeft !== x) {
+              headerEl.scrollLeft = x;
+            }
+            const filterEl = filterRowRef.value;
+            if (filterEl != null && filterEl.scrollLeft !== x) {
+              filterEl.scrollLeft = x;
+            }
+            // The sticky footer lives INSIDE the body scrollport now
+            // (position: sticky; bottom: 0), so it scrolls naturally
+            // with the body - no imperative scrollLeft mirror needed.
+            // clear active tooltip on scroll —
+            // popover coordinates were captured pre-scroll and would
+            // misposition otherwise.
+            onBodyTooltipScroll();
+          },
+        },
+        [
+          ...topPinnedRowNodes,
+          bodyContent,
+          ...bottomPinnedRowNodes,
+          // the sticky footer is a child of the body scrollport so
+          // the body's horizontal scrollbar sits BELOW it (not above).
+          ...(footer != null ? [footer] : []),
+          ...(overlayVNode != null ? [overlayVNode] : []),
+        ],
+      );
+
       // opt-in status bar between body and
       // pagination footer. Default content via defaultStatusBarText;
       // consumer override via `status-bar` named slot. Counts come
-      // from current rows + selection + pagination state. Sticky-
-      // bottom strip; sits BELOW the footer aggregate row + ABOVE
-      // the pagination footer.
+      // from current rows + selection + pagination state. Sits BELOW
+      // the body (which contains the sticky footer aggregate row) +
+      // ABOVE the pagination footer.
       const statusBar: VNode | null = props.showStatusBar
         ? (() => {
             const counts: StatusBarCounts = {
@@ -12362,11 +12369,12 @@ export const ChronixTable = defineComponent({
       const themeVars = cssVarsForTheme(t);
       // assemble wrapper children — header, optional
       // filter row, body, optional pagination footer. Filter and
-      // footer are independently opt-in.
+      // footer are independently opt-in. The footer aggregate row now
+      // lives INSIDE the body scrollport (sticky-bottom), so it is not
+      // pushed here as a wrapper-level sibling.
       const children: VNode[] = [header];
       if (filterRow != null) children.push(filterRow);
       children.push(body);
-      if (footer != null) children.push(footer);
       if (statusBar != null) children.push(statusBar);
       if (paginationFooter != null) children.push(paginationFooter);
 
