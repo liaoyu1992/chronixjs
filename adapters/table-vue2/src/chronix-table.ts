@@ -2884,7 +2884,7 @@ export const ChronixTable = defineComponent({
       const wRect = wrapper.getBoundingClientRect();
       const cRect = cell.getBoundingClientRect();
       columnHeaderMenuPosRef.value = {
-        left: Math.round(cRect.left - wRect.left),
+        left: Math.round(cRect.right - wRect.left),
         top: Math.round(cRect.bottom - wRect.top),
       };
     }
@@ -8062,12 +8062,7 @@ export const ChronixTable = defineComponent({
             h(
               'button',
               {
-                class: [
-                  'cx-table-column-header-menu-button',
-                  isOpen && 'cx-table-column-header-menu-button--open',
-                ]
-                  .filter(Boolean)
-                  .join(' '),
+                class: ['cx-table-column-header-menu-button'].filter(Boolean).join(' '),
                 attrs: {
                   type: 'button',
                   'data-col-id': cell.colId,
@@ -8098,9 +8093,9 @@ export const ChronixTable = defineComponent({
                     },
                   },
                   [
-                    h('circle', { attrs: { cx: 7, cy: 2, r: 1.5 } }),
-                    h('circle', { attrs: { cx: 7, cy: 8, r: 1.5 } }),
-                    h('circle', { attrs: { cx: 7, cy: 14, r: 1.5 } }),
+                    h('circle', { attrs: { cx: 7, cy: 4, r: 1.2 } }),
+                    h('circle', { attrs: { cx: 7, cy: 8, r: 1.2 } }),
+                    h('circle', { attrs: { cx: 7, cy: 12, r: 1.2 } }),
                   ],
                 ),
               ],

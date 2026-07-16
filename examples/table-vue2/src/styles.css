@@ -1354,11 +1354,6 @@ html,
   border-color: #cbd5e1;
   color: #1f2937;
 }
-.cx-table-column-header-menu-button--open {
-  background: #e0e7ff;
-  border-color: #6366f1;
-  color: #1e40af;
-}
 .cx-table-column-header-menu {
   position: absolute;
   top: 100%;
@@ -1370,6 +1365,7 @@ html,
   border: 1px solid #cbd5e1;
   border-radius: 4px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  transform: translateX(-100%);
 }
 .cx-table-column-header-menu-item {
   display: block;

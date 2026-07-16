@@ -3452,7 +3452,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const wRect = wrapper.getBoundingClientRect();
       const cRect = cell.getBoundingClientRect();
       setColumnHeaderMenuPos({
-        left: Math.round(cRect.left - wRect.left),
+        left: Math.round(cRect.right - wRect.left),
         top: Math.round(cRect.bottom - wRect.top),
       });
     }, []);
@@ -8780,12 +8780,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               return (
                 <button
                   type="button"
-                  className={[
-                    'cx-table-column-header-menu-button',
-                    isOpen && 'cx-table-column-header-menu-button--open',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
+                  className={['cx-table-column-header-menu-button'].filter(Boolean).join(' ')}
                   data-col-id={cell.colId}
                   aria-haspopup="menu"
                   aria-expanded={isOpen ? 'true' : 'false'}
@@ -8805,9 +8800,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     fill="currentColor"
                     aria-hidden="true"
                   >
-                    <circle cx="7" cy="2" r="1.5" />
-                    <circle cx="7" cy="8" r="1.5" />
-                    <circle cx="7" cy="14" r="1.5" />
+                    <circle cx="7" cy="4" r="1.2" />
+                    <circle cx="7" cy="8" r="1.2" />
+                    <circle cx="7" cy="12" r="1.2" />
                   </svg>
                 </button>
               );
