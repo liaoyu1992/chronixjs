@@ -677,24 +677,12 @@
   box-shadow: 0 -2px 4px var(--cx-table-pinned-shadow-color, rgba(15, 23, 42, 0.12));
 }
 
-/* --- Set-filter dropdown --- */
-*
-  state
-  opens
-  in-flow
-  (pushes filter row content down).
-  Consumers
-  *
-  wanting
-  position:absolute
-  overlay
-  can
-  override
-  .cx-table-set-filter
-  *
-  + .cx-table-set-filter__panel.
-  */
-  .cx-table-set-filter {
+/* --- Set-filter dropdown ---
+ * Native <details> open state opens in-flow (pushes filter row content
+ * down). Consumers wanting position:absolute overlay can override
+ * .cx-table-set-filter + .cx-table-set-filter__panel.
+ */
+.cx-table-set-filter {
   display: inline-block;
   width: 100%;
   position: relative;
