@@ -11962,11 +11962,17 @@ export const ChronixTable = defineComponent({
                 background: 'var(--cx-table-footer-bg, #f8f9fa)',
                 ...pinnedCellStyle(col.id),
               };
-              const children: VNode[] = [];
+              // Mirror body's plain-column shape (text placed directly as the
+              // cell child, NOT wrapped in a label span) so the consumer's
+              // `.cx-table-cell` / `.cx-table-footer-cell` CSS (flex + overflow
+              // hidden + text-overflow ellipsis) applies identically - avoids a
+              // footer-specific span that would need its own flex:1/min-width:0
+              // rule and otherwise breaks ellipsis / alignment with body rows.
+              let children: string | VNode[] = [];
               if (hasAggregator) {
                 const value = valuesByColId[col.id];
                 // Format via the column's valueFormatter (if set) or
-                // the default formatter — synthesize a footer-row
+                // the default formatter - synthesize a footer-row
                 // RowSpec so a row-aware formatter still sees the
                 // aggregate value through the standard CellRenderArgs
                 // shape (matches valueFormatter signature
@@ -11978,7 +11984,7 @@ export const ChronixTable = defineComponent({
                 const text = col.valueFormatter
                   ? col.valueFormatter({ value, row: synthRow, column: col })
                   : formatCellValue({ row: synthRow, column: col });
-                children.push(h('span', { class: 'cx-table-footer-cell-label' }, text));
+                children = text;
               }
               return h(
                 'div',
@@ -12070,6 +12076,12 @@ export const ChronixTable = defineComponent({
                   bottom: '0',
                   width: `${totalWithRowDrag}px`,
                   zIndex: '3',
+                  // Pinned footer cells read `var(--cx-table-pinned-zone-bg, inherit)`
+                  // via pinnedCellStyle(); without this override they fall back to
+                  // `inherit` (transparent) and lose the footer background, making the
+                  // aggregator row look patchy. Pin the token to the footer bg so
+                  // columns WITHOUT an aggregator still show the footer background.
+                  '--cx-table-pinned-zone-bg': 'var(--cx-table-footer-bg, #f8f9fa)',
                 },
               },
               [footerRow],

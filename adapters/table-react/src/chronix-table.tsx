@@ -2572,7 +2572,6 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // `scrollLeft` is a meaningful programmatic offset.
     const headerRef = useRef<HTMLDivElement | null>(null);
     const filterRowRef = useRef<HTMLDivElement | null>(null);
-    const footerRef = useRef<HTMLDivElement | null>(null);
     // (2026-05-31 — react port): per-column Set filter
     // virtualization state. Verbatim mirror of vue3 .
     const [setFilterScrollTopByColId, setSetFilterScrollTopByColId] = useState<
@@ -10755,12 +10754,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       position: 'top' | 'bottom',
       zoneIndex: number,
       zoneCount: number,
+      bottomOffset = 0,
     ): ReactElement => {
       const rowH = row.heightHint ?? t.rowHeight;
       const stickyAnchor: CSSProperties =
         position === 'top'
           ? { top: `${zoneIndex * rowH}px` }
-          : { bottom: `${(zoneCount - 1 - zoneIndex) * rowH}px` };
+          : { bottom: `${(zoneCount - 1 - zoneIndex) * rowH + bottomOffset}px` };
       const cellNodes: ReactElement[] = visibleColumns.map((col) => {
         const value = getCellValue({ row, column: col });
         const text =
@@ -10938,8 +10938,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const topPinnedRowNodes: ReactElement[] = topPinnedRows.map((row, i) =>
       buildPinnedRowNode(row, 'top', i, topPinnedRows.length),
     );
+    // lift bottom-pinned rows above the sticky footer so they don't
+    // overlap (footerHeight when footer is shown, 0 otherwise).
+    const pinnedRowBottomOffset = showFooterRow ? t.footerHeight : 0;
     const bottomPinnedRowNodes: ReactElement[] = bottomPinnedRows.map((row, i) =>
-      buildPinnedRowNode(row, 'bottom', i, bottomPinnedRows.length),
+      buildPinnedRowNode(row, 'bottom', i, bottomPinnedRows.length, pinnedRowBottomOffset),
     );
 
     // (2026-05-28 — react port): loading + no-rows overlays.
@@ -10987,91 +10990,18 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       );
     }
 
-    // (2026-05-26 — react port of vue3):
-    // `overflowX` flips `'hidden'` → `'auto'` so that when the total
-    // column width exceeds the body's viewport width a horizontal
-    // scrollbar appears + pinned cells' sticky positioning has a
-    // scrolling ancestor to anchor against. No visible change when
-    // columns fit (no scrollbar materializes).
-    //
-    // `overflowY: 'scroll'` (not `auto`) reserves a STABLE vertical-
-    // scrollbar gutter whether the body overflows or not, matching the
-    // header / filter / footer's reserved gutter so a pinned-right
-    // column's sticky `right: 0` lands on the same right edge across
-    // all four rows. With `auto`, a short body drops the scrollbar +
-    // shifts its pinned column ~15px right of the header's; `scroll`
-    // keeps the edges identical.
-    const bodyStyle: CSSProperties = {
-      overflowY: 'scroll',
-      overflowX: 'auto',
-      position: 'relative',
-    };
-    const body = (
-      <div
-        ref={bodyRef}
-        className="cx-table-body"
-        role="rowgroup"
-        style={bodyStyle}
-        // (2026-05-27 — react port of vue3):
-        // `tabIndex={0}` makes the body focusable so Ctrl+C / Cmd+C
-        // keydown lands here when the user is interacting with the
-        // data area. Standard a11y pattern for "div that should
-        // accept keyboard input"; the role="rowgroup" + per-cell
-        // gridcell roles still describe semantics correctly.
-        tabIndex={0}
-        // Ctrl+C / Cmd+C copies the active cell-range as
-        // TSV. Gates on cellRangeSelection === 'enabled' + active
-        // range; non-matching keystrokes propagate normally.
-        onKeyDown={onBodyKeyDown}
-        // (2026-05-28 — react port): pointer leaves body via
-        // non-cell edge → clear pending + active tooltip.
-        onPointerLeave={onBodyTooltipPointerLeave}
-        // mirror body's horizontal scroll into the header +
-        // filter row's `scrollLeft` so the column-aligned strips
-        // track together. Imperative DOM mutation (no React state
-        // round-trip) — scroll events fire ~60Hz and a setState would
-        // force a re-render per event. Additive to (not replacing)
-        // the vertical-scroll tracking via useTableBodyScroll's
-        // addEventListener — both observers run.
-        onScroll={(e) => {
-          const target = e.currentTarget;
-          const x = target.scrollLeft;
-          const headerEl = headerRef.current;
-          if (headerEl != null && headerEl.scrollLeft !== x) {
-            headerEl.scrollLeft = x;
-          }
-          const filterEl = filterRowRef.current;
-          if (filterEl != null && filterEl.scrollLeft !== x) {
-            filterEl.scrollLeft = x;
-          }
-          // (2026-05-27 — react port of vue3):
-          // mirror horizontal scroll into the optional sticky footer
-          // so its column-aligned cells track the body. Additive to
-          // header + filter mirrors.
-          const footerEl = footerRef.current;
-          if (footerEl != null && footerEl.scrollLeft !== x) {
-            footerEl.scrollLeft = x;
-          }
-          // clear tooltip on scroll (popover coords captured
-          // pre-scroll).
-          onBodyTooltipScroll();
-        }}
-      >
-        {topPinnedRowNodes}
-        {bodyContent}
-        {bottomPinnedRowNodes}
-        {overlayNode}
-      </div>
-    );
-
     // (2026-05-27 — react port of vue3): opt-in
-    // sticky footer aggregate row beneath the body. Verbatim port of
-    // vue3 footer build; react JSX deltas: ref={footerRef} instead of
-    // a callback ref, CSSProperties typed inline, className strings
-    // joined with spaces. Per-zone iteration mirrors the header strip
+    // sticky footer aggregate row rendered INSIDE the body scrollport
+    // as a sticky-bottom element so the body's horizontal scrollbar
+    // sits BELOW the footer (not above it). Per Decision A.1,
+    // aggregators receive the post-filter rows; per Decision C.1,
+    // columns without an aggregator render empty placeholder cells
+    // sized to the column width so the row stays column-aligned with
+    // the body + header. Per-zone iteration mirrors the header strip
     // (left pinned + selection rail placeholder + center + right
-    // pinned). Horizontal scroll is mirrored from the body's onScroll
-    // handler via `footerRef` (additive to header + filter mirrors).
+    // pinned). Horizontal scroll is automatic (the footer is a child
+    // of the body scrollport). Declared before `body` because `body`
+    // embeds it.
     let footer: ReactElement | null = null;
     if (showFooterRow) {
       const buildFooterCell = (col: ColumnSpec): ReactElement => {
@@ -11095,7 +11025,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           background: 'var(--cx-table-footer-bg, #f8f9fa)',
           ...pinnedCellStyle(col.id),
         };
-        let label: ReactElement | null = null;
+        // Mirror body's plain-column shape (text rendered directly as the
+        // cell child, NOT wrapped in a label span) so the consumer's
+        // `.cx-table-cell` / `.cx-table-footer-cell` CSS (flex + overflow
+        // hidden + text-overflow ellipsis) applies identically - avoids a
+        // footer-specific span that would need its own flex:1/min-width:0
+        // rule and otherwise breaks ellipsis / alignment with body rows.
+        let content: string | null = null;
         if (hasAggregator) {
           const value = footerValuesByColId[col.id];
           const synthRow: RowSpec = {
@@ -11105,7 +11041,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
           const text = col.valueFormatter
             ? col.valueFormatter({ value, row: synthRow, column: col })
             : formatCellValue({ row: synthRow, column: col });
-          label = <span className="cx-table-footer-cell-label">{text}</span>;
+          content = text;
         }
         return (
           <div
@@ -11115,7 +11051,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             data-col-id={col.id}
             style={style}
           >
-            {label}
+            {content}
           </div>
         );
       };
@@ -11168,16 +11104,30 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         : rowChildrenWithSelection;
       footer = (
         <div
-          ref={footerRef}
           className="cx-table-footer"
           role="rowgroup"
-          // `overflowX: hidden` makes the footer's
-          // scrollLeft setter meaningful so the body's onScroll
-          // mirror works (same trick as the header).
-          // `overflowY: 'scroll'` reserves the body-matching scrollbar
-          // gutter so pinned-right footer cells align (see header
-          // container comment above).
-          style={{ overflowX: 'hidden', overflowY: 'scroll' }}
+          // position: sticky; bottom: 0 keeps the footer pinned to
+          // the bottom of the body viewport (visible while the body
+          // scrolls vertically). The footer scrolls horizontally
+          // with the body naturally (sticky only applies to the
+          // block axis), so no scrollLeft mirror is needed. width
+          // matches total content width so footer cells track body
+          // columns. zIndex 3 sits above body rows (0) + pinned
+          // rows (2) but below the drag-fill handle (4).
+          style={
+            {
+              position: 'sticky',
+              bottom: '0',
+              width: `${totalWithRowDrag}px`,
+              zIndex: 3,
+              // Pinned footer cells read `var(--cx-table-pinned-zone-bg, inherit)`
+              // via pinnedCellStyle(); without this override they fall back to
+              // `inherit` (transparent) and lose the footer background, making the
+              // aggregator row look patchy. Pin the token to the footer bg so
+              // columns WITHOUT an aggregator still show the footer background.
+              '--cx-table-pinned-zone-bg': 'var(--cx-table-footer-bg, #f8f9fa)',
+            } as CSSProperties
+          }
         >
           <div
             className="cx-table-row cx-table-row--footer"
@@ -11189,6 +11139,83 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         </div>
       );
     }
+
+    // (2026-05-26 — react port of vue3):
+    // `overflowX` flips `'hidden'` → `'auto'` so that when the total
+    // column width exceeds the body's viewport width a horizontal
+    // scrollbar appears + pinned cells' sticky positioning has a
+    // scrolling ancestor to anchor against. No visible change when
+    // columns fit (no scrollbar materializes).
+    //
+    // `overflowY: 'scroll'` (not `auto`) reserves a STABLE vertical-
+    // scrollbar gutter whether the body overflows or not, matching the
+    // header / filter's reserved gutter so a pinned-right column's
+    // sticky `right: 0` lands on the same right edge across header,
+    // filter + body. The sticky footer lives INSIDE the body scrollport
+    // so it shares the body's gutter (no separate overflow needed).
+    // With `auto`, a short body drops the scrollbar + shifts its pinned
+    // column ~15px right of the header's; `scroll` keeps the edges
+    // identical.
+    const bodyStyle: CSSProperties = {
+      overflowY: 'scroll',
+      overflowX: 'auto',
+      position: 'relative',
+    };
+    const body = (
+      <div
+        ref={bodyRef}
+        className="cx-table-body"
+        role="rowgroup"
+        style={bodyStyle}
+        // (2026-05-27 — react port of vue3):
+        // `tabIndex={0}` makes the body focusable so Ctrl+C / Cmd+C
+        // keydown lands here when the user is interacting with the
+        // data area. Standard a11y pattern for "div that should
+        // accept keyboard input"; the role="rowgroup" + per-cell
+        // gridcell roles still describe semantics correctly.
+        tabIndex={0}
+        // Ctrl+C / Cmd+C copies the active cell-range as
+        // TSV. Gates on cellRangeSelection === 'enabled' + active
+        // range; non-matching keystrokes propagate normally.
+        onKeyDown={onBodyKeyDown}
+        // (2026-05-28 — react port): pointer leaves body via
+        // non-cell edge → clear pending + active tooltip.
+        onPointerLeave={onBodyTooltipPointerLeave}
+        // mirror body's horizontal scroll into the header +
+        // filter row's `scrollLeft` so the column-aligned strips
+        // track together. Imperative DOM mutation (no React state
+        // round-trip) — scroll events fire ~60Hz and a setState would
+        // force a re-render per event. Additive to (not replacing)
+        // the vertical-scroll tracking via useTableBodyScroll's
+        // addEventListener — both observers run.
+        onScroll={(e) => {
+          const target = e.currentTarget;
+          const x = target.scrollLeft;
+          const headerEl = headerRef.current;
+          if (headerEl != null && headerEl.scrollLeft !== x) {
+            headerEl.scrollLeft = x;
+          }
+          const filterEl = filterRowRef.current;
+          if (filterEl != null && filterEl.scrollLeft !== x) {
+            filterEl.scrollLeft = x;
+          }
+          // The sticky footer lives INSIDE the body scrollport now
+          // (position: sticky; bottom: 0), so it scrolls naturally
+          // with the body - no imperative scrollLeft mirror needed.
+          // clear tooltip on scroll (popover coords captured
+          // pre-scroll).
+          onBodyTooltipScroll();
+        }}
+      >
+        {topPinnedRowNodes}
+        {bodyContent}
+        {bottomPinnedRowNodes}
+        {/* the sticky footer is a child of the body scrollport so
+            the body's horizontal scrollbar sits BELOW it (not above). */}
+        {footer}
+        {overlayNode}
+      </div>
+    );
 
     // (2026-05-28 — react port): opt-in status bar between
     // body and pagination footer. Verbatim port of vue3 .
@@ -11639,7 +11666,6 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         {header}
         {filterRow}
         {body}
-        {footer}
         {statusBar}
         {paginationFooter}
         {rowDropLine}

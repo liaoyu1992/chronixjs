@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsup';
+import { copyFileSync } from 'fs';
 
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -11,4 +12,7 @@ export default defineConfig({
   minify: false,
   splitting: false,
   external: ['vue', '@chronixjs/table', '@chronixjs/cx-kit'],
+  onSuccess: () => {
+    copyFileSync('../../node_modules/@chronixjs/table/dist/styles.css', 'dist/styles.css');
+  },
 });

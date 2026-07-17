@@ -2304,7 +2304,6 @@ export const ChronixTable = defineComponent({
     // `scrollLeft` is a meaningful programmatic offset.
     const headerRef = ref<HTMLElement | null>(null);
     const filterRowRef = ref<HTMLElement | null>(null);
-    const footerRef = ref<HTMLElement | null>(null);
     // (2026-05-31 — vue2 port): per-column Set filter
     // virtualization state. Verbatim mirror of vue3 .
     const setFilterScrollTopByColId = ref<Record<string, number>>({});
@@ -10353,12 +10352,13 @@ export const ChronixTable = defineComponent({
         position: 'top' | 'bottom',
         zoneIndex: number,
         zoneCount: number,
+        bottomOffset = 0,
       ): VNode {
         const rowH = row.heightHint ?? t.rowHeight;
         const stickyAnchor: Record<string, string> =
           position === 'top'
             ? { top: `${zoneIndex * rowH}px` }
-            : { bottom: `${(zoneCount - 1 - zoneIndex) * rowH}px` };
+            : { bottom: `${(zoneCount - 1 - zoneIndex) * rowH + bottomOffset}px` };
         const cellNodes: VNode[] = visible.map((col) => {
           const value = getCellValue({ row, column: col });
           const text =
@@ -10444,8 +10444,11 @@ export const ChronixTable = defineComponent({
       const topPinnedRowNodes: VNode[] = topPinned.map((row, i) =>
         buildPinnedRowVNode(row, 'top', i, topPinned.length),
       );
+      // lift bottom-pinned rows above the sticky footer so they don't
+      // overlap (footerHeight when footer is shown, 0 otherwise).
+      const pinnedRowBottomOffset = props.showFooterRow ? t.footerHeight : 0;
       const bottomPinnedRowNodes: VNode[] = bottomPinned.map((row, i) =>
-        buildPinnedRowVNode(row, 'bottom', i, bottomPinned.length),
+        buildPinnedRowVNode(row, 'bottom', i, bottomPinned.length, pinnedRowBottomOffset),
       );
 
       // (2026-05-28 — vue2 port): loading + no-rows overlays.
@@ -10495,99 +10498,12 @@ export const ChronixTable = defineComponent({
         );
       })();
 
-      const body: VNode = h(
-        'div',
-        {
-          // Vue 2.7's vnode-data ref accepts function refs in composition
-          // API form. The `as never` cast bridges the wider Vue 2 ref
-          // type (Element | Component) to our narrower HTMLElement
-          // signature — same idiom as `wrapperRef` below.
-          ref: ((el: HTMLElement | null) => {
-            bodyRef.value = el;
-          }) as never,
-          class: 'cx-table-body',
-          // (2026-05-27 — vue2 port of vue3):
-          // `tabindex: 0` makes the body focusable so Ctrl+C / Cmd+C
-          // keydown lands here when the user is interacting with the
-          // data area. Standard a11y pattern for "div that should
-          // accept keyboard input"; the role="rowgroup" + per-cell
-          // gridcell roles still describe semantics correctly.
-          attrs: { role: 'rowgroup', tabindex: 0 },
-          // (2026-05-26 — vue2 port of vue3):
-          // `overflowX` flips `'hidden'` → `'auto'` so that when the
-          // total column width exceeds the body's viewport width a
-          // horizontal scrollbar appears + pinned cells' sticky
-          // positioning has a scrolling ancestor to anchor against.
-          // No visible change when columns fit (no scrollbar
-          // materializes).
-          //
-          // `overflowY: 'scroll'` (not `auto`) reserves a STABLE
-          // vertical-scrollbar gutter whether the body overflows or not,
-          // matching the header / filter / footer's reserved gutter so a
-          // pinned-right column's sticky `right: 0` lands on the same
-          // right edge across all four rows. With `auto`, a short body
-          // drops the scrollbar + shifts its pinned column ~15px right
-          // of the header's; `scroll` keeps the edges identical.
-          style: {
-            overflowY: 'scroll',
-            overflowX: 'auto',
-            position: 'relative',
-          },
-          on: {
-            // mirror body's horizontal scroll into the
-            // header + filter row's `scrollLeft` so the column-aligned
-            // strips track together. Imperative DOM mutation (no
-            // reactive ref round-trip) — scroll events fire ~60Hz and
-            // a reactive ref update + render would add ~1-2ms per
-            // event. Additive to (not replacing) the existing vertical-
-            // scroll tracking that `useTableBodyScroll` registers via
-            // addEventListener — both observers run.
-            scroll: (e: Event) => {
-              const target = e.currentTarget as HTMLElement | null;
-              if (target == null) return;
-              const x = target.scrollLeft;
-              const headerEl = headerRef.value;
-              if (headerEl != null && headerEl.scrollLeft !== x) {
-                headerEl.scrollLeft = x;
-              }
-              const filterEl = filterRowRef.value;
-              if (filterEl != null && filterEl.scrollLeft !== x) {
-                filterEl.scrollLeft = x;
-              }
-              // (2026-05-27 — vue2 port of vue3):
-              // mirror horizontal scroll into the optional sticky
-              // footer so its column-aligned cells track the body.
-              // Additive to header + filter mirrors.
-              const footerEl = footerRef.value;
-              if (footerEl != null && footerEl.scrollLeft !== x) {
-                footerEl.scrollLeft = x;
-              }
-              // (2026-05-28 — vue2 port): clear active
-              // tooltip on scroll (popover coords captured pre-scroll).
-              onBodyTooltipScroll();
-            },
-            // Ctrl+C / Cmd+C copies the active cell-range as
-            // TSV. Gates on cellRangeSelection === 'enabled' + active
-            // range; non-matching keystrokes propagate normally.
-            keydown: onBodyKeydown,
-            // (2026-05-28 — vue2 port): pointerleave clears
-            // pending + active tooltip when exiting via non-cell edges.
-            pointerleave: onBodyTooltipPointerleave,
-          },
-        },
-        [
-          ...topPinnedRowNodes,
-          bodyContent,
-          ...bottomPinnedRowNodes,
-          ...(overlayVNode != null ? [overlayVNode] : []),
-        ],
-      );
-
-      // (2026-05-27 — vue2 port of vue3): opt-in
-      // sticky footer aggregate row beneath the body. Verbatim port
-      // of vue3 footer build; vue2 vnode-data deltas: `attrs:` for
-      // data-* attributes, `ref:` function callback (as never cast),
-      // and explicit `key` on root for stable diffing.
+      // (2026-05-27 - vue2 port of vue3): opt-in sticky footer
+      // aggregate row rendered INSIDE the body scrollport as a
+      // sticky-bottom element so the body horizontal scrollbar sits
+      // BELOW the footer (not above it). vue2 vnode-data deltas:
+      // `attrs:` for data-* attributes. Horizontal scroll is automatic
+      // (the footer is a child of the body scrollport).
       const footer: VNode | null = props.showFooterRow
         ? (() => {
             const valuesByColId = footerValuesByColId.value;
@@ -10612,7 +10528,13 @@ export const ChronixTable = defineComponent({
                 background: 'var(--cx-table-footer-bg, #f8f9fa)',
                 ...pinnedCellStyle(col.id),
               };
-              const children: VNode[] = [];
+              // Mirror body's plain-column shape (text placed directly as the
+              // cell child, NOT wrapped in a label span) so the consumer's
+              // `.cx-table-cell` / `.cx-table-footer-cell` CSS (flex + overflow
+              // hidden + text-overflow ellipsis) applies identically - avoids a
+              // footer-specific span that would need its own flex:1/min-width:0
+              // rule and otherwise breaks ellipsis / alignment with body rows.
+              let children: string | VNode[] = [];
               if (hasAggregator) {
                 const value = valuesByColId[col.id];
                 const synthRow: RowSpec = {
@@ -10622,7 +10544,7 @@ export const ChronixTable = defineComponent({
                 const text = col.valueFormatter
                   ? col.valueFormatter({ value, row: synthRow, column: col })
                   : formatCellValue({ row: synthRow, column: col });
-                children.push(h('span', { class: 'cx-table-footer-cell-label' }, text));
+                children = text;
               }
               return h(
                 'div',
@@ -10699,20 +10621,108 @@ export const ChronixTable = defineComponent({
             return h(
               'div',
               {
-                ref: ((el: HTMLElement | null) => {
-                  footerRef.value = el;
-                }) as never,
                 class: 'cx-table-footer',
                 attrs: { role: 'rowgroup' },
-                // `overflowY: 'scroll'` reserves the body-matching
-                // scrollbar gutter so pinned-right footer cells align
-                // (see header container comment above).
-                style: { overflowX: 'hidden', overflowY: 'scroll' },
+                style: {
+                  position: 'sticky',
+                  bottom: '0',
+                  width: `${totalWithRowDrag}px`,
+                  zIndex: '3',
+                  // Pinned footer cells read `var(--cx-table-pinned-zone-bg, inherit)`
+                  // via pinnedCellStyle(); without this override they fall back to
+                  // `inherit` (transparent) and lose the footer background, making the
+                  // aggregator row look patchy. Pin the token to the footer bg so
+                  // columns WITHOUT an aggregator still show the footer background.
+                  '--cx-table-pinned-zone-bg': 'var(--cx-table-footer-bg, #f8f9fa)',
+                },
               },
               [footerRow],
             );
           })()
         : null;
+
+      const body: VNode = h(
+        'div',
+        {
+          // Vue 2.7's vnode-data ref accepts function refs in composition
+          // API form. The `as never` cast bridges the wider Vue 2 ref
+          // type (Element | Component) to our narrower HTMLElement
+          // signature — same idiom as `wrapperRef` below.
+          ref: ((el: HTMLElement | null) => {
+            bodyRef.value = el;
+          }) as never,
+          class: 'cx-table-body',
+          // (2026-05-27 — vue2 port of vue3):
+          // `tabindex: 0` makes the body focusable so Ctrl+C / Cmd+C
+          // keydown lands here when the user is interacting with the
+          // data area. Standard a11y pattern for "div that should
+          // accept keyboard input"; the role="rowgroup" + per-cell
+          // gridcell roles still describe semantics correctly.
+          attrs: { role: 'rowgroup', tabindex: 0 },
+          // (2026-05-26 — vue2 port of vue3):
+          // `overflowX` flips `'hidden'` → `'auto'` so that when the
+          // total column width exceeds the body's viewport width a
+          // horizontal scrollbar appears + pinned cells' sticky
+          // positioning has a scrolling ancestor to anchor against.
+          // No visible change when columns fit (no scrollbar
+          // materializes).
+          //
+          // `overflowY: 'scroll'` (not `auto`) reserves a STABLE
+          // vertical-scrollbar gutter whether the body overflows or not,
+          // matching the header / filter's reserved gutter so a
+          // pinned-right column's sticky `right: 0` lands on the same
+          // right edge across header, filter + body. The sticky footer
+          // lives INSIDE the body scrollport so it shares the body's
+          // gutter (no separate overflow needed). With `auto`, a short
+          // body drops the scrollbar + shifts its pinned column ~15px
+          // right of the header's; `scroll` keeps the edges identical.
+          style: {
+            overflowY: 'scroll',
+            overflowX: 'auto',
+            position: 'relative',
+          },
+          on: {
+            // mirror body's horizontal scroll into the
+            // header + filter row's `scrollLeft` so the column-aligned
+            // strips track together. Imperative DOM mutation (no
+            // reactive ref round-trip) — scroll events fire ~60Hz and
+            // a reactive ref update + render would add ~1-2ms per
+            // event. Additive to (not replacing) the existing vertical-
+            // scroll tracking that `useTableBodyScroll` registers via
+            // addEventListener — both observers run.
+            scroll: (e: Event) => {
+              const target = e.currentTarget as HTMLElement | null;
+              if (target == null) return;
+              const x = target.scrollLeft;
+              const headerEl = headerRef.value;
+              if (headerEl != null && headerEl.scrollLeft !== x) {
+                headerEl.scrollLeft = x;
+              }
+              const filterEl = filterRowRef.value;
+              if (filterEl != null && filterEl.scrollLeft !== x) {
+                filterEl.scrollLeft = x;
+              }
+              // (2026-05-28 - vue2 port): clear active
+              // tooltip on scroll (popover coords captured pre-scroll).
+              onBodyTooltipScroll();
+            },
+            // Ctrl+C / Cmd+C copies the active cell-range as
+            // TSV. Gates on cellRangeSelection === 'enabled' + active
+            // range; non-matching keystrokes propagate normally.
+            keydown: onBodyKeydown,
+            // (2026-05-28 — vue2 port): pointerleave clears
+            // pending + active tooltip when exiting via non-cell edges.
+            pointerleave: onBodyTooltipPointerleave,
+          },
+        },
+        [
+          ...topPinnedRowNodes,
+          bodyContent,
+          ...bottomPinnedRowNodes,
+          ...(footer != null ? [footer] : []),
+          ...(overlayVNode != null ? [overlayVNode] : []),
+        ],
+      );
 
       // opt-in pagination footer rendered
       // below the body. Layout: prev button + page info (1-based for
@@ -10948,7 +10958,6 @@ export const ChronixTable = defineComponent({
       const children: VNode[] = [header];
       if (filterRow != null) children.push(filterRow);
       children.push(body);
-      if (footer != null) children.push(footer);
       if (statusBar != null) children.push(statusBar);
       if (paginationFooter != null) children.push(paginationFooter);
 

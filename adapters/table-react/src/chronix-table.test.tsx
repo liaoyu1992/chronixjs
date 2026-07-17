@@ -308,10 +308,12 @@ describe('<ChronixTable> (react).1 rowLayoutPass + absolute body rows (vue3)', (
 
 describe('<ChronixTable> (react).1 virtualRowsPass + scrollport (vue3)', () => {
   // overflow-y is 'scroll' (not 'auto') so the body reserves a STABLE
-  // vertical-scrollbar gutter that the header / filter / footer mirror —
+  // vertical-scrollbar gutter that the header / filter mirror -
   // keeps a pinned-right column's sticky `right:0` on the same right edge
-  // across all four rows. With 'auto' a real ~15px classic scrollbar shifts
-  // the body's pinned column left of the header's by the scrollbar width.
+  // across header, filter + body. The sticky footer lives INSIDE the body
+  // scrollport so it shares the body's gutter (no separate overflow needed).
+  // With 'auto' a real ~15px classic scrollbar shifts the body's pinned
+  // column left of the header's by the scrollbar width.
   it('body scrollport carries overflow-y:scroll + overflow-x:auto', () => {
     const { container } = render(<ChronixTable columns={columns} rows={rows} />);
     const body = container.querySelector('.cx-table-body');
@@ -320,15 +322,23 @@ describe('<ChronixTable> (react).1 virtualRowsPass + scrollport (vue3)', () => {
     expect(style).toMatch(/overflow-x:\s*auto/i);
   });
 
-  it('header / filter / footer mirror the body scrollbar gutter (overflow-y:scroll)', () => {
+  it('header / filter mirror the body scrollbar gutter; footer is sticky inside body', () => {
     const { container } = render(
       <ChronixTable columns={columns} rows={rows} showFilterRow showFooterRow />,
     );
-    for (const sel of ['.cx-table-header', '.cx-table-filter-row', '.cx-table-footer']) {
+    // header + filter are external siblings that reserve a matching gutter.
+    for (const sel of ['.cx-table-header', '.cx-table-filter-row']) {
       const el = container.querySelector(sel);
       const style = el?.getAttribute('style') ?? '';
       expect(style).toMatch(/overflow-y:\s*scroll/i);
     }
+    // footer is now a sticky-bottom child of the body scrollport (not a
+    // sibling with its own overflow). Verify position:sticky + bottom:0.
+    const footerStyle = container.querySelector('.cx-table-footer')?.getAttribute('style') ?? '';
+    expect(footerStyle).toMatch(/position:\s*sticky/i);
+    expect(footerStyle).toMatch(/bottom:\s*0/i);
+    // footer should be a descendant of the body, not a sibling of it.
+    expect(container.querySelector('.cx-table-body .cx-table-footer')).not.toBeNull();
   });
 
   it('body-content layer carries explicit totalBodyHeight + width:totalWidth', () => {

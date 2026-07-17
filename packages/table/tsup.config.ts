@@ -1,4 +1,5 @@
 import { defineConfig } from 'tsup';
+import { copyFileSync } from 'fs';
 
 export default defineConfig({
   entry: ['src/index.ts'],
@@ -10,4 +11,7 @@ export default defineConfig({
   treeshake: true,
   minify: false,
   splitting: false,
+  onSuccess: () => {
+    copyFileSync('src/styles.css', 'dist/styles.css');
+  },
 });
