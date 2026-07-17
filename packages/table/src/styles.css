@@ -229,6 +229,48 @@
   transition: transform 80ms ease-out;
 }
 
+/* row-drag handle (grip) cell. The adapter renders an inline SVG
+ * 6-dot grip as the only child; the base .cx-table-cell already
+ * sets display:flex; align-items:center, so this rule only adds
+ * horizontal centring + the hover/active affordance. Width / height
+ * / sticky position come from inline style set by
+ * uildRowDragGripCell.
+ *
+ * Theme tokens:
+ *  - --cx-table-row-drag-rail-bg (rail background, default #f8fafc)
+ *  - --cx-table-row-drag-handle-color (icon rest colour, default #94a3b8)
+ *  - --cx-table-row-drag-handle-hover-color (icon hover colour, default #475569)
+ *  - --cx-table-row-drag-cell-hover-bg (cell hover tint, default #eef2f7)
+ */
+.cx-table-row-drag-cell {
+  justify-content: center;
+  background: var(--cx-table-row-drag-rail-bg, #f8fafc);
+}
+
+.cx-table-row-drag-cell__grip {
+  color: var(--cx-table-row-drag-handle-color, #94a3b8);
+  pointer-events: none;
+  transition: color 80ms ease-out;
+}
+
+.cx-table-row-drag-cell--draggable {
+  cursor: grab;
+}
+
+.cx-table-row-drag-cell--draggable:hover {
+  background: var(--cx-table-row-drag-cell-hover-bg, #eef2f7);
+}
+
+.cx-table-row-drag-cell--draggable:hover .cx-table-row-drag-cell__grip {
+  color: var(--cx-table-row-drag-handle-hover-color, #475569);
+}
+
+/* active drag session: the source row carries cx-table-row--moving;
+ * flip its grip cell to grabbing so the cursor tracks the gesture. */
+.cx-table-row--moving > .cx-table-row-drag-cell--draggable {
+  cursor: grabbing;
+}
+
 /* pinned-column zone visuals. The SFC sets
  * `position: sticky` + left/right cumulative offsets on pinned cells
  * via inline style; this CSS just paints the boundary shadow + zone

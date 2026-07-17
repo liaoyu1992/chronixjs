@@ -9288,7 +9288,6 @@ export const ChronixTable = defineComponent({
           position: 'sticky',
           [railSide]: '0px',
           zIndex: 2,
-          background: 'var(--cx-table-row-drag-rail-bg, #f8fafc)',
         };
         return h(
           'div',
@@ -9305,6 +9304,8 @@ export const ChronixTable = defineComponent({
             'data-col-id': '__cx_row_drag__',
             'data-row-id': row.id,
             'data-row-drag-handle': isInactive ? undefined : 'true',
+            title: isInactive ? undefined : '拖拽以调整行顺序',
+            'aria-label': isInactive ? undefined : '拖拽以调整行顺序',
             style: {
               width: `${rowDragColumnWidth}px`,
               height: `${rowH}px`,
@@ -9314,7 +9315,30 @@ export const ChronixTable = defineComponent({
               ? undefined
               : (e: PointerEvent) => onRowDragPointerDown(row.id, e),
           },
-          isInactive ? [] : ['≡'],
+          isInactive
+            ? []
+            : [
+                h('span', { class: 'cx-table-row-drag-cell__grip', 'aria-hidden': 'true' }, [
+                  h(
+                    'svg',
+                    {
+                      width: 10,
+                      height: 16,
+                      viewBox: '0 0 10 16',
+                      fill: 'currentColor',
+                      'aria-hidden': 'true',
+                    },
+                    [
+                      h('circle', { cx: 2.5, cy: 3, r: 1.3 }),
+                      h('circle', { cx: 7.5, cy: 3, r: 1.3 }),
+                      h('circle', { cx: 2.5, cy: 8, r: 1.3 }),
+                      h('circle', { cx: 7.5, cy: 8, r: 1.3 }),
+                      h('circle', { cx: 2.5, cy: 13, r: 1.3 }),
+                      h('circle', { cx: 7.5, cy: 13, r: 1.3 }),
+                    ],
+                  ),
+                ]),
+              ],
         );
       }
 
