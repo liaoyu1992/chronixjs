@@ -11357,7 +11357,18 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                   applyPage(cp - 1, ps);
                 }}
               >
-                «
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
               </button>
               <div
                 className="cx-table-pagination-pages"
@@ -11378,7 +11389,18 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                   applyPage(cp + 1, ps);
                 }}
               >
-                »
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
               </button>
             </div>
             <div className="cx-table-pagination-meta">

@@ -12272,7 +12272,20 @@ export const ChronixTable = defineComponent({
                           applyPage(cp - 1, ps);
                         },
                       },
-                      '«',
+                      h(
+                        'svg',
+                        {
+                          width: 16,
+                          height: 16,
+                          viewBox: '0 0 24 24',
+                          fill: 'none',
+                          stroke: 'currentColor',
+                          'stroke-width': 2,
+                          'stroke-linecap': 'round',
+                          'stroke-linejoin': 'round',
+                        },
+                        [h('polyline', { points: '15 18 9 12 15 6' })],
+                      ),
                     );
                     const nextBtn: VNode = h(
                       'button',
@@ -12286,7 +12299,20 @@ export const ChronixTable = defineComponent({
                           applyPage(cp + 1, ps);
                         },
                       },
-                      '»',
+                      h(
+                        'svg',
+                        {
+                          width: 16,
+                          height: 16,
+                          viewBox: '0 0 24 24',
+                          fill: 'none',
+                          stroke: 'currentColor',
+                          'stroke-width': 2,
+                          'stroke-linecap': 'round',
+                          'stroke-linejoin': 'round',
+                        },
+                        [h('polyline', { points: '9 18 15 12 9 6' })],
+                      ),
                     );
                     // page-number bar - replaces the
                     // "第 N / M 页" info text with an ellipsis-aware
