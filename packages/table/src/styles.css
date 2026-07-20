@@ -503,35 +503,39 @@
   gap: 8px;
 }
 
-/* prev / next buttons (NaiveUI-style circular, borderless).
- * Color scheme unchanged: #345d9d stays the primary blue.
- * Visual treatment shifts from bordered rectangles to clean
- * circular icon buttons with a gray hover fill. */
+/* prev / next buttons (NaiveUI pagination item styling).
+ * Measured from naiveui.com Pagination demo: 22x22px, 3px radius,
+ * 1px solid #e0e0e6 border, transparent bg. Color scheme stays
+ * on #345d9d (our primary) where NaiveUI uses #18a058. */
 .cx-table-pagination-button {
   align-items: center;
   background: transparent;
-  border: none;
-  border-radius: 50%;
-  color: #345d9d;
+  border: 1px solid #e0e0e6;
+  border-radius: 3px;
+  color: #33363b;
   cursor: pointer;
   display: inline-flex;
-  font-size: 13px;
-  height: 28px;
+  font-size: 12px;
+  height: 22px;
   justify-content: center;
   line-height: 1;
+  margin: 0;
   padding: 0;
   transition:
-    background 0.15s ease,
-    color 0.15s ease;
-  width: 28px;
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 22px;
 }
 
 .cx-table-pagination-button:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.09);
+  border-color: #345d9d;
+  color: #345d9d;
 }
 
 .cx-table-pagination-button:disabled {
-  color: #c0c6cc;
+  border-color: #e0e0e6;
+  color: #c2c2c2;
   cursor: not-allowed;
 }
 
@@ -548,60 +552,64 @@
 .cx-table-pagination-pages {
   align-items: center;
   display: flex;
-  gap: 4px;
 }
 
-/* page-number buttons (NaiveUI-style circular, borderless).
- * Default state is transparent; hover gets a gray fill; the
- * current page gets a solid primary-color fill with white text
- * for high-contrast emphasis. Color scheme unchanged (#345d9d). */
+/* page-number buttons (NaiveUI pagination item styling).
+ * Measured: 22x22px, 3px radius, transparent bg, transparent border
+ * on default; active page gets a 1px solid primary-color border +
+ * primary-color text (border-highlight, NOT solid fill). */
 .cx-table-pagination-page {
   align-items: center;
   background: transparent;
-  border: none;
-  border-radius: 50%;
-  color: #345d9d;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: #33363b;
   cursor: pointer;
   display: inline-flex;
   font-size: 12px;
-  height: 28px;
+  height: 22px;
   justify-content: center;
   line-height: 1;
-  min-width: 28px;
-  padding: 0;
+  margin-left: 8px;
+  min-width: 22px;
+  padding: 0 4px;
   text-align: center;
   transition:
-    background 0.15s ease,
-    color 0.15s ease;
-  width: 28px;
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cx-table-pagination-page:first-child {
+  margin-left: 0;
 }
 
 .cx-table-pagination-page:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.09);
+  color: #345d9d;
 }
 
 .cx-table-pagination-page--current {
-  background: #345d9d;
-  color: #fff;
+  border-color: #345d9d;
+  color: #345d9d;
   cursor: default;
-  font-weight: 500;
 }
 
 .cx-table-pagination-page--current:hover {
-  background: #345d9d;
+  border-color: #345d9d;
+  color: #345d9d;
 }
 
 .cx-table-pagination-ellipsis {
   align-items: center;
-  color: #5c6773;
+  color: #767c82;
   cursor: default;
   display: inline-flex;
   font-size: 12px;
-  height: 28px;
+  height: 22px;
   justify-content: center;
-  padding: 0;
+  margin-left: 8px;
+  padding: 0 4px;
   user-select: none;
-  width: 28px;
 }
 
 .cx-table-pagination-total {
@@ -626,6 +634,8 @@
 }
 
 .cx-table-pagination-size-select:focus {
+  border-color: #345d9d;
+  outline: none;
   border-color: #345d9d;
   outline: none;
   border-color: #345d9d;
