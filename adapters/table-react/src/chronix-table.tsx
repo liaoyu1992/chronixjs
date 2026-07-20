@@ -1667,16 +1667,6 @@ export interface ChronixTableProps {
    */
   readonly showFooterRow?: boolean;
   /**
-   * (2026-05-27 — react port of vue3): opt-in column
-   * visibility menu. Default `false`. When `true`, a button affordance
-   * in the wrapper's top-right corner opens a popover listing every
-   * column with per-column checkboxes + "全部显示" / "全部隐藏" actions.
-   * User toggles fire `onColumnVisibilityChange` with the new `hidden`
-   * value; consumer rebuilds the `columns` prop per Decision A.1
-   * (emit-only persistence).
-   */
-  readonly showColumnVisibilityMenu?: boolean;
-  /**
    * (react port): fires when the user toggles a column's
    * checkbox in the visibility menu OR a programmatic
    * `setColumnVisibility` / `toggleColumnVisibility` call runs.
@@ -2474,7 +2464,6 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       pasteValidatorPolicy = 'skip-rejected',
       onInvalidCellsChange,
       showFooterRow = false,
-      showColumnVisibilityMenu = false,
       onColumnVisibilityChange,
       onColumnsChange,
       enableKeyboardNavigation = false,
@@ -2683,17 +2672,6 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const cellStyleBorderSquareDragRef = useRef<boolean>(false);
     const cellStyleBorderHueDragRef = useRef<boolean>(false);
     // (2026-05-27 — react port of vue3): column-
-    // visibility-menu state. `columnMenuOpen` toggles the popover;
-    // `columnMenuButtonRef` / `columnMenuPopoverRef` anchor outside-
-    // click detection. `columnMenuOpenRef` mirrors the state into a
-    // ref so the document-level pointerdown listener (registered once
-    // via useEffect with empty deps) reads the latest value without
-    // re-subscribing.
-    const [columnMenuOpen, setColumnMenuOpen] = useState<boolean>(false);
-    const columnMenuOpenRef = useRef<boolean>(false);
-    columnMenuOpenRef.current = columnMenuOpen;
-    const columnMenuButtonRef = useRef<HTMLButtonElement | null>(null);
-    const columnMenuPopoverRef = useRef<HTMLDivElement | null>(null);
     // (2026-05-28 — react port of vue3): active-cell
     // focus marker for keyboard navigation. State mirror via ref so
     // the keydown useCallback can read the latest active cell without
@@ -4015,17 +3993,6 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       items: cellContextMenuKbdItems,
       isOpen: cellContextMenuKbdIsOpen,
     });
-
-    const columnVisibilityMenuKbdItems = useMemo<readonly MenuKeyboardNavItem[]>(
-      () => columns.map((col) => ({ id: col.id })),
-      [columns],
-    );
-    const columnVisibilityMenuKbdNav = useMenuKeyboardNav({
-      menuRef: columnMenuPopoverRef,
-      items: columnVisibilityMenuKbdItems,
-      isOpen: columnMenuOpen,
-    });
-
     /**
      * (2026-05-26 — react port of vue3): downstream
      * of `columnLayoutPass` — partitions `visibleColumns` into left-
@@ -4283,93 +4250,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [columnTable, columns, onColumnVisibilityChange],
     );
 
-    const applyShowAllColumns = useCallback(
-      (jsEvent: Event | null): void => {
-        for (const col of columns) {
-          if (col.hide === true) {
-            onColumnVisibilityChange?.({ column: col, hidden: false, jsEvent });
-          }
-        }
-      },
-      [columns, onColumnVisibilityChange],
-    );
-
-    const applyHideAllColumns = useCallback(
-      (jsEvent: Event | null): void => {
-        let firstVisibleSkipped = false;
-        for (const col of columns) {
-          if (col.hide === true) continue;
-          if (!firstVisibleSkipped) {
-            firstVisibleSkipped = true;
-            continue;
-          }
-          onColumnVisibilityChange?.({ column: col, hidden: true, jsEvent });
-        }
-      },
-      [columns, onColumnVisibilityChange],
-    );
-
-    const onColumnMenuButtonClick = useCallback(() => {
-      setColumnMenuOpen((open) => !open);
-    }, []);
-
-    const onColumnCheckboxChange = useCallback(
-      (colId: string, event: Event): void => {
-        const target = event.target;
-        if (!(target instanceof HTMLInputElement)) return;
-        applyColumnVisibilityChange(colId, !target.checked, event);
-      },
-      [applyColumnVisibilityChange],
-    );
-
-    const onShowAllColumnsClick = useCallback(
-      (event: Event): void => {
-        applyShowAllColumns(event);
-      },
-      [applyShowAllColumns],
-    );
-
-    const onHideAllColumnsClick = useCallback(
-      (event: Event): void => {
-        applyHideAllColumns(event);
-      },
-      [applyHideAllColumns],
-    );
-
-    const onColumnMenuKeydown = useCallback((e: KeyboardEvent): void => {
-      if (e.key === 'Escape') setColumnMenuOpen(false);
-    }, []);
-
-    // (2026-05-27 — react port): document-level pointerdown
-    // listener for outside-click-closes-popover. Registered ONCE on
-    // mount via useEffect with empty deps; reads `columnMenuOpenRef`
-    // (synced from `columnMenuOpen` state above) so the closure stays
-    // valid across state changes without re-subscribing every render.
-    useEffect(() => {
-      function onDocumentPointerdown(e: PointerEvent): void {
-        if (!columnMenuOpenRef.current) return;
-        const target = e.target;
-        if (!(target instanceof Element)) return;
-        const button = columnMenuButtonRef.current;
-        const popover = columnMenuPopoverRef.current;
-        if (button?.contains(target)) return;
-        if (popover?.contains(target)) return;
-        setColumnMenuOpen(false);
-      }
-      document.addEventListener('pointerdown', onDocumentPointerdown);
-      return () => {
-        document.removeEventListener('pointerdown', onDocumentPointerdown);
-      };
-    }, []);
-
-    // (vue3 equivalent): apply a `(page, pageSize)`
-    // tuple. Dedup against the current tuple — no-op writes (e.g.
-    // setPage(currentPage)) don't re-fire `onPageChange`. Page input
-    // is NOT clamped here — pagePass clamps when materializing
-    // `pagedRows`, and `currentPage` exposed via the handle reads the
+    // (vue3 equivalent): apply a (page, pageSize)`n    // tuple. Dedup against the current tuple - no-op writes (e.g.
+    // setPage(currentPage)) don't re-fire onPageChange. Page input
+    // is NOT clamped here - pagePass clamps when materializing
+    // pagedRows, and currentPage exposed via the handle reads the
     // pass's clamped value (currentPageFromPass) so a consumer who
-    // calls `setPage(99)` over a 3-page dataset gets `2` back from
-    // the next `getPage()` call.
+    // calls setPage(99) over a 3-page dataset gets 2 back from
+    // the next getPage() call.
     const applyPage = useCallback(
       (nextPage: number, nextPageSize: number): void => {
         const currentPage = pageStateRef.current;
@@ -8492,6 +8379,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       // column sort omits the superscript.
       const column = columnTable.getById(cell.colId);
       const isSortable = column?.sortable !== false;
+      // actions columns are functional (row-action buttons), not data -
+      // they never sort, never show the column-header menu, and are not
+      // reorderable, regardless of the column-spec defaults.
+      const isActionsCol = column?.actions != null;
       // (2026-05-29 — react port): visually-hidden description
       // text + aria-describedby reference so screen readers narrate sort
       // + filter state. Verbatim port of vue3 .
@@ -8546,10 +8437,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       };
       const className = [
         'cx-table-header-cell',
-        isSortable && 'cx-table-header-cell--sortable',
+        isSortable && !isActionsCol && 'cx-table-header-cell--sortable',
         direction != null && 'cx-table-header-cell--sorted',
         isResizingThis && 'cx-table-header-cell--resizing',
-        isReorderable && 'cx-table-header-cell--reorderable',
+        isReorderable && !isActionsCol && 'cx-table-header-cell--reorderable',
         isMovingThis && 'cx-table-header-cell--moving',
         isDropTargetBefore && 'cx-table-header-cell--drop-target-before',
         isDropTargetAfter && 'cx-table-header-cell--drop-target-after',
@@ -8725,8 +8616,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
            * actions is empty, only the icon is shown (no label). */}
           {(() => {
             const colForSettings = columnTable.getById(cell.colId);
-            const isActionsColForSettings =
-              toolPanel?.show === true && colForSettings?.actions != null;
+            const isActionsColForSettings = colForSettings?.actions != null;
             const showHeaderLabel =
               !isActionsColForSettings || (colForSettings?.actions?.length ?? 0) > 0;
             return (
@@ -8763,17 +8653,19 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               </>
             );
           })()}
-          <span className={indicatorClassName} data-sort-direction={direction ?? ''}>
-            {indicatorText}
-            {showPosition && (
-              <sup
-                className="cx-table-sort-indicator-position"
-                data-sort-position={String(activeIndex + 1)}
-              >
-                {String(activeIndex + 1)}
-              </sup>
-            )}
-          </span>
+          {isSortable && !isActionsCol && (
+            <span className={indicatorClassName} data-sort-direction={direction ?? ''}>
+              {indicatorText}
+              {showPosition && (
+                <sup
+                  className="cx-table-sort-indicator-position"
+                  data-sort-position={String(activeIndex + 1)}
+                >
+                  {String(activeIndex + 1)}
+                </sup>
+              )}
+            </span>
+          )}
           <span
             id={headerDescribedById}
             className="cx-table-header-cell__sr-description"
@@ -8782,6 +8674,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             {headerDescription}
           </span>
           {showColumnHeaderMenu === true &&
+            !isActionsCol &&
             (() => {
               const isOpen = openColumnHeaderMenuColId === cell.colId;
               return (
@@ -12827,123 +12720,6 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         <div className="cx-table-sr-announce" role="status" aria-live="polite" aria-atomic="true">
           {srAnnounceText}
         </div>
-        {showColumnVisibilityMenu && (
-          <button
-            ref={columnMenuButtonRef}
-            type="button"
-            className="cx-table-column-menu-button"
-            aria-label="列显隐"
-            aria-haspopup="menu"
-            aria-expanded={columnMenuOpen ? 'true' : 'false'}
-            data-column-menu-open={columnMenuOpen ? 'true' : 'false'}
-            style={{
-              position: 'absolute',
-              top: '4px',
-              right: '4px',
-              zIndex: 5,
-              padding: '2px 8px',
-              fontSize: '14px',
-              lineHeight: 1.4,
-              background: 'var(--cx-table-header-bg, #f1f3f5)',
-              border: '1px solid var(--cx-table-header-border-color, #d9dde2)',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-            onClick={onColumnMenuButtonClick}
-          >
-            列
-          </button>
-        )}
-        {showColumnVisibilityMenu && columnMenuOpen && (
-          <div
-            ref={columnMenuPopoverRef}
-            className="cx-table-column-menu-popover"
-            role="menu"
-            tabIndex={0}
-            // chain existing Escape handler + new Arrow nav.
-            onKeyDown={(e) => {
-              onColumnMenuKeydown(e.nativeEvent);
-              columnVisibilityMenuKbdNav.handleKeydown(e);
-            }}
-            style={{
-              position: 'absolute',
-              top: '36px',
-              right: '4px',
-              zIndex: 5,
-              minWidth: '160px',
-              maxHeight: '320px',
-              overflowY: 'auto',
-              background: '#ffffff',
-              border: '1px solid var(--cx-table-header-border-color, #d9dde2)',
-              borderRadius: '4px',
-              boxShadow: '0 2px 8px rgba(15, 23, 42, 0.12)',
-              padding: '4px 0',
-            }}
-          >
-            <div
-              className="cx-table-column-menu-actions"
-              style={{
-                display: 'flex',
-                gap: '6px',
-                padding: '6px 8px',
-                borderBottom: '1px solid var(--cx-table-header-border-color, #d9dde2)',
-              }}
-            >
-              <button
-                type="button"
-                className="cx-table-column-menu-action cx-table-column-menu-action--show-all"
-                onClick={(e) => {
-                  onShowAllColumnsClick(e.nativeEvent);
-                }}
-              >
-                全部显示
-              </button>
-              <button
-                type="button"
-                className="cx-table-column-menu-action cx-table-column-menu-action--hide-all"
-                onClick={(e) => {
-                  onHideAllColumnsClick(e.nativeEvent);
-                }}
-              >
-                全部隐藏
-              </button>
-            </div>
-            {columns.map((col, idx) => {
-              const isHidden = col.hide === true;
-              const label = col.headerName ?? col.field ?? col.id;
-              // roving tabindex over the checkbox list.
-              const isKbdActive = columnVisibilityMenuKbdNav.activeIndex === idx;
-              return (
-                <label
-                  key={`column-menu-item-${col.id}`}
-                  className="cx-table-column-menu-item"
-                  data-col-id={col.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '4px 8px',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    className="cx-table-column-menu-checkbox"
-                    tabIndex={isKbdActive ? 0 : -1}
-                    data-col-id={col.id}
-                    data-menu-item-index={String(idx)}
-                    checked={!isHidden}
-                    onChange={(e) => {
-                      onColumnCheckboxChange(col.id, e.nativeEvent);
-                    }}
-                  />
-                  <span className="cx-table-column-menu-label">{label}</span>
-                </label>
-              );
-            })}
-          </div>
-        )}
         {movingColumnState?.dropLineLeftPx != null && (
           <div
             className="cx-table-drop-line"

@@ -37,12 +37,11 @@ Complete API reference for the data table component.
 
 ### Footer & Menus
 
-| Prop                       | Type      | Default | Description                   |
-| -------------------------- | --------- | ------- | ----------------------------- |
-| `showFooterRow`            | `boolean` | `false` | Show footer row               |
-| `showColumnVisibilityMenu` | `boolean` | `false` | Show column visibility toggle |
-| `showColumnHeaderMenu`     | `boolean` | `false` | Show column header menus      |
-| showStatusBar              | oolean    | alse    | Show status bar (footer left) |
+| Prop                   | Type      | Default | Description                   |
+| ---------------------- | --------- | ------- | ----------------------------- |
+| `showFooterRow`        | `boolean` | `false` | Show footer row               |
+| `showColumnHeaderMenu` | `boolean` | `false` | Show column header menus      |
+| showStatusBar          | oolean    | alse    | Show status bar (footer left) |
 
 ### Keyboard & Navigation
 

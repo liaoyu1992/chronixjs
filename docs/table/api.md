@@ -37,12 +37,11 @@
 
 ### 底部与菜单
 
-| 属性                       | 类型      | 默认值  | 描述                      |
-| -------------------------- | --------- | ------- | ------------------------- |
-| `showFooterRow`            | `boolean` | `false` | 显示底部行                |
-| `showColumnVisibilityMenu` | `boolean` | `false` | 显示列可见性切换          |
-| `showColumnHeaderMenu`     | `boolean` | `false` | 显示列表头菜单            |
-| showStatusBar              | oolean    | alse    | 显示状态栏（footer 左侧） |
+| 属性                   | 类型      | 默认值  | 描述                      |
+| ---------------------- | --------- | ------- | ------------------------- |
+| `showFooterRow`        | `boolean` | `false` | 显示底部行                |
+| `showColumnHeaderMenu` | `boolean` | `false` | 显示列表头菜单            |
+| showStatusBar          | oolean    | alse    | 显示状态栏（footer 左侧） |
 
 ### 键盘与导航
 

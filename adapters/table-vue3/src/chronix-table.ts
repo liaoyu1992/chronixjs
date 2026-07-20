@@ -2169,21 +2169,6 @@ export const ChronixTable = defineComponent({
       default: false,
     },
     /**
-     * opt-in column visibility menu rendered in
-     * the top-right corner of the wrapper. Default `false`. When
-     * `true`, a button affordance opens a popover listing every column
-     * with per-column checkboxes + "全部显示" / "全部隐藏" actions. User
-     * toggles fire `column-visibility-change` with the new `hidden`
-     * value; consumer rebuilds the `columns` prop with the updated
-     * `hide` field per Decision A.1 (emit-only persistence). Programmatic
-     * `setColumnVisibility` / `toggleColumnVisibility` handle methods
-     * stay available regardless of this prop's value.
-     */
-    showColumnVisibilityMenu: {
-      type: Boolean,
-      default: false,
-    },
-    /**
      * opt-in cell-level keyboard navigation.
      * Default `false`. When `true`, the body's keydown handler
      * dispatches arrow keys / Home / End / PageUp / PageDown /
@@ -3007,15 +2992,6 @@ export const ChronixTable = defineComponent({
     // cellStyleHueDragRef but for the border-targeted HSV widget.
     const cellStyleBorderSquareDragRef = ref<boolean>(false);
     const cellStyleBorderHueDragRef = ref<boolean>(false);
-    // column-visibility-menu state.
-    // `columnMenuOpen` controls popover visibility; mount-time default
-    // is false. `columnMenuButtonRef` / `columnMenuPopoverRef` anchor
-    // the outside-click detection (clicks INSIDE these elements do not
-    // close the popover; clicks anywhere else do).
-    const columnMenuOpen = ref<boolean>(false);
-    const columnMenuButtonRef = ref<HTMLElement | null>(null);
-    const columnMenuPopoverRef = ref<HTMLElement | null>(null);
-    // ARIA keyboard nav menu container refs.
     // Each of the 4 menu surfaces (settings popover tabs + column header
     // menu + cell context menu + column-visibility menu) needs its
     // own container ref so `useMenuKeyboardNav` can scope its
@@ -3818,15 +3794,6 @@ export const ChronixTable = defineComponent({
       menuRef: cellContextMenuRef,
       items: cellContextMenuItems,
       isOpen: cellContextMenuIsOpen,
-    });
-
-    const columnVisibilityMenuItems = computed<readonly MenuKeyboardNavItem[]>(() =>
-      props.columns.map((col) => ({ id: col.id })),
-    );
-    const columnVisibilityMenuKbdNav = useMenuKeyboardNav({
-      menuRef: columnMenuPopoverRef,
-      items: columnVisibilityMenuItems,
-      isOpen: columnMenuOpen,
     });
 
     const serverSideRowsSynthesized = computed<readonly RowSpec[]>(() => {
@@ -7858,91 +7825,6 @@ export const ChronixTable = defineComponent({
       emit('column-visibility-change', { column: col, hidden, jsEvent });
     }
 
-    /**
-     * "全部显示" — iterate the columns and fire
-     * `column-visibility-change` for each previously-hidden column.
-     * Consumer's handler rebuilds the columns prop; one emit per
-     * column keeps the emit shape uniform per Decision A.1 (batched
-     * payload is parked per Out-of-scope). Skips already-visible
-     * columns so the consumer's batch rebuild only sees real
-     * transitions.
-     */
-    function applyShowAllColumns(jsEvent: Event | null): void {
-      for (const col of props.columns) {
-        if (col.hide === true) {
-          emit('column-visibility-change', { column: col, hidden: false, jsEvent });
-        }
-      }
-    }
-
-    /**
-     * "全部隐藏" — iterate the columns and fire
-     * `column-visibility-change` for each currently-visible column
-     * EXCEPT the FIRST visible column (which stays visible per
-     * Decision C.1 to keep virtualRowsPass + body render assumptions
-     * intact). One emit per actually-hidden column.
-     */
-    function applyHideAllColumns(jsEvent: Event | null): void {
-      let firstVisibleSkipped = false;
-      for (const col of props.columns) {
-        if (col.hide === true) continue;
-        if (!firstVisibleSkipped) {
-          firstVisibleSkipped = true;
-          continue;
-        }
-        emit('column-visibility-change', { column: col, hidden: true, jsEvent });
-      }
-    }
-
-    function onColumnMenuButtonClick(): void {
-      columnMenuOpen.value = !columnMenuOpen.value;
-    }
-
-    function onColumnCheckboxChange(colId: string, event: Event): void {
-      const target = event.target;
-      if (!(target instanceof HTMLInputElement)) return;
-      // Checkbox is checked = column visible; hidden is the inverse.
-      applyColumnVisibilityChange(colId, !target.checked, event);
-    }
-
-    function onShowAllColumnsClick(event: Event): void {
-      applyShowAllColumns(event);
-    }
-
-    function onHideAllColumnsClick(event: Event): void {
-      applyHideAllColumns(event);
-    }
-
-    /**
-     * document-level pointerdown listener — closes the popover
-     * when the user clicks outside the button + popover. Registered on
-     * mount, cleaned up on unmount. Uses `pointerdown` (not `click`) so
-     * the popover closes BEFORE the body's own click handlers see the
-     * event (matches Notion / Linear menu UX). Capturing phase is NOT
-     * needed — bubbling is sufficient because we test ancestry.
-     */
-    function onDocumentPointerdown(e: PointerEvent): void {
-      if (!columnMenuOpen.value) return;
-      const target = e.target;
-      if (!(target instanceof Element)) return;
-      const button = columnMenuButtonRef.value;
-      const popover = columnMenuPopoverRef.value;
-      if (button?.contains(target)) return;
-      if (popover?.contains(target)) return;
-      columnMenuOpen.value = false;
-    }
-
-    /**
-     * Escape inside the popover closes it. Body-scoped
-     * keydown rather than document-scoped so we don't accidentally
-     * swallow Escape elsewhere.
-     */
-    function onColumnMenuKeydown(e: KeyboardEvent): void {
-      if (e.key === 'Escape') {
-        columnMenuOpen.value = false;
-      }
-    }
-
     const handle: TableHandle = {
       getColumnTable(): ColumnTable {
         return columnTable.value;
@@ -8549,17 +8431,9 @@ export const ChronixTable = defineComponent({
 
     onMounted(() => {
       emit('table-ready', handle);
-      // register the document-level outside-
-      // click listener for the column-visibility-menu popover. Done at
-      // mount so a programmatic open via consumer code (e.g. when the
-      // menu is the only initial UI affordance) responds to outside
-      // clicks even before the user clicks the button.
-      document.addEventListener('pointerdown', onDocumentPointerdown);
     });
 
     onBeforeUnmount(() => {
-      // paired cleanup for the document-level listener.
-      document.removeEventListener('pointerdown', onDocumentPointerdown);
       // tear down the server-side row-source
       // session — aborts in-flight `getRows` + clears the block cache.
       tearDownServerSideSession();
@@ -9638,6 +9512,10 @@ export const ChronixTable = defineComponent({
         // + 8.1: per-column sort state for the indicator span.
         const column = columnTable.value.getById(cell.colId);
         const isSortable = column?.sortable !== false;
+        // actions columns are functional (row-action buttons), not data -
+        // they never sort, never show the column-header menu, and are not
+        // reorderable, regardless of the column-spec defaults.
+        const isActionsCol = column?.actions != null;
         // gate the resizer on column.resizable (default true).
         const isResizable = column?.resizable !== false;
         // gate the move handler on column.reorderable (default true).
@@ -9670,19 +9548,22 @@ export const ChronixTable = defineComponent({
               String(activeIndex + 1),
             )
           : null;
-        const indicatorNode: VNode = h(
-          'span',
-          {
-            class: [
-              'cx-table-sort-indicator',
-              direction != null && `cx-table-sort-indicator--${direction}`,
-            ]
-              .filter(Boolean)
-              .join(' '),
-            'data-sort-direction': direction ?? '',
-          },
-          positionNode != null ? [indicatorText, positionNode] : indicatorText,
-        );
+        const indicatorNode: VNode | null =
+          isSortable && !isActionsCol
+            ? h(
+                'span',
+                {
+                  class: [
+                    'cx-table-sort-indicator',
+                    direction != null && `cx-table-sort-indicator--${direction}`,
+                  ]
+                    .filter(Boolean)
+                    .join(' '),
+                  'data-sort-direction': direction ?? '',
+                },
+                positionNode != null ? [indicatorText, positionNode] : indicatorText,
+              )
+            : null;
         // pointer-capture resizer. Once
         // setPointerCapture is called on the resizer element, all
         // subsequent pointermove + pointerup events fire on THAT
@@ -9804,7 +9685,7 @@ export const ChronixTable = defineComponent({
         // sits between sort indicator + resizer. The menu popover is
         // hoisted to wrapper level to escape the cell's overflow:hidden.
         const columnHeaderMenuNodes: VNode[] = [];
-        if (props.showColumnHeaderMenu === true) {
+        if (props.showColumnHeaderMenu === true && !isActionsCol) {
           const isOpen = openColumnHeaderMenuColIdRef.value === cell.colId;
           columnHeaderMenuNodes.push(
             h(
@@ -9851,8 +9732,7 @@ export const ChronixTable = defineComponent({
         // actions is empty, only the icon is shown (no label).
         const toolPanelCfg = props.toolPanel;
         const colForSettings = columnTable.value.getById(cell.colId);
-        const isActionsColForSettings =
-          toolPanelCfg?.show === true && colForSettings?.actions != null;
+        const isActionsColForSettings = colForSettings?.actions != null;
         const settingsIconNode: VNode | null = isActionsColForSettings
           ? h(
               'button',
@@ -9904,10 +9784,10 @@ export const ChronixTable = defineComponent({
             key: `header-${cell.colId}`,
             class: [
               'cx-table-header-cell',
-              isSortable && 'cx-table-header-cell--sortable',
+              isSortable && !isActionsCol && 'cx-table-header-cell--sortable',
               direction != null && 'cx-table-header-cell--sorted',
               isResizingThis && 'cx-table-header-cell--resizing',
-              isReorderable && 'cx-table-header-cell--reorderable',
+              isReorderable && !isActionsCol && 'cx-table-header-cell--reorderable',
               isMovingThis && 'cx-table-header-cell--moving',
               isDropTargetBefore && 'cx-table-header-cell--drop-target-before',
               isDropTargetAfter && 'cx-table-header-cell--drop-target-after',
@@ -12449,154 +12329,6 @@ export const ChronixTable = defineComponent({
       // popover. Both are absolute-positioned overlays anchored to the
       // wrapper's top-right corner. The button is always present when
       // `showColumnVisibilityMenu` is true; the popover only mounts
-      // when `columnMenuOpen.value === true`. Clicking the button
-      // toggles `columnMenuOpen`; outside clicks close it (registered
-      // at mount via `onDocumentPointerdown`).
-      if (props.showColumnVisibilityMenu) {
-        const menuButton: VNode = h(
-          'button',
-          {
-            ref: (el: unknown) => {
-              columnMenuButtonRef.value = el as HTMLElement | null;
-            },
-            class: 'cx-table-column-menu-button',
-            type: 'button',
-            'aria-label': '列显隐',
-            'aria-haspopup': 'menu',
-            'aria-expanded': columnMenuOpen.value ? 'true' : 'false',
-            'data-column-menu-open': columnMenuOpen.value ? 'true' : 'false',
-            style: {
-              position: 'absolute',
-              top: '4px',
-              right: '4px',
-              zIndex: '5',
-              padding: '2px 8px',
-              fontSize: '14px',
-              lineHeight: '1.4',
-              background: 'var(--cx-table-header-bg, #f1f3f5)',
-              border: '1px solid var(--cx-table-header-border-color, #d9dde2)',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            },
-            onClick: onColumnMenuButtonClick,
-          },
-          '列',
-        );
-        children.push(menuButton);
-
-        if (columnMenuOpen.value) {
-          // roving tabindex over the checkbox list — input is
-          // the focusable element so `[data-menu-item-index]` lives on
-          // the input. The popover container has `tabindex: 0` (pre-
-          // Phase-84 behavior) so Tab still lands on the menu first;
-          // once focus enters the menu, Arrow/Home/End cycle checkboxes.
-          const colMenuActiveIdx = columnVisibilityMenuKbdNav.activeIndex.value;
-          const checkboxItems: VNode[] = props.columns.map((col, idx) => {
-            const isHidden = col.hide === true;
-            const label = col.headerName ?? col.field ?? col.id;
-            const isKbdActive = colMenuActiveIdx === idx;
-            return h(
-              'label',
-              {
-                key: `column-menu-item-${col.id}`,
-                class: 'cx-table-column-menu-item',
-                'data-col-id': col.id,
-                style: {
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '4px 8px',
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                },
-              },
-              [
-                h('input', {
-                  type: 'checkbox',
-                  class: 'cx-table-column-menu-checkbox',
-                  tabindex: isKbdActive ? 0 : -1,
-                  'data-col-id': col.id,
-                  'data-menu-item-index': String(idx),
-                  checked: !isHidden,
-                  onChange: (e: Event) => {
-                    onColumnCheckboxChange(col.id, e);
-                  },
-                }),
-                h('span', { class: 'cx-table-column-menu-label' }, label),
-              ],
-            );
-          });
-
-          const actionRow: VNode = h(
-            'div',
-            {
-              class: 'cx-table-column-menu-actions',
-              style: {
-                display: 'flex',
-                gap: '6px',
-                padding: '6px 8px',
-                borderBottom: '1px solid var(--cx-table-header-border-color, #d9dde2)',
-              },
-            },
-            [
-              h(
-                'button',
-                {
-                  type: 'button',
-                  class: 'cx-table-column-menu-action cx-table-column-menu-action--show-all',
-                  onClick: onShowAllColumnsClick,
-                },
-                '全部显示',
-              ),
-              h(
-                'button',
-                {
-                  type: 'button',
-                  class: 'cx-table-column-menu-action cx-table-column-menu-action--hide-all',
-                  onClick: onHideAllColumnsClick,
-                },
-                '全部隐藏',
-              ),
-            ],
-          );
-
-          const popover: VNode = h(
-            'div',
-            {
-              ref: (el: unknown) => {
-                columnMenuPopoverRef.value = el as HTMLElement | null;
-              },
-              class: 'cx-table-column-menu-popover',
-              role: 'menu',
-              tabindex: 0,
-              // chain existing Escape handler with the new
-              // arrow-key nav from `useMenuKeyboardNav`. Both check
-              // their own keys + early-return on no-match so they
-              // compose without conflict.
-              onKeydown: (e: KeyboardEvent) => {
-                onColumnMenuKeydown(e);
-                columnVisibilityMenuKbdNav.handleKeydown(e);
-              },
-              style: {
-                position: 'absolute',
-                top: '36px',
-                right: '4px',
-                zIndex: '5',
-                minWidth: '160px',
-                maxHeight: '320px',
-                overflowY: 'auto',
-                background: '#ffffff',
-                border: '1px solid var(--cx-table-header-border-color, #d9dde2)',
-                borderRadius: '4px',
-                boxShadow: '0 2px 8px rgba(15, 23, 42, 0.12)',
-                padding: '4px 0',
-              },
-            },
-            [actionRow, ...checkboxItems],
-          );
-          children.push(popover);
-        }
-      }
 
       // drop-line overlay for column-move drag.
       // Rendered as an absolute-positioned 2px-wide line spanning the
