@@ -39,7 +39,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.9",
+    "@changesets/cli": "^2.31.1",
     "@chronixjs/eslint-config": "workspace:*",
     "@chronixjs/stylelint-config": "workspace:*",
     "@types/node": "^26.1.1",
