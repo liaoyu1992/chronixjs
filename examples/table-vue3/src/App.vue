@@ -1097,13 +1097,13 @@ const mockServerSideDataSource: ServerSideDataSource = {
   },
 };
 const rowModelType = ref<'clientSide' | 'serverSide'>('serverSide');
-// demo wiring: paginationEnabled toggle for
+// demo wiring: showPagination toggle for
 // server-side mode. When ON, pageSize OVERRIDES cacheBlockSize (page N
 // maps 1:1 to block N). Default OFF to preserve the original
 // demo behavior.
-const serverSidePaginationEnabled = ref<boolean>(false);
+const serverSideshowPagination = ref<boolean>(false);
 function onToggleServerSidePagination(): void {
-  serverSidePaginationEnabled.value = !serverSidePaginationEnabled.value;
+  serverSideshowPagination.value = !serverSideshowPagination.value;
 }
 // demo wiring: invalidate block 0 only —
 // preserves totalRowCount + other blocks + lets the SFC re-fetch block 0
@@ -1427,7 +1427,7 @@ function onColumnHeaderMenuAction(payload: {
           :selection-column="{ show: true, side: 'left' }"
           :row-drag-column="{ show: true, side: 'left' }"
           @row-order-change="onRowOrderChange"
-          :pagination-enabled="true"
+          :show-pagination="true"
           :initial-page-size="20"
           cell-range-selection="enabled"
           :enable-undo-history="true"
@@ -1569,7 +1569,7 @@ function onColumnHeaderMenuAction(payload: {
               data-testid="server-side-pagination-toggle"
               @click="onToggleServerSidePagination"
             >
-              Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }}
+              Pagination: {{ serverSideshowPagination ? 'ON' : 'OFF' }}
             </button>
             <button
               type="button"
@@ -1587,7 +1587,7 @@ function onColumnHeaderMenuAction(payload: {
           :rows="[]"
           :row-model-type="rowModelType"
           :server-side-data-source="mockServerSideDataSource"
-          :pagination-enabled="serverSidePaginationEnabled"
+          :show-pagination="serverSideshowPagination"
           :initial-page-size="25"
           :show-filter-row="true"
         />

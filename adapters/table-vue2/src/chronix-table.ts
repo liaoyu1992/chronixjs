@@ -332,7 +332,7 @@ export interface TableHandle {
   setPageSize(pageSize: number): void;
   /**
    * read the total page count after filter + sort + page.
-   * `1` when paginationEnabled is `false`; `0` when paginated and
+   * `1` when showPagination is `false`; `0` when paginated and
    * the filtered row set is empty; otherwise `Math.ceil(rows /
    * pageSize)`.
    */
@@ -1848,7 +1848,7 @@ export const ChronixTable = defineComponent({
      * is configured with `pageSize: 0` (passthrough) so the body
      * sees the full row set. Verbatim port of vue3 prop.
      */
-    paginationEnabled: {
+    showPagination: {
       type: Boolean,
       default: false,
     },
@@ -2474,7 +2474,7 @@ export const ChronixTable = defineComponent({
     const selectionAnchorRef = ref<string | null>(null);
 
     // internal pagination state. Always
-    // tracked even when `paginationEnabled` is false — the latter
+    // tracked even when `showPagination` is false — the latter
     // only controls whether pagePass receives a non-zero pageSize
     // (turning the pass into the passthrough state) + whether the
     // footer renders. `currentPageRef` is 0-based; the footer
@@ -2482,9 +2482,7 @@ export const ChronixTable = defineComponent({
     // numbering. Verbatim port of vue3 .
     const currentPageRef = ref<number>(0);
     const currentPageSizeRef = ref<number>(props.initialPageSize);
-    const effectivePageSize = computed(() =>
-      props.paginationEnabled ? currentPageSizeRef.value : 0,
-    );
+    const effectivePageSize = computed(() => (props.showPagination ? currentPageSizeRef.value : 0));
 
     // in-flight edit state. Only ONE cell at a
     // time can be in edit mode; opening an edit on a different cell
@@ -2710,8 +2708,8 @@ export const ChronixTable = defineComponent({
     function setUpServerSideSession(source: ServerSideDataSource): void {
       tearDownServerSideSession();
       // (2026-05-30 — vue2 port): pageSize OVERRIDES
-      // cacheBlockSize when paginationEnabled. Verbatim mirror of vue3.
-      const usePageSizeAsBlockSize = props.paginationEnabled;
+      // cacheBlockSize when showPagination. Verbatim mirror of vue3.
+      const usePageSizeAsBlockSize = props.showPagination;
       const effectiveBlockSize = usePageSizeAsBlockSize
         ? currentPageSizeRef.value
         : props.cacheBlockSize;
@@ -2721,7 +2719,7 @@ export const ChronixTable = defineComponent({
         typeof console !== 'undefined'
       ) {
         console.warn(
-          '[chronix-table] rowModelType:"serverSide" + paginationEnabled:true: cacheBlockSize prop is ignored; pageSize is used as the block size (A.1). Remove cacheBlockSize to silence this warning.',
+          '[chronix-table] rowModelType:"serverSide" + showPagination:true: cacheBlockSize prop is ignored; pageSize is used as the block size (A.1). Remove cacheBlockSize to silence this warning.',
         );
       }
       const session = createServerSideRowSource(source, {
@@ -2745,8 +2743,8 @@ export const ChronixTable = defineComponent({
         () => props.serverSideDataSource,
         () => props.cacheBlockSize,
         () => props.serverSideMaxBlocksInCache,
-        () => props.paginationEnabled,
-        () => (props.paginationEnabled ? currentPageSizeRef.value : 0),
+        () => props.showPagination,
+        () => (props.showPagination ? currentPageSizeRef.value : 0),
       ] as const,
       ([mode, source]) => {
         if (mode !== 'serverSide' || source == null) {
@@ -3088,9 +3086,9 @@ export const ChronixTable = defineComponent({
       if (total <= 0) return [];
       const blockSize = session.cacheBlockSize;
       // (2026-05-30 — vue2 port) Decision B.1: when
-      // paginationEnabled, allocate ONLY the current page's rows.
+      // showPagination, allocate ONLY the current page's rows.
       // Verbatim mirror of vue3.
-      if (props.paginationEnabled) {
+      if (props.showPagination) {
         const pageSize = currentPageSizeRef.value;
         const totalPages = Math.max(1, Math.ceil(total / pageSize));
         const page = Math.min(Math.max(0, currentPageRef.value), totalPages - 1);
@@ -3137,7 +3135,7 @@ export const ChronixTable = defineComponent({
     watch(
       [
         () => props.rowModelType,
-        () => props.paginationEnabled,
+        () => props.showPagination,
         () => bodyScrollTop.value,
         () => bodyClientHeight.value,
         () => mergedTheme.value.rowHeight,
@@ -3192,9 +3190,9 @@ export const ChronixTable = defineComponent({
     );
 
     // (2026-05-30 — vue2 port) Decision B.1: footer values
-    // for serverSide + paginationEnabled mode. Verbatim mirror of vue3.
+    // for serverSide + showPagination mode. Verbatim mirror of vue3.
     const serverSidePaginationActive = computed(
-      () => props.rowModelType === 'serverSide' && props.paginationEnabled,
+      () => props.rowModelType === 'serverSide' && props.showPagination,
     );
     const serverSideTotalRowsForFooter = computed(() => {
       if (!serverSidePaginationActive.value) return 0;
@@ -4685,7 +4683,7 @@ export const ChronixTable = defineComponent({
      * already on page 0. The pageSize is preserved.
      */
     function resetPageToFirstIfPaginated(): void {
-      if (!props.paginationEnabled) return;
+      if (!props.showPagination) return;
       if (currentPageRef.value === 0) return;
       applyPage(0, currentPageSizeRef.value);
     }
@@ -6660,7 +6658,7 @@ export const ChronixTable = defineComponent({
         // Read from the pass output (post-clamp) so consumers always
         // see the legal page index. Pre-mount or pagination-disabled
         // → 0. (2026-05-30 — vue2 port): serverSide+
-        // paginationEnabled reads from the session-derived computed.
+        // showPagination reads from the session-derived computed.
         if (serverSidePaginationActive.value) return serverSideCurrentPageForFooter.value;
         return currentPageFromPass.value;
       },
@@ -10758,224 +10756,234 @@ export const ChronixTable = defineComponent({
         ],
       );
 
-      // opt-in pagination footer rendered
-      // below the body. Layout: prev button + page info (1-based for
-      // human reading) + next button on the left; rows total text +
-      // page-size <select> on the right. Buttons disable at boundaries;
-      // the <select> renders `pageSizeOptions` and routes change events
-      // through `setPageSize`. The component always exposes the
-      // (2026-05-28 — vue2 port): opt-in status bar. Verbatim
-      // port of vue3 . Vue 2.7 ctx.slots['status-bar'] returns
-      // a slot factory; invoke with `{counts}` to get the VNode array.
-      const statusBar: VNode | null = props.showStatusBar
-        ? (() => {
-            const counts: StatusBarCounts = {
-              total: props.rows.length,
-              filtered: filteredRows.value.length,
-              selected: selectedRowIdsSet.value.size,
-              page: currentPageRef.value,
-              pageSize: currentPageSizeRef.value,
-            };
-            const slot = ctx.slots['status-bar'];
-            const inner: VNode | string | (VNode | string)[] =
-              slot != null ? slot({ counts }) : defaultStatusBarText(counts);
-            return h(
-              'div',
-              {
-                class: 'cx-table-status-bar',
-                attrs: {
-                  role: 'status',
-                  'aria-live': 'polite',
-                  'data-testid': 'cx-status-bar',
-                },
-                style: {
-                  height: `${t.statusBarHeight}px`,
-                  background: 'var(--cx-table-status-bar-bg, #f4f6f8)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  paddingLeft: `${t.cellPaddingX}px`,
-                  paddingRight: `${t.cellPaddingX}px`,
-                  fontSize: '12px',
-                  color: '#3a414a',
-                  borderTop: `1px solid var(--cx-table-row-divider-color, #eceff2)`,
-                },
-              },
-              Array.isArray(inner) ? inner : [inner],
-            );
-          })()
-        : null;
+      // merged footer row: status area (left) + pagination cluster (right).
+      // Shown when either `showStatusBar` or `showPagination` is on; when
+      // both are off the entire footer is omitted. The two clusters are
+      // siblings (not nested) so `role="status"` + `role="navigation"`
+      // stay in separate subtrees under the neutral `role="group"` root.
+      // Verbatim port of vue3 footer; vue2 vnode-data deltas:
+      // attrs:{...} for HTML attrs, domProps:{value} for <select>,
+      // on:{click|change} for event handlers.
+      const footerBar: VNode | null =
+        props.showStatusBar || props.showPagination
+          ? (() => {
+              // --- left: status area ---
+              const statusArea: VNode | null = props.showStatusBar
+                ? (() => {
+                    const counts: StatusBarCounts = {
+                      total: props.rows.length,
+                      filtered: filteredRows.value.length,
+                      selected: selectedRowIdsSet.value.size,
+                      page: currentPageRef.value,
+                      pageSize: currentPageSizeRef.value,
+                    };
+                    // Vue 2.7 ctx.slots['status-bar'] returns a slot
+                    // factory; invoke with `{counts}` to get the VNode array.
+                    const slot = ctx.slots['status-bar'];
+                    const inner: VNode | string | (VNode | string)[] =
+                      slot != null ? slot({ counts }) : defaultStatusBarText(counts);
+                    return h(
+                      'div',
+                      {
+                        class: 'cx-table-pagination-status cx-table-status-bar',
+                        attrs: {
+                          role: 'status',
+                          'aria-live': 'polite',
+                          'data-testid': 'cx-status-bar',
+                        },
+                      },
+                      Array.isArray(inner) ? inner : [inner],
+                    );
+                  })()
+                : null;
 
-      // pagination handle methods even when this footer is suppressed
-      // (programmatic control still works). Verbatim port of vue3
-      // footer; vue2 vnode-data deltas: attrs:{disabled,type}
-      // for <button>, domProps:{value} for <select>, on:{click|change}
-      // for handlers.
-      const paginationFooter: VNode | null = props.paginationEnabled
-        ? (() => {
-            // (2026-05-30 — vue2 port) Decision B.1:
-            // serverSide+paginationEnabled reads totals from the
-            // session-derived computeds directly. Verbatim mirror of vue3.
-            const cp = serverSidePaginationActive.value
-              ? serverSideCurrentPageForFooter.value
-              : currentPageFromPass.value;
-            const tp = serverSidePaginationActive.value
-              ? serverSideTotalPagesForFooter.value
-              : totalPagesFromPass.value;
-            const ps = currentPageSizeRef.value;
-            const totalRows = serverSidePaginationActive.value
-              ? serverSideTotalRowsForFooter.value
-              : totalRowsAcrossPages.value;
-            // Last valid page is tp-1; when tp=0 (empty), both ends
-            // are disabled (no navigation makes sense).
-            const atFirst = tp === 0 || cp <= 0;
-            const atLast = tp === 0 || cp >= tp - 1;
-            // Display 1-based per vue3 Decision B; empty
-            // dataset shows "0 / 0" so users see the empty state.
-            const humanCurrent = tp === 0 ? 0 : cp + 1;
-            const humanTotal = tp;
-            const prevBtn: VNode = h(
-              'button',
-              {
-                class: 'cx-table-pagination-button cx-table-pagination-button--prev',
-                attrs: {
-                  type: 'button',
-                  'aria-label': 'Previous page',
-                  disabled: atFirst,
-                },
-                on: {
-                  click: () => {
-                    if (atFirst) return;
-                    applyPage(cp - 1, ps);
-                  },
-                },
-              },
-              '«',
-            );
-            const nextBtn: VNode = h(
-              'button',
-              {
-                class: 'cx-table-pagination-button cx-table-pagination-button--next',
-                attrs: {
-                  type: 'button',
-                  'aria-label': 'Next page',
-                  disabled: atLast,
-                },
-                on: {
-                  click: () => {
-                    if (atLast) return;
-                    applyPage(cp + 1, ps);
-                  },
-                },
-              },
-              '»',
-            );
-            // page-number bar — replaces the
-            // "第 N / M 页" info text with an ellipsis-aware
-            // list of clickable page buttons. Empty for tp === 0 (no
-            // pages to show; the bar collapses to just prev/next which
-            // are both disabled). Verbatim port of vue3; vue2
-            // vnode-data deltas: attrs:{...} for button HTML attrs with
-            // a mutable Record build for conditional aria-current;
-            // attrs:{'aria-hidden': 'true'} for ellipsis; on:{click}.
-            const visiblePages = computeVisiblePageNumbers(
-              cp,
-              tp,
-              props.paginationSiblingCount,
-              props.paginationBoundaryCount,
-            );
-            const pageBarChildren: VNode[] = visiblePages.map((el, idx) => {
-              if (el === 'ellipsis') {
-                return h(
-                  'span',
-                  {
-                    key: `ellipsis-${idx}`,
-                    class: 'cx-table-pagination-ellipsis',
-                    attrs: { 'aria-hidden': 'true' },
-                  },
-                  '…',
-                );
-              }
-              const isCurrent = el === cp;
-              const pageBtnAttrs: Record<string, string | number | boolean> = {
-                type: 'button',
-                'aria-label': `Go to page ${el + 1}`,
-                'data-page-index': String(el),
-                disabled: isCurrent,
-              };
-              if (isCurrent) pageBtnAttrs['aria-current'] = 'page';
+              // --- right: pagination cluster (nav + meta) ---
+              // The calc logic below is preserved verbatim from the
+              // legacy `paginationFooter` block; only the outer wrapper
+              // changed.
+              const cluster: VNode | null = props.showPagination
+                ? (() => {
+                    // (2026-05-30 - vue2 port) Decision B.1:
+                    // serverSide+showPagination reads totals from the
+                    // session-derived computeds directly. Verbatim mirror of vue3.
+                    const cp = serverSidePaginationActive.value
+                      ? serverSideCurrentPageForFooter.value
+                      : currentPageFromPass.value;
+                    const tp = serverSidePaginationActive.value
+                      ? serverSideTotalPagesForFooter.value
+                      : totalPagesFromPass.value;
+                    const ps = currentPageSizeRef.value;
+                    const totalRows = serverSidePaginationActive.value
+                      ? serverSideTotalRowsForFooter.value
+                      : totalRowsAcrossPages.value;
+                    // Last valid page is tp-1; when tp=0 (empty), both ends
+                    // are disabled (no navigation makes sense).
+                    const atFirst = tp === 0 || cp <= 0;
+                    const atLast = tp === 0 || cp >= tp - 1;
+                    // Display 1-based per vue3 Decision B; empty
+                    // dataset shows "0 / 0" so users see the empty state.
+                    const humanCurrent = tp === 0 ? 0 : cp + 1;
+                    const humanTotal = tp;
+                    const prevBtn: VNode = h(
+                      'button',
+                      {
+                        class: 'cx-table-pagination-button cx-table-pagination-button--prev',
+                        attrs: {
+                          type: 'button',
+                          'aria-label': 'Previous page',
+                          disabled: atFirst,
+                        },
+                        on: {
+                          click: () => {
+                            if (atFirst) return;
+                            applyPage(cp - 1, ps);
+                          },
+                        },
+                      },
+                      '«',
+                    );
+                    const nextBtn: VNode = h(
+                      'button',
+                      {
+                        class: 'cx-table-pagination-button cx-table-pagination-button--next',
+                        attrs: {
+                          type: 'button',
+                          'aria-label': 'Next page',
+                          disabled: atLast,
+                        },
+                        on: {
+                          click: () => {
+                            if (atLast) return;
+                            applyPage(cp + 1, ps);
+                          },
+                        },
+                      },
+                      '»',
+                    );
+                    // page-number bar - replaces the
+                    // "第 N / M 页" info text with an ellipsis-aware
+                    // list of clickable page buttons. Empty for tp === 0 (no
+                    // pages to show; the bar collapses to just prev/next which
+                    // are both disabled). Verbatim port of vue3; vue2
+                    // vnode-data deltas: attrs:{...} for button HTML attrs with
+                    // a mutable Record build for conditional aria-current;
+                    // attrs:{'aria-hidden': 'true'} for ellipsis; on:{click}.
+                    const visiblePages = computeVisiblePageNumbers(
+                      cp,
+                      tp,
+                      props.paginationSiblingCount,
+                      props.paginationBoundaryCount,
+                    );
+                    const pageBarChildren: VNode[] = visiblePages.map((el, idx) => {
+                      if (el === 'ellipsis') {
+                        return h(
+                          'span',
+                          {
+                            key: `ellipsis-${idx}`,
+                            class: 'cx-table-pagination-ellipsis',
+                            attrs: { 'aria-hidden': 'true' },
+                          },
+                          '…',
+                        );
+                      }
+                      const isCurrent = el === cp;
+                      const pageBtnAttrs: Record<string, string | number | boolean> = {
+                        type: 'button',
+                        'aria-label': `Go to page ${el + 1}`,
+                        'data-page-index': String(el),
+                        disabled: isCurrent,
+                      };
+                      if (isCurrent) pageBtnAttrs['aria-current'] = 'page';
+                      return h(
+                        'button',
+                        {
+                          key: `page-${el}`,
+                          class: isCurrent
+                            ? 'cx-table-pagination-page cx-table-pagination-page--current'
+                            : 'cx-table-pagination-page',
+                          attrs: pageBtnAttrs,
+                          on: {
+                            click: () => {
+                              if (isCurrent) return;
+                              applyPage(el, ps);
+                            },
+                          },
+                        },
+                        String(el + 1),
+                      );
+                    });
+                    const pageInfo: VNode = h(
+                      'div',
+                      {
+                        class: 'cx-table-pagination-pages',
+                        attrs: {
+                          'data-current-page': String(cp),
+                          'data-total-pages': String(tp),
+                          role: 'group',
+                          'aria-label': `Page ${humanCurrent} of ${humanTotal}`,
+                        },
+                      },
+                      pageBarChildren,
+                    );
+                    const sizeSelect: VNode = h(
+                      'select',
+                      {
+                        class: 'cx-table-pagination-size-select',
+                        attrs: { 'aria-label': 'Rows per page' },
+                        domProps: { value: ps },
+                        on: {
+                          change: (e: Event) => {
+                            const target = e.target as HTMLSelectElement;
+                            const nextSize = Number(target.value);
+                            if (Number.isFinite(nextSize) && nextSize > 0) {
+                              applyPage(currentPageRef.value, nextSize);
+                            }
+                          },
+                        },
+                      },
+                      props.pageSizeOptions.map((opt) =>
+                        h('option', { key: `size-${opt}`, attrs: { value: opt } }, `${opt} 行/页`),
+                      ),
+                    );
+                    const sizeWrap: VNode = h('label', { class: 'cx-table-pagination-size' }, [
+                      h('span', { class: 'cx-table-pagination-size-label' }, '每页 '),
+                      sizeSelect,
+                    ]);
+                    // The "共 N 行" total label is shown only when the
+                    // status area is NOT rendered - otherwise the status
+                    // bar already surfaces the full row-count summary and
+                    // the label would be a duplicate.
+                    const totalLabel: VNode | null = props.showStatusBar
+                      ? null
+                      : h('span', { class: 'cx-table-pagination-total' }, `共 ${totalRows} 行`);
+                    return h(
+                      'div',
+                      {
+                        class: 'cx-table-pagination-cluster',
+                        attrs: { role: 'navigation', 'aria-label': '分页' },
+                      },
+                      [
+                        h('div', { class: 'cx-table-pagination-nav' }, [
+                          prevBtn,
+                          pageInfo,
+                          nextBtn,
+                        ]),
+                        h('div', { class: 'cx-table-pagination-meta' }, [totalLabel, sizeWrap]),
+                      ],
+                    );
+                  })()
+                : null;
+
               return h(
-                'button',
+                'div',
                 {
-                  key: `page-${el}`,
-                  class: isCurrent
-                    ? 'cx-table-pagination-page cx-table-pagination-page--current'
-                    : 'cx-table-pagination-page',
-                  attrs: pageBtnAttrs,
-                  on: {
-                    click: () => {
-                      if (isCurrent) return;
-                      applyPage(el, ps);
-                    },
-                  },
+                  class: 'cx-table-pagination',
+                  attrs: { role: 'group', 'aria-label': '表格底栏' },
                 },
-                String(el + 1),
+                [statusArea, cluster],
               );
-            });
-            const pageInfo: VNode = h(
-              'div',
-              {
-                class: 'cx-table-pagination-pages',
-                attrs: {
-                  'data-current-page': String(cp),
-                  'data-total-pages': String(tp),
-                  role: 'group',
-                  'aria-label': `Page ${humanCurrent} of ${humanTotal}`,
-                },
-              },
-              pageBarChildren,
-            );
-            const sizeSelect: VNode = h(
-              'select',
-              {
-                class: 'cx-table-pagination-size-select',
-                attrs: { 'aria-label': 'Rows per page' },
-                domProps: { value: ps },
-                on: {
-                  change: (e: Event) => {
-                    const target = e.target as HTMLSelectElement;
-                    const nextSize = Number(target.value);
-                    if (Number.isFinite(nextSize) && nextSize > 0) {
-                      applyPage(currentPageRef.value, nextSize);
-                    }
-                  },
-                },
-              },
-              props.pageSizeOptions.map((opt) =>
-                h('option', { key: `size-${opt}`, attrs: { value: opt } }, `${opt} 行/页`),
-              ),
-            );
-            const sizeWrap: VNode = h('label', { class: 'cx-table-pagination-size' }, [
-              h('span', { class: 'cx-table-pagination-size-label' }, '每页 '),
-              sizeSelect,
-            ]);
-            const totalLabel: VNode = h(
-              'span',
-              { class: 'cx-table-pagination-total' },
-              `共 ${totalRows} 行`,
-            );
-            return h(
-              'div',
-              {
-                class: 'cx-table-pagination',
-                attrs: { role: 'navigation', 'aria-label': 'Pagination' },
-              },
-              [
-                h('div', { class: 'cx-table-pagination-nav' }, [prevBtn, pageInfo, nextBtn]),
-                h('div', { class: 'cx-table-pagination-meta' }, [totalLabel, sizeWrap]),
-              ],
-            );
-          })()
-        : null;
+            })()
+          : null;
 
       // inline CSS custom properties on the wrapper so the
       // theme reaches descendant CSS via `var(--cx-table-*, fallback)`.
@@ -10992,8 +11000,7 @@ export const ChronixTable = defineComponent({
       const children: VNode[] = [header];
       if (filterRow != null) children.push(filterRow);
       children.push(body);
-      if (statusBar != null) children.push(statusBar);
-      if (paginationFooter != null) children.push(paginationFooter);
+      if (footerBar != null) children.push(footerBar);
 
       // (2026-05-27 — vue2 port of vue3): opt-in
       // column-visibility-menu button + popover. Both are absolute-

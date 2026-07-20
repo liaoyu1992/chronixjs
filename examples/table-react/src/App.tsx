@@ -215,7 +215,7 @@ const NOTE_CYCLE = [
 // (vue3): 50 rows so virtualization actually
 // exercises in the demo (totalBodyHeight = 50 × 28 = 1400px;
 // viewport ~320px shows ~11 rows + overscan at a time).
-// (vue3): paginationEnabled + initialPageSize=20
+// (vue3): showPagination + initialPageSize=20
 // reshapes the 50-row dataset into 3 pages × 20 rows + last partial.
 // each row carries a `price` field in 0.9..99.5 range
 // so the number editor exercises float coercion.
@@ -1481,7 +1481,7 @@ export function App(): ReactElement {
             enableKeyboardAutoScroll={enableAutoScroll}
             selectionMode="multi"
             selectionColumn={{ show: true, side: 'left' }}
-            paginationEnabled
+            showPagination
             initialPageSize={20}
             cellRangeSelection="enabled"
             enableUndoHistory={true}
@@ -1653,7 +1653,7 @@ export function App(): ReactElement {
             rows={[]}
             rowModelType={rowModelType}
             serverSideDataSource={mockServerSideDataSource}
-            paginationEnabled={serverSidePaginationEnabled}
+            showPagination={serverSidePaginationEnabled}
             initialPageSize={25}
             showFilterRow
             data-testid="server-side-table"

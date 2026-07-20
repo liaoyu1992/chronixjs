@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { defaultStatusBarText } from './default-status-bar-text.js';
 
 describe('defaultStatusBarText', () => {
-  it('renders just total when nothing selected + no filter', () => {
+  it('renders all three segments with zero selection + no filter', () => {
     const out = defaultStatusBarText({
       total: 50,
       filtered: 50,
@@ -11,10 +11,10 @@ describe('defaultStatusBarText', () => {
       page: 0,
       pageSize: 0,
     });
-    expect(out).toBe('50 行');
+    expect(out).toBe('共 50 行，已选 0 行，筛选 50 行');
   });
 
-  it('includes selected segment when selected > 0', () => {
+  it('reflects selected count in the 已选 segment', () => {
     const out = defaultStatusBarText({
       total: 50,
       filtered: 50,
@@ -22,10 +22,10 @@ describe('defaultStatusBarText', () => {
       page: 0,
       pageSize: 0,
     });
-    expect(out).toBe('50 行 · 已选 3');
+    expect(out).toBe('共 50 行，已选 3 行，筛选 50 行');
   });
 
-  it('includes filtered segment when filtered != total', () => {
+  it('reflects filtered count in the 筛选 segment', () => {
     const out = defaultStatusBarText({
       total: 50,
       filtered: 12,
@@ -33,10 +33,10 @@ describe('defaultStatusBarText', () => {
       page: 0,
       pageSize: 0,
     });
-    expect(out).toBe('50 行 · 过滤后 12');
+    expect(out).toBe('共 50 行，已选 0 行，筛选 12 行');
   });
 
-  it('shows both selected + filtered segments when both active', () => {
+  it('shows all three segments populated', () => {
     const out = defaultStatusBarText({
       total: 50,
       filtered: 12,
@@ -44,7 +44,7 @@ describe('defaultStatusBarText', () => {
       page: 0,
       pageSize: 0,
     });
-    expect(out).toBe('50 行 · 已选 3 · 过滤后 12');
+    expect(out).toBe('共 50 行，已选 3 行，筛选 12 行');
   });
 
   it('handles zero-row case', () => {
@@ -55,7 +55,7 @@ describe('defaultStatusBarText', () => {
       page: 0,
       pageSize: 0,
     });
-    expect(out).toBe('0 行');
+    expect(out).toBe('共 0 行，已选 0 行，筛选 0 行');
   });
 
   it('ignores page + pageSize (not part of the default text)', () => {
@@ -66,6 +66,6 @@ describe('defaultStatusBarText', () => {
       page: 2,
       pageSize: 20,
     });
-    expect(out).toBe('50 行');
+    expect(out).toBe('共 50 行，已选 0 行，筛选 50 行');
   });
 });

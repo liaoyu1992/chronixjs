@@ -1379,14 +1379,14 @@ describe('<ChronixTable> (react) — pagination base', () => {
     expect(container.querySelector('.cx-table-pagination')).toBeNull();
   });
 
-  it('paginationEnabled renders footer + buttons + page-size select', () => {
+  it('showPagination renders footer + buttons + page-size select', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
       />,
     );
@@ -1407,7 +1407,7 @@ describe('<ChronixTable> (react) — pagination base', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
         onPageChange={onPage}
       />,
@@ -1424,7 +1424,7 @@ describe('<ChronixTable> (react) — pagination base', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
         onPageChange={onPage}
       />,
@@ -1439,7 +1439,7 @@ describe('<ChronixTable> (react) — pagination base', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
       />,
     );
@@ -1449,7 +1449,7 @@ describe('<ChronixTable> (react) — pagination base', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
       />,
     );
@@ -1461,7 +1461,7 @@ describe('<ChronixTable> (react) — pagination base', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
       />,
     );
@@ -1478,7 +1478,7 @@ describe('<ChronixTable> (react) — pagination base', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
         onPageChange={onPage}
       />,
@@ -1498,7 +1498,7 @@ describe('<ChronixTable> (react) — pagination base', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
         onPageChange={onPage}
       />,
@@ -1518,7 +1518,7 @@ describe('<ChronixTable> (react).1 page-number bar', () => {
       <ChronixTable
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
       />,
     );
@@ -1542,7 +1542,7 @@ describe('<ChronixTable> (react).1 page-number bar', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={manyRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
       />,
     );
@@ -1552,7 +1552,7 @@ describe('<ChronixTable> (react).1 page-number bar', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={manyRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
       />,
     );
@@ -1567,7 +1567,7 @@ describe('<ChronixTable> (react).1 page-number bar', () => {
         ref={handleRef}
         columns={paginationColumns}
         rows={paginationRows}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
         onPageChange={onPage}
       />,
@@ -5295,7 +5295,7 @@ describe('saved table views (react)', () => {
         ref={handleRef}
         columns={viewColumns}
         rows={viewRows}
-        paginationEnabled
+        showPagination
         initialPageSize={20}
       />,
     );
@@ -5316,7 +5316,7 @@ describe('saved table views (react)', () => {
         ref={handleRef}
         columns={viewColumns}
         rows={viewRows}
-        paginationEnabled
+        showPagination
         initialPageSize={20}
       />,
     );
@@ -8877,7 +8877,7 @@ describe('+ 45.2: server-side refinements (react)', () => {
     return { source, calls };
   }
 
-  it('45.1: paginationEnabled + serverSide mounts without throwing (react)', () => {
+  it('45.1: showPagination + serverSide mounts without throwing (react)', () => {
     const { source, calls } = makeControlledSource();
     const { container } = render(
       <ChronixTable
@@ -8885,7 +8885,7 @@ describe('+ 45.2: server-side refinements (react)', () => {
         rows={[]}
         rowModelType="serverSide"
         serverSideDataSource={source}
-        paginationEnabled
+        showPagination
         initialPageSize={25}
       />,
     );
@@ -8905,7 +8905,7 @@ describe('+ 45.2: server-side refinements (react)', () => {
         rows={[]}
         rowModelType="serverSide"
         serverSideDataSource={source}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
       />,
     );
@@ -8924,7 +8924,7 @@ describe('+ 45.2: server-side refinements (react)', () => {
         rows={[]}
         rowModelType="serverSide"
         serverSideDataSource={source}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
         onPageChange={(p) => events.push(p)}
       />,
@@ -9029,7 +9029,7 @@ describe('+ 45.4: viewport-driven dispatch + bootstrap (react)', () => {
         rows={[]}
         rowModelType="serverSide"
         serverSideDataSource={source}
-        paginationEnabled
+        showPagination
         initialPageSize={25}
       />,
     );
@@ -9073,7 +9073,7 @@ describe('+ 45.4: viewport-driven dispatch + bootstrap (react)', () => {
         rows={[]}
         rowModelType="serverSide"
         serverSideDataSource={source}
-        paginationEnabled
+        showPagination
         initialPageSize={25}
       />,
     );
@@ -9269,7 +9269,7 @@ describe('server-side anticipatory prefetch (react)', () => {
     expect(postBumpNew).toBeLessThanOrEqual(1);
   });
 
-  it('45.5: paginationEnabled=true ignores serverSidePrefetchAheadBlocks prop (react)', async () => {
+  it('45.5: showPagination=true ignores serverSidePrefetchAheadBlocks prop (react)', async () => {
     const { source, calls } = makeControlledSource();
     const { container } = render(
       <ChronixTable
@@ -9277,7 +9277,7 @@ describe('server-side anticipatory prefetch (react)', () => {
         rows={[]}
         rowModelType="serverSide"
         serverSideDataSource={source}
-        paginationEnabled
+        showPagination
         initialPageSize={10}
         serverSidePrefetchAheadBlocks={5}
       />,

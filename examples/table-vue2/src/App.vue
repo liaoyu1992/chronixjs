@@ -531,8 +531,8 @@ export default defineComponent({
       lazyLoadCounts: { start: 0, success: 0, error: 0 },
       // (2026-05-29 — vue2 port): server-side row model mode.
       rowModelType: 'serverSide' as 'clientSide' | 'serverSide',
-      // (2026-05-30 — vue2 port): paginationEnabled toggle.
-      serverSidePaginationEnabled: false as boolean,
+      // (2026-05-30 — vue2 port): showPagination toggle.
+      serverSideshowPagination: false as boolean,
       // (2026-05-30 — vue2 port): Tier 3 finale demo data.
       tier3Counter: {} as Record<string, number>,
       // (2026-05-30 — vue2 port): context-menu last-action mirror.
@@ -1259,8 +1259,8 @@ export default defineComponent({
       handle?.refreshServerSideRows();
     },
     onToggleServerSidePagination(): void {
-      const self = this as unknown as { serverSidePaginationEnabled: boolean };
-      self.serverSidePaginationEnabled = !self.serverSidePaginationEnabled;
+      const self = this as unknown as { serverSideshowPagination: boolean };
+      self.serverSideshowPagination = !self.serverSideshowPagination;
     },
     onInvalidateServerSideBlock0(): void {
       const handle = this.$refs['serverSideTable'] as unknown as TableHandle | undefined;
@@ -1500,7 +1500,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           selection-mode="multi"
           :selection-column="{ show: true, side: 'left' }"
           :row-drag-column="{ show: true, side: 'left' }"
-          :pagination-enabled="true"
+          :show-pagination="true"
           :initial-page-size="20"
           cell-range-selection="enabled"
           :enable-undo-history="true"
@@ -1632,7 +1632,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
               data-testid="server-side-pagination-toggle"
               @click="onToggleServerSidePagination"
             >
-              Pagination: {{ serverSidePaginationEnabled ? 'ON' : 'OFF' }}
+              Pagination: {{ serverSideshowPagination ? 'ON' : 'OFF' }}
             </button>
             <button
               type="button"
@@ -1650,7 +1650,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           :rows="emptyServerSideRows"
           :row-model-type="rowModelType"
           :server-side-data-source="mockServerSideDataSource"
-          :pagination-enabled="serverSidePaginationEnabled"
+          :show-pagination="serverSideshowPagination"
           :initial-page-size="25"
           :show-filter-row="true"
         />

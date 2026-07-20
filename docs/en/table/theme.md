@@ -97,7 +97,7 @@ const darkTheme: Partial<ChronixTableTheme> = {
 | `cellPaddingX`          | `12`    | Horizontal cell padding (px) |
 | `headerGroupHeight`     | `32`    | Header group row height (px) |
 | `footerHeight`          | `36`    | Footer row height (px)       |
-| `statusBarHeight`       | `28`    | Status bar height (px)       |
+| statusBarHeight         | 36      | 底部行高度（px）             |
 
 ### Header
 
@@ -132,10 +132,11 @@ const darkTheme: Partial<ChronixTableTheme> = {
 
 ### Footer & Status
 
-| Token         | Default     | Description           |
-| ------------- | ----------- | --------------------- |
-| `footerBg`    | `'#f9fafb'` | Footer row background |
-| `statusBarBg` | `'#f9fafb'` | Status bar background |
+| Token              | Default     | Description                            |
+| ------------------ | ----------- | -------------------------------------- |
+| `footerBg`         | `'#f9fafb'` | Footer row background                  |
+| statusBarBg        | '#fafbfc'   | 底部行背景（合并 status + pagination） |
+| statusBarTextColor | '#3a414a'   | 状态栏文案色                           |
 
 ### Tree Data
 

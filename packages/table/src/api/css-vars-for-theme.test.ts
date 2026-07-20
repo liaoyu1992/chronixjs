@@ -32,6 +32,7 @@ describe('cssVarsForTheme', () => {
         '--cx-table-selection-column-width',
         '--cx-table-status-bar-bg',
         '--cx-table-status-bar-height',
+        '--cx-table-status-bar-text-color',
         '--cx-table-tooltip-bg',
         '--cx-table-tooltip-color',
         '--cx-table-tooltip-delay-ms',
@@ -51,8 +52,9 @@ describe('cssVarsForTheme', () => {
 
   it('status-bar tokens emit with px / raw-string conventions', () => {
     const vars = cssVarsForTheme(defaultChronixTableTheme);
-    expect(vars['--cx-table-status-bar-height']).toBe('28px');
-    expect(vars['--cx-table-status-bar-bg']).toBe('#f4f6f8');
+    expect(vars['--cx-table-status-bar-height']).toBe('36px');
+    expect(vars['--cx-table-status-bar-bg']).toBe('#fafbfc');
+    expect(vars['--cx-table-status-bar-text-color']).toBe('#3a414a');
   });
 
   it('pinned-row-z-index emits as raw number string (no px)', () => {

@@ -1370,7 +1370,7 @@ describe('<ChronixTable>', () => {
     expect(handle.getResolvedWidth('does-not-exist')).toBeUndefined();
   });
 
-  it('default paginationEnabled=false renders no footer; getTotalPages returns 1', () => {
+  it('default showPagination=false renders no footer; getTotalPages returns 1', () => {
     const wrapper = mount(ChronixTable, { props: { columns, rows } });
     const handle = wrapper.vm as unknown as {
       getTotalPages(): number;
@@ -1381,18 +1381,18 @@ describe('<ChronixTable>', () => {
     expect(handle.getTotalPages()).toBe(1);
     expect(handle.getPage()).toBe(0);
     // Even when pagination is disabled, the default initialPageSize
-    // is preserved so toggling paginationEnabled later starts at the
+    // is preserved so toggling showPagination later starts at the
     // documented default.
     expect(handle.getPageSize()).toBe(20);
   });
 
-  it('paginationEnabled + 50 rows + initialPageSize=20 → 20 rendered rows + footer present + getTotalPages=3', async () => {
+  it('showPagination + 50 rows + initialPageSize=20 → 20 rendered rows + footer present + getTotalPages=3', async () => {
     const manyRows: readonly RowSpec[] = Array.from({ length: 50 }, (_, i) => ({
       id: `r${i + 1}`,
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 20 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 20 },
       attachTo: document.body,
     });
     await wrapper.vm.$nextTick();
@@ -1420,7 +1420,7 @@ describe('<ChronixTable>', () => {
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 20 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 20 },
     });
     const handle = wrapper.vm as unknown as { setPage(page: number): void; getPage(): number };
     handle.setPage(1);
@@ -1446,7 +1446,7 @@ describe('<ChronixTable>', () => {
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 10 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 10 },
     });
     const handle = wrapper.vm as unknown as {
       setPage(page: number): void;
@@ -1479,7 +1479,7 @@ describe('<ChronixTable>', () => {
       },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 10 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 10 },
     });
     const handle = wrapper.vm as unknown as {
       setPage(page: number): void;
@@ -1509,7 +1509,7 @@ describe('<ChronixTable>', () => {
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 10 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 10 },
     });
     const handle = wrapper.vm as unknown as {
       setPage(page: number): void;
@@ -1532,7 +1532,7 @@ describe('<ChronixTable>', () => {
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 20 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 20 },
     });
     const handle = wrapper.vm as unknown as { setPage(page: number): void };
     handle.setPage(1);
@@ -1715,7 +1715,7 @@ describe('<ChronixTable>', () => {
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 10 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 10 },
     });
     // 50 / 10 = 5 pages → under default threshold (7) → all pages render, no ellipsis.
     const pageButtons = wrapper.findAll('.cx-table-pagination-page');
@@ -1731,7 +1731,7 @@ describe('<ChronixTable>', () => {
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: lotsOfRows, paginationEnabled: true, initialPageSize: 10 },
+      props: { columns, rows: lotsOfRows, showPagination: true, initialPageSize: 10 },
     });
     // Initial page = 0 → near-start mode → [1, 2, 3, ellipsis, 20].
     expect(wrapper.find('.cx-table-pagination-ellipsis').exists()).toBe(true);
@@ -1748,7 +1748,7 @@ describe('<ChronixTable>', () => {
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 10 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 10 },
     });
     const handle = wrapper.vm as unknown as { getPage(): number };
     // Click the "page 3" button (index 2).
@@ -1767,7 +1767,7 @@ describe('<ChronixTable>', () => {
       data: { id: i + 1, name: `Row ${i + 1}`, qty: i, status: 'OK', note: '' },
     }));
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows: manyRows, paginationEnabled: true, initialPageSize: 10 },
+      props: { columns, rows: manyRows, showPagination: true, initialPageSize: 10 },
     });
     const handle = wrapper.vm as unknown as { setPage(page: number): void };
     handle.setPage(2);
@@ -5231,7 +5231,7 @@ describe('saved table views (vue3)', () => {
 
   it('getTableView projects columns/sort/filter/page/pageSize with version: 1', async () => {
     const wrapper = mount(ChronixTable, {
-      props: { columns: viewColumns, rows: viewRows, paginationEnabled: true, initialPageSize: 20 },
+      props: { columns: viewColumns, rows: viewRows, showPagination: true, initialPageSize: 20 },
     });
     const handle = wrapper.vm as unknown as ViewHandle;
     handle.setSort({ colId: 'qty', direction: 'desc' });
@@ -5246,7 +5246,7 @@ describe('saved table views (vue3)', () => {
 
   it('applyTableView dispatches sort + filter + page/pageSize to setters', async () => {
     const wrapper = mount(ChronixTable, {
-      props: { columns: viewColumns, rows: viewRows, paginationEnabled: true, initialPageSize: 20 },
+      props: { columns: viewColumns, rows: viewRows, showPagination: true, initialPageSize: 20 },
     });
     const handle = wrapper.vm as unknown as ViewHandle;
     handle.applyTableView({
@@ -8387,7 +8387,7 @@ describe('+ 45.2: server-side refinements (vue3)', () => {
     return { id: `srv-${i}`, data: { id: i, name: `name-${i}` } };
   }
 
-  it('45.1: paginationEnabled + serverSide forwards pageSize as cacheBlockSize', async () => {
+  it('45.1: showPagination + serverSide forwards pageSize as cacheBlockSize', async () => {
     const { source, calls } = makeControlledSource();
     mount(ChronixTable, {
       props: {
@@ -8395,14 +8395,14 @@ describe('+ 45.2: server-side refinements (vue3)', () => {
         rows: [],
         rowModelType: 'serverSide' as const,
         serverSideDataSource: source,
-        paginationEnabled: true,
+        showPagination: true,
         initialPageSize: 25,
       },
     });
     await flush();
     // bootstrap fires getRowAt(0); the dispatch endRow-startRow
     // equals the effective cacheBlockSize. Per Decision A.1,
-    // pageSize OVERRIDES cacheBlockSize when paginationEnabled+serverSide.
+    // pageSize OVERRIDES cacheBlockSize when showPagination+serverSide.
     expect(calls.length).toBe(1);
     const firstCall = calls[0]!;
     expect(firstCall.params.endRow - firstCall.params.startRow).toBe(25);
@@ -8416,7 +8416,7 @@ describe('+ 45.2: server-side refinements (vue3)', () => {
         rows: [],
         rowModelType: 'serverSide' as const,
         serverSideDataSource: source,
-        paginationEnabled: true,
+        showPagination: true,
         initialPageSize: 10,
       },
     });
@@ -8441,7 +8441,7 @@ describe('+ 45.2: server-side refinements (vue3)', () => {
         rows: [],
         rowModelType: 'serverSide' as const,
         serverSideDataSource: source,
-        paginationEnabled: true,
+        showPagination: true,
         initialPageSize: 10,
       },
     });
@@ -8563,7 +8563,7 @@ describe('+ 45.4: viewport-driven dispatch + bootstrap (vue3)', () => {
         rows: [],
         rowModelType: 'serverSide' as const,
         serverSideDataSource: source,
-        paginationEnabled: true,
+        showPagination: true,
         initialPageSize: 25,
       },
     });
@@ -8616,7 +8616,7 @@ describe('+ 45.4: viewport-driven dispatch + bootstrap (vue3)', () => {
         rows: [],
         rowModelType: 'serverSide' as const,
         serverSideDataSource: source,
-        paginationEnabled: true,
+        showPagination: true,
         initialPageSize: 25,
       },
     });
@@ -8858,7 +8858,7 @@ describe('server-side anticipatory prefetch (vue3)', () => {
     wrapper.unmount();
   });
 
-  it('45.5: paginationEnabled=true ignores serverSidePrefetchAheadBlocks prop', async () => {
+  it('45.5: showPagination=true ignores serverSidePrefetchAheadBlocks prop', async () => {
     const { source, calls } = makeControlledSource();
     const wrapper = mount(ChronixTable, {
       props: {
@@ -8866,7 +8866,7 @@ describe('server-side anticipatory prefetch (vue3)', () => {
         rows: [],
         rowModelType: 'serverSide' as const,
         serverSideDataSource: source,
-        paginationEnabled: true,
+        showPagination: true,
         initialPageSize: 10,
         serverSidePrefetchAheadBlocks: 5,
       },

@@ -23,24 +23,18 @@ export interface StatusBarCounts {
 /**
  * default Chinese-locale status-bar summary.
  *
- * Format: "N 行 · 已选 M · 过滤后 K" with the latter two segments
- * omitted when not applicable:
- *
- * - `selected === 0` → omit "已选 M".
- * - `filtered === total` → omit "过滤后 K" (nothing was filtered out).
+ * Format: "共 N 行，已选 M 行，筛选 K 行" - all three segments are
+ * always shown (no conditional omission), so the status bar reads as
+ * a complete row-count summary. When sharing the footer row with the
+ * pagination cluster (`showPagination` + `showStatusBar` both on), the
+ * pagination side hides its own "共 N 行" total label to avoid the
+ * duplicate - the status bar is the single source of row counts.
  *
  * Consumers wanting English / other locales pass a custom renderer
  * via the adapter's `status-bar` slot (vue3/vue2) or
  * `statusBarRenderer` prop (react). This default text is the
- * structural fallback only — not theme-able.
+ * structural fallback only - not theme-able.
  */
 export function defaultStatusBarText(counts: StatusBarCounts): string {
-  const parts: string[] = [`${counts.total} 行`];
-  if (counts.selected > 0) {
-    parts.push(`已选 ${counts.selected}`);
-  }
-  if (counts.filtered !== counts.total) {
-    parts.push(`过滤后 ${counts.filtered}`);
-  }
-  return parts.join(' · ');
+  return `共 ${counts.total} 行，已选 ${counts.selected} 行，筛选 ${counts.filtered} 行`;
 }

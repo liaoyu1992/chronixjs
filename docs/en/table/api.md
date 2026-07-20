@@ -42,7 +42,7 @@ Complete API reference for the data table component.
 | `showFooterRow`            | `boolean` | `false` | Show footer row               |
 | `showColumnVisibilityMenu` | `boolean` | `false` | Show column visibility toggle |
 | `showColumnHeaderMenu`     | `boolean` | `false` | Show column header menus      |
-| `showStatusBar`            | `boolean` | `false` | Show status bar               |
+| showStatusBar              | oolean    | alse    | Show status bar (footer left) |
 
 ### Keyboard & Navigation
 
@@ -69,13 +69,13 @@ Complete API reference for the data table component.
 
 ### Pagination
 
-| Prop                      | Type                | Default | Description           |
-| ------------------------- | ------------------- | ------- | --------------------- |
-| `paginationEnabled`       | `boolean`           | `false` | Enable pagination     |
-| `initialPageSize`         | `number`            | `20`    | Initial page size     |
-| `pageSizeOptions`         | `readonly number[]` |         | Page size choices     |
-| `paginationSiblingCount`  | `number`            |         | Sibling page buttons  |
-| `paginationBoundaryCount` | `number`            |         | Boundary page buttons |
+| Prop                      | Type                | Default | Description                                                               |
+| ------------------------- | ------------------- | ------- | ------------------------------------------------------------------------- |
+| showPagination            | oolean              | alse    | Show pagination cluster (footer right); also enables pagination semantics |
+| `initialPageSize`         | `number`            | `20`    | Initial page size                                                         |
+| `pageSizeOptions`         | `readonly number[]` |         | Page size choices                                                         |
+| `paginationSiblingCount`  | `number`            |         | Sibling page buttons                                                      |
+| `paginationBoundaryCount` | `number`            |         | Boundary page buttons                                                     |
 
 ### Row Drag
 

@@ -267,22 +267,35 @@ export interface ChronixTableTheme {
   readonly treeErrorColor: string;
 
   /**
-   * height in pixels of the optional status
-   * bar rendered between the body and the pagination footer when
-   * `showStatusBar: true`. Default `28`. Emitted as
-   * `--cx-table-status-bar-height`. When `showStatusBar: false`
-   * (default), this token is unused.
+   * height in pixels of the merged footer row rendered at the bottom
+   * of the wrapper when `showStatusBar` or `showPagination` is on.
+   * The footer hosts the status area (left) + pagination cluster
+   * (right) on one row. Default `36` - tall enough to host both
+   * clusters without clipping. Emitted as
+   * `--cx-table-status-bar-height` (name retained for backwards-compat
+   * of CSS overrides). When both flags are `false`, this token is
+   * unused (no footer rendered).
    */
   readonly statusBarHeight: number;
 
   /**
-   * background color of the status bar strip.
-   * Default `'#f4f6f8'` — slightly lighter than `footerBg` (`'#f8f9fa'`)
-   * so the status strip reads as a distinct sibling beneath the
-   * footer. Emitted as `--cx-table-status-bar-bg`. Consumers using
-   * dark themes typically override.
+   * background color of the merged footer row.
+   * Default `'#fafbfc'` - aligns with the legacy pagination background
+   * so the status area + pagination cluster read as one continuous bar.
+   * Emitted as `--cx-table-status-bar-bg` (name retained for
+   * backwards-compat of CSS overrides). Consumers using dark themes
+   * typically override.
    */
   readonly statusBarBg: string;
+
+  /**
+   * text color of the status area (left cluster of the footer row).
+   * Default `'#3a414a'` - a muted dark slate that reads on
+   * `statusBarBg`. Emitted as `--cx-table-status-bar-text-color`.
+   * Does not affect pagination button text; those keep their own
+   * `#345d9d` / `#1f2933` colors.
+   */
+  readonly statusBarTextColor: string;
 }
 
 /**
@@ -321,6 +334,7 @@ export const defaultChronixTableTheme: ChronixTableTheme = {
   overlayBg: 'rgba(255, 255, 255, 0.85)',
   treeSpinnerColor: '#5a6675',
   treeErrorColor: '#dc2626',
-  statusBarHeight: 28,
-  statusBarBg: '#f4f6f8',
+  statusBarHeight: 36,
+  statusBarBg: '#fafbfc',
+  statusBarTextColor: '#3a414a',
 };

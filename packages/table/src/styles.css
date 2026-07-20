@@ -452,21 +452,48 @@
   background: rgba(52, 93, 157, 0.05);
 }
 
-/* pagination footer. Two-row flex layout —
- * left side hosts prev/next + page info; right side hosts total
- * rows + page-size dropdown. Sticky-bottom inside the wrapper so
- * the footer stays visible while the body scrolls.
+/* footer row - merged status bar + pagination.
+ * Hosts up to two clusters on one row:
+ *   - left:  .cx-table-pagination-status  (status area; shown when `showStatusBar`)
+ *   - right: .cx-table-pagination-cluster  (nav + meta;   shown when `showPagination`)
+ * `justify-content: space-between` pushes status to the left edge and the
+ * pagination cluster to the right. `flex-wrap: wrap` lets the clusters stack
+ * vertically on narrow viewports. Background + min-height come from the
+ * `statusBar*` theme tokens so the whole row reads as one continuous bar.
  */
 .cx-table-pagination {
   align-items: center;
-  background: #fafbfc;
+  background: var(--cx-table-status-bar-bg, #fafbfc);
   border-top: 1px solid var(--cx-table-header-border-color, #d9dde2);
   display: flex;
   flex-wrap: wrap;
   font-size: 12px;
   gap: 12px;
   justify-content: space-between;
+  min-height: var(--cx-table-status-bar-height, 36px);
   padding: 6px 12px;
+}
+
+/* left cluster: status area (counts summary). Mirrors the legacy
+ * `cx-table-status-bar` class (still attached to the same node for
+ * backwards-compat of consumer CSS overrides). Text color comes from
+ * `--cx-table-status-bar-text-color`. */
+.cx-table-pagination-status {
+  align-items: center;
+  color: var(--cx-table-status-bar-text-color, #3a414a);
+  display: flex;
+  font-size: 12px;
+  min-width: 0;
+}
+
+/* right cluster: wraps the nav (prev/next + page numbers) and meta
+ * (total label + page-size select) so the whole pagination group is
+ * pushed to the right edge as a unit by the parent's
+ * `justify-content: space-between`. */
+.cx-table-pagination-cluster {
+  align-items: center;
+  display: flex;
+  gap: 12px;
 }
 
 .cx-table-pagination-nav,

@@ -97,7 +97,7 @@ const darkTheme: Partial<ChronixTableTheme> = {
 | `cellPaddingX`          | `12`   | 单元格水平内边距（px） |
 | `headerGroupHeight`     | `32`   | 表头分组行高（px）     |
 | `footerHeight`          | `36`   | 底部行高（px）         |
-| `statusBarHeight`       | `28`   | 状态栏高度（px）       |
+| statusBarHeight         | 36     | 底部行高度（px）       |
 
 ### 表头
 
@@ -132,10 +132,11 @@ const darkTheme: Partial<ChronixTableTheme> = {
 
 ### 底部与状态栏
 
-| 令牌          | 默认值      | 描述       |
-| ------------- | ----------- | ---------- |
-| `footerBg`    | `'#f9fafb'` | 底部行背景 |
-| `statusBarBg` | `'#f9fafb'` | 状态栏背景 |
+| 令牌               | 默认值      | 描述                                   |
+| ------------------ | ----------- | -------------------------------------- |
+| `footerBg`         | `'#f9fafb'` | 底部行背景                             |
+| statusBarBg        | '#fafbfc'   | 底部行背景（合并 status + pagination） |
+| statusBarTextColor | '#3a414a'   | 状态栏文案色                           |
 
 ### 树形数据
 

@@ -37,12 +37,12 @@
 
 ### 底部与菜单
 
-| 属性                       | 类型      | 默认值  | 描述             |
-| -------------------------- | --------- | ------- | ---------------- |
-| `showFooterRow`            | `boolean` | `false` | 显示底部行       |
-| `showColumnVisibilityMenu` | `boolean` | `false` | 显示列可见性切换 |
-| `showColumnHeaderMenu`     | `boolean` | `false` | 显示列表头菜单   |
-| `showStatusBar`            | `boolean` | `false` | 显示状态栏       |
+| 属性                       | 类型      | 默认值  | 描述                      |
+| -------------------------- | --------- | ------- | ------------------------- |
+| `showFooterRow`            | `boolean` | `false` | 显示底部行                |
+| `showColumnVisibilityMenu` | `boolean` | `false` | 显示列可见性切换          |
+| `showColumnHeaderMenu`     | `boolean` | `false` | 显示列表头菜单            |
+| showStatusBar              | oolean    | alse    | 显示状态栏（footer 左侧） |
 
 ### 键盘与导航
 
@@ -69,13 +69,13 @@
 
 ### 分页
 
-| 属性                      | 类型                | 默认值  | 描述           |
-| ------------------------- | ------------------- | ------- | -------------- |
-| `paginationEnabled`       | `boolean`           | `false` | 启用分页       |
-| `initialPageSize`         | `number`            | `20`    | 初始每页条数   |
-| `pageSizeOptions`         | `readonly number[]` |         | 每页条数选项   |
-| `paginationSiblingCount`  | `number`            |         | 相邻页码按钮数 |
-| `paginationBoundaryCount` | `number`            |         | 边界页码按钮数 |
+| 属性                      | 类型                | 默认值 | 描述                                          |
+| ------------------------- | ------------------- | ------ | --------------------------------------------- |
+| showPagination            | oolean              | alse   | 显示分页控件（footer 右侧）；同时启用分页语义 |
+| `initialPageSize`         | `number`            | `20`   | 初始每页条数                                  |
+| `pageSizeOptions`         | `readonly number[]` |        | 每页条数选项                                  |
+| `paginationSiblingCount`  | `number`            |        | 相邻页码按钮数                                |
+| `paginationBoundaryCount` | `number`            |        | 边界页码按钮数                                |
 
 ### 行拖拽
 

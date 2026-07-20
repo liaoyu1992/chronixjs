@@ -305,7 +305,7 @@ export interface TableHandle {
   /**
    * (vue3 equivalent): read the current 0-based
    * page index. Internal-only state ownership matches sort / filter /
-   * selection. Returns `0` when `paginationEnabled` is `false` —
+   * selection. Returns `0` when `showPagination` is `false` —
    * programmatic `setPage(99)` over a 3-page dataset returns `2` from
    * the next `getPage()` call (clamped to the last valid page).
    */
@@ -320,7 +320,7 @@ export interface TableHandle {
   /**
    * read the current rows-per-page value. Returns
    * `initialPageSize` (or the latest `setPageSize` value) regardless
-   * of `paginationEnabled` so consumers can pre-seed page sizes
+   * of `showPagination` so consumers can pre-seed page sizes
    * before enabling pagination.
    */
   getPageSize(): number;
@@ -333,7 +333,7 @@ export interface TableHandle {
    */
   setPageSize(pageSize: number): void;
   /**
-   * read the total page count. `1` when `paginationEnabled`
+   * read the total page count. `1` when `showPagination`
    * is `false`; `0` when paginated and the dataset is empty;
    * otherwise `Math.ceil(totalRows / pageSize)`.
    */
@@ -852,7 +852,7 @@ export interface SelectionColumnConfig {
  * Fires on every transition of the internal `(page, pageSize)` tuple
  * — `setPage`, `setPageSize`, the footer `«` / `»` buttons + size
  * `<select>` + page-number bar clicks. `page` is 0-based; `pageSize`
- * is the rows-per-page value (NOT capped to `paginationEnabled` —
+ * is the rows-per-page value (NOT capped to `showPagination` —
  * fires the same payload even when the footer is suppressed).
  */
 export interface PageChangePayload {
@@ -1789,12 +1789,17 @@ export interface ChronixTableProps {
    */
   readonly onSelectionChange?: (payload: SelectionChangePayload) => void;
   /**
-   * (vue3 equivalent): opt-in client-side pagination.
-   * Default `false`. When `false`, internal `page` / `pageSize` state
-   * is still tracked + handle methods still work + pagePass becomes a
-   * passthrough — the footer simply isn't rendered.
+   * show the pagination cluster (right side of the footer row).
+   * Default `false`. Also enables client-side pagination semantics:
+   * `pagePass` slices rows into pages + the page/pageSize state drives
+   * `effectivePageSize`. When `false`, internal `page` / `pageSize`
+   * state is still tracked + handle methods still work + pagePass
+   * becomes a passthrough - the cluster simply isn't rendered.
+   *
+   * Combined with `showStatusBar` (left side), both share one footer
+   * row; when both are `false` the entire footer is omitted.
    */
-  readonly paginationEnabled?: boolean;
+  readonly showPagination?: boolean;
   /**
    * initial rows-per-page. Default 20. Only consulted at
    * mount; subsequent changes via `setPageSize` / the footer
@@ -1975,8 +1980,11 @@ export interface ChronixTableProps {
   /** (2026-05-28 — react port): fires after `childrenLoader` rejects. */
   readonly onLazyLoadError?: (payload: LazyLoadErrorPayload) => void;
   /**
-   * (2026-05-28 — react port): opt-in status bar between
-   * body and pagination footer. Default `false`.
+   * show the status area (left cluster of the footer row). Default
+   * `false`. Renders the row-count summary ("共 N 行，已选 M 行，筛选
+   * K 行" by default, or a custom `statusBarRenderer`). Combined with
+   * `showPagination` (right cluster), both share one footer row; when
+   * both are `false` the entire footer is omitted.
    */
   readonly showStatusBar?: boolean;
   /**
@@ -2486,7 +2494,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       onRowMoveStop,
       onRowOrderChange,
       onSelectionChange,
-      paginationEnabled = false,
+      showPagination = false,
       initialPageSize = 20,
       pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
       paginationSiblingCount = 1,
@@ -2744,7 +2752,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // mount). useState drives re-renders; useRef mirrors hold the
     // synchronous value handle methods read so post-`setPage(...)`
     // reads observe the latest values immediately. State is tracked
-    // even when `paginationEnabled` is false — the latter only
+    // even when `showPagination` is false — the latter only
     // controls whether pagePass receives a non-zero pageSize (the
     // passthrough state) + whether the footer renders.
     const [pageState, setPageState] = useState<number>(0);
@@ -3090,12 +3098,12 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     }, [columns, resizingColumnState]);
 
     // (vue3 equivalent): pagePass is a passthrough
-    // when paginationEnabled is false — feed `pageSize: 0` so the
+    // when showPagination is false — feed `pageSize: 0` so the
     // pipeline preserves -51 identity-equal output. The
     // internal pageSizeState is still tracked for the imperative
     // handle methods, so consumers can pre-seed it before flipping
-    // paginationEnabled.
-    const effectivePageSize = paginationEnabled ? pageSizeState : 0;
+    // showPagination.
+    const effectivePageSize = showPagination ? pageSizeState : 0;
 
     // (react port, 2026-05-28): tree-data expand-state hook.
     // The hook owns the source-of-truth Set; chevron-click / keyboard
@@ -3162,8 +3170,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const prevLastVisibleRef = useRef<number | null>(null);
 
     // (2026-05-30 — react port) Decision A.1: pageSize
-    // OVERRIDES cacheBlockSize when paginationEnabled. Re-create the
-    // session when pageSize changes (= paginationEnabled active +
+    // OVERRIDES cacheBlockSize when showPagination. Re-create the
+    // session when pageSize changes (= showPagination active +
     // pageSizeState transitions). Verbatim mirror of vue3 watch.
     useEffect(() => {
       if (rowModelType !== 'serverSide' || serverSideDataSource == null) {
@@ -3175,7 +3183,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         prevLastVisibleRef.current = null;
         return;
       }
-      const usePageSizeAsBlockSize = paginationEnabled;
+      const usePageSizeAsBlockSize = showPagination;
       const effectiveBlockSize = usePageSizeAsBlockSize ? pageSizeState : cacheBlockSize;
       if (
         usePageSizeAsBlockSize &&
@@ -3183,7 +3191,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         typeof console !== 'undefined'
       ) {
         console.warn(
-          '[chronix-table] rowModelType:"serverSide" + paginationEnabled:true: cacheBlockSize prop is ignored; pageSize is used as the block size (A.1). Remove cacheBlockSize to silence this warning.',
+          '[chronix-table] rowModelType:"serverSide" + showPagination:true: cacheBlockSize prop is ignored; pageSize is used as the block size (A.1). Remove cacheBlockSize to silence this warning.',
         );
       }
       const session = createServerSideRowSource(serverSideDataSource, {
@@ -3216,7 +3224,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       serverSideDataSource,
       cacheBlockSize,
       serverSideMaxBlocksInCache,
-      paginationEnabled,
+      showPagination,
       pageSizeState,
     ]);
 
@@ -3233,7 +3241,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // direction-aware prefetch pass appended after visible-range
     // dispatch (gated on `serverSidePrefetchAheadBlocks > 0`).
     useEffect(() => {
-      if (rowModelType !== 'serverSide' || paginationEnabled) return;
+      if (rowModelType !== 'serverSide' || showPagination) return;
       const session = serverSideSessionRef.current;
       if (session == null) return;
       const rowHeight = mergedTheme.rowHeight;
@@ -3269,7 +3277,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       prevLastVisibleRef.current = lastVisible;
     }, [
       rowModelType,
-      paginationEnabled,
+      showPagination,
       bodyScrollTop,
       bodyClientHeight,
       mergedTheme.rowHeight,
@@ -3494,9 +3502,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       if (total <= 0) return EMPTY_ROW_LIST;
       const blockSize = session.cacheBlockSize;
       // (2026-05-30 — react port) Decision B.1: when
-      // paginationEnabled, allocate ONLY the current page's rows.
+      // showPagination, allocate ONLY the current page's rows.
       // Verbatim mirror of vue3.
-      if (paginationEnabled) {
+      if (showPagination) {
         const pageSize = pageSizeState;
         const totalPages = Math.max(1, Math.ceil(total / pageSize));
         const page = Math.min(Math.max(0, pageState), totalPages - 1);
@@ -3533,11 +3541,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         }
       }
       return result;
-    }, [rowModelType, serverSideVersion, paginationEnabled, pageSizeState, pageState]);
+    }, [rowModelType, serverSideVersion, showPagination, pageSizeState, pageState]);
 
     // (2026-05-30 — react port) Decision B.1: footer values
-    // for serverSide + paginationEnabled mode. Verbatim mirror of vue3.
-    const serverSidePaginationActive = rowModelType === 'serverSide' && paginationEnabled;
+    // for serverSide + showPagination mode. Verbatim mirror of vue3.
+    const serverSidePaginationActive = rowModelType === 'serverSide' && showPagination;
     const serverSideTotalRowsForFooter = useMemo(() => {
       if (!serverSidePaginationActive) return 0;
       void serverSideVersion;
@@ -4133,7 +4141,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // transition, reset page index to 0 (the user expects to see the
     // top of the newly-ordered list, not whatever page index they
     // happened to be on under the previous sort). Reset fires only
-    // when `paginationEnabled` is true; the dedup guards no-op
+    // when `showPagination` is true; the dedup guards no-op
     // transitions. The reset itself fires an `onPageChange` emit when
     // the page actually moves.
     const applySort = useCallback(
@@ -4152,13 +4160,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         sortSpecRef.current = next;
         setSortSpec(next);
         onSortChange?.({ sortSpec: next });
-        if (paginationEnabled && pageStateRef.current !== 0) {
+        if (showPagination && pageStateRef.current !== 0) {
           pageStateRef.current = 0;
           setPageState(0);
           onPageChange?.({ page: 0, pageSize: pageSizeStateRef.current });
         }
       },
-      [columnTable, onSortChange, paginationEnabled, onPageChange],
+      [columnTable, onSortChange, showPagination, onPageChange],
     );
 
     // + 50.1 (vue3 + 9.1 equivalent): apply filter
@@ -4169,7 +4177,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // (vue3 Decision C.1): same auto-reset-to-page-0
     // applied to filter transitions as to sort transitions — the user
     // expects to see the top of the newly-filtered list. Reset only
-    // fires when `paginationEnabled` is true and a transition actually
+    // fires when `showPagination` is true and a transition actually
     // occurred (the existing dedup above guards no-op writes).
     const applyFilter = useCallback(
       (next: readonly FilterSpec[]): void => {
@@ -4191,13 +4199,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         filterSpecRef.current = next;
         setFilterSpec(next);
         onFilterChange?.({ filterSpec: next });
-        if (paginationEnabled && pageStateRef.current !== 0) {
+        if (showPagination && pageStateRef.current !== 0) {
           pageStateRef.current = 0;
           setPageState(0);
           onPageChange?.({ page: 0, pageSize: pageSizeStateRef.current });
         }
       },
-      [columnTable, onFilterChange, paginationEnabled, onPageChange],
+      [columnTable, onFilterChange, showPagination, onPageChange],
     );
 
     // (2026-05-29 — react port): apply a new quick-find text.
@@ -4212,13 +4220,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         quickFindTextRef.current = next;
         setQuickFindTextState(next);
         onQuickFindTextChange?.({ quickFindText: next });
-        if (paginationEnabled && pageStateRef.current !== 0) {
+        if (showPagination && pageStateRef.current !== 0) {
           pageStateRef.current = 0;
           setPageState(0);
           onPageChange?.({ page: 0, pageSize: pageSizeStateRef.current });
         }
       },
-      [onQuickFindTextChange, paginationEnabled, onPageChange],
+      [onQuickFindTextChange, showPagination, onPageChange],
     );
 
     // + 51.1 (vue3 + 10.1 equivalent): apply
@@ -7425,7 +7433,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         // getPageSize reads from the ref (the SFC's source of truth;
         // pagePass's pageSize is `0` for the passthrough case but
         // consumers should observe the SFC-tracked value).
-        // (2026-05-30 — react port): serverSide+paginationEnabled
+        // (2026-05-30 — react port): serverSide+showPagination
         // reads from the session-derived computeds (pagePass is in
         // passthrough state). Verbatim mirror of vue3.
         getPage: () =>
@@ -11235,171 +11243,176 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       </div>
     );
 
-    // (2026-05-28 — react port): opt-in status bar between
-    // body and pagination footer. Verbatim port of vue3 .
-    let statusBar: ReactElement | null = null;
-    if (showStatusBar) {
-      const counts: StatusBarCounts = {
-        total: rows.length,
-        filtered: filteredRows.length,
-        selected: selectedRowIdsSet.size,
-        page: pageStateRef.current,
-        pageSize: pageSizeStateRef.current,
-      };
-      const inner: ReactNode =
-        statusBarRenderer != null ? statusBarRenderer(counts) : defaultStatusBarText(counts);
-      statusBar = (
-        <div
-          className="cx-table-status-bar"
-          role="status"
-          aria-live="polite"
-          data-testid="cx-status-bar"
-          style={{
-            height: `${t.statusBarHeight}px`,
-            background: 'var(--cx-table-status-bar-bg, #f4f6f8)',
-            display: 'flex',
-            alignItems: 'center',
-            paddingLeft: `${t.cellPaddingX}px`,
-            paddingRight: `${t.cellPaddingX}px`,
-            fontSize: 12,
-            color: '#3a414a',
-            borderTop: '1px solid var(--cx-table-row-divider-color, #eceff2)',
-          }}
-        >
-          {inner}
-        </div>
-      );
-    }
-
-    // + 52.1 (vue3 + 11.1 equivalent): opt-in
-    // pagination footer rendered below the body. Layout: prev button
-    // + page-number bar (ellipsis-aware via computeVisiblePageNumbers)
-    // + next button on the left; rows-total label + page-size
-    // `<select>` on the right. Buttons disable at boundaries; the
-    // `<select>` renders `pageSizeOptions` and routes change events
-    // through `applyPage(currentPage, nextSize)`. The component always
-    // exposes pagination handle methods even when this footer is
-    // suppressed (programmatic control still works).
-    let paginationFooter: ReactElement | null = null;
-    if (paginationEnabled) {
-      // (2026-05-30 — react port) Decision B.1: serverSide+
-      // paginationEnabled reads totals from session-derived computeds.
-      const cp = serverSidePaginationActive ? serverSideCurrentPageForFooter : currentPageFromPass;
-      const tp = serverSidePaginationActive ? serverSideTotalPagesForFooter : totalPagesFromPass;
-      const ps = pageSizeStateRef.current;
-      const totalRows = serverSidePaginationActive
-        ? serverSideTotalRowsForFooter
-        : totalRowsAcrossPages;
-      // Last valid page is tp-1; when tp=0 (empty), both ends are
-      // disabled (no navigation makes sense).
-      const atFirst = tp === 0 || cp <= 0;
-      const atLast = tp === 0 || cp >= tp - 1;
-      // Display 1-based per Decision B; empty dataset shows
-      // "0 / 0" so users see the empty state.
-      const humanCurrent = tp === 0 ? 0 : cp + 1;
-      const humanTotal = tp;
-      const visiblePages = computeVisiblePageNumbers(
-        cp,
-        tp,
-        paginationSiblingCount,
-        paginationBoundaryCount,
-      );
-      const pageBarChildren = visiblePages.map((el, idx) => {
-        if (el === 'ellipsis') {
-          return (
-            <span
-              key={`ellipsis-${idx}`}
-              className="cx-table-pagination-ellipsis"
-              aria-hidden="true"
-            >
-              …
-            </span>
-          );
-        }
-        const isCurrent = el === cp;
-        const pageBtnClass = isCurrent
-          ? 'cx-table-pagination-page cx-table-pagination-page--current'
-          : 'cx-table-pagination-page';
-        return (
-          <button
-            key={`page-${el}`}
-            type="button"
-            className={pageBtnClass}
-            aria-label={`Go to page ${el + 1}`}
-            aria-current={isCurrent ? 'page' : undefined}
-            data-page-index={String(el)}
-            disabled={isCurrent}
-            onClick={() => {
-              if (isCurrent) return;
-              applyPage(el, ps);
-            }}
+    // merged footer row: status area (left) + pagination cluster (right).
+    // Shown when either `showStatusBar` or `showPagination` is on; when
+    // both are off the entire footer is omitted. The two clusters are
+    // siblings (not nested) so `role="status"` + `role="navigation"` stay
+    // in separate subtrees under the neutral `role="group"` root.
+    let footerBar: ReactElement | null = null;
+    const showFooter = showStatusBar || showPagination;
+    if (showFooter) {
+      // --- left: status area ---
+      let statusArea: ReactElement | null = null;
+      if (showStatusBar) {
+        const counts: StatusBarCounts = {
+          total: rows.length,
+          filtered: filteredRows.length,
+          selected: selectedRowIdsSet.size,
+          page: pageStateRef.current,
+          pageSize: pageSizeStateRef.current,
+        };
+        const inner: ReactNode =
+          statusBarRenderer != null ? statusBarRenderer(counts) : defaultStatusBarText(counts);
+        statusArea = (
+          <div
+            className="cx-table-pagination-status cx-table-status-bar"
+            role="status"
+            aria-live="polite"
+            data-testid="cx-status-bar"
           >
-            {String(el + 1)}
-          </button>
-        );
-      });
-      paginationFooter = (
-        <div className="cx-table-pagination" role="navigation" aria-label="Pagination">
-          <div className="cx-table-pagination-nav">
-            <button
-              type="button"
-              className="cx-table-pagination-button cx-table-pagination-button--prev"
-              aria-label="Previous page"
-              disabled={atFirst}
-              onClick={() => {
-                if (atFirst) return;
-                applyPage(cp - 1, ps);
-              }}
-            >
-              «
-            </button>
-            <div
-              className="cx-table-pagination-pages"
-              data-current-page={String(cp)}
-              data-total-pages={String(tp)}
-              role="group"
-              aria-label={`Page ${humanCurrent} of ${humanTotal}`}
-            >
-              {pageBarChildren}
-            </div>
-            <button
-              type="button"
-              className="cx-table-pagination-button cx-table-pagination-button--next"
-              aria-label="Next page"
-              disabled={atLast}
-              onClick={() => {
-                if (atLast) return;
-                applyPage(cp + 1, ps);
-              }}
-            >
-              »
-            </button>
+            {inner}
           </div>
-          <div className="cx-table-pagination-meta">
-            <span className="cx-table-pagination-total">{`共 ${totalRows} 行`}</span>
-            <label className="cx-table-pagination-size">
-              <span className="cx-table-pagination-size-label">每页 </span>
-              <select
-                className="cx-table-pagination-size-select"
-                aria-label="Rows per page"
-                value={ps}
-                onChange={(e) => {
-                  const nextSize = Number(e.target.value);
-                  if (Number.isFinite(nextSize) && nextSize > 0) {
-                    applyPage(pageStateRef.current, nextSize);
-                  }
+        );
+      }
+
+      // --- right: pagination cluster (nav + meta) ---
+      // The calc logic below is preserved verbatim from the legacy
+      // `paginationFooter` block; only the outer wrapper changed.
+      let cluster: ReactElement | null = null;
+      if (showPagination) {
+        // (2026-05-30 - react port) Decision B.1: serverSide+
+        // showPagination reads totals from session-derived computeds.
+        const cp = serverSidePaginationActive
+          ? serverSideCurrentPageForFooter
+          : currentPageFromPass;
+        const tp = serverSidePaginationActive ? serverSideTotalPagesForFooter : totalPagesFromPass;
+        const ps = pageSizeStateRef.current;
+        const totalRows = serverSidePaginationActive
+          ? serverSideTotalRowsForFooter
+          : totalRowsAcrossPages;
+        // Last valid page is tp-1; when tp=0 (empty), both ends are
+        // disabled (no navigation makes sense).
+        const atFirst = tp === 0 || cp <= 0;
+        const atLast = tp === 0 || cp >= tp - 1;
+        // Display 1-based per Decision B; empty dataset shows
+        // "0 / 0" so users see the empty state.
+        const humanCurrent = tp === 0 ? 0 : cp + 1;
+        const humanTotal = tp;
+        const visiblePages = computeVisiblePageNumbers(
+          cp,
+          tp,
+          paginationSiblingCount,
+          paginationBoundaryCount,
+        );
+        const pageBarChildren = visiblePages.map((el, idx) => {
+          if (el === 'ellipsis') {
+            return (
+              <span
+                key={`ellipsis-${idx}`}
+                className="cx-table-pagination-ellipsis"
+                aria-hidden="true"
+              >
+                …
+              </span>
+            );
+          }
+          const isCurrent = el === cp;
+          const pageBtnClass = isCurrent
+            ? 'cx-table-pagination-page cx-table-pagination-page--current'
+            : 'cx-table-pagination-page';
+          return (
+            <button
+              key={`page-${el}`}
+              type="button"
+              className={pageBtnClass}
+              aria-label={`Go to page ${el + 1}`}
+              aria-current={isCurrent ? 'page' : undefined}
+              data-page-index={String(el)}
+              disabled={isCurrent}
+              onClick={() => {
+                if (isCurrent) return;
+                applyPage(el, ps);
+              }}
+            >
+              {String(el + 1)}
+            </button>
+          );
+        });
+        // The "共 N 行" total label is shown only when the status area
+        // is NOT rendered - otherwise the status bar already surfaces
+        // the full row-count summary and the label would be a duplicate.
+        const totalLabel = showStatusBar ? null : (
+          <span className="cx-table-pagination-total">{`共 ${totalRows} 行`}</span>
+        );
+        cluster = (
+          <div className="cx-table-pagination-cluster" role="navigation" aria-label="分页">
+            <div className="cx-table-pagination-nav">
+              <button
+                type="button"
+                className="cx-table-pagination-button cx-table-pagination-button--prev"
+                aria-label="Previous page"
+                disabled={atFirst}
+                onClick={() => {
+                  if (atFirst) return;
+                  applyPage(cp - 1, ps);
                 }}
               >
-                {pageSizeOptions.map((opt) => (
-                  <option key={`size-${opt}`} value={opt}>{`${opt} 行/页`}</option>
-                ))}
-              </select>
-            </label>
+                «
+              </button>
+              <div
+                className="cx-table-pagination-pages"
+                data-current-page={String(cp)}
+                data-total-pages={String(tp)}
+                role="group"
+                aria-label={`Page ${humanCurrent} of ${humanTotal}`}
+              >
+                {pageBarChildren}
+              </div>
+              <button
+                type="button"
+                className="cx-table-pagination-button cx-table-pagination-button--next"
+                aria-label="Next page"
+                disabled={atLast}
+                onClick={() => {
+                  if (atLast) return;
+                  applyPage(cp + 1, ps);
+                }}
+              >
+                »
+              </button>
+            </div>
+            <div className="cx-table-pagination-meta">
+              {totalLabel}
+              <label className="cx-table-pagination-size">
+                <span className="cx-table-pagination-size-label">每页 </span>
+                <select
+                  className="cx-table-pagination-size-select"
+                  aria-label="Rows per page"
+                  value={ps}
+                  onChange={(e) => {
+                    const nextSize = Number(e.target.value);
+                    if (Number.isFinite(nextSize) && nextSize > 0) {
+                      applyPage(pageStateRef.current, nextSize);
+                    }
+                  }}
+                >
+                  {pageSizeOptions.map((opt) => (
+                    <option key={`size-${opt}`} value={opt}>{`${opt} 行/页`}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
           </div>
+        );
+      }
+
+      footerBar = (
+        <div className="cx-table-pagination" role="group" aria-label="表格底栏">
+          {statusArea}
+          {cluster}
         </div>
       );
     }
-
     // (vue3 equivalent): inline CSS custom
     // properties on the wrapper so the theme reaches descendant CSS
     // via `var(--cx-table-*, fallback)`. Geometry tokens emit with
@@ -11684,8 +11697,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         {header}
         {filterRow}
         {body}
-        {statusBar}
-        {paginationFooter}
+        {footerBar}
         {rowDropLine}
         {contextMenuPosition != null && contextMenu != null && contextMenu.items.length > 0 && (
           <div
