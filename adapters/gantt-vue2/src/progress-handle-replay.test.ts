@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ChronixGantt } from './chronix-gantt.js';
 
+import type { BarProgressPayload } from './use-gantt-pointer.js';
 import type { AxisRangePlanInput, BarSpec, RowSpec } from '@chronixjs/gantt';
 import type Vue from 'vue';
 
@@ -209,7 +210,7 @@ describe('<ChronixGantt> progress-handle drag — recording replay (vue2 SFC por
       pointerId: 1,
     });
 
-    const emitted = wrapper.emitted('bar-progress');
+    const emitted = wrapper.emitted('bar-progress') as [BarProgressPayload][] | undefined;
     expect(emitted).toBeTruthy();
     expect(emitted!).toHaveLength(1);
     const payload = emitted![0]![0];

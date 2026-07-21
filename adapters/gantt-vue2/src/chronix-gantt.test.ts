@@ -341,7 +341,15 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction ', () => {
     await body.trigger('pointermove', pointerOpts(660, 20));
     await body.trigger('pointerup', pointerOpts(660, 20));
 
-    const emits = wrapper.emitted('bar-drop');
+    const emits = wrapper.emitted('bar-drop') as
+      | [
+          {
+            barId: string;
+            oldRange: { start: Date; end: Date };
+            newRange: { start: Date; end: Date };
+          },
+        ][]
+      | undefined;
     expect(emits).toBeDefined();
     expect(emits).toHaveLength(1);
     const payload = emits![0]![0];
@@ -366,7 +374,7 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction ', () => {
     await body.trigger('pointerup', pointerOpts(603, 20));
 
     expect(wrapper.emitted('bar-drop')).toBeUndefined();
-    const clicks = wrapper.emitted('bar-click');
+    const clicks = wrapper.emitted('bar-click') as [{ barId: string }][] | undefined;
     expect(clicks).toBeDefined();
     expect(clicks).toHaveLength(1);
     expect(clicks![0]![0].barId).toBe('b1');
@@ -387,7 +395,16 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction ', () => {
     await body.trigger('pointermove', pointerOpts(775, 20)); // +60 px = +1 hour
     await body.trigger('pointerup', pointerOpts(775, 20));
 
-    const emits = wrapper.emitted('bar-resize');
+    const emits = wrapper.emitted('bar-resize') as
+      | [
+          {
+            barId: string;
+            edge: 'start' | 'end';
+            oldRange: { start: Date; end: Date };
+            newRange: { start: Date; end: Date };
+          },
+        ][]
+      | undefined;
     expect(emits).toBeDefined();
     const payload = emits![0]![0];
     expect(payload.barId).toBe('b1');
@@ -410,7 +427,9 @@ describe('@chronixjs/gantt-vue2 ChronixGantt — pointer interaction ', () => {
     await body.trigger('pointermove', pointerOpts(300, 20));
     await body.trigger('pointerup', pointerOpts(300, 20));
 
-    const emits = wrapper.emitted('select');
+    const emits = wrapper.emitted('select') as
+      | [{ rowId: string; range: { start: Date; end: Date } }][]
+      | undefined;
     expect(emits).toBeDefined();
     const payload = emits![0]![0];
     expect(payload.rowId).toBe('r1');
@@ -626,7 +645,9 @@ describe('<ChronixGantt> validation gates', () => {
     await body.trigger('pointerup', pointerOpts(660, 20));
 
     expect(wrapper.emitted('bar-drop')).toBeUndefined();
-    const rejected = wrapper.emitted('bar-drop-rejected');
+    const rejected = wrapper.emitted('bar-drop-rejected') as
+      | [{ barId: string; reason: string; attemptedRange: { start: Date; end: Date } }][]
+      | undefined;
     expect(rejected).toBeDefined();
     expect(rejected).toHaveLength(1);
     const payload = rejected![0]![0];
@@ -662,7 +683,9 @@ describe('<ChronixGantt> validation gates', () => {
     await body.trigger('pointerup', pointerOpts(775, 20));
 
     expect(wrapper.emitted('bar-resize')).toBeUndefined();
-    const rejected = wrapper.emitted('bar-resize-rejected');
+    const rejected = wrapper.emitted('bar-resize-rejected') as
+      | [{ barId: string; edge: string; reason: string }][]
+      | undefined;
     expect(rejected).toBeDefined();
     const payload = rejected![0]![0];
     expect(payload.barId).toBe('b1');
@@ -686,7 +709,9 @@ describe('<ChronixGantt> validation gates', () => {
     await body.trigger('pointerup', pointerOpts(300, 20));
 
     expect(wrapper.emitted('select')).toBeUndefined();
-    const rejected = wrapper.emitted('select-rejected');
+    const rejected = wrapper.emitted('select-rejected') as
+      | [{ rowId: string; reason: string }][]
+      | undefined;
     expect(rejected).toBeDefined();
     const payload = rejected![0]![0];
     expect(payload.rowId).toBe('r1');
@@ -782,7 +807,9 @@ describe('<ChronixGantt> validation gates', () => {
     await body.trigger('pointerup', pointerOpts(600, 20));
 
     expect(wrapper.emitted('select')).toBeUndefined();
-    const rejected = wrapper.emitted('select-rejected');
+    const rejected = wrapper.emitted('select-rejected') as
+      | [{ rowId: string; reason: string }][]
+      | undefined;
     expect(rejected).toBeDefined();
     expect(rejected![0]![0].reason).toBe('overlap');
   });
@@ -817,7 +844,9 @@ describe('<ChronixGantt> validation gates', () => {
     await body.trigger('pointerup', pointerOpts(1020, 20));
 
     expect(wrapper.emitted('select')).toBeUndefined();
-    const rejected = wrapper.emitted('select-rejected');
+    const rejected = wrapper.emitted('select-rejected') as
+      | [{ rowId: string; reason: string }][]
+      | undefined;
     expect(rejected).toBeDefined();
     expect(rejected![0]![0].reason).toBe('constraint');
   });
@@ -1569,7 +1598,7 @@ describe('<ChronixGantt> link rendering + LINK_SLOT_NAME wire ', () => {
     );
     const emitted = wrapper.emitted('link-orphan') ?? [];
     // 1st mount emit fires for A; setProps triggers another emit batch with A + B.
-    const allIds = emitted.flatMap((e) => e);
+    const allIds = emitted.flatMap((e) => e as unknown[]);
     expect(allIds).toContain('orphan-A');
     expect(allIds).toContain('orphan-B');
     warnSpy.mockRestore();
@@ -2060,7 +2089,7 @@ describe('<ChronixGantt> header toolbar ', () => {
       propsData: { bars: [], rows, axisInput: dayAxisInput, headerToolbar: DEMO_TOOLBAR },
     });
     await wrapper.find('button.cx-gantt-week-button').trigger('click');
-    const emitted = wrapper.emitted('update:axisInput');
+    const emitted = wrapper.emitted('update:axisInput') as AxisRangePlanInput[][] | undefined;
     expect(emitted).toBeTruthy();
     expect(emitted![0]![0]).toMatchObject({ viewId: 'week' });
     // anchorDate is preserved across view changes
@@ -2072,7 +2101,7 @@ describe('<ChronixGantt> header toolbar ', () => {
       propsData: { bars: [], rows, axisInput: dayAxisInput, headerToolbar: DEMO_TOOLBAR },
     });
     await wrapper.find('button.cx-gantt-next-button').trigger('click');
-    const emitted = wrapper.emitted('update:axisInput')!;
+    const emitted = wrapper.emitted('update:axisInput') as AxisRangePlanInput[][];
     expect(emitted[0]![0]!.viewId).toBe('day');
     expect(emitted[0]![0]!.anchorDate.getDate()).toBe(dayAxisInput.anchorDate.getDate() + 1);
   });
@@ -2082,7 +2111,7 @@ describe('<ChronixGantt> header toolbar ', () => {
       propsData: { bars: [], rows, axisInput: dayAxisInput, headerToolbar: DEMO_TOOLBAR },
     });
     await wrapper.find('button.cx-gantt-prev-button').trigger('click');
-    const emitted = wrapper.emitted('update:axisInput')!;
+    const emitted = wrapper.emitted('update:axisInput') as AxisRangePlanInput[][];
     expect(emitted[0]![0]!.anchorDate.getDate()).toBe(dayAxisInput.anchorDate.getDate() - 1);
   });
 
@@ -2091,7 +2120,7 @@ describe('<ChronixGantt> header toolbar ', () => {
       propsData: { bars: [], rows, axisInput: dayAxisInput, headerToolbar: DEMO_TOOLBAR },
     });
     await wrapper.find('button.cx-gantt-today-button').trigger('click');
-    const emitted = wrapper.emitted('update:axisInput')!;
+    const emitted = wrapper.emitted('update:axisInput') as AxisRangePlanInput[][];
     const next = emitted[0]![0]!.anchorDate;
     expect(next.getHours()).toBe(0);
     expect(next.getMinutes()).toBe(0);
@@ -2247,9 +2276,7 @@ describe('<ChronixGantt> slot rects ', () => {
     // At least one weekend slot in any 30-day month view
     const hasSatOrSun = slotRects.wrappers.some((r) => {
       const cls = r.classes();
-      return ['cx-gantt-slot-sat', 'cx-gantt-slot-sun'].some((slotClass) =>
-        cls.includes(slotClass),
-      );
+      return cls.includes('cx-gantt-slot-sat') || cls.includes('cx-gantt-slot-sun');
     });
     expect(hasSatOrSun).toBe(true);
   });
