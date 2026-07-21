@@ -1491,7 +1491,6 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           :rows="rows"
           :show-filter-row="true"
           :show-footer-row="true"
-          :show-column-visibility-menu="true"
           :show-column-header-menu="true"
           :context-menu="phase83ContextMenuConfig"
           @column-header-menu-action="onColumnHeaderMenuAction"

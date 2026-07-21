@@ -1473,7 +1473,6 @@ export function App(): ReactElement {
             rows={rows}
             showFilterRow
             showFooterRow
-            showColumnVisibilityMenu
             showColumnHeaderMenu
             contextMenu={phase83ContextMenuConfig}
             onColumnHeaderMenuAction={onColumnHeaderMenuAction}

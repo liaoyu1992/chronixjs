@@ -1417,7 +1417,6 @@ function onColumnHeaderMenuAction(payload: {
           :rows="rows"
           :show-filter-row="true"
           :show-footer-row="true"
-          :show-column-visibility-menu="true"
           :show-column-header-menu="true"
           :context-menu="phase83ContextMenuConfig"
           @column-header-menu-action="onColumnHeaderMenuAction"
