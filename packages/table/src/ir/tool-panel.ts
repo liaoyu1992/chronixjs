@@ -165,7 +165,8 @@ export const SETTINGS_COLUMN_ID = '__cx_settings__';
 export const SETTINGS_COLUMN_SPEC: Readonly<ColumnSpec> = {
   id: SETTINGS_COLUMN_ID,
   headerName: '',
-  width: 44,
+  width: 32,
+  minWidth: 32,
   pinned: 'right',
   actions: [],
   sortable: false,
