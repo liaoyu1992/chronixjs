@@ -1509,6 +1509,7 @@ export function App(): ReactElement {
             onHistoryReplay={onHistoryReplay}
             onHistoryChange={onHistoryChange}
             onHeaderGroupClick={onHeaderGroupClick}
+            toolPanel={toolPanelConfig}
           />
         </section>
         <section className="demo-page__table demo-page__tree-table">
@@ -1539,6 +1540,7 @@ export function App(): ReactElement {
             selectionMode="multi"
             selectionColumn={{ show: true, side: 'left' }}
             onExpandedChange={onTreeExpandedChange}
+            toolPanel={toolPanelConfig}
           />
         </section>
         <section className="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
@@ -1576,6 +1578,7 @@ export function App(): ReactElement {
             rows={tier2Rows}
             loading={tier2Loading}
             data-testid="tier2-table"
+            toolPanel={toolPanelConfig}
           />
         </section>
         <section className="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
@@ -1605,6 +1608,7 @@ export function App(): ReactElement {
             onLazyLoadSuccess={onLazySuccess}
             onLazyLoadError={onLazyError}
             data-testid="lazy-table"
+            toolPanel={toolPanelConfig}
           />
         </section>
         <section
@@ -1656,6 +1660,7 @@ export function App(): ReactElement {
             initialPageSize={25}
             showFilterRow
             data-testid="server-side-table"
+            toolPanel={toolPanelConfig}
           />
         </section>
         <section
@@ -1684,6 +1689,7 @@ export function App(): ReactElement {
             rows={tier3Rows}
             enableRowAutoHeight
             data-testid="tier3-finale-table"
+            toolPanel={toolPanelConfig}
           />
         </section>
         <section

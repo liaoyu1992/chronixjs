@@ -1449,6 +1449,7 @@ function onColumnHeaderMenuAction(payload: {
           @history-replay="onHistoryReplay"
           @history-change="onHistoryChange"
           @header-group-click="onHeaderGroupClick"
+          :tool-panel="toolPanelConfig"
         />
       </section>
       <section class="demo-page__table demo-page__tree-table">
@@ -1478,6 +1479,7 @@ function onColumnHeaderMenuAction(payload: {
           selection-mode="multi"
           :selection-column="{ show: true, side: 'left' }"
           @expanded-change="onTreeExpandedChange"
+          :tool-panel="toolPanelConfig"
         />
       </section>
       <section class="demo-page__table demo-page__tier2-table" data-testid="tier2-section">
@@ -1503,6 +1505,7 @@ function onColumnHeaderMenuAction(payload: {
           :rows="tier2Rows"
           :loading="tier2Loading"
           data-testid="tier2-table"
+          :tool-panel="toolPanelConfig"
         />
       </section>
       <section class="demo-page__table demo-page__lazy-table" data-testid="lazy-section">
@@ -1533,6 +1536,7 @@ function onColumnHeaderMenuAction(payload: {
           @lazy-load-start="onLazyStart"
           @lazy-load-success="onLazySuccess"
           @lazy-load-error="onLazyError"
+          :tool-panel="toolPanelConfig"
         />
       </section>
       <section
@@ -1589,6 +1593,7 @@ function onColumnHeaderMenuAction(payload: {
           :show-pagination="serverSideshowPagination"
           :initial-page-size="25"
           :show-filter-row="true"
+          :tool-panel="toolPanelConfig"
         />
       </section>
       <section
@@ -1619,6 +1624,7 @@ function onColumnHeaderMenuAction(payload: {
           :columns="tier3Columns"
           :rows="tier3Rows"
           :enable-row-auto-height="true"
+          :tool-panel="toolPanelConfig"
         />
       </section>
       <section
