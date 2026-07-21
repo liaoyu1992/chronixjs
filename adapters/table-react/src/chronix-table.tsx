@@ -103,6 +103,7 @@ import {
   type PinnedColsResult,
   DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
+  SETTINGS_COLUMN_SPEC,
   type RowAction,
   type RowDataSource,
   type RowSpec,
@@ -3059,10 +3060,17 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // because we pre-patch the input. When no resize is in flight,
     // returns the `columns` prop by reference so the useMemo chain
     // inside `useTableLayout` doesn't re-trigger.
+    const effectiveColumns = useMemo<readonly ColumnSpec[]>(() => {
+      const tp = toolPanel;
+      if (tp == null || !tp.show || tp.panels.length === 0) return columns;
+      if (columns.some((c) => c.actions != null)) return columns;
+      return [...columns, SETTINGS_COLUMN_SPEC];
+    }, [columns, toolPanel]);
+
     const columnsForLayout = useMemo<readonly ColumnSpec[]>(() => {
       const resizing = resizingColumnState;
-      if (resizing == null) return columns;
-      return columns.map((col): ColumnSpec => {
+      if (resizing == null) return effectiveColumns;
+      return effectiveColumns.map((col): ColumnSpec => {
         if (col.id !== resizing.colId) return col;
         // Destructure to OMIT `flex` (rather than set it to undefined)
         // because the package's tsconfig has
@@ -3073,7 +3081,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         const { flex: _omittedFlex, ...rest } = col;
         return { ...rest, width: resizing.draftWidth };
       });
-    }, [columns, resizingColumnState]);
+    }, [effectiveColumns, resizingColumnState]);
 
     // (vue3 equivalent): pagePass is a passthrough
     // when showPagination is false — feed `pageSize: 0` so the
@@ -3932,7 +3940,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // unused in current scope (consumed below in selection helpers).
     void filteredRows;
 
-    const columnTable = useMemo<ColumnTable>(() => createColumnTable(columns), [columns]);
+    const columnTable = useMemo<ColumnTable>(
+      () => createColumnTable(effectiveColumns),
+      [effectiveColumns],
+    );
     /** -A (2026-05-30 — react port): ref-mirror for imperative TableHandle access. */
     const columnTableRef = useRef(columnTable);
     columnTableRef.current = columnTable;
@@ -8615,6 +8626,8 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
            * the label text ("操作") is shown alongside the icon. When
            * actions is empty, only the icon is shown (no label). */}
           {(() => {
+            const toolPanelEnabled =
+              toolPanel != null && toolPanel.show && toolPanel.panels.length > 0;
             const colForSettings = columnTable.getById(cell.colId);
             const isActionsColForSettings = colForSettings?.actions != null;
             const showHeaderLabel =
@@ -8624,7 +8637,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 {showHeaderLabel && (
                   <span className="cx-table-header-cell-label">{cell.label}</span>
                 )}
-                {isActionsColForSettings && (
+                {toolPanelEnabled && isActionsColForSettings && (
                   <button
                     ref={(el: HTMLButtonElement | null) => {
                       settingsIconButtonRef.current = el;

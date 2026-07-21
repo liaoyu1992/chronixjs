@@ -1,3 +1,5 @@
+import type { ColumnSpec } from './column-spec.js';
+
 /**
  * IR primitive: tool-panel popover descriptor.
  *
@@ -140,3 +142,34 @@ export const DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX = 320;
  * `ToolPanelConfig.popoverMaxHeight` is omitted.
  */
 export const DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX = 400;
+
+/**
+ * Stable id of the synthetic settings column that the adapter
+ * injects (pinned right, `actions: []`) when `ToolPanelConfig.show`
+ * is true + non-empty `panels` AND the consumer's `columns` prop
+ * contains NO column with an `actions` field. The settings (gear)
+ * icon lives in this column's header cell. The column is internal -
+ * it never leaks into `columns-change` emits, xlsx export, or
+ * saved-table-view serialization (all of those operate on the raw
+ * `props.columns`, not the adapter-internal effective column list).
+ */
+export const SETTINGS_COLUMN_ID = '__cx_settings__';
+
+/**
+ * Frozen `ColumnSpec` for the synthetic settings column. `actions:
+ * []` (empty) marks it as an actions column so existing actions-
+ * column special-casing (no sort, no reorder, no header menu, empty
+ * body cell) applies automatically. Consumers should never need to
+ * reference this directly.
+ */
+export const SETTINGS_COLUMN_SPEC: Readonly<ColumnSpec> = {
+  id: SETTINGS_COLUMN_ID,
+  headerName: '',
+  width: 44,
+  pinned: 'right',
+  actions: [],
+  sortable: false,
+  reorderable: false,
+  resizable: false,
+  autosizeable: false,
+};

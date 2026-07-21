@@ -65,3 +65,6 @@ docs/.vitepress/cache
 # Underscore prefix (_probe*.mjs, _cap_cmp.mjs, _shots/) marks throwaway
 # local diagnostics; tracked scripts use run-*/verify-phase-* names.
 tooling/golden-runner/scripts/_*
+
+# local dev-server launchers/logs
+.dev-servers/

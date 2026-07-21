@@ -9608,10 +9608,25 @@ describe('tool-panel tablist keyboard nav (react)', () => {
     );
     // toolPanel.show=false -> no popover tabs render.
     expect(container.querySelector('.cx-table-settings-popover__tabs')).toBeFalsy();
-    // The settings button itself is decoupled from toolPanel.show: it
-    // renders whenever the column has `actions` (the button toggles a
-    // popover whose content adapts to whether toolPanel is configured).
+    // The settings button is gated on toolPanel.show: it does NOT render when
+    // toolPanel is disabled (show=false), even if the column has `actions`
+    // (bug fix: previously decoupled, which rendered a dead gear icon on actions
+    // columns of tables that never configured toolPanel).
+    expect(container.querySelector('.cx-table-header-settings-button')).toBeFalsy();
+  });
+
+  it('tool-panel: injects synthetic settings column when no actions column exists (react)', () => {
+    const { container } = render(
+      <ChronixTable columns={columns} rows={rows} toolPanel={panelConfig} />,
+    );
+    // bug fix: when toolPanel is enabled but the consumer declared NO
+    // actions column, the adapter injects a pinned-right empty actions
+    // column (id __cx_settings__) so the gear icon always has a header.
+    expect(
+      container.querySelector('.cx-table-header-cell[data-col-id="__cx_settings__"]'),
+    ).toBeTruthy();
     expect(container.querySelector('.cx-table-header-settings-button')).toBeTruthy();
+    expect(container.querySelector('.cx-table-header-cell[data-col-id="actions"]')).toBeFalsy();
   });
 });
 

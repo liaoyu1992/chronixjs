@@ -102,6 +102,7 @@ import {
   type PinnedColsResult,
   DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
+  SETTINGS_COLUMN_SPEC,
   type RowAction,
   type RowDataSource,
   type RowValidator,
@@ -2620,10 +2621,18 @@ export const ChronixTable = defineComponent({
     // (matches AG-Grid / MUI DataGrid). When no resize is in flight,
     // returns `props.columns` by reference (no allocation). Verbatim
     // port of vue3 .
+    const effectiveColumns = computed<readonly ColumnSpec[]>(() => {
+      const cols = props.columns;
+      const tp = props.toolPanel;
+      if (tp == null || !tp.show || tp.panels.length === 0) return cols;
+      if (cols.some((c) => c.actions != null)) return cols;
+      return [...cols, SETTINGS_COLUMN_SPEC];
+    });
+
     const columnsForLayout = computed<readonly ColumnSpec[]>(() => {
       const resizing = resizingColumnRef.value;
-      if (resizing == null) return props.columns;
-      return props.columns.map((col): ColumnSpec => {
+      if (resizing == null) return effectiveColumns.value;
+      return effectiveColumns.value.map((col): ColumnSpec => {
         if (col.id !== resizing.colId) return col;
         // Destructure to OMIT `flex` (rather than set it to undefined)
         // because the package's tsconfig has `exactOptionalPropertyTypes:
@@ -2805,6 +2814,15 @@ export const ChronixTable = defineComponent({
     const settingsPopoverOpenRef = ref<boolean>(false);
     const settingsIconButtonRef = ref<HTMLElement | null>(null);
     const settingsPopoverRef = ref<HTMLElement | null>(null);
+    function setSettingsIconButtonRef(el: HTMLElement | null): void {
+      settingsIconButtonRef.value = el;
+    }
+    function setSettingsPopoverRef(el: HTMLElement | null): void {
+      settingsPopoverRef.value = el;
+    }
+    function setSettingsPopoverTabsRef(el: HTMLElement | null): void {
+      settingsPopoverTabsRef.value = el;
+    }
     function applyToolPanelChange(nextId: string | null): void {
       const prev = activeToolPanelId.value;
       if (prev === nextId && settingsPopoverOpenRef.value) return;
@@ -3268,7 +3286,7 @@ export const ChronixTable = defineComponent({
       { immediate: true },
     );
 
-    const columnTable = computed<ColumnTable>(() => createColumnTable(props.columns));
+    const columnTable = computed<ColumnTable>(() => createColumnTable(effectiveColumns.value));
     const rowDataSource = computed<RowDataSource>(() => createClientSideRowSource(props.rows));
 
     // (2026-05-28 — vue2 port): lazy children load helpers.
@@ -8064,40 +8082,41 @@ export const ChronixTable = defineComponent({
         // the label text ("操作") is shown alongside the icon. When
         // actions is empty, only the icon is shown (no label).
         const toolPanelCfg = props.toolPanel;
+        const toolPanelEnabled =
+          toolPanelCfg != null && toolPanelCfg.show && toolPanelCfg.panels.length > 0;
         const colForSettings = columnTable.value.getById(cell.colId);
         const isActionsColForSettings = colForSettings?.actions != null;
-        const settingsIconNode: VNode | null = isActionsColForSettings
-          ? h(
-              'button',
-              {
-                ref: ((el: HTMLElement | null) => {
-                  settingsIconButtonRef.value = el;
-                }) as never,
-                class: [
-                  'cx-table-header-settings-button',
-                  settingsPopoverOpenRef.value && 'cx-table-header-settings-button--open',
-                ]
-                  .filter(Boolean)
-                  .join(' '),
-                attrs: {
-                  type: 'button',
-                  'aria-haspopup': 'dialog',
-                  'aria-expanded': settingsPopoverOpenRef.value ? 'true' : 'false',
-                  'aria-label': '设置',
-                },
-                on: {
-                  pointerdown: (e: PointerEvent) => {
-                    e.stopPropagation();
+        const settingsIconNode: VNode | null =
+          toolPanelEnabled && isActionsColForSettings
+            ? h(
+                'button',
+                {
+                  ref: setSettingsIconButtonRef as never,
+                  class: [
+                    'cx-table-header-settings-button',
+                    settingsPopoverOpenRef.value && 'cx-table-header-settings-button--open',
+                  ]
+                    .filter(Boolean)
+                    .join(' '),
+                  attrs: {
+                    type: 'button',
+                    'aria-haspopup': 'dialog',
+                    'aria-expanded': settingsPopoverOpenRef.value ? 'true' : 'false',
+                    'aria-label': '设置',
                   },
-                  click: (e: MouseEvent) => {
-                    e.stopPropagation();
-                    toggleSettingsPopover();
+                  on: {
+                    pointerdown: (e: PointerEvent) => {
+                      e.stopPropagation();
+                    },
+                    click: (e: MouseEvent) => {
+                      e.stopPropagation();
+                      toggleSettingsPopover();
+                    },
                   },
                 },
-              },
-              '⚙',
-            )
-          : null;
+                '⚙',
+              )
+            : null;
         const showHeaderLabel =
           !isActionsColForSettings || (colForSettings?.actions?.length ?? 0) > 0;
         const headerChildren: (VNode | null)[] = [
@@ -12352,9 +12371,7 @@ export const ChronixTable = defineComponent({
         return h(
           'div',
           {
-            ref: ((el: HTMLElement | null) => {
-              settingsPopoverRef.value = el;
-            }) as never,
+            ref: setSettingsPopoverRef as never,
             class: 'cx-table-settings-popover',
             attrs: {
               role: 'dialog',
@@ -12372,9 +12389,7 @@ export const ChronixTable = defineComponent({
             h(
               'div',
               {
-                ref: ((el: HTMLElement | null) => {
-                  settingsPopoverTabsRef.value = el;
-                }) as never,
+                ref: setSettingsPopoverTabsRef as never,
                 class: 'cx-table-settings-popover__tabs',
                 attrs: {
                   role: 'tablist',

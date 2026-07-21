@@ -60,6 +60,8 @@ export type {
 export {
   DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
+  SETTINGS_COLUMN_ID,
+  SETTINGS_COLUMN_SPEC,
 } from './ir/index.js';
 
 // Data sources

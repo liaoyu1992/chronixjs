@@ -102,6 +102,7 @@ import {
   type PinnedColsResult,
   DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
+  SETTINGS_COLUMN_SPEC,
   type RowAction,
   type RowDataSource,
   type RowSpec,
@@ -3294,10 +3295,18 @@ export const ChronixTable = defineComponent({
     // B.1 so resizing a flex column converts it to explicit width
     // (matches AG-Grid / MUI DataGrid). When no resize is in flight,
     // returns `props.columns` by reference (no allocation).
+    const effectiveColumns = computed<readonly ColumnSpec[]>(() => {
+      const cols = props.columns;
+      const tp = props.toolPanel;
+      if (tp == null || !tp.show || tp.panels.length === 0) return cols;
+      if (cols.some((c) => c.actions != null)) return cols;
+      return [...cols, SETTINGS_COLUMN_SPEC];
+    });
+
     const columnsForLayout = computed<readonly ColumnSpec[]>(() => {
       const resizing = resizingColumnRef.value;
-      if (resizing == null) return props.columns;
-      return props.columns.map((col): ColumnSpec => {
+      if (resizing == null) return effectiveColumns.value;
+      return effectiveColumns.value.map((col): ColumnSpec => {
         if (col.id !== resizing.colId) return col;
         // Destructure to OMIT `flex` (rather than set it to undefined)
         // because the package's tsconfig has `exactOptionalPropertyTypes:
@@ -4178,7 +4187,7 @@ export const ChronixTable = defineComponent({
       { immediate: true },
     );
 
-    const columnTable = computed<ColumnTable>(() => createColumnTable(props.columns));
+    const columnTable = computed<ColumnTable>(() => createColumnTable(effectiveColumns.value));
     const rowDataSource = computed<RowDataSource>(() => createClientSideRowSource(props.rows));
 
     /**
@@ -9731,36 +9740,39 @@ export const ChronixTable = defineComponent({
         // the label text ("操作") is shown alongside the icon. When
         // actions is empty, only the icon is shown (no label).
         const toolPanelCfg = props.toolPanel;
+        const toolPanelEnabled =
+          toolPanelCfg != null && toolPanelCfg.show && toolPanelCfg.panels.length > 0;
         const colForSettings = columnTable.value.getById(cell.colId);
         const isActionsColForSettings = colForSettings?.actions != null;
-        const settingsIconNode: VNode | null = isActionsColForSettings
-          ? h(
-              'button',
-              {
-                type: 'button',
-                ref: (el: unknown) => {
-                  settingsIconButtonRef.value = el as HTMLElement | null;
+        const settingsIconNode: VNode | null =
+          toolPanelEnabled && isActionsColForSettings
+            ? h(
+                'button',
+                {
+                  type: 'button',
+                  ref: (el: unknown) => {
+                    settingsIconButtonRef.value = el as HTMLElement | null;
+                  },
+                  class: [
+                    'cx-table-header-settings-button',
+                    settingsPopoverOpenRef.value && 'cx-table-header-settings-button--open',
+                  ]
+                    .filter(Boolean)
+                    .join(' '),
+                  'aria-haspopup': 'dialog',
+                  'aria-expanded': settingsPopoverOpenRef.value ? 'true' : 'false',
+                  'aria-label': '设置',
+                  onPointerdown: (e: PointerEvent) => {
+                    e.stopPropagation();
+                  },
+                  onClick: (e: MouseEvent) => {
+                    e.stopPropagation();
+                    toggleSettingsPopover();
+                  },
                 },
-                class: [
-                  'cx-table-header-settings-button',
-                  settingsPopoverOpenRef.value && 'cx-table-header-settings-button--open',
-                ]
-                  .filter(Boolean)
-                  .join(' '),
-                'aria-haspopup': 'dialog',
-                'aria-expanded': settingsPopoverOpenRef.value ? 'true' : 'false',
-                'aria-label': '设置',
-                onPointerdown: (e: PointerEvent) => {
-                  e.stopPropagation();
-                },
-                onClick: (e: MouseEvent) => {
-                  e.stopPropagation();
-                  toggleSettingsPopover();
-                },
-              },
-              '⚙',
-            )
-          : null;
+                '⚙',
+              )
+            : null;
         const showHeaderLabel =
           !isActionsColForSettings || (colForSettings?.actions?.length ?? 0) > 0;
         const headerChildren: (VNode | null)[] = [

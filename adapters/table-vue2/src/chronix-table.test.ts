@@ -9067,8 +9067,26 @@ describe('tool-panel tablist keyboard nav (vue2)', () => {
       },
     });
     expect(wrapper.find('.cx-table-settings-popover__tabs').exists()).toBe(false);
-    // settings button is decoupled from toolPanel.show: renders when actions != null.
+    // settings button is gated on toolPanel.show: it does NOT render when
+    // toolPanel is disabled (show=false), even when the column has `actions`
+    // (bug fix: previously decoupled, which rendered a dead gear icon on actions
+    // columns of tables that never configured toolPanel).
+    expect(wrapper.find('.cx-table-header-settings-button').exists()).toBe(false);
+    wrapper.destroy();
+  });
+
+  it('tool-panel: injects synthetic settings column when no actions column exists (vue2)', () => {
+    const wrapper = mount(TableForTest, {
+      propsData: { columns, rows, toolPanel: panelConfig },
+    });
+    // bug fix: when toolPanel is enabled but the consumer declared NO
+    // actions column, the adapter injects a pinned-right empty actions
+    // column (id __cx_settings__) so the gear icon always has a header.
+    expect(wrapper.find('.cx-table-header-cell[data-col-id="__cx_settings__"]').exists()).toBe(
+      true,
+    );
     expect(wrapper.find('.cx-table-header-settings-button').exists()).toBe(true);
+    expect(wrapper.find('.cx-table-header-cell[data-col-id="actions"]').exists()).toBe(false);
     wrapper.destroy();
   });
 });
