@@ -104,6 +104,7 @@ import {
   DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
   SETTINGS_COLUMN_SPEC,
+  normalizeColumnSpec,
   type RowAction,
   type RowDataSource,
   type RowSpec,
@@ -3061,10 +3062,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // returns the `columns` prop by reference so the useMemo chain
     // inside `useTableLayout` doesn't re-trigger.
     const effectiveColumns = useMemo<readonly ColumnSpec[]>(() => {
+      const normalized = columns.map(normalizeColumnSpec);
       const tp = toolPanel;
-      if (tp == null || !tp.show || tp.panels.length === 0) return columns;
-      if (columns.some((c) => c.actions != null)) return columns;
-      return [...columns, SETTINGS_COLUMN_SPEC];
+      if (tp == null || !tp.show || tp.panels.length === 0) return normalized;
+      if (normalized.some((c) => c.actions != null)) return normalized;
+      return [...normalized, SETTINGS_COLUMN_SPEC];
     }, [columns, toolPanel]);
 
     const columnsForLayout = useMemo<readonly ColumnSpec[]>(() => {
@@ -8969,6 +8971,30 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               const pinnedFilterClasses = pinnedCellModifierSuffixes(col.id)
                 .map((suffix) => `cx-table-filter-cell${suffix}`)
                 .join(' ');
+
+              // Action columns render an empty filter cell - no input
+              // at all. The actions strip is button-only content; a
+              // filter input (even disabled) is meaningless UI noise.
+              if (col.actions != null && col.actions.length > 0) {
+                return (
+                  <div
+                    key={`filter-cell-${col.id}`}
+                    className={
+                      pinnedFilterClasses
+                        ? `cx-table-filter-cell ${pinnedFilterClasses}`
+                        : 'cx-table-filter-cell'
+                    }
+                    data-col-id={col.id}
+                    style={{
+                      boxSizing: 'border-box',
+                      width: `${widthByColId[col.id] ?? 0}px`,
+                      paddingLeft: `${t.cellPaddingX}px`,
+                      paddingRight: `${t.cellPaddingX}px`,
+                      ...pinnedFilterStyle,
+                    }}
+                  />
+                );
+              }
 
               // (react port): set-filter dropdown branch.
               if (isSetFilterUi && isFilterable) {

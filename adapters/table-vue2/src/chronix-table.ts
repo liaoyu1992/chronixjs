@@ -103,6 +103,7 @@ import {
   DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
   SETTINGS_COLUMN_SPEC,
+  normalizeColumnSpec,
   type RowAction,
   type RowDataSource,
   type RowValidator,
@@ -2622,7 +2623,7 @@ export const ChronixTable = defineComponent({
     // returns `props.columns` by reference (no allocation). Verbatim
     // port of vue3 .
     const effectiveColumns = computed<readonly ColumnSpec[]>(() => {
-      const cols = props.columns;
+      const cols = props.columns.map(normalizeColumnSpec);
       const tp = props.toolPanel;
       if (tp == null || !tp.show || tp.panels.length === 0) return cols;
       if (cols.some((c) => c.actions != null)) return cols;
@@ -8651,6 +8652,30 @@ export const ChronixTable = defineComponent({
             const pinnedFilterClasses = pinnedCellModifierSuffixes(col.id)
               .map((suffix) => `cx-table-filter-cell${suffix}`)
               .join(' ');
+
+            // Action columns render an empty filter cell - no input
+            // at all. The actions strip is button-only content; a
+            // filter input (even disabled) is meaningless UI noise.
+            if (col.actions != null && col.actions.length > 0) {
+              return h(
+                'div',
+                {
+                  key: `filter-cell-${col.id}`,
+                  class: pinnedFilterClasses
+                    ? `cx-table-filter-cell ${pinnedFilterClasses}`
+                    : 'cx-table-filter-cell',
+                  attrs: { 'data-col-id': col.id },
+                  style: {
+                    boxSizing: 'border-box',
+                    width: `${widths[col.id] ?? 0}px`,
+                    paddingLeft: `${t.cellPaddingX}px`,
+                    paddingRight: `${t.cellPaddingX}px`,
+                    ...pinnedFilterStyle,
+                  },
+                },
+                [],
+              );
+            }
 
             // (vue2 port): set-filter dropdown branch.
             if (isSetFilterUi && isFilterable) {

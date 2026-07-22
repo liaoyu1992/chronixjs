@@ -103,6 +103,7 @@ import {
   DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
   SETTINGS_COLUMN_SPEC,
+  normalizeColumnSpec,
   type RowAction,
   type RowDataSource,
   type RowSpec,
@@ -3296,7 +3297,7 @@ export const ChronixTable = defineComponent({
     // (matches AG-Grid / MUI DataGrid). When no resize is in flight,
     // returns `props.columns` by reference (no allocation).
     const effectiveColumns = computed<readonly ColumnSpec[]>(() => {
-      const cols = props.columns;
+      const cols = props.columns.map(normalizeColumnSpec);
       const tp = props.toolPanel;
       if (tp == null || !tp.show || tp.panels.length === 0) return cols;
       if (cols.some((c) => c.actions != null)) return cols;
@@ -10326,6 +10327,28 @@ export const ChronixTable = defineComponent({
             const pinnedClassList = pinnedCellModifierSuffixes(col.id).map(
               (suffix) => `cx-table-filter-cell${suffix}`,
             );
+
+            // Action columns render an empty filter cell - no input
+            // at all. The actions strip is button-only content; a
+            // filter input (even disabled) is meaningless UI noise.
+            if (col.actions != null && col.actions.length > 0) {
+              return h(
+                'div',
+                {
+                  key: `filter-cell-${col.id}`,
+                  class: ['cx-table-filter-cell', ...pinnedClassList].join(' '),
+                  'data-col-id': col.id,
+                  style: {
+                    boxSizing: 'border-box',
+                    width: `${widths[col.id] ?? 0}px`,
+                    paddingLeft: `${t.cellPaddingX}px`,
+                    paddingRight: `${t.cellPaddingX}px`,
+                    ...pinnedStyle,
+                  },
+                },
+                [],
+              );
+            }
 
             // set-filter dropdown branch. Renders
             // a native HTML `<details><summary>` so the browser owns

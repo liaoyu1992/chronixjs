@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+﻿import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { h } from 'vue';
 
@@ -10553,5 +10553,66 @@ describe('nested-groups in-UI affordances (vue3)', () => {
     // Empty path throws per Decision A.1 / C.1.
     expect(() => vm.setMultiFilterEntryAtPath('qty', [], leaf!)).toThrow();
     expect(() => vm.getMultiFilterEntryAtPath('qty', [])).toThrow();
+  });
+
+  // ============================================================
+  // actions column: no filter / sort (core-enforced via normalizeColumnSpec)
+  // ============================================================
+
+  it('actions column filter cell renders no input (not even disabled)', () => {
+    const cols: readonly ColumnSpec[] = [
+      { id: 'id', field: 'id', headerName: 'ID', width: 80 },
+      {
+        id: 'actions',
+        headerName: '操作',
+        width: 160,
+        actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+      },
+    ];
+    const rs: readonly RowSpec[] = [
+      { id: 'r1', data: { id: 1 } },
+      { id: 'r2', data: { id: 2 } },
+    ];
+    const wrapper = mount(ChronixTable, {
+      props: { columns: cols, rows: rs, showFilterRow: true },
+    });
+    // The actions column's filter cell must exist (for column alignment)
+    // but must NOT contain any filter input.
+    const actionsCell = wrapper.find('.cx-table-filter-cell[data-col-id="actions"]');
+    expect(actionsCell.exists()).toBe(true);
+    expect(actionsCell.find('.cx-table-filter-input').exists()).toBe(false);
+    // A normal column's filter input is still rendered + enabled.
+    const idInput = wrapper.find('.cx-table-filter-input[data-col-id="id"]');
+    expect(idInput.exists()).toBe(true);
+    expect(idInput.attributes('disabled')).toBeUndefined();
+  });
+
+  it('actions column sort is rejected even without explicit sortable:false', async () => {
+    const cols: readonly ColumnSpec[] = [
+      { id: 'id', field: 'id', headerName: 'ID', width: 80 },
+      {
+        id: 'actions',
+        headerName: '操作',
+        width: 160,
+        actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+      },
+    ];
+    const rs: readonly RowSpec[] = [
+      { id: 'r1', data: { id: 2 } },
+      { id: 'r2', data: { id: 1 } },
+    ];
+    const wrapper = mount(ChronixTable, { props: { columns: cols, rows: rs } });
+    const vm = wrapper.vm as unknown as {
+      setSort: (s: SortSpec | readonly SortSpec[] | null) => void;
+      getSort: () => readonly SortSpec[];
+    };
+    // Programmatic sort on the actions column should be a no-op.
+    vm.setSort([{ colId: 'actions', direction: 'asc' }]);
+    await wrapper.vm.$nextTick();
+    expect(vm.getSort()).toEqual([]);
+    // Sort on a normal column still works.
+    vm.setSort([{ colId: 'id', direction: 'asc' }]);
+    await wrapper.vm.$nextTick();
+    expect(vm.getSort()).toEqual([{ colId: 'id', direction: 'asc' }]);
   });
 });

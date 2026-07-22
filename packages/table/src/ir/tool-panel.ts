@@ -1,4 +1,4 @@
-import type { ColumnSpec } from './column-spec.js';
+﻿import type { ColumnSpec } from './column-spec.js';
 
 /**
  * IR primitive: tool-panel popover descriptor.
@@ -170,6 +170,7 @@ export const SETTINGS_COLUMN_SPEC: Readonly<ColumnSpec> = {
   pinned: 'right',
   actions: [],
   sortable: false,
+  filterable: false,
   reorderable: false,
   resizable: false,
   autosizeable: false,

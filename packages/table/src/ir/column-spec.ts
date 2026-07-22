@@ -1,4 +1,4 @@
-import type { EditValidationError } from './edit-validation-error.js';
+﻿import type { EditValidationError } from './edit-validation-error.js';
 import type { RowSpec } from './row-spec.js';
 import type { CellComparatorArgs } from './sort-spec.js';
 import type { ExportStyle } from '../api/export-style.js';
@@ -648,4 +648,28 @@ export interface RowAction {
    * (button uses `label` as accessible name).
    */
   readonly ariaLabel?: string;
+}
+
+/**
+ * Normalize a `ColumnSpec` so that action columns (columns with a
+ * non-empty `actions` array) never participate in data operations
+ * that are meaningless for a button strip.
+ *
+ * When `actions` is a non-empty array, the returned column has
+ * `sortable` and `filterable` forced to `false` regardless of what
+ * the consumer declared. All other fields are preserved by reference.
+ *
+ * When the column is not an actions column (`actions` absent or
+ * empty), the input is returned by reference (zero allocation). When
+ * the column is already an actions column with both flags `false`,
+ * it is also returned by reference.
+ *
+ * This centralizes the "actions columns have no filter / sort"
+ * invariant in the core so every adapter inherits it by running
+ * columns through this helper in its `effectiveColumns` computed.
+ */
+export function normalizeColumnSpec(col: ColumnSpec): ColumnSpec {
+  if (col.actions == null || col.actions.length === 0) return col;
+  if (col.sortable === false && col.filterable === false) return col;
+  return { ...col, sortable: false, filterable: false };
 }
