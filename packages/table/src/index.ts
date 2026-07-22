@@ -58,12 +58,15 @@ export type {
   ContextMenuOpenPayload,
 } from './ir/index.js';
 export {
+  computeColumnHeaderMinWidth,
   DEFAULT_TOOL_PANEL_POPOVER_MAX_HEIGHT_PX,
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
   normalizeColumnSpec,
   SETTINGS_COLUMN_ID,
   SETTINGS_COLUMN_SPEC,
+  withHeaderMinWidth,
 } from './ir/index.js';
+export type { HeaderMinWidthOptions } from './ir/index.js';
 
 // Data sources
 export type { ColumnTable, RowDataSource } from './data/index.js';

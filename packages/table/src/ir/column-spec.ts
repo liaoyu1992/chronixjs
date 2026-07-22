@@ -673,3 +673,96 @@ export function normalizeColumnSpec(col: ColumnSpec): ColumnSpec {
   if (col.sortable === false && col.filterable === false) return col;
   return { ...col, sortable: false, filterable: false };
 }
+
+/**
+ * Fixed pixel widths of header chrome elements (mirror CSS values in
+ * `packages/table/src/styles.css`). Used by `withHeaderMinWidth` to
+ * compute the minimum column width that can display the header label +
+ * sort indicator + column-header menu button without truncating the
+ * interactive controls.
+ *
+ * - `HEADER_SORT_INDICATOR_WIDTH`: `min-width: 11px` + `margin-left: 6px`
+ *   = 17px (from `.cx-table-sort-indicator`).
+ * - `HEADER_MENU_BUTTON_WIDTH`: `width: 24px` (from
+ *   `.cx-table-column-header-menu-button`). The `margin-left: auto`
+ *   resolves to 0 when the column is at its minimum width, so it does
+ *   not contribute to the floor.
+ * - `HEADER_MIN_LABEL_WIDTH`: minimum space reserved for the label text
+ *   + ellipsis when the column is at its narrowest. 24px fits roughly
+ *   3-4 characters at the default 13px font size before truncation.
+ */
+const HEADER_SORT_INDICATOR_WIDTH = 17;
+const HEADER_MENU_BUTTON_WIDTH = 24;
+const HEADER_MIN_LABEL_WIDTH = 24;
+
+/**
+ * Options bag for `withHeaderMinWidth`.
+ */
+export interface HeaderMinWidthOptions {
+  /** Horizontal padding inside each cell (theme `cellPaddingX`). */
+  readonly cellPaddingX: number;
+  /** Whether the column-header menu (⋮) button is rendered. */
+  readonly showColumnHeaderMenu: boolean;
+}
+
+/**
+ * Compute the minimum pixel width a **data column** needs so that its
+ * header can display the label text + sort indicator + column-header
+ * menu button without the interactive controls being clipped.
+ *
+ * The formula is:
+ *
+ * ```
+ * cellPaddingX * 2 + HEADER_MIN_LABEL_WIDTH
+ *   + (sortable ? HEADER_SORT_INDICATOR_WIDTH : 0)
+ *   + (showColumnHeaderMenu ? HEADER_MENU_BUTTON_WIDTH : 0)
+ * ```
+ *
+ * **Action columns** (columns with a non-null `actions` array) are
+ * excluded - they have their own explicit sizing (e.g. the synthetic
+ * `SETTINGS_COLUMN_SPEC` at `width: 32`) and do not carry a sort
+ * indicator or column-header menu button.
+ *
+ * The function is pure and side-effect-free. It mirrors the CSS
+ * dimensions of the header chrome elements; if those CSS values change,
+ * the constants above must be updated to match.
+ */
+export function computeColumnHeaderMinWidth(
+  col: ColumnSpec,
+  options: HeaderMinWidthOptions,
+): number {
+  let width = options.cellPaddingX * 2 + HEADER_MIN_LABEL_WIDTH;
+  if (col.sortable !== false) {
+    width += HEADER_SORT_INDICATOR_WIDTH;
+  }
+  if (options.showColumnHeaderMenu) {
+    width += HEADER_MENU_BUTTON_WIDTH;
+  }
+  return width;
+}
+
+/**
+ * Enforce a minimum column width that can display the header label +
+ * sort indicator + column-header menu button.
+ *
+ * Returns the input column **by reference** (zero allocation) when:
+ * - The column is an actions column (not subject to header-content min),
+ * - Or the column's existing `minWidth` already meets or exceeds the
+ *   computed header-content minimum.
+ *
+ * Otherwise returns a shallow copy with `minWidth` bumped to the
+ * computed value. This ensures both `columnLayoutPass` (which reads
+ * `col.minWidth ?? defaultMinColumnWidth`) and `clampResizeWidth` (same
+ * resolution) respect the header-content floor.
+ *
+ * Adapters call this in their `effectiveColumns` computed/memo right
+ * after `normalizeColumnSpec` so the invariant applies uniformly to
+ * layout, drag-resize, and autosize.
+ */
+export function withHeaderMinWidth(col: ColumnSpec, options: HeaderMinWidthOptions): ColumnSpec {
+  if (col.actions != null) return col;
+  const headerMin = computeColumnHeaderMinWidth(col, options);
+  const currentMin = col.minWidth ?? 0;
+  if (currentMin >= headerMin) return col;
+  return { ...col, minWidth: headerMin };
+}

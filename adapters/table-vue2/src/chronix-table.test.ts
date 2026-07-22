@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+﻿import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { h } from 'vue';
 
@@ -164,7 +164,7 @@ describe('<ChronixTable> (vue2)', () => {
       getRowDataSource(): { getById(id: string): RowSpec | undefined };
       getResolvedWidth(colId: string): number | undefined;
     };
-    expect(handle.getColumnTable().getById('id')).toEqual(columns[0]);
+    expect(handle.getColumnTable().getById('id')).toEqual({ ...columns[0], minWidth: 57 });
     expect(handle.getRowDataSource().getById('r1')).toEqual(rows[0]);
     expect(handle.getResolvedWidth('id')).toBe(80);
     expect(handle.getResolvedWidth('does-not-exist')).toBeUndefined();

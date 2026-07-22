@@ -1,4 +1,4 @@
-import {
+﻿import {
   appendMutationBatch,
   clampResizeWidth,
   coerceEditDraftValue,
@@ -104,6 +104,8 @@ import {
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
   SETTINGS_COLUMN_SPEC,
   normalizeColumnSpec,
+  withHeaderMinWidth,
+  type HeaderMinWidthOptions,
   type RowAction,
   type RowDataSource,
   type RowSpec,
@@ -3297,7 +3299,13 @@ export const ChronixTable = defineComponent({
     // (matches AG-Grid / MUI DataGrid). When no resize is in flight,
     // returns `props.columns` by reference (no allocation).
     const effectiveColumns = computed<readonly ColumnSpec[]>(() => {
-      const cols = props.columns.map(normalizeColumnSpec);
+      const headerMinWidthOpts: HeaderMinWidthOptions = {
+        cellPaddingX: mergedTheme.value.cellPaddingX,
+        showColumnHeaderMenu: props.showColumnHeaderMenu === true,
+      };
+      const cols = props.columns
+        .map(normalizeColumnSpec)
+        .map((col) => withHeaderMinWidth(col, headerMinWidthOpts));
       const tp = props.toolPanel;
       if (tp == null || !tp.show || tp.panels.length === 0) return cols;
       if (cols.some((c) => c.actions != null)) return cols;

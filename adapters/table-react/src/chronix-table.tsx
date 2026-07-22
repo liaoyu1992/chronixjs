@@ -1,4 +1,4 @@
-import {
+﻿import {
   appendMutationBatch,
   clampResizeWidth,
   coerceEditDraftValue,
@@ -105,6 +105,8 @@ import {
   DEFAULT_TOOL_PANEL_POPOVER_WIDTH_PX,
   SETTINGS_COLUMN_SPEC,
   normalizeColumnSpec,
+  withHeaderMinWidth,
+  type HeaderMinWidthOptions,
   type RowAction,
   type RowDataSource,
   type RowSpec,
@@ -3062,12 +3064,18 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // returns the `columns` prop by reference so the useMemo chain
     // inside `useTableLayout` doesn't re-trigger.
     const effectiveColumns = useMemo<readonly ColumnSpec[]>(() => {
-      const normalized = columns.map(normalizeColumnSpec);
+      const headerMinWidthOpts: HeaderMinWidthOptions = {
+        cellPaddingX: mergedTheme.cellPaddingX,
+        showColumnHeaderMenu: showColumnHeaderMenu === true,
+      };
+      const normalized = columns
+        .map(normalizeColumnSpec)
+        .map((col) => withHeaderMinWidth(col, headerMinWidthOpts));
       const tp = toolPanel;
       if (tp == null || !tp.show || tp.panels.length === 0) return normalized;
       if (normalized.some((c) => c.actions != null)) return normalized;
       return [...normalized, SETTINGS_COLUMN_SPEC];
-    }, [columns, toolPanel]);
+    }, [columns, toolPanel, mergedTheme, showColumnHeaderMenu]);
 
     const columnsForLayout = useMemo<readonly ColumnSpec[]>(() => {
       const resizing = resizingColumnState;

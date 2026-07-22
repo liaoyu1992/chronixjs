@@ -11,7 +11,12 @@
  */
 
 export type { ColumnSpec, RowAction } from './column-spec.js';
-export { normalizeColumnSpec } from './column-spec.js';
+export {
+  computeColumnHeaderMinWidth,
+  normalizeColumnSpec,
+  withHeaderMinWidth,
+} from './column-spec.js';
+export type { HeaderMinWidthOptions } from './column-spec.js';
 export type { EditValidationError } from './edit-validation-error.js';
 export type { RowSpec } from './row-spec.js';
 export type { RowValidator, RowValidationViolation } from './row-validator.js';

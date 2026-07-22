@@ -1363,7 +1363,7 @@ describe('<ChronixTable>', () => {
       getRowDataSource(): { getById(id: string): RowSpec | undefined };
       getResolvedWidth(colId: string): number | undefined;
     };
-    expect(handle.getColumnTable().getById('id')).toEqual(columns[0]);
+    expect(handle.getColumnTable().getById('id')).toEqual({ ...columns[0], minWidth: 57 });
     expect(handle.getRowDataSource().getById('r1')).toEqual(rows[0]);
     // Width for the explicit-80 'id' column resolves through layout.
     expect(handle.getResolvedWidth('id')).toBe(80);

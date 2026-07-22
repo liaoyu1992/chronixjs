@@ -234,7 +234,7 @@ describe('<ChronixTable> (react) — mount + layout', () => {
     render(<ChronixTable ref={handleRef} columns={columns} rows={rows} />);
     const handle = handleRef.current;
     expect(handle).not.toBeNull();
-    expect(handle?.getColumnTable().getById('id')).toEqual(columns[0]);
+    expect(handle?.getColumnTable().getById('id')).toEqual({ ...columns[0], minWidth: 57 });
     expect(handle?.getRowDataSource().getById('r1')).toEqual(rows[0]);
     // Width for the explicit-80 'id' column resolves through layout.
     expect(handle?.getResolvedWidth('id')).toBe(80);
@@ -2036,21 +2036,21 @@ describe('<ChronixTable> (react) — column resize', () => {
     );
     const qtyResizer = container.querySelector('[data-col-id="qty"] .cx-table-header-resizer');
     fireResizePointer('pointerdown', qtyResizer!, { clientX: 300, pointerId: 1 });
-    // qty starts at 100; +40 → 140 (within [40, 200])
+    // qty starts at 100; +40 → 140 (within [57, 200])
     fireResizePointer('pointermove', qtyResizer!, { clientX: 340, pointerId: 1 });
     expect(handleRef.current?.getResizingColumn()?.draftWidth).toBe(140);
   });
 
-  it('pointermove clamps below minWidth — qty drag to far left bottoms at 40', () => {
+  it('pointermove clamps below minWidth — qty drag to far left bottoms at 57', () => {
     const handleRef = createRef<TableHandle>();
     const { container } = render(
       <ChronixTable ref={handleRef} columns={resizeColumns} rows={resizeRows} />,
     );
     const qtyResizer = container.querySelector('[data-col-id="qty"] .cx-table-header-resizer');
     fireResizePointer('pointerdown', qtyResizer!, { clientX: 300, pointerId: 1 });
-    // qty starts at 100; -500 → -400 → clamped to minWidth 40
+    // qty starts at 100; -500 → -400 → clamped to minWidth 57 (header-content floor)
     fireResizePointer('pointermove', qtyResizer!, { clientX: -200, pointerId: 1 });
-    expect(handleRef.current?.getResizingColumn()?.draftWidth).toBe(40);
+    expect(handleRef.current?.getResizingColumn()?.draftWidth).toBe(57);
   });
 
   it('pointermove clamps above maxWidth — qty drag to far right tops at 200', () => {
