@@ -19,7 +19,7 @@
     "@chronixjs/ui-react": "workspace:*",
     "qrcode-generator": "^2.0.4",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@chronixjs/eslint-config": "workspace:*",
