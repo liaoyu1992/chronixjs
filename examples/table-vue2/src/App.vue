@@ -1492,6 +1492,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           :show-filter-row="true"
           :show-footer-row="true"
           :show-column-header-menu="true"
+          :show-column-filter-button="true"
           :context-menu="phase83ContextMenuConfig"
           @column-header-menu-action="onColumnHeaderMenuAction"
           :enable-keyboard-navigation="true"
@@ -1656,6 +1657,7 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           :show-pagination="serverSideshowPagination"
           :initial-page-size="25"
           :show-filter-row="true"
+          :show-column-filter-button="true"
           :tool-panel="toolPanelConfig"
         />
       </section>

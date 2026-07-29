@@ -1474,6 +1474,7 @@ export function App(): ReactElement {
             showFilterRow
             showFooterRow
             showColumnHeaderMenu
+            showColumnFilterButton
             contextMenu={phase83ContextMenuConfig}
             onColumnHeaderMenuAction={onColumnHeaderMenuAction}
             enableKeyboardNavigation
@@ -1659,6 +1660,7 @@ export function App(): ReactElement {
             showPagination={serverSidePaginationEnabled}
             initialPageSize={25}
             showFilterRow
+            showColumnFilterButton
             data-testid="server-side-table"
             toolPanel={toolPanelConfig}
           />

@@ -1,4 +1,4 @@
-﻿/* ============================================================================
+﻿﻿/* ============================================================================
  * Chronix Table - Base Stylesheet
  *
  * Shipped from @chronixjs/table and re-exported by each adapter
@@ -9,32 +9,29 @@
  *
  * All colors use CSS custom properties with fallbacks. Override them
  * via the theme prop or by redefining the vars in your own CSS.
- * ========================================================================== */
+ * ========================================================================== *
 
-/* --- Wrapper layout --- */
-
+/* --- Wrapper layout --- *
 .cx-table-wrapper {
   width: 100%;
   display: flex;
   flex-direction: column;
 }
 
-/* --- quick-find cell-level highlight wrapper --- */
-
+/* --- quick-find cell-level highlight wrapper --- *
 .cx-table-cell__find-match {
   background: #fff3a3;
   padding: 0 1px;
   border-radius: 2px;
 }
 
-/* --- Header --- */
-
+/* --- Header --- *
 .cx-table-header {
-  /* Split background so the 15px scrollbar gutter (which shows this container's
+   /* Split background so the 15px scrollbar gutter (which shows this container's
    * bg through the transparent scrollbar) matches the row beside it: group bg
    * over the group rows, leaf bg over the leaf row. --cx-table-header-group-rows-h
    * is set inline by the adapter (0 when no groups → solid leaf bg). The cells
-   * cover this gradient everywhere except the gutter. */
+   * cover this gradient everywhere except the gutter. *
   background: linear-gradient(
     to bottom,
     var(--cx-table-header-group-bg, #e8ecf0) 0,
@@ -54,7 +51,7 @@
  * stay) so the gutter just reads as the row's background colour. The body
  * keeps its real, visible bar. The footer now lives INSIDE the body
  * scrollport (sticky-bottom) so it shares the body's scrollbar gutter -
- * no separate overflow or gutter styling needed. */
+ * no separate overflow or gutter styling needed. *
 .cx-table-header,
 .cx-table-filter-row {
   scrollbar-color: transparent transparent;
@@ -67,16 +64,14 @@
 .cx-table-filter-row::-webkit-scrollbar-thumb {
   background: transparent;
 }
-
 .cx-table-header .cx-table-row {
-  /* Solid leaf-coloured background (NOT `inherit`) so the row does NOT pick up
+   /* Solid leaf-coloured background (NOT `inherit`) so the row does NOT pick up
    * the header container's split gutter gradient — that gradient exists only to
    * colour the scrollbar gutter, and inheriting it would tint every leaf cell
    * with the group band's first colour. Group cells carry their own explicit bg
-   * on top; pinned cells inherit THIS solid bg for opaque occlusion. */
+   * on top; pinned cells inherit THIS solid bg for opaque occlusion. *
   background: var(--cx-table-header-bg, #f1f3f5);
 }
-
 .cx-table-row {
   display: flex;
   flex-direction: row;
@@ -85,16 +80,14 @@
 /* body rows are absolute-positioned + can't rely on
  * `border-bottom` (the layout would still account for the border).
  * `box-shadow: inset 0 -1px` paints the divider on top of the row
- * without affecting its computed height — keeps row Y math clean. */
+ * without affecting its computed height — keeps row Y math clean. *
 .cx-table-body .cx-table-row,
 .cx-table-body-content .cx-table-row {
   box-shadow: inset 0 -1px 0 var(--cx-table-row-divider-color, #eceff2);
 }
-
 .cx-table-header .cx-table-row {
   border-bottom: 1px solid var(--cx-table-header-border-color, #d9dde2);
 }
-
 .cx-table-header-cell,
 .cx-table-cell,
 .cx-table-footer-cell {
@@ -109,24 +102,21 @@
 
 /* header cell needs `position: relative` so
  * the absolute-positioned resizer (4px wide, anchored to right edge)
- * has it as the containing block. */
+ * has it as the containing block. *
 .cx-table-header-cell {
   position: relative;
 }
-
 .cx-table-header-cell:last-child,
 .cx-table-cell:last-child,
 .cx-table-footer-cell:last-child {
   border-right: none;
 }
-
 .cx-table-header-cell-label {
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .cx-table-sort-indicator {
   color: #345d9d;
   flex: 0 0 auto;
@@ -135,7 +125,6 @@
   min-width: 11px;
   text-align: center;
 }
-
 .cx-table-sort-indicator-position {
   color: #b3711d;
   font-family: 'SFMono-Regular', Consolas, monospace;
@@ -144,7 +133,6 @@
   margin-left: 1px;
   vertical-align: super;
 }
-
 .cx-table-filter-row {
   background: #fafbfc;
   border-bottom: 1px solid var(--cx-table-header-border-color, #d9dde2);
@@ -154,12 +142,11 @@
  * row so the outer `.cx-table-filter-row` can act as a
  * horizontally-clipped scrollport whose `scrollLeft` is mirrored
  * from the body's scrollLeft. Matches the header's outer-clip /
- * inner-content-row pattern. */
+ * inner-content-row pattern. *
 .cx-table-filter-row-content {
   display: flex;
   flex-direction: row;
 }
-
 .cx-table-filter-cell {
   align-items: center;
   box-sizing: border-box;
@@ -168,7 +155,6 @@
   padding-bottom: 4px;
   padding-top: 4px;
 }
-
 .cx-table-filter-input {
   background: #fff;
   border: 1px solid #d9dde2;
@@ -179,23 +165,19 @@
   padding: 2px 6px;
   width: 100%;
 }
-
 .cx-table-filter-input:focus {
   border-color: #345d9d;
   box-shadow: 0 0 0 2px rgba(52, 93, 157, 0.15);
 }
-
 .cx-table-filter-input:disabled {
   background: #f1f3f5;
   color: #a0aab4;
   cursor: not-allowed;
 }
-
 .cx-table-row--selected {
   background: rgba(52, 93, 157, 0.14) !important;
   box-shadow: inset 0 -1px 0 rgba(52, 93, 157, 0.32) !important;
 }
-
 .cx-table-row--selected .cx-table-cell {
   color: #1f2933;
   font-weight: 500;
@@ -204,7 +186,7 @@
 /* cell-range modifier — pale blue tint + thin
  * outline overlay. Excel-like selection-rectangle visual idiom. Coexists
  * with .cx-table-row--selected (rows can be selected AND cells in range
- * — both modifiers compose visually). */
+ * — both modifiers compose visually). *
 .cx-table-cell--in-cell-range {
   background: rgba(56, 138, 240, 0.16);
   outline: 1px solid rgba(56, 138, 240, 0.6);
@@ -214,7 +196,7 @@
 /* drag-fill preview class painted on cells in
  * `fillEnvelope \ source` during an active drag-fill gesture. Dashed
  * outline + faint tint distinguish the preview from the committed
- * cell-range above. */
+ * cell-range above. *
 .cx-table-cell--in-fill-preview {
   background: rgba(37, 99, 235, 0.08);
   outline: 1px dashed var(--cx-table-drag-fill-handle-color, #2563eb);
@@ -223,7 +205,7 @@
 
 /* drag-fill handle. The SFC inlines position / size / cursor
  * via the render style attribute so the handle works without an
- * external CSS rule; this rule adds optional hover affordance. */
+ * external CSS rule; this rule adds optional hover affordance. *
 .cx-table-drag-fill-handle:hover {
   transform: scale(1.25);
   transition: transform 80ms ease-out;
@@ -241,32 +223,28 @@
  *  - --cx-table-row-drag-handle-color (icon rest colour, default #94a3b8)
  *  - --cx-table-row-drag-handle-hover-color (icon hover colour, default #475569)
  *  - --cx-table-row-drag-cell-hover-bg (cell hover tint, default #eef2f7)
- */
+ *
 .cx-table-row-drag-cell {
   justify-content: center;
   background: var(--cx-table-row-drag-rail-bg, #f8fafc);
 }
-
 .cx-table-row-drag-cell__grip {
   color: var(--cx-table-row-drag-handle-color, #94a3b8);
   pointer-events: none;
   transition: color 80ms ease-out;
 }
-
 .cx-table-row-drag-cell--draggable {
   cursor: grab;
 }
-
 .cx-table-row-drag-cell--draggable:hover {
   background: var(--cx-table-row-drag-cell-hover-bg, #eef2f7);
 }
-
 .cx-table-row-drag-cell--draggable:hover .cx-table-row-drag-cell__grip {
   color: var(--cx-table-row-drag-handle-hover-color, #475569);
 }
 
 /* active drag session: the source row carries cx-table-row--moving;
- * flip its grip cell to grabbing so the cursor tracks the gesture. */
+ * flip its grip cell to grabbing so the cursor tracks the gesture. *
 .cx-table-row--moving > .cx-table-row-drag-cell--draggable {
   cursor: grabbing;
 }
@@ -282,14 +260,13 @@
  * the row zebra-stripe colors INSIDE the pinned cells. Demo overrides
  * are below this block; consumers can override per-instance via the
  * `theme` prop.
- */
+ *
 .cx-table-cell--pinned-left-last,
 .cx-table-header-cell--pinned-left-last,
 .cx-table-filter-cell--pinned-left-last,
 .cx-table-footer-cell--pinned-left-last {
   box-shadow: 2px 0 4px var(--cx-table-pinned-shadow-color, rgba(15, 23, 42, 0.12));
 }
-
 .cx-table-cell--pinned-right-first,
 .cx-table-header-cell--pinned-right-first,
 .cx-table-filter-cell--pinned-right-first,
@@ -306,40 +283,33 @@
  * default is to inherit; this rule provides a more explicit fallback
  * for the boundary cells (whose shadow can otherwise blend visually
  * with the underlying scroll content).
- */
+ *
 .cx-table-body .cx-table-row:nth-child(odd) .cx-table-cell--pinned-left,
 .cx-table-body .cx-table-row:nth-child(odd) .cx-table-cell--pinned-right {
   background: var(--cx-table-pinned-zone-bg, var(--cx-table-odd-row-bg, #ffffff));
 }
-
 .cx-table-body .cx-table-row:nth-child(even) .cx-table-cell--pinned-left,
 .cx-table-body .cx-table-row:nth-child(even) .cx-table-cell--pinned-right {
   background: var(--cx-table-pinned-zone-bg, var(--cx-table-even-row-bg, #fafbfc));
 }
-
 .cx-table-header .cx-table-header-cell--pinned-left,
 .cx-table-header .cx-table-header-cell--pinned-right {
   background: var(--cx-table-pinned-zone-bg, var(--cx-table-header-bg, #f1f3f5));
 }
-
 .cx-table-filter-row .cx-table-filter-cell--pinned-left,
 .cx-table-filter-row .cx-table-filter-cell--pinned-right {
   background: var(--cx-table-pinned-zone-bg, #fafbfc);
 }
-
 .cx-table-header-cell--sortable:hover {
   background: rgba(52, 93, 157, 0.08);
 }
-
 .cx-table-header-cell--sorted {
   background: rgba(52, 93, 157, 0.12);
 }
-
 .cx-table-body .cx-table-row:nth-child(odd),
 .cx-table-body-content .cx-table-row:nth-child(odd) {
   background: var(--cx-table-odd-row-bg, #ffffff);
 }
-
 .cx-table-body .cx-table-row:nth-child(even),
 .cx-table-body-content .cx-table-row:nth-child(even) {
   background: var(--cx-table-even-row-bg, #fafbfc);
@@ -351,7 +321,7 @@
  * on the `selectionColumn.side` configured side (default 'left').
  * Header carries a three-state select-all checkbox; per-row cells
  * carry per-row checkboxes wired to the SFC's selection state.
- */
+ *
 .cx-table-selection-cell,
 .cx-table-selection-cell-body {
   align-items: center;
@@ -360,27 +330,22 @@
   flex-shrink: 0;
   justify-content: center;
 }
-
 .cx-table-selection-cell {
   background: var(--cx-table-header-bg, #f1f3f5);
 }
-
 .cx-table-selection-cell-body {
   background: inherit;
 }
-
 .cx-table-selection-checkbox {
   cursor: pointer;
   height: 14px;
   margin: 0;
   width: 14px;
 }
-
 .cx-table-selection-checkbox--header {
-  /* Slight visual cue that header is the broadcast checkbox */
+   /* Slight visual cue that header is the broadcast checkbox *
   accent-color: #345d9d;
 }
-
 .cx-table-selection-checkbox--row {
   accent-color: #345d9d;
 }
@@ -389,11 +354,10 @@
  * .cx-table-cell wrapper at the same height. Border-color matches
  * the sort-indicator accent for visual continuity with other
  * "active state" UI.
- */
+ *
 .cx-table-cell--editing {
   padding: 0 !important;
 }
-
 .cx-table-cell-editor {
   background: #fff;
   border: 1px solid #345d9d;
@@ -406,7 +370,6 @@
   outline: none;
   width: 100%;
 }
-
 .cx-table-cell-editor:focus {
   border-color: #1f3d77;
   box-shadow: 0 0 0 2px rgba(52, 93, 157, 0.2);
@@ -420,7 +383,7 @@
  * hover (industry convention — only show resize cursor when user is
  * near the boundary). `cursor: col-resize` is the standard browser
  * cue. The `--active` modifier paints a darker color while a drag
- * session is in flight. */
+ * session is in flight. *
 .cx-table-header-resizer {
   position: absolute;
   top: 0;
@@ -434,12 +397,10 @@
   user-select: none;
   touch-action: none;
 }
-
 .cx-table-header-cell:hover .cx-table-header-resizer {
   opacity: 1;
   background: rgba(52, 93, 157, 0.3);
 }
-
 .cx-table-header-resizer--active,
 .cx-table-header-resizer:active {
   opacity: 1;
@@ -447,7 +408,7 @@
 }
 
 /* While a column is being resized, paint a darker right border on its
- * header cell so the user sees the active column clearly. */
+ * header cell so the user sees the active column clearly. *
 .cx-table-header-cell--resizing {
   background: rgba(52, 93, 157, 0.05);
 }
@@ -460,7 +421,7 @@
  * pagination cluster to the right. `flex-wrap: wrap` lets the clusters stack
  * vertically on narrow viewports. Background + min-height come from the
  * `statusBar*` theme tokens so the whole row reads as one continuous bar.
- */
+ *
 .cx-table-pagination {
   align-items: center;
   background: var(--cx-table-status-bar-bg, #fafbfc);
@@ -477,7 +438,7 @@
 /* left cluster: status area (counts summary). Mirrors the legacy
  * `cx-table-status-bar` class (still attached to the same node for
  * backwards-compat of consumer CSS overrides). Text color comes from
- * `--cx-table-status-bar-text-color`. */
+ * `--cx-table-status-bar-text-color`. *
 .cx-table-pagination-status {
   align-items: center;
   color: var(--cx-table-status-bar-text-color, #3a414a);
@@ -489,13 +450,12 @@
 /* right cluster: wraps the nav (prev/next + page numbers) and meta
  * (total label + page-size select) so the whole pagination group is
  * pushed to the right edge as a unit by the parent's
- * `justify-content: space-between`. */
+ * `justify-content: space-between`. *
 .cx-table-pagination-cluster {
   align-items: center;
   display: flex;
   gap: 12px;
 }
-
 .cx-table-pagination-nav,
 .cx-table-pagination-meta {
   align-items: center;
@@ -506,7 +466,7 @@
 /* prev / next buttons (NaiveUI pagination item styling).
  * Measured from naiveui.com Pagination demo: 22x22px, 3px radius,
  * 1px solid #e0e0e6 border, transparent bg. Color scheme stays
- * on #345d9d (our primary) where NaiveUI uses #18a058. */
+ * on #345d9d (our primary) where NaiveUI uses #18a058. *
 .cx-table-pagination-button {
   align-items: center;
   background: transparent;
@@ -527,18 +487,15 @@
     background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 22px;
 }
-
 .cx-table-pagination-button:hover:not(:disabled) {
   border-color: #345d9d;
   color: #345d9d;
 }
-
 .cx-table-pagination-button:disabled {
   border-color: #e0e0e6;
   color: #c2c2c2;
   cursor: not-allowed;
 }
-
 .cx-table-pagination-info {
   color: #1f2933;
   font-family: 'SFMono-Regular', Consolas, monospace;
@@ -548,7 +505,7 @@
 }
 
 /* page-number bar - ellipsis-aware list of clickable page buttons.
- * Sits between prev and next inside .cx-table-pagination-nav. */
+ * Sits between prev and next inside .cx-table-pagination-nav. *
 .cx-table-pagination-pages {
   align-items: center;
   display: flex;
@@ -557,7 +514,7 @@
 /* page-number buttons (NaiveUI pagination item styling).
  * Measured: 22x22px, 3px radius, transparent bg, transparent border
  * on default; active page gets a 1px solid primary-color border +
- * primary-color text (border-highlight, NOT solid fill). */
+ * primary-color text (border-highlight, NOT solid fill). *
 .cx-table-pagination-page {
   align-items: center;
   background: transparent;
@@ -579,26 +536,21 @@
     border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .cx-table-pagination-page:first-child {
   margin-left: 0;
 }
-
 .cx-table-pagination-page:hover:not(:disabled) {
   color: #345d9d;
 }
-
 .cx-table-pagination-page--current {
   border-color: #345d9d;
   color: #345d9d;
   cursor: default;
 }
-
 .cx-table-pagination-page--current:hover {
   border-color: #345d9d;
   color: #345d9d;
 }
-
 .cx-table-pagination-ellipsis {
   align-items: center;
   color: #767c82;
@@ -611,18 +563,15 @@
   padding: 0 4px;
   user-select: none;
 }
-
 .cx-table-pagination-total {
   color: #5c6773;
 }
-
 .cx-table-pagination-size {
   align-items: center;
   color: #5c6773;
   display: inline-flex;
   gap: 4px;
 }
-
 .cx-table-pagination-size-select {
   background: #fff;
   border: 1px solid #d9dde2;
@@ -632,7 +581,6 @@
   font-size: 12px;
   padding: 2px 4px;
 }
-
 .cx-table-pagination-size-select:focus {
   border-color: #345d9d;
   outline: none;
@@ -656,27 +604,23 @@
  * the full table height (header + filter + body + footer) at one
  * absolute coordinate. The actual `left` / `bottom` / `top` are set
  * inline by the SFC; the CSS only handles theming + transitions.
- */
+ *
 .cx-table-header-cell--reorderable:hover {
   cursor: grab;
 }
-
 .cx-table-header-cell--moving {
   opacity: 0.6;
   cursor: grabbing !important;
 }
-
 .cx-table-header-cell--drop-target-before {
   background: rgba(38, 128, 235, 0.08);
 }
-
 .cx-table-header-cell--drop-target-after {
   background: rgba(38, 128, 235, 0.08);
 }
-
 .cx-table-drop-line {
-  /* Geometry set inline by the SFC (top, bottom, left, width,
-   * z-index); CSS handles color + transition only. */
+   /* Geometry set inline by the SFC (top, bottom, left, width,
+   * z-index); CSS handles color + transition only. *
   background: var(--cx-table-drop-indicator-color, #2680eb);
   transition: left 0.08s ease-out;
 }
@@ -688,7 +632,7 @@
  * Click target is the chevron span itself; the SFC's onClick
  * handler stops propagation so a chevron click does NOT trigger
  * cell-click / row-click / activeCell-change.
- */
+ *
 .cx-table-tree-chevron,
 .cx-table-tree-chevron-spacer {
   align-items: center;
@@ -699,7 +643,6 @@
   margin-right: 4px;
   width: 12px;
 }
-
 .cx-table-tree-chevron {
   color: var(--cx-table-tree-chevron-color, #5a6675);
   cursor: pointer;
@@ -707,17 +650,15 @@
   -webkit-user-select: none;
   user-select: none;
 }
-
 .cx-table-tree-chevron:hover {
   color: #1f2933;
 }
-
 .cx-table-tree-chevron--expanded {
   transform: rotate(90deg);
 }
 
 /* lazy-load spinner + error icon. Spinner uses
-   a stroke-dashoffset rotation; error icon shows on rejected load. */
+   a stroke-dashoffset rotation; error icon shows on rejected load. *
 @keyframes cx-table-tree-spinner-rotate {
   from {
     transform: rotate(0deg);
@@ -738,7 +679,6 @@
 .cx-table-tree-error-icon:hover {
   filter: brightness(0.85);
 }
-
 .cx-table-cell-tree-label {
   flex: 1;
   min-width: 0;
@@ -746,10 +686,10 @@
   text-overflow: ellipsis;
 }
 
-/* --- Screen-reader live region --- */
+/* --- Screen-reader live region --- * 
 /* The chronix-table SFC renders this div with `role="status" aria-live="polite"`
  * inside the wrapper subtree so NVDA / JAWS users hear keyboard-driven
- * activeCell transitions. Visually hidden via the clip-path / 1px hack. */
+ * activeCell transitions. Visually hidden via the clip-path / 1px hack. *
 .cx-table-sr-announce {
   position: absolute;
   width: 1px;
@@ -768,21 +708,18 @@
  * `inherit` fallback is transparent over a transparent body, so rows
  * scrolling underneath bleed through. Define the token at ROW scope
  * (scoped — NOT global: pinned columns reuse the same token with their own
- * zebra fallback) to an opaque color, in default + hover states. */
+ * zebra fallback) to an opaque color, in default + hover states. *
 .cx-table-row--pinned-top,
 .cx-table-row--pinned-bottom {
   --cx-table-pinned-zone-bg: var(--cx-table-odd-row-bg, #ffffff);
 }
-
 .cx-table-row--pinned-top:hover,
 .cx-table-row--pinned-bottom:hover {
   --cx-table-pinned-zone-bg: var(--cx-table-even-row-bg, #fafbfc);
 }
-
 .cx-table-row--pinned-top {
   box-shadow: 0 2px 4px var(--cx-table-pinned-shadow-color, rgba(15, 23, 42, 0.12));
 }
-
 .cx-table-row--pinned-bottom {
   box-shadow: 0 -2px 4px var(--cx-table-pinned-shadow-color, rgba(15, 23, 42, 0.12));
 }
@@ -791,7 +728,7 @@
  * Native <details> open state opens in-flow (pushes filter row content
  * down). Consumers wanting position:absolute overlay can override
  * .cx-table-set-filter + .cx-table-set-filter__panel.
- */
+ *
 .cx-table-set-filter {
   display: inline-block;
   width: 100%;
@@ -863,7 +800,7 @@
  * bar. Synthetic placeholder rows render with a single shimmering
  * pseudo-bar per cell so users see "data is loading" feedback while
  * the virtualization-driven Y range stays accurate.
- */
+ *
 .cx-table-row--skeleton {
   background: #fcfcfd;
 }
@@ -889,7 +826,7 @@
   }
 }
 
-/* Tier 3 finale — row number + actions + auto-height. */
+/* Tier 3 finale — row number + actions + auto-height. *
 .cx-table-cell--row-number {
   justify-content: center;
   color: #94a3b8;
@@ -933,7 +870,7 @@
   font-size: 13px;
 }
 
-/* settings popover styles (replaces docked tool-panel container). */
+/* settings popover styles (replaces docked tool-panel container). *
 .cx-table-header-settings-button {
   display: inline-flex;
   align-items: center;
@@ -999,7 +936,7 @@
   font-size: 13px;
 }
 
-/* --- ChronixColumnsToolPanel --- */
+/* --- ChronixColumnsToolPanel --- *
 .cx-table-columns-tool-panel {
   display: flex;
   flex-direction: column;
@@ -1072,7 +1009,7 @@
   background: #f8fafc;
 }
 
-/* pre-built ChronixFiltersToolPanel styles. */
+/* pre-built ChronixFiltersToolPanel styles. *
 .cx-table-filters-tool-panel {
   display: flex;
   flex-direction: column;
@@ -1192,7 +1129,7 @@
   font-size: 11px;
 }
 
-/* -A (2026-05-30): column header menu styles. */
+/* -A (2026-05-30): column header menu styles. *
 .cx-table-column-header-menu-button {
   display: inline-flex;
   align-items: center;
@@ -1244,7 +1181,143 @@
   color: #94a3b8;
 }
 
-/* -B (2026-05-30): cell context menu styles. */
+/* Column header filter button + panel styles. *
+.cx-table-column-filter-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 2px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  color: #64748b;
+  flex-shrink: 0;
+}
+.cx-table-column-filter-button:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1f2937;
+}
+.cx-table-column-filter-button--active {
+  color: #4f46e5;
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+.cx-table-column-filter-panel {
+  position: absolute;
+  z-index: 7;
+  min-width: 280px;
+  max-width: 360px;
+  padding: 12px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+}
+.cx-table-column-filter-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+}
+.cx-table-column-filter-panel-mode {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.cx-table-column-filter-panel-mode-btn {
+  padding: 3px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 12px;
+  color: #64748b;
+}
+.cx-table-column-filter-panel-mode-btn--active {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: #ffffff;
+}
+.cx-table-column-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.cx-table-column-filter-row-select,
+.cx-table-column-filter-row-input {
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #1f2937;
+  background: #ffffff;
+}
+.cx-table-column-filter-row-select {
+  flex-shrink: 0;
+  width: 80px;
+}
+.cx-table-column-filter-row-input {
+  flex: 1;
+  min-width: 60px;
+}
+.cx-table-column-filter-row-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.cx-table-column-filter-row-remove:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+.cx-table-column-filter-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.cx-table-column-filter-panel-add,
+.cx-table-column-filter-panel-clear {
+  padding: 4px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 3px;
+  background: #ffffff;
+  cursor: pointer;
+  font-size: 12px;
+  color: #475569;
+}
+.cx-table-column-filter-panel-add:hover {
+  background: #eef2ff;
+  border-color: #818cf8;
+  color: #4f46e5;
+}
+.cx-table-column-filter-panel-clear:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* -B (2026-05-30): cell context menu styles. *
 .cx-table-cell-context-menu {
   min-width: 180px;
   padding: 4px 0;

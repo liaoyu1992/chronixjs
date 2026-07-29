@@ -475,6 +475,10 @@ export interface TableHandle {
   openColumnHeaderMenu(colId: string): void;
   /** -A (2026-05-30 — vue2 port). Verbatim mirror of vue3. */
   closeColumnHeaderMenu(): void;
+  /** Column filter panel (vue2 port). Verbatim mirror of vue3. */
+  openColumnFilter(colId: string): void;
+  /** Column filter panel (vue2 port). Verbatim mirror of vue3. */
+  closeColumnFilter(): void;
   /** -A (2026-05-30 — vue2 port). Verbatim mirror of vue3. */
   getOpenColumnHeaderMenuColId(): string | null;
   /** -B (2026-05-30 — vue2 port). Verbatim mirror of vue3. */
@@ -2113,6 +2117,11 @@ export const ChronixTable = defineComponent({
       type: Boolean,
       default: false,
     },
+    /** Column filter funnel button (vue2 port). Verbatim mirror of vue3. */
+    showColumnFilterButton: {
+      type: Boolean,
+      default: false,
+    },
     /** -B (2026-05-30 — vue2 port). Verbatim mirror of vue3. */
     contextMenu: {
       type: Object as PropType<ContextMenuConfig | null | undefined>,
@@ -2898,6 +2907,54 @@ export const ChronixTable = defineComponent({
       };
     }
 
+    /** Column filter panel state (vue2 port). Verbatim mirror of vue3. */
+    const openColumnFilterColIdRef = ref<string | null>(null);
+    const columnFilterPosRef = ref<{ left: number; top: number } | null>(null);
+    const columnFilterPanelRef = ref<HTMLElement | null>(null);
+
+    function applyOpenColumnFilter(colId: string | null): void {
+      const prev = openColumnFilterColIdRef.value;
+      if (prev === colId) return;
+      openColumnFilterColIdRef.value = colId;
+      if (colId == null) {
+        columnFilterPosRef.value = null;
+        return;
+      }
+      const wrapper = wrapperRef.value;
+      if (wrapper == null) return;
+      const escaped =
+        typeof window !== 'undefined' ? (window.CSS?.escape?.(colId) ?? colId) : colId;
+      const cell = wrapper.querySelector<HTMLElement>(
+        `.cx-table-header-cell[data-col-id="${escaped}"]`,
+      );
+      if (cell == null) return;
+      const wRect = wrapper.getBoundingClientRect();
+      const cRect = cell.getBoundingClientRect();
+      columnFilterPosRef.value = {
+        left: Math.round(cRect.right - wRect.left),
+        top: Math.round(cRect.bottom - wRect.top),
+      };
+    }
+
+    function getColumnMultiFilter(colId: string): MultiFilterSpec | null {
+      const found = filterSpec.value.find(
+        (s): s is MultiFilterSpec => s.type === 'multi' && s.colId === colId,
+      );
+      return found ?? null;
+    }
+
+    function applyColumnMultiFilter(colId: string, spec: MultiFilterSpec | null): void {
+      const others = filterSpec.value.filter((s) => {
+        if (s.type === 'expression') return true;
+        return s.colId !== colId;
+      });
+      if (spec == null) {
+        applyFilter(others);
+        return;
+      }
+      applyFilter([...others, spec]);
+    }
+
     function applyOpenContextMenu(
       rowId: string | null,
       colId: string | null,
@@ -2961,6 +3018,13 @@ export const ChronixTable = defineComponent({
         const insideButton = target.closest('.cx-table-column-header-menu-button') != null;
         if (!insideMenu && !insideButton) {
           applyOpenColumnHeaderMenu(null);
+        }
+      }
+      if (openColumnFilterColIdRef.value != null) {
+        const insideFilterPanel = target.closest('.cx-table-column-filter-panel') != null;
+        const insideFilterButton = target.closest('.cx-table-column-filter-button') != null;
+        if (!insideFilterPanel && !insideFilterButton) {
+          applyOpenColumnFilter(null);
         }
       }
       if (contextMenuPositionRef.value != null) {
@@ -6730,6 +6794,15 @@ export const ChronixTable = defineComponent({
       closeColumnHeaderMenu(): void {
         applyOpenColumnHeaderMenu(null);
       },
+      openColumnFilter(colId: string): void {
+        if (!props.showColumnFilterButton) return;
+        const col = columnTable.value.getById(colId);
+        if (col == null) return;
+        applyOpenColumnFilter(colId);
+      },
+      closeColumnFilter(): void {
+        applyOpenColumnFilter(null);
+      },
       getOpenColumnHeaderMenuColId(): string | null {
         return openColumnHeaderMenuColIdRef.value;
       },
@@ -8080,6 +8153,69 @@ export const ChronixTable = defineComponent({
                     h('circle', { attrs: { cx: 7, cy: 8, r: 1.2 } }),
                     h('circle', { attrs: { cx: 7, cy: 12, r: 1.2 } }),
                   ],
+                ),
+              ],
+            ),
+          );
+        }
+        // Column filter funnel button (vue2 port). Verbatim mirror of vue3.
+        if (
+          props.showColumnFilterButton === true &&
+          !isActionsCol &&
+          column?.filterable !== false
+        ) {
+          const isFilterOpen = openColumnFilterColIdRef.value === cell.colId;
+          const hasActiveFilter = filterSpec.value.some(
+            (s) =>
+              (s.type === 'multi' ||
+                s.type === 'text' ||
+                s.type === 'number' ||
+                s.type === 'set') &&
+              s.colId === cell.colId,
+          );
+          columnHeaderMenuNodes.push(
+            h(
+              'button',
+              {
+                class: [
+                  'cx-table-column-filter-button',
+                  isFilterOpen && 'cx-table-column-filter-button--active',
+                  hasActiveFilter && 'cx-table-column-filter-button--active',
+                ]
+                  .filter(Boolean)
+                  .join(' '),
+                attrs: {
+                  type: 'button',
+                  'data-col-id': cell.colId,
+                  'aria-haspopup': 'dialog',
+                  'aria-expanded': isFilterOpen ? 'true' : 'false',
+                  'aria-label': '列筛选',
+                },
+                on: {
+                  pointerdown: (e: PointerEvent) => {
+                    e.stopPropagation();
+                  },
+                  click: (e: MouseEvent) => {
+                    e.stopPropagation();
+                    applyOpenColumnFilter(isFilterOpen ? null : cell.colId);
+                  },
+                },
+              },
+              [
+                h(
+                  'svg',
+                  {
+                    attrs: {
+                      width: 14,
+                      height: 14,
+                      viewBox: '0 0 16 16',
+                      fill: 'none',
+                      stroke: 'currentColor',
+                      'stroke-width': 1.5,
+                      'aria-hidden': 'true',
+                    },
+                  },
+                  [h('path', { attrs: { d: 'M1.5 2.5h13l-5 6v5l-3 1.5v-6.5z' } })],
                 ),
               ],
             ),
@@ -12641,6 +12777,231 @@ export const ChronixTable = defineComponent({
             })()
           : null;
 
+      // Column filter panel overlay (vue2 port). Verbatim mirror of vue3.
+      const openFilterColId = openColumnFilterColIdRef.value;
+      const filterPos = columnFilterPosRef.value;
+      const columnFilterPanelOverlay: VNode | null =
+        props.showColumnFilterButton === true && openFilterColId != null && filterPos != null
+          ? (() => {
+              const filterCol = columnTable.value.getById(openFilterColId);
+              if (filterCol == null || filterCol.filterable === false) return null;
+              const isNumberCol = filterCol.type === 'number';
+              const existing = getColumnMultiFilter(openFilterColId);
+              const mode: 'AND' | 'OR' = existing?.mode ?? 'AND';
+              interface CondRow {
+                operator: string;
+                value: string;
+              }
+              const rows: CondRow[] = [];
+              if (existing != null) {
+                for (const child of existing.filters) {
+                  if (child.type === 'text') {
+                    rows.push({ operator: child.operator, value: child.value });
+                  } else if (child.type === 'number') {
+                    rows.push({
+                      operator: child.operator,
+                      value:
+                        child.operator === 'inRange'
+                          ? `${child.value}..${child.valueTo ?? ''}`
+                          : String(child.value),
+                    });
+                  }
+                }
+              }
+              if (rows.length === 0) {
+                rows.push({ operator: isNumberCol ? '=' : 'contains', value: '' });
+              }
+              const textOperators: readonly { value: string; label: string }[] = [
+                { value: 'contains', label: '包含' },
+                { value: 'equals', label: '等于' },
+                { value: 'startsWith', label: '开头是' },
+                { value: 'endsWith', label: '结尾是' },
+              ];
+              const numberOperators: readonly { value: string; label: string }[] = [
+                { value: '=', label: '=' },
+                { value: '!=', label: '≠' },
+                { value: '>', label: '>' },
+                { value: '<', label: '<' },
+                { value: '>=', label: '≥' },
+                { value: '<=', label: '≤' },
+                { value: 'inRange', label: '范围' },
+              ];
+              const operators = isNumberCol ? numberOperators : textOperators;
+              const commitFilter = (nextRows: CondRow[], nextMode: 'AND' | 'OR'): void => {
+                const activeRows = nextRows.filter((r) => r.value.trim() !== '');
+                if (activeRows.length === 0) {
+                  applyColumnMultiFilter(openFilterColId, null);
+                  return;
+                }
+                const filters: MultiFilterEntry[] = activeRows.map((r) => {
+                  if (isNumberCol) {
+                    if (r.operator === 'inRange') {
+                      const [lo, hi] = r.value.split('..');
+                      return {
+                        type: 'number' as const,
+                        operator: 'inRange' as const,
+                        value: Number(lo?.trim() ?? 0),
+                        valueTo: Number(hi?.trim() ?? 0),
+                      };
+                    }
+                    return {
+                      type: 'number' as const,
+                      operator: r.operator as '!=' | '<' | '<=' | '=' | '>' | '>=',
+                      value: Number(r.value),
+                    };
+                  }
+                  return {
+                    type: 'text' as const,
+                    operator: r.operator as 'contains' | 'endsWith' | 'equals' | 'startsWith',
+                    value: r.value,
+                  };
+                });
+                applyColumnMultiFilter(openFilterColId, {
+                  type: 'multi',
+                  colId: openFilterColId,
+                  mode: nextMode,
+                  filters,
+                });
+              };
+              const colLabel = filterCol.headerName ?? filterCol.field ?? filterCol.id;
+              const pos = filterPos;
+              const rowNodes: VNode[] = rows.map((row, idx) => {
+                return h('div', { class: 'cx-table-column-filter-row' }, [
+                  h(
+                    'select',
+                    {
+                      class: 'cx-table-column-filter-row-select',
+                      domProps: { value: row.operator },
+                      on: {
+                        change: (e: Event) => {
+                          const target = e.target as HTMLSelectElement;
+                          rows[idx]!.operator = target.value;
+                          commitFilter(rows, mode);
+                        },
+                      },
+                    },
+                    operators.map((op) =>
+                      h(
+                        'option',
+                        {
+                          attrs: { value: op.value },
+                          domProps: { selected: row.operator === op.value },
+                        },
+                        op.label,
+                      ),
+                    ),
+                  ),
+                  h('input', {
+                    class: 'cx-table-column-filter-row-input',
+                    attrs: {
+                      type: isNumberCol ? 'number' : 'text',
+                      placeholder: isNumberCol ? '数值' : '文本',
+                    },
+                    domProps: { value: row.value },
+                    on: {
+                      input: (e: Event) => {
+                        const target = e.target as HTMLInputElement;
+                        rows[idx]!.value = target.value;
+                        commitFilter(rows, mode);
+                      },
+                    },
+                  }),
+                  h(
+                    'button',
+                    {
+                      class: 'cx-table-column-filter-row-remove',
+                      attrs: { type: 'button', 'aria-label': '移除条件' },
+                      on: {
+                        click: () => {
+                          rows.splice(idx, 1);
+                          commitFilter(rows, mode);
+                        },
+                      },
+                    },
+                    '×',
+                  ),
+                ]);
+              });
+              return h(
+                'div',
+                {
+                  ref: ((el: HTMLElement | null) => {
+                    columnFilterPanelRef.value = el;
+                  }) as never,
+                  class: 'cx-table-column-filter-panel',
+                  attrs: { 'data-col-id': openFilterColId },
+                  style: {
+                    position: 'absolute',
+                    left: `${pos.left}px`,
+                    top: `${pos.top}px`,
+                    zIndex: 7,
+                  },
+                },
+                [
+                  h('div', { class: 'cx-table-column-filter-panel-header' }, [
+                    h('span', `筛选 — ${colLabel}`),
+                  ]),
+                  h('div', { class: 'cx-table-column-filter-panel-mode' }, [
+                    h(
+                      'button',
+                      {
+                        class: [
+                          'cx-table-column-filter-panel-mode-btn',
+                          mode === 'AND' && 'cx-table-column-filter-panel-mode-btn--active',
+                        ]
+                          .filter(Boolean)
+                          .join(' '),
+                        attrs: { type: 'button' },
+                        on: { click: () => commitFilter(rows, 'AND') },
+                      },
+                      '且 (AND)',
+                    ),
+                    h(
+                      'button',
+                      {
+                        class: [
+                          'cx-table-column-filter-panel-mode-btn',
+                          mode === 'OR' && 'cx-table-column-filter-panel-mode-btn--active',
+                        ]
+                          .filter(Boolean)
+                          .join(' '),
+                        attrs: { type: 'button' },
+                        on: { click: () => commitFilter(rows, 'OR') },
+                      },
+                      '或 (OR)',
+                    ),
+                  ]),
+                  ...rowNodes,
+                  h('div', { class: 'cx-table-column-filter-panel-actions' }, [
+                    h(
+                      'button',
+                      {
+                        class: 'cx-table-column-filter-panel-add',
+                        attrs: { type: 'button' },
+                        on: {
+                          click: () => {
+                            rows.push({ operator: isNumberCol ? '=' : 'contains', value: '' });
+                            commitFilter(rows, mode);
+                          },
+                        },
+                      },
+                      '+ 添加条件',
+                    ),
+                    h(
+                      'button',
+                      {
+                        class: 'cx-table-column-filter-panel-clear',
+                        attrs: { type: 'button' },
+                        on: { click: () => applyColumnMultiFilter(openFilterColId, null) },
+                      },
+                      '清空',
+                    ),
+                  ]),
+                ],
+              );
+            })()
+          : null;
+
       const tableWrapper = h(
         'div',
         {
@@ -12675,6 +13036,7 @@ export const ChronixTable = defineComponent({
           ...(cellStyleEditorPopover != null ? [cellStyleEditorPopover] : []),
           ...(settingsPopover != null ? [settingsPopover] : []),
           ...(columnHeaderMenuOverlay != null ? [columnHeaderMenuOverlay] : []),
+          ...(columnFilterPanelOverlay != null ? [columnFilterPanelOverlay] : []),
         ],
       );
       return tableWrapper;

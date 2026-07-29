@@ -1418,6 +1418,7 @@ function onColumnHeaderMenuAction(payload: {
           :show-filter-row="true"
           :show-footer-row="true"
           :show-column-header-menu="true"
+          :show-column-filter-button="true"
           :context-menu="phase83ContextMenuConfig"
           @column-header-menu-action="onColumnHeaderMenuAction"
           :enable-keyboard-navigation="true"
@@ -1593,6 +1594,7 @@ function onColumnHeaderMenuAction(payload: {
           :show-pagination="serverSideshowPagination"
           :initial-page-size="25"
           :show-filter-row="true"
+          :show-column-filter-button="true"
           :tool-panel="toolPanelConfig"
         />
       </section>
