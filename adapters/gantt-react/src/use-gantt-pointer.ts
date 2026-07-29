@@ -23,8 +23,8 @@ import {
   type SwimlaneStrip,
   type TimeRange,
 } from '@chronixjs/gantt';
-import { flushSync } from 'react-dom';
 import { useReducer, useRef } from 'react';
+import { flushSync } from 'react-dom';
 
 /**
  * Commit payload emitted when a `BarDragTransaction` completes — sourced

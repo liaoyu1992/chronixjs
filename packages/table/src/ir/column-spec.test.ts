@@ -1,10 +1,16 @@
 ﻿import { describe, expect, it } from 'vitest';
 
-import { normalizeColumnSpec } from './column-spec.js';
+import {
+  computeColumnHeaderMinWidth,
+  normalizeColumnSpec,
+  withHeaderMinWidth,
+} from './column-spec.js';
 
-import type { ColumnSpec, RowAction } from './column-spec.js';
+import type { ColumnSpec, HeaderMinWidthOptions, RowAction } from './column-spec.js';
 
-const noop = (): void => {};
+const noop = (): void => {
+  /* intentional no-op */
+};
 
 const action: RowAction = { id: 'edit', label: 'Edit', onClick: noop };
 
@@ -72,9 +78,6 @@ describe('normalizeColumnSpec', () => {
     expect(out.actions).toBe(col.actions);
   });
 });
-
-import { computeColumnHeaderMinWidth, withHeaderMinWidth } from './column-spec.js';
-import type { HeaderMinWidthOptions } from './column-spec.js';
 
 describe('computeColumnHeaderMinWidth', () => {
   const opts: HeaderMinWidthOptions = {

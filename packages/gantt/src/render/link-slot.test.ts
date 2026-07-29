@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
+import { defaultChronixTheme } from '../api/chronix-theme.js';
+
 import { createSlotRegistry } from './create-slot-registry.js';
 import { LINK_SLOT_NAME, type LinkSlotArgs } from './link-slot.js';
 
-import { defaultChronixTheme } from '../api/chronix-theme.js';
-
+import type { SlotTemplate } from './slot.js';
 import type { LinkSpec } from '../ir/index.js';
 import type { PlacedBar, RoutedLink } from '../layout/types.js';
-import type { SlotTemplate } from './slot.js';
 
 const fromBar: PlacedBar = {
   barId: 'a',

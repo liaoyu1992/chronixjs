@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import type { LinkRenderArg, LinkRenderFunc, LinkRenderOverride } from './link-render.js';
-
 import type { CustomLinkMarker, LinkSpec } from '../ir/index.js';
 import type { PlacedBar, RoutedLink } from '../layout/types.js';
 

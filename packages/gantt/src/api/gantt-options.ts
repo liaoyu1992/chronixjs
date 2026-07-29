@@ -1,6 +1,6 @@
 import type { BarSpec, LinkSpec, RowSpec, TimeRange } from '../ir/index.js';
-import type { SlotTemplate } from '../render/index.js';
 import type { AxisRangePlanInput } from '../layout/types.js';
+import type { SlotTemplate } from '../render/index.js';
 
 /** Payload for the `bar-drop` event — fired after a `BarDragTransaction` commits. */
 export interface BarDropPayload {
