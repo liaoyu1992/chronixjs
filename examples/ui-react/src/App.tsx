@@ -112,6 +112,7 @@ import type {
   TimelineItem,
   TreeNodeData,
   TreeNodeSpec,
+  UploadFileInfo,
 } from '@chronixjs/ui';
 
 const PHASE25_RADIO_OPTIONS: readonly RadioOption[] = [
@@ -547,7 +548,7 @@ export function App(): ReactElement {
     'Tag 2',
   ]);
   const [phase35NumberAnimationTo] = useState(100);
-  const [phase35UploadFiles] = useState<unknown[]>([]);
+  const [phase35UploadFiles] = useState<UploadFileInfo[]>([]);
 
   // Carousel lazy + thumbnails
   const PHASE37_LAZY_CAROUSEL_ITEMS = [
