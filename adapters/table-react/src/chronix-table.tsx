@@ -1,4 +1,22 @@
 ﻿import {
+  DEFAULT_VIRTUAL_WINDOW_OVERSCAN,
+  computeHsvAtSquarePosition,
+  computeHueAtStripPosition,
+  computeRangeClosestHandle,
+  computeRangeValueAtPosition,
+  computeRangeValueOnKey,
+  computeSquarePositionForHsv,
+  computeStripPositionForHue,
+  computeVirtualWindow,
+  hexToRgb,
+  hsvToRgb,
+  rgbToHex,
+  rgbToHsv,
+  type Hsv,
+  type RangeHandle,
+  type Rgb,
+} from '@chronixjs/cx-kit';
+import {
   appendMutationBatch,
   clampResizeWidth,
   coerceEditDraftValue,
@@ -134,24 +152,6 @@ import {
   type ServerSideDataSource,
   type ServerSideRowSource,
 } from '@chronixjs/table-server-side';
-import {
-  DEFAULT_VIRTUAL_WINDOW_OVERSCAN,
-  computeHsvAtSquarePosition,
-  computeHueAtStripPosition,
-  computeRangeClosestHandle,
-  computeRangeValueAtPosition,
-  computeRangeValueOnKey,
-  computeSquarePositionForHsv,
-  computeStripPositionForHue,
-  computeVirtualWindow,
-  hexToRgb,
-  hsvToRgb,
-  rgbToHex,
-  rgbToHsv,
-  type Hsv,
-  type RangeHandle,
-  type Rgb,
-} from '@chronixjs/cx-kit';
 import {
   forwardRef,
   useCallback,

@@ -10566,7 +10566,7 @@ describe('nested-groups in-UI affordances (vue3)', () => {
         id: 'actions',
         headerName: '操作',
         width: 160,
-        actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+        actions: [{ id: 'edit', label: '编辑', onClick: () => undefined }],
       },
     ];
     const rs: readonly RowSpec[] = [
@@ -10594,7 +10594,7 @@ describe('nested-groups in-UI affordances (vue3)', () => {
         id: 'actions',
         headerName: '操作',
         width: 160,
-        actions: [{ id: 'edit', label: '编辑', onClick: () => {} }],
+        actions: [{ id: 'edit', label: '编辑', onClick: () => undefined }],
       },
     ];
     const rs: readonly RowSpec[] = [

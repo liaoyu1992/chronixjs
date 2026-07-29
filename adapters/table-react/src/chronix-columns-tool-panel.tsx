@@ -9,9 +9,8 @@
  */
 import { useMemo, useState, type ChangeEvent, type ReactElement } from 'react';
 
-import type { ColumnSpec } from '@chronixjs/table';
-
 import type { TableHandle } from './chronix-table.js';
+import type { ColumnSpec } from '@chronixjs/table';
 
 export interface ChronixColumnsToolPanelProps {
   readonly tableHandle: TableHandle | null;

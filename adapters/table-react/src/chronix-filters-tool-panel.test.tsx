@@ -1,14 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type {
-  ColumnSpec,
-  ColumnUniqueValue,
-  FilterSpec,
-  ParseFilterExpressionResult,
-  RowSpec,
-} from '@chronixjs/table';
-
 import {
   ADVANCED_FILTER_KEYWORDS,
   ADVANCED_FILTER_OPERATORS,
@@ -20,6 +12,13 @@ import {
 } from './chronix-filters-tool-panel.js';
 
 import type { TableHandle } from './chronix-table.js';
+import type {
+  ColumnSpec,
+  ColumnUniqueValue,
+  FilterSpec,
+  ParseFilterExpressionResult,
+  RowSpec,
+} from '@chronixjs/table';
 
 function makeHandle(overrides: Partial<TableHandle> = {}): TableHandle {
   const noop = (): void => undefined;

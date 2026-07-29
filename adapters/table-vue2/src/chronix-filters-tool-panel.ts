@@ -11,16 +11,6 @@
  * autocomplete helpers into the advanced-filter textarea as a column-
  * name typeahead popover. Verbatim mirror of vue3 .
  */
-import {
-  computed,
-  defineComponent,
-  h,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-  type PropType,
-} from 'vue';
 
 import {
   computeMatchSpans,
@@ -40,6 +30,16 @@ import {
   type RowSpec,
   type TypeaheadRecentStorage,
 } from '@chronixjs/table';
+import {
+  computed,
+  defineComponent,
+  h,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+  type PropType,
+} from 'vue';
 
 import type { TableHandle } from './chronix-table.js';
 

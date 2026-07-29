@@ -1,20 +1,3 @@
-import type {
-  AutoCompleteOption,
-  BreadcrumbItem,
-  CarouselItem,
-  CollapseItem,
-  DescriptionItem,
-  DropdownOption,
-  ListItem,
-  MenuItem,
-  PopSelectOption,
-  RadioOption,
-  StepItem,
-  TabItem,
-  TimelineItem,
-  TreeNodeData,
-  TreeNodeSpec,
-} from '@chronixjs/ui';
 import {
   ChronixAffix,
   ChronixAlert,
@@ -112,6 +95,24 @@ import {
   ChronixUpload,
 } from '@chronixjs/ui-react';
 import { useState, type ReactElement } from 'react';
+
+import type {
+  AutoCompleteOption,
+  BreadcrumbItem,
+  CarouselItem,
+  CollapseItem,
+  DescriptionItem,
+  DropdownOption,
+  ListItem,
+  MenuItem,
+  PopSelectOption,
+  RadioOption,
+  StepItem,
+  TabItem,
+  TimelineItem,
+  TreeNodeData,
+  TreeNodeSpec,
+} from '@chronixjs/ui';
 
 const PHASE25_RADIO_OPTIONS: readonly RadioOption[] = [
   { key: 'a', label: 'Option A', value: 'a', disabled: false },
@@ -470,7 +471,7 @@ export function App(): ReactElement {
   );
 
   // Select family
-  const PHASE31_SELECT_OPTIONS: any[] = [
+  const PHASE31_SELECT_OPTIONS = [
     { key: 'apple', label: 'Apple', value: 'apple' },
     { key: 'banana', label: 'Banana', value: 'banana' },
     { key: 'cherry', label: 'Cherry', value: 'cherry' },
@@ -478,7 +479,7 @@ export function App(): ReactElement {
   const [phase31SelectValue, setPhase31SelectValue] = useState<string | undefined>(undefined);
   const [phase31SelectMultiValue, setPhase31SelectMultiValue] = useState<string[]>([]);
 
-  const PHASE31_TREE_DATA: any[] = [
+  const PHASE31_TREE_DATA = [
     {
       key: 't1',
       data: { label: 'Tree Node 1' },
@@ -496,7 +497,7 @@ export function App(): ReactElement {
     't1',
   ]);
 
-  const PHASE31_CASCADER_OPTIONS: any[] = [
+  const PHASE31_CASCADER_OPTIONS = [
     {
       key: 'zhejiang',
       label: 'Zhejiang',
@@ -513,7 +514,7 @@ export function App(): ReactElement {
   ];
   const [phase31CascaderValue, setPhase31CascaderValue] = useState<string | undefined>(undefined);
 
-  const PHASE31_MENTION_OPTIONS: any[] = [
+  const PHASE31_MENTION_OPTIONS = [
     { key: 'alice', label: 'Alice', value: 'alice' },
     { key: 'bob', label: 'Bob', value: 'bob' },
     { key: 'charlie', label: 'Charlie', value: 'charlie' },
@@ -546,7 +547,7 @@ export function App(): ReactElement {
     'Tag 2',
   ]);
   const [phase35NumberAnimationTo] = useState(100);
-  const [phase35UploadFiles] = useState<any[]>([]);
+  const [phase35UploadFiles] = useState<unknown[]>([]);
 
   // Carousel lazy + thumbnails
   const PHASE37_LAZY_CAROUSEL_ITEMS = [

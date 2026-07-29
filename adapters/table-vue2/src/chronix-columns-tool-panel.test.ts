@@ -1,12 +1,11 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
-import type { VueConstructor } from 'vue';
-
-import type { ColumnSpec } from '@chronixjs/table';
 
 import { ChronixColumnsToolPanel } from './chronix-columns-tool-panel.js';
 
 import type { TableHandle } from './chronix-table.js';
+import type { ColumnSpec } from '@chronixjs/table';
+import type { VueConstructor } from 'vue';
 
 const ColumnsPanelForTest = ChronixColumnsToolPanel as unknown as VueConstructor;
 

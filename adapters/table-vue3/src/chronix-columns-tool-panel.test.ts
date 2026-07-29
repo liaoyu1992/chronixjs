@@ -1,11 +1,10 @@
 import { mount } from '@vue/test-utils';
 import { describe, expect, it, vi } from 'vitest';
 
-import type { ColumnSpec } from '@chronixjs/table';
-
 import { ChronixColumnsToolPanel } from './chronix-columns-tool-panel.js';
 
 import type { TableHandle } from './chronix-table.js';
+import type { ColumnSpec } from '@chronixjs/table';
 
 function makeHandle(overrides: Partial<TableHandle> = {}): TableHandle {
   const noop = (): void => undefined;

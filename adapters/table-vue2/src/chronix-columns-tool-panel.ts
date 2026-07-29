@@ -8,10 +8,9 @@
  */
 import { computed, defineComponent, h, ref } from 'vue';
 
+import type { TableHandle } from './chronix-table.js';
 import type { ColumnSpec } from '@chronixjs/table';
 import type { PropType } from 'vue';
-
-import type { TableHandle } from './chronix-table.js';
 
 export interface ChronixColumnsToolPanelProps {
   readonly tableHandle: TableHandle | null;

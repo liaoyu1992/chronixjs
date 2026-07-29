@@ -15,9 +15,8 @@
  */
 import { defineComponent, h, ref, computed, type PropType } from 'vue';
 
-import type { ColumnSpec } from '@chronixjs/table';
-
 import type { TableHandle } from './chronix-table.js';
+import type { ColumnSpec } from '@chronixjs/table';
 
 /**
  * Props for `<ChronixColumnsToolPanel>`.

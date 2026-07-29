@@ -25,16 +25,6 @@
  * dismisses. On commit: replace word-at-cursor with `col.id`. See
  * `audit/TABLE_PHASE_100_2_ADVANCED_FILTER_TYPEAHEAD_DESIGN.md`.
  */
-import {
-  computed,
-  defineComponent,
-  h,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-  type PropType,
-} from 'vue';
 
 import {
   computeMatchSpans,
@@ -54,6 +44,16 @@ import {
   type RowSpec,
   type TypeaheadRecentStorage,
 } from '@chronixjs/table';
+import {
+  computed,
+  defineComponent,
+  h,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+  type PropType,
+} from 'vue';
 
 import type { TableHandle } from './chronix-table.js';
 
