@@ -3536,16 +3536,6 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       setFilterPanelMode(existing?.mode ?? 'AND');
     }, []);
 
-    const getColumnMultiFilter = useCallback(
-      (colId: string): MultiFilterSpec | null => {
-        const found = filterSpec.find(
-          (s): s is MultiFilterSpec => s.type === 'multi' && s.colId === colId,
-        );
-        return found ?? null;
-      },
-      [filterSpec],
-    );
-
     // Close the hoisted menu on any scroll (capture-phase) so it never
     // detaches from its anchor cell during horizontal/vertical scroll.
     useEffect(() => {
