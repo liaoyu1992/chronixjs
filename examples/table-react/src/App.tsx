@@ -1252,7 +1252,7 @@ export function App(): ReactElement {
     return `按 ${parts.join(' + ')}`;
   }
   function describeFilter(specs: readonly FilterSpec[]): string {
-    if (specs.length === 0) return '无过滤 (在表头下方输入框中输入)';
+    if (specs.length === 0) return '无过滤 (点击表头筛选按钮打开筛选面板)';
     const parts = specs.map((spec) => {
       if (spec.type === 'expression') {
         return `表达式: ${spec.source ?? '(IR-only)'}`;
@@ -1471,7 +1471,6 @@ export function App(): ReactElement {
             showStatusBar
             columns={columns}
             rows={rows}
-            showFilterRow
             showFooterRow
             showColumnHeaderMenu
             showColumnFilterButton
@@ -1659,7 +1658,6 @@ export function App(): ReactElement {
             serverSideDataSource={mockServerSideDataSource}
             showPagination={serverSidePaginationEnabled}
             initialPageSize={25}
-            showFilterRow
             showColumnFilterButton
             data-testid="server-side-table"
             toolPanel={toolPanelConfig}

@@ -1,19 +1,13 @@
 ﻿import {
-  DEFAULT_VIRTUAL_WINDOW_OVERSCAN,
   computeHsvAtSquarePosition,
   computeHueAtStripPosition,
-  computeRangeClosestHandle,
-  computeRangeValueAtPosition,
-  computeRangeValueOnKey,
   computeSquarePositionForHsv,
   computeStripPositionForHue,
-  computeVirtualWindow,
   hexToRgb,
   hsvToRgb,
   rgbToHex,
   rgbToHsv,
   type Hsv,
-  type RangeHandle,
   type Rgb,
 } from '@chronixjs/cx-kit';
 import {
@@ -31,7 +25,6 @@ import {
   computePasteMutations,
   collectDescendantRowIds,
   collectUniqueColumnValues,
-  computeColumnNumericExtents,
   computeDragAutoScrollVelocity,
   DEFAULT_DRAG_AUTO_SCROLL_MAX_VELOCITY_PX_PER_FRAME,
   DEFAULT_DRAG_AUTO_SCROLL_TRIGGER_ZONE_PX,
@@ -58,11 +51,9 @@ import {
   findNextEditableCell,
   formatCellRangeForClipboard,
   formatCellValue,
-  formatPrefixNumberFilter,
   getCellValue,
   getColumnDropTarget,
   parseClipboardTsv,
-  parsePrefixNumberFilter,
   pinnedColsPass,
   parseFilterExpression,
   popRedoBatch,
@@ -109,7 +100,6 @@ import {
   type FilterSpec,
   type HeaderGroupSpan,
   type ParseFilterExpressionResult,
-  type SetFilterSpec,
   type LazyChildrenState,
   type LazyChildrenStatus,
   type MutationBatch,
@@ -128,10 +118,8 @@ import {
   type RowDataSource,
   type RowValidator,
   type RowValidationViolation,
-  type NumberFilterSpec,
   type RowSpec,
   type SortSpec,
-  type TextFilterSpec,
   type ToolPanelChangePayload,
   type ToolPanelConfig,
   type ToolPanelDescriptor,
@@ -830,7 +818,7 @@ export interface SortChangePayload {
  * payload for the `filter-change` emit.
  * Fires every time the internal filter state transitions — including
  * transitions back to `[]` (filter cleared) and per-keystroke when
- * the consumer types into a `showFilterRow` input. Consumers can
+ * the consumer interacts with column filters. Consumers can
  * mirror `filterSpec` into external state without a controlled prop.
  * Verbatim port of vue3 `FilterChangePayload`.
  */
@@ -1109,21 +1097,6 @@ export interface CellEditValidationPendingPayload {
   readonly row: RowSpec;
   readonly column: ColumnSpec;
   readonly draftValue: unknown;
-}
-
-/**
- * (2026-06-02 — vue2 port): args for the
- * `multiFilterChildRenderer` slot prop. Verbatim mirror of vue3
- * . Consumer's renderer returns `VNode | null`; non-null
- * replaces the built-in slot widget, `null` falls back.
- */
-export interface MultiFilterChildRendererArgs {
-  readonly column: ColumnSpec;
-  readonly slotIdx: number;
-  readonly slotKind: 'text' | 'number' | 'set';
-  /** (2026-06-02 — vue2 port): widened to MultiFilterEntry. */
-  readonly child: MultiFilterEntry;
-  readonly setChildValue: (next: MultiFilterEntry) => void;
 }
 
 /**
@@ -1618,19 +1591,6 @@ export interface LazyLoadErrorPayload {
 const EMPTY_PREVIEW_SET: ReadonlySet<string> = new Set<string>();
 
 /**
- * hard-coded Set filter checkbox row height
- * used by `computeVirtualWindow`. Verbatim port of vue3's
- * `SET_FILTER_ITEM_HEIGHT_PX`.
- */
-const SET_FILTER_ITEM_HEIGHT_PX = 28;
-
-/**
- * (2026-05-31 — vue2 port): fixed step for Number filter
- * range slider. Verbatim mirror of vue3 constant.
- */
-const NUMBER_FILTER_RANGE_STEP = 1;
-
-/**
  * helper: shallow equality on `CellRangeEnvelope` pairs.
  * Verbatim port of vue3's `sameEnvelope`. `computeDragFillEnvelope`
  * returns the same source object when no extension applies; this
@@ -1681,31 +1641,12 @@ export const ChronixTable = defineComponent({
       default: undefined,
     },
     /**
-     * opt-in filter-input row beneath the
-     * column headers. Default `false` — consumers who want a
-     * per-column text-filter UX without writing custom inputs set
-     * this to `true`. Programmatic `setFilter` works regardless of
-     * this prop's value. Verbatim port of vue3 prop.
-     */
-    showFilterRow: {
-      type: Boolean,
-      default: false,
-    },
-    /**
      * (2026-06-02 — vue2 port): default mode for newly-
      * bootstrapped multi-filter specs. Verbatim mirror of vue3.
      */
     multiFilterDefaultMode: {
       type: String as PropType<'AND' | 'OR'>,
       default: 'AND',
-    },
-    /**
-     * (2026-06-02 — vue2 port): per-slot custom renderer.
-     * Verbatim mirror of vue3 prop.
-     */
-    multiFilterChildRenderer: {
-      type: Function as PropType<(args: MultiFilterChildRendererArgs) => VNode | null>,
-      default: undefined,
     },
     /**
      * (2026-06-02 — vue2 port): cross-cell / cross-row
@@ -2029,24 +1970,6 @@ export const ChronixTable = defineComponent({
       default: 0,
     },
     /**
-     * (2026-05-31 — vue2 port): Set filter dropdown
-     * virtualization threshold. Verbatim mirror of vue3
-     * prop. Default `100`.
-     */
-    setFilterVirtualizeThreshold: {
-      type: Number,
-      default: 100,
-    },
-    /**
-     * (2026-05-31 — vue2 port): opt-in Number filter
-     * range slider. Verbatim mirror of vue3 prop.
-     * Default `false`.
-     */
-    numberFilterShowRangeSlider: {
-      type: Boolean,
-      default: false,
-    },
-    /**
      * (2026-05-31 — vue2 port) + (2026-05-31
      * — vue2 port): opt-in per-cell style editor with Background +
      * Text tabs. Verbatim mirror of vue3 prop. Default `false`.
@@ -2297,23 +2220,15 @@ export const ChronixTable = defineComponent({
     // composition API form, `as never` cast bridging the wider Vue 2
     // ref signature to our narrower HTMLElement type).
     const bodyRef = ref<HTMLElement | null>(null);
-    // (2026-05-26 — vue2 port of vue3): header +
-    // filter row are SIBLINGS of body, so the body's `overflowX: auto`
-    // scroll does NOT propagate to them. The SFC mirrors
-    // `bodyScrollLeft → headerEl.scrollLeft + filterRowEl.scrollLeft`
-    // via the body's `on: { scroll }` handler so the header / filter
+    // (2026-05-26 — vue2 port of vue3): header is
+    // a SIBLING of body, so the body's `overflowX: auto`
+    // scroll does NOT propagate to it. The SFC mirrors
+    // `bodyScrollLeft → headerEl.scrollLeft`
+    // via the body's `on: { scroll }` handler so the header
     // cells stay column-aligned with body cells during horizontal
-    // scroll. Header + filter both carry `overflowX: hidden` inline so
+    // scroll. Header carries `overflowX: hidden` inline so
     // `scrollLeft` is a meaningful programmatic offset.
     const headerRef = ref<HTMLElement | null>(null);
-    const filterRowRef = ref<HTMLElement | null>(null);
-    // (2026-05-31 — vue2 port): per-column Set filter
-    // virtualization state. Verbatim mirror of vue3 .
-    const setFilterScrollTopByColId = ref<Record<string, number>>({});
-    const setFilterViewportHeightByColId = ref<Record<string, number>>({});
-    // (2026-05-31 — vue2 port): per-column Number filter
-    // range slider drag state. Verbatim mirror of vue3 .
-    const numberFilterRangeDragByColId = ref<Record<string, RangeHandle | null>>({});
     // (2026-05-31 — vue2 port) + + Phase
     // 99.2.2 + (2026-06-01 — vue2 port): per-cell style
     // overrides + editor open state. Entry shape carries 9 optional
@@ -3684,151 +3599,6 @@ export const ChronixTable = defineComponent({
       return [spec as FilterSpec];
     }
 
-    /**
-     * + 43.1: SFC-internal helper for per-column filter-input
-     * updates. Dispatches on `column.type`:
-     *
-     * - `'number'` columns → parse the input via
-     *   `parsePrefixNumberFilter` (supports `5`, `>10`, `<20`, `>=5`,
-     *   `<=10`, `!=3`, `5..50`). Invalid input → no spec entry
-     *   (treats typos as "no filter" rather than hiding rows).
-     * - other columns → text filter with `'contains'` operator.
-     *
-     * Empty value (or invalid number-filter input) removes the entry
-     * so `getFilter()` doesn't accumulate dead specs. Verbatim port
-     * of vue3 .
-     */
-    function setFilterColumnValue(colId: string, value: string): void {
-      const current = filterSpec.value;
-      const idx = current.findIndex(
-        (s) => s.type !== 'expression' && s.type !== 'set' && s.colId === colId,
-      );
-      const column = columnTable.value.getById(colId);
-      const isNumberColumn = column?.type === 'number';
-
-      let newEntry: FilterSpec | null;
-      if (value === '') {
-        newEntry = null;
-      } else if (isNumberColumn) {
-        // Number column: parse the prefix syntax. Invalid → null (no
-        // spec entry); valid → NumberFilterSpec.
-        newEntry = parsePrefixNumberFilter(value, colId);
-      } else {
-        const textEntry: TextFilterSpec = {
-          type: 'text',
-          colId,
-          operator: 'contains',
-          value,
-        };
-        newEntry = textEntry;
-      }
-
-      let next: readonly FilterSpec[];
-      if (newEntry == null) {
-        next = idx >= 0 ? [...current.slice(0, idx), ...current.slice(idx + 1)] : current;
-      } else if (idx >= 0) {
-        next = [...current.slice(0, idx), newEntry, ...current.slice(idx + 1)];
-      } else {
-        next = [...current, newEntry];
-      }
-      applyFilter(next);
-    }
-
-    /**
-     * format the SFC's filter input value from the
-     * current filter spec for a given column. Round-trips
-     * `setFilter` → input text so external programmatic calls
-     * reactively update the visible input. Verbatim port of vue3
-     * .
-     */
-    function filterInputValueFor(colId: string): string {
-      const entry = filterSpec.value.find(
-        (s) => s.type !== 'expression' && s.type !== 'set' && s.colId === colId,
-      );
-      if (entry == null || entry.type === 'expression' || entry.type === 'set') return '';
-      if (entry.type === 'text') return entry.value;
-      if (entry.type === 'number') return formatPrefixNumberFilter(entry);
-      return '';
-    }
-
-    /**
-     * (2026-05-29 — vue2 port): read the current SetFilterSpec
-     * for a column. Verbatim port of vue3 .
-     */
-    function getSetFilterValues(
-      colId: string,
-    ): readonly (string | number | boolean | null)[] | null {
-      const entry = filterSpec.value.find(
-        (s): s is SetFilterSpec => s.type === 'set' && s.colId === colId,
-      );
-      if (entry == null) return null;
-      return entry.selectedValues;
-    }
-
-    /**
-     * (vue2 port): replace the SetFilterSpec entry for a
-     * column. Verbatim port of vue3 .
-     */
-    function applySetFilterValues(
-      colId: string,
-      selectedValues: readonly (string | number | boolean | null)[] | null,
-    ): void {
-      const current = filterSpec.value;
-      const idx = current.findIndex((s) => s.type === 'set' && s.colId === colId);
-      let next: readonly FilterSpec[];
-      if (selectedValues == null) {
-        next = idx >= 0 ? [...current.slice(0, idx), ...current.slice(idx + 1)] : current;
-      } else {
-        const entry: SetFilterSpec = { type: 'set', colId, selectedValues };
-        if (idx >= 0) {
-          next = [...current.slice(0, idx), entry, ...current.slice(idx + 1)];
-        } else {
-          next = [...current, entry];
-        }
-      }
-      applyFilter(next);
-    }
-
-    function setFilterSummaryLabel(colId: string, totalUnique: number): string {
-      const selection = getSetFilterValues(colId);
-      if (selection == null) return `全部 (${totalUnique}) ▾`;
-      if (selection.length === 0) return `空选 (0 / ${totalUnique}) ▾`;
-      return `${selection.length} / ${totalUnique} ▾`;
-    }
-
-    function isSetFilterValueChecked(
-      colId: string,
-      value: string | number | boolean | null,
-    ): boolean {
-      const selection = getSetFilterValues(colId);
-      if (selection == null) return true;
-      for (const candidate of selection) {
-        if (candidate === value) return true;
-        if (candidate === null && value === null) return true;
-      }
-      return false;
-    }
-
-    function toggleSetFilterValue(
-      colId: string,
-      value: string | number | boolean | null,
-      allValues: readonly (string | number | boolean | null)[],
-    ): void {
-      const selection = getSetFilterValues(colId);
-      if (selection == null) {
-        const next = allValues.filter((v) => v !== value);
-        applySetFilterValues(colId, next);
-        return;
-      }
-      const isChecked = isSetFilterValueChecked(colId, value);
-      if (isChecked) {
-        const next = selection.filter((v) => v !== value);
-        applySetFilterValues(colId, next);
-      } else {
-        applySetFilterValues(colId, [...selection, value]);
-      }
-    }
-
     // (2026-06-01 — vue2 port): multi-filter container
     // helpers. Verbatim port of vue3 surface.
     function getMultiFilterSpec(colId: string): MultiFilterSpec | null {
@@ -3867,69 +3637,6 @@ export const ChronixTable = defineComponent({
         next = [...current, spec];
       }
       applyFilter(next);
-    }
-    function setMultiFilterChildValue(col: ColumnSpec, slotIdx: number, rawValue: string): void {
-      const current = getMultiFilterSpec(col.id) ?? bootstrapMultiFilterSpec(col);
-      const existing = current.filters[slotIdx];
-      // (2026-06-02 — vue2 port): skip when slot at idx is
-      // a group entry (consumer-injected via setFilter).
-      if (existing?.type === 'group') return;
-      const slotKind = (col.multiFilterChildTypes ?? (['text', 'text'] as const))[slotIdx];
-      if (slotKind == null) return;
-      let nextChild: MultiFilterChild;
-      if (slotKind === 'number') {
-        const parsed = Number(rawValue);
-        nextChild = {
-          type: 'number',
-          operator: '=',
-          value: Number.isFinite(parsed) ? parsed : Number.NaN,
-        };
-      } else if (slotKind === 'set') {
-        return;
-      } else {
-        nextChild = { type: 'text', operator: 'contains', value: rawValue };
-      }
-      const nextFilters = current.filters.map((f, i) => (i === slotIdx ? nextChild : f));
-      applyMultiFilterSpec(col.id, { ...current, filters: nextFilters });
-    }
-    // (2026-06-02 — vue2 port): set-child membership toggle.
-    function toggleMultiFilterChildSetValue(
-      col: ColumnSpec,
-      slotIdx: number,
-      value: string | number | boolean | null,
-    ): void {
-      const current = getMultiFilterSpec(col.id) ?? bootstrapMultiFilterSpec(col);
-      const existing = current.filters[slotIdx];
-      if (existing?.type !== 'set') return;
-      const prev = existing.selectedValues;
-      let nextSelected: readonly (string | number | boolean | null)[] | null;
-      if (prev == null) {
-        nextSelected = [value];
-      } else {
-        const idx = prev.findIndex((v) => Object.is(v, value));
-        if (idx >= 0) {
-          const next = [...prev.slice(0, idx), ...prev.slice(idx + 1)];
-          nextSelected = next.length === 0 ? null : next;
-        } else {
-          nextSelected = [...prev, value];
-        }
-      }
-      const nextChild: MultiFilterChildSet = { type: 'set', selectedValues: nextSelected };
-      const nextFilters = current.filters.map((f, i) => (i === slotIdx ? nextChild : f));
-      applyMultiFilterSpec(col.id, { ...current, filters: nextFilters });
-    }
-    function isMultiFilterChildSetValueChecked(
-      col: ColumnSpec,
-      slotIdx: number,
-      value: string | number | boolean | null,
-    ): boolean {
-      const spec = getMultiFilterSpec(col.id);
-      if (spec == null) return false;
-      const child = spec.filters[slotIdx];
-      if (child?.type !== 'set') return false;
-      const sel = child.selectedValues;
-      if (sel == null) return false;
-      return sel.some((v) => Object.is(v, value));
     }
     /**
      * (2026-06-02 — vue2 port): walk the multi-filter
@@ -4019,58 +3726,6 @@ export const ChronixTable = defineComponent({
       if (splicedChildren === current.filters) return entries;
       const replacedGroup: MultiFilterGroup = { ...current, filters: splicedChildren };
       return entries.map((e, i) => (i === idx ? replacedGroup : e));
-    }
-
-    function setMultiFilterMode(col: ColumnSpec, mode: 'AND' | 'OR'): void {
-      const current = getMultiFilterSpec(col.id) ?? bootstrapMultiFilterSpec(col);
-      if (current.mode === mode) return;
-      applyMultiFilterSpec(col.id, { ...current, mode });
-    }
-    function multiFilterSummaryLabel(col: ColumnSpec): string {
-      const spec = getMultiFilterSpec(col.id);
-      if (spec == null) return '未启用';
-      const active = spec.filters.filter((f) => {
-        if (f.type === 'text') return f.value !== '';
-        if (f.type === 'number') return Number.isFinite(f.value);
-        if (f.type === 'set') return f.selectedValues != null;
-        // group counts as active iff it has any entries.
-        return f.filters.length > 0;
-      }).length;
-      if (active === 0) return '未启用';
-      const modeLabel = spec.mode === 'AND' ? '全部' : '任一';
-      return `${active} 个筛选器 · ${modeLabel}`;
-    }
-
-    /**
-     * (2026-05-31 — vue2 port): read the current Number
-     * filter range for a column. Verbatim mirror of vue3 helper.
-     */
-    function readNumberFilterRangeForCol(
-      colId: string,
-      extents: { min: number; max: number },
-    ): { low: number; high: number } {
-      const entry = filterSpec.value.find(
-        (s): s is NumberFilterSpec => s.type === 'number' && s.colId === colId,
-      );
-      if (entry == null) return { low: extents.min, high: extents.max };
-      if (entry.operator === 'inRange') {
-        const low = entry.value;
-        const high = entry.valueTo ?? entry.value;
-        return { low: Math.min(low, high), high: Math.max(low, high) };
-      }
-      return { low: entry.value, high: entry.value };
-    }
-
-    /**
-     * (2026-05-31 — vue2 port): map a slider value to a
-     * percent along the track. Verbatim mirror of vue3 helper.
-     */
-    function rangeThumbLeftPercent(value: number, extents: { min: number; max: number }): number {
-      if (extents.max <= extents.min) return 0;
-      const ratio = (value - extents.min) / (extents.max - extents.min);
-      if (ratio < 0) return 0;
-      if (ratio > 1) return 100;
-      return ratio * 100;
     }
 
     /**
@@ -7710,27 +7365,6 @@ export const ChronixTable = defineComponent({
         );
       }
 
-      function buildFilterSelectionCell(): VNode {
-        // Placeholder cell to keep column alignment in the filter row.
-        return h('div', {
-          key: 'filter-selection',
-          class: 'cx-table-filter-cell cx-table-selection-cell',
-          attrs: { 'data-col-id': '__cx_selection__' },
-          style: { width: `${selectionColWidth}px`, ...selectionRailStickyStyle },
-        });
-      }
-
-      function buildFilterRowDragCell(): VNode {
-        // Empty placeholder reserving the row-drag rail's width in the
-        // filter row so filter inputs align with the body's grip column.
-        return h('div', {
-          key: 'filter-row-drag',
-          class: 'cx-table-filter-cell cx-table-row-drag-cell',
-          attrs: { 'data-col-id': '__cx_row_drag__' },
-          style: { width: `${rowDragColumnWidth}px`, ...rowDragRailStickyStyle },
-        });
-      }
-
       function buildBodySelectionCell(rowId: string, rowH: number): VNode {
         const isRowSel = selSet.has(rowId);
         // (vue2 port, 2026-05-28): tristate visualization
@@ -8108,57 +7742,8 @@ export const ChronixTable = defineComponent({
           },
           headerDescription,
         );
-        // -A (2026-05-30 — vue2 port): column header menu
-        // button + popover. Renders only when
-        // props.showColumnHeaderMenu === true. Verbatim mirror of vue3.
-        const columnHeaderMenuNodes: VNode[] = [];
-        if (props.showColumnHeaderMenu === true && !isActionsCol) {
-          const isOpen = openColumnHeaderMenuColIdRef.value === cell.colId;
-          columnHeaderMenuNodes.push(
-            h(
-              'button',
-              {
-                class: ['cx-table-column-header-menu-button'].filter(Boolean).join(' '),
-                attrs: {
-                  type: 'button',
-                  'data-col-id': cell.colId,
-                  'aria-haspopup': 'menu',
-                  'aria-expanded': isOpen ? 'true' : 'false',
-                  'aria-label': '列操作菜单',
-                },
-                on: {
-                  pointerdown: (e: PointerEvent) => {
-                    e.stopPropagation();
-                  },
-                  click: (e: MouseEvent) => {
-                    e.stopPropagation();
-                    applyOpenColumnHeaderMenu(isOpen ? null : cell.colId);
-                  },
-                },
-              },
-              [
-                h(
-                  'svg',
-                  {
-                    attrs: {
-                      width: 14,
-                      height: 16,
-                      viewBox: '0 0 14 16',
-                      fill: 'currentColor',
-                      'aria-hidden': 'true',
-                    },
-                  },
-                  [
-                    h('circle', { attrs: { cx: 7, cy: 4, r: 1.2 } }),
-                    h('circle', { attrs: { cx: 7, cy: 8, r: 1.2 } }),
-                    h('circle', { attrs: { cx: 7, cy: 12, r: 1.2 } }),
-                  ],
-                ),
-              ],
-            ),
-          );
-        }
         // Column filter funnel button (vue2 port). Verbatim mirror of vue3.
+        const columnHeaderMenuNodes: VNode[] = [];
         if (
           props.showColumnFilterButton === true &&
           !isActionsCol &&
@@ -8216,6 +7801,55 @@ export const ChronixTable = defineComponent({
                     },
                   },
                   [h('path', { attrs: { d: 'M1.5 2.5h13l-5 6v5l-3 1.5v-6.5z' } })],
+                ),
+              ],
+            ),
+          );
+        }
+        // -A (2026-05-30 — vue2 port): column header menu
+        // button + popover. Renders only when
+        // props.showColumnHeaderMenu === true. Verbatim mirror of vue3.
+        if (props.showColumnHeaderMenu === true && !isActionsCol) {
+          const isOpen = openColumnHeaderMenuColIdRef.value === cell.colId;
+          columnHeaderMenuNodes.push(
+            h(
+              'button',
+              {
+                class: ['cx-table-column-header-menu-button'].filter(Boolean).join(' '),
+                attrs: {
+                  type: 'button',
+                  'data-col-id': cell.colId,
+                  'aria-haspopup': 'menu',
+                  'aria-expanded': isOpen ? 'true' : 'false',
+                  'aria-label': '列操作菜单',
+                },
+                on: {
+                  pointerdown: (e: PointerEvent) => {
+                    e.stopPropagation();
+                  },
+                  click: (e: MouseEvent) => {
+                    e.stopPropagation();
+                    applyOpenColumnHeaderMenu(isOpen ? null : cell.colId);
+                  },
+                },
+              },
+              [
+                h(
+                  'svg',
+                  {
+                    attrs: {
+                      width: 14,
+                      height: 16,
+                      viewBox: '0 0 14 16',
+                      fill: 'currentColor',
+                      'aria-hidden': 'true',
+                    },
+                  },
+                  [
+                    h('circle', { attrs: { cx: 7, cy: 4, r: 1.2 } }),
+                    h('circle', { attrs: { cx: 7, cy: 8, r: 1.2 } }),
+                    h('circle', { attrs: { cx: 7, cy: 12, r: 1.2 } }),
+                  ],
                 ),
               ],
             ),
@@ -8583,994 +8217,6 @@ export const ChronixTable = defineComponent({
         },
         headerRows,
       );
-
-      // opt-in filter row beneath the header.
-      // One <input> per visible column; filterable columns get an
-      // editable text input + `oninput → setFilterColumnValue`;
-      // non-filterable columns get a disabled placeholder. Per-input
-      // value is read from the current `filterSpec` array so external
-      // `setFilter` calls reactively update the visible input text.
-      // Verbatim port of vue3 form; vue2 vnode-data delta:
-      // attrs goes under `attrs:`, event handlers under `on:`.
-      //
-      // column.type === 'number' columns get
-      // a prefix-syntax placeholder hint + data-filter-type="number"
-      // attr and route input through the prefix parser inside
-      // setFilterColumnValue. filterInputValueFor round-trips current
-      // spec via formatPrefixNumberFilter for number columns.
-      // extracted filterColumnNodes so the selection-cell
-      // prepend/append can compose cleanly. Identical body to the
-      // inline map otherwise.
-      //
-      // (2026-05-31 — vue2 port): optional dual-handle
-      // range slider beneath the Number filter text input. Verbatim
-      // mirror of vue3 wiring.
-      function renderNumberFilterRangeSlider(
-        col: ColumnSpec,
-        extents: { min: number; max: number },
-      ): VNode {
-        const range = readNumberFilterRangeForCol(col.id, extents);
-        const onCommit = (next: { low: number; high: number }): void => {
-          setFilterColumnValue(col.id, `${next.low}..${next.high}`);
-        };
-        const onPointerDownTrack = (e: PointerEvent): void => {
-          const track = e.currentTarget as HTMLElement;
-          const rect = track.getBoundingClientRect();
-          const trackSizePx = rect.width;
-          const positionPx = e.clientX - rect.left;
-          const handle = computeRangeClosestHandle({
-            positionPx,
-            currentRange: range,
-            trackSizePx,
-            min: extents.min,
-            max: extents.max,
-          });
-          numberFilterRangeDragByColId.value = {
-            ...numberFilterRangeDragByColId.value,
-            [col.id]: handle,
-          };
-          try {
-            track.setPointerCapture(e.pointerId);
-          } catch {
-            // capture not available in happy-dom — drag still works
-            // because pointermove on the track bubbles up.
-          }
-          const next = computeRangeValueAtPosition({
-            positionPx,
-            activeHandle: handle,
-            currentRange: range,
-            trackSizePx,
-            min: extents.min,
-            max: extents.max,
-            step: NUMBER_FILTER_RANGE_STEP,
-          });
-          onCommit(next);
-        };
-        const onPointerMoveTrack = (e: PointerEvent): void => {
-          const active = numberFilterRangeDragByColId.value[col.id] ?? null;
-          if (active == null) return;
-          const track = e.currentTarget as HTMLElement;
-          const rect = track.getBoundingClientRect();
-          const positionPx = e.clientX - rect.left;
-          const currentRange = readNumberFilterRangeForCol(col.id, extents);
-          const next = computeRangeValueAtPosition({
-            positionPx,
-            activeHandle: active,
-            currentRange,
-            trackSizePx: rect.width,
-            min: extents.min,
-            max: extents.max,
-            step: NUMBER_FILTER_RANGE_STEP,
-          });
-          onCommit(next);
-        };
-        const onPointerUpTrack = (e: PointerEvent): void => {
-          numberFilterRangeDragByColId.value = {
-            ...numberFilterRangeDragByColId.value,
-            [col.id]: null,
-          };
-          const track = e.currentTarget as HTMLElement;
-          try {
-            track.releasePointerCapture(e.pointerId);
-          } catch {
-            // capture may have never been set — ignore.
-          }
-        };
-        const onKeydownThumb =
-          (handle: RangeHandle) =>
-          (e: KeyboardEvent): void => {
-            const currentRange = readNumberFilterRangeForCol(col.id, extents);
-            const result = computeRangeValueOnKey({
-              key: e.key,
-              activeHandle: handle,
-              currentRange,
-              min: extents.min,
-              max: extents.max,
-              step: NUMBER_FILTER_RANGE_STEP,
-            });
-            if (result == null) return;
-            e.preventDefault();
-            onCommit(result);
-          };
-        return h(
-          'div',
-          {
-            class: 'cx-table-number-filter__range',
-            attrs: {
-              role: 'group',
-              'aria-label': `${col.headerName ?? col.id} range`,
-              'data-col-id': col.id,
-              'data-number-filter-range': '',
-            },
-            style: {
-              position: 'relative',
-              height: '20px',
-              marginTop: '4px',
-              touchAction: 'none',
-            },
-            on: {
-              pointerdown: onPointerDownTrack,
-              pointermove: onPointerMoveTrack,
-              pointerup: onPointerUpTrack,
-              pointercancel: onPointerUpTrack,
-            },
-          },
-          [
-            h('div', {
-              class: 'cx-table-number-filter__range-track',
-              style: {
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: '8px',
-                height: '4px',
-                background: '#e2e8f0',
-              },
-            }),
-            h('button', {
-              class: 'cx-table-number-filter__range-thumb',
-              attrs: {
-                type: 'button',
-                'data-range-handle': 'low',
-                role: 'slider',
-                tabindex: '0',
-                'aria-valuemin': String(extents.min),
-                'aria-valuemax': String(extents.max),
-                'aria-valuenow': String(range.low),
-                'aria-label': `${col.headerName ?? col.id} low`,
-              },
-              style: {
-                position: 'absolute',
-                top: 0,
-                width: '12px',
-                height: '20px',
-                marginLeft: '-6px',
-                left: `${rangeThumbLeftPercent(range.low, extents)}%`,
-                background: '#3b82f6',
-                border: 'none',
-                cursor: 'pointer',
-              },
-              on: {
-                keydown: onKeydownThumb('low'),
-              },
-            }),
-            h('button', {
-              class: 'cx-table-number-filter__range-thumb',
-              attrs: {
-                type: 'button',
-                'data-range-handle': 'high',
-                role: 'slider',
-                tabindex: '0',
-                'aria-valuemin': String(extents.min),
-                'aria-valuemax': String(extents.max),
-                'aria-valuenow': String(range.high),
-                'aria-label': `${col.headerName ?? col.id} high`,
-              },
-              style: {
-                position: 'absolute',
-                top: 0,
-                width: '12px',
-                height: '20px',
-                marginLeft: '-6px',
-                left: `${rangeThumbLeftPercent(range.high, extents)}%`,
-                background: '#3b82f6',
-                border: 'none',
-                cursor: 'pointer',
-              },
-              on: {
-                keydown: onKeydownThumb('high'),
-              },
-            }),
-          ],
-        );
-      }
-      const filterColumnNodes: VNode[] = props.showFilterRow
-        ? visible.map((col) => {
-            const isFilterable = col.filterable !== false;
-            const isNumberColumn = col.type === 'number';
-            const isSetFilterUi = col.filterUi === 'set';
-            // filter-row cells inherit pinned styling so
-            // they stay column-aligned with header + body cells
-            // during horizontal scroll.
-            const pinnedFilterStyle = pinnedCellStyle(col.id);
-            const pinnedFilterClasses = pinnedCellModifierSuffixes(col.id)
-              .map((suffix) => `cx-table-filter-cell${suffix}`)
-              .join(' ');
-
-            // Action columns render an empty filter cell - no input
-            // at all. The actions strip is button-only content; a
-            // filter input (even disabled) is meaningless UI noise.
-            if (col.actions != null && col.actions.length > 0) {
-              return h(
-                'div',
-                {
-                  key: `filter-cell-${col.id}`,
-                  class: pinnedFilterClasses
-                    ? `cx-table-filter-cell ${pinnedFilterClasses}`
-                    : 'cx-table-filter-cell',
-                  attrs: { 'data-col-id': col.id },
-                  style: {
-                    boxSizing: 'border-box',
-                    width: `${widths[col.id] ?? 0}px`,
-                    paddingLeft: `${t.cellPaddingX}px`,
-                    paddingRight: `${t.cellPaddingX}px`,
-                    ...pinnedFilterStyle,
-                  },
-                },
-                [],
-              );
-            }
-
-            // (vue2 port): set-filter dropdown branch.
-            if (isSetFilterUi && isFilterable) {
-              const unique = collectUniqueColumnValues({ rows: props.rows, column: col });
-              const allValues = unique.values.map((v) => v.value);
-              const summaryLabel = setFilterSummaryLabel(col.id, unique.values.length);
-              const totalItemCount = unique.values.length;
-              // (vue2 port): verbatim mirror of vue3 Phase
-              // 96.2 — threshold-gated `computeVirtualWindow`
-              // virtualization for the unique-value checkbox list.
-              const shouldVirtualize = totalItemCount > props.setFilterVirtualizeThreshold;
-              const renderSetFilterItem = (entry: (typeof unique.values)[number]): VNode =>
-                h(
-                  'label',
-                  {
-                    key: `set-filter-item-${col.id}-${String(entry.value)}`,
-                    class: 'cx-table-set-filter__item',
-                  },
-                  [
-                    h('input', {
-                      class: 'cx-table-set-filter__checkbox',
-                      attrs: {
-                        type: 'checkbox',
-                        checked: isSetFilterValueChecked(col.id, entry.value),
-                        'data-set-filter-value': String(entry.value),
-                      },
-                      domProps: {
-                        checked: isSetFilterValueChecked(col.id, entry.value),
-                      },
-                      on: {
-                        change: () => toggleSetFilterValue(col.id, entry.value, allValues),
-                      },
-                    }),
-                    h(
-                      'span',
-                      { class: 'cx-table-set-filter__label' },
-                      entry.value === null ? '(空)' : String(entry.value),
-                    ),
-                    h('span', { class: 'cx-table-set-filter__count' }, ` (${entry.count})`),
-                  ],
-                );
-              let listChildren: VNode | VNode[];
-              if (shouldVirtualize) {
-                const scrollTop = setFilterScrollTopByColId.value[col.id] ?? 0;
-                const viewportHeight = setFilterViewportHeightByColId.value[col.id] ?? 0;
-                const vWindow = computeVirtualWindow({
-                  totalItemCount,
-                  itemHeightPx: SET_FILTER_ITEM_HEIGHT_PX,
-                  scrollTop,
-                  viewportHeight,
-                  overscan: DEFAULT_VIRTUAL_WINDOW_OVERSCAN,
-                });
-                const visibleNodes = unique.values
-                  .slice(vWindow.startIndex, vWindow.endIndex)
-                  .map(renderSetFilterItem);
-                listChildren = h(
-                  'div',
-                  {
-                    class: 'cx-table-set-filter__sizer',
-                    attrs: { 'data-set-filter-sizer': '' },
-                    style: {
-                      position: 'relative',
-                      height: `${vWindow.totalHeightPx}px`,
-                    },
-                  },
-                  [
-                    h(
-                      'div',
-                      {
-                        class: 'cx-table-set-filter__window',
-                        attrs: {
-                          'data-set-filter-window': '',
-                          'data-window-start': String(vWindow.startIndex),
-                          'data-window-end': String(vWindow.endIndex),
-                        },
-                        style: {
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          transform: `translateY(${vWindow.offsetTopPx}px)`,
-                        },
-                      },
-                      visibleNodes,
-                    ),
-                  ],
-                );
-              } else {
-                listChildren = unique.values.map(renderSetFilterItem);
-              }
-              const panelChildren: VNode[] = [
-                h('div', { class: 'cx-table-set-filter__actions' }, [
-                  h(
-                    'button',
-                    {
-                      class: 'cx-table-set-filter__action',
-                      attrs: { type: 'button', 'data-action': 'select-all' },
-                      on: { click: () => applySetFilterValues(col.id, null) },
-                    },
-                    '全选',
-                  ),
-                  h(
-                    'button',
-                    {
-                      class: 'cx-table-set-filter__action',
-                      attrs: { type: 'button', 'data-action': 'clear' },
-                      on: { click: () => applySetFilterValues(col.id, []) },
-                    },
-                    '清空',
-                  ),
-                ]),
-                h(
-                  'div',
-                  {
-                    class: 'cx-table-set-filter__list',
-                    attrs: {
-                      role: 'group',
-                      'data-virtualized': shouldVirtualize ? 'true' : 'false',
-                    },
-                    ref: ((el: HTMLElement | null) => {
-                      if (!shouldVirtualize) return;
-                      if (!el) return;
-                      const next = el.clientHeight;
-                      const prev = setFilterViewportHeightByColId.value[col.id];
-                      if (prev !== next) {
-                        setFilterViewportHeightByColId.value = {
-                          ...setFilterViewportHeightByColId.value,
-                          [col.id]: next,
-                        };
-                      }
-                    }) as never,
-                    on: {
-                      scroll: (e: Event) => {
-                        if (!shouldVirtualize) return;
-                        const target = e.target as HTMLElement;
-                        const next = target.scrollTop;
-                        const prev = setFilterScrollTopByColId.value[col.id];
-                        if (prev !== next) {
-                          setFilterScrollTopByColId.value = {
-                            ...setFilterScrollTopByColId.value,
-                            [col.id]: next,
-                          };
-                        }
-                      },
-                    },
-                  },
-                  Array.isArray(listChildren) ? listChildren : [listChildren],
-                ),
-              ];
-              if (unique.truncated) {
-                panelChildren.push(
-                  h(
-                    'p',
-                    { class: 'cx-table-set-filter__truncated' },
-                    `已截断 (>${unique.values.length})`,
-                  ),
-                );
-              }
-              return h(
-                'div',
-                {
-                  key: `filter-cell-${col.id}`,
-                  class: pinnedFilterClasses
-                    ? `cx-table-filter-cell ${pinnedFilterClasses}`
-                    : 'cx-table-filter-cell',
-                  attrs: {
-                    'data-col-id': col.id,
-                    'data-filter-ui': 'set',
-                  },
-                  style: {
-                    // border-box: flex basis alignment (see leaf header cell).
-                    boxSizing: 'border-box',
-                    width: `${widths[col.id] ?? 0}px`,
-                    paddingLeft: `${t.cellPaddingX}px`,
-                    paddingRight: `${t.cellPaddingX}px`,
-                    ...pinnedFilterStyle,
-                  },
-                },
-                [
-                  h(
-                    'details',
-                    {
-                      class: 'cx-table-set-filter',
-                      attrs: { 'data-col-id': col.id },
-                    },
-                    [
-                      h(
-                        'summary',
-                        {
-                          class: 'cx-table-set-filter__summary',
-                          attrs: { 'aria-label': `Filter ${col.headerName ?? col.id}` },
-                        },
-                        summaryLabel,
-                      ),
-                      h('div', { class: 'cx-table-set-filter__panel' }, panelChildren),
-                    ],
-                  ),
-                ],
-              );
-            }
-
-            // + (2026-06-02 — vue2
-            // port) + (2026-06-02 — vue2 port):
-            // multi-filter container branch. ships
-            // recursive render via `renderMultiFilterEntries` driving
-            // both root + nested groups. Verbatim mirror of vue3.
-            const isMultiFilterUi = col.filterUi === 'multi';
-            if (isMultiFilterUi && isFilterable) {
-              const slots = col.multiFilterChildTypes ?? (['text', 'text'] as const);
-              const summary = multiFilterSummaryLabel(col);
-              const spec = getMultiFilterSpec(col.id);
-              const effectiveRootEntries: readonly MultiFilterEntry[] =
-                spec?.filters ??
-                slots.map((kind) => {
-                  if (kind === 'text') return { type: 'text', operator: 'contains', value: '' };
-                  if (kind === 'set') return { type: 'set', selectedValues: null };
-                  return { type: 'number', operator: '=', value: 0 };
-                });
-              const effectiveRootMode = spec?.mode ?? props.multiFilterDefaultMode;
-              const slotCount = slots.length;
-              let setSlotUnique: ReturnType<typeof collectUniqueColumnValues> | null = null;
-              const ensureSetSlotUnique = (): ReturnType<typeof collectUniqueColumnValues> => {
-                setSlotUnique ??= collectUniqueColumnValues({ rows: props.rows, column: col });
-                return setSlotUnique;
-              };
-              const slotKindOfEntry = (entry: MultiFilterEntry): 'text' | 'number' | 'set' => {
-                if (entry.type === 'group') return 'text';
-                return entry.type;
-              };
-              const renderRemoveSlotButton = (
-                slotIdx: number,
-                parentPath: readonly number[],
-                siblingCount: number,
-              ): VNode => {
-                const disabled = parentPath.length === 0 ? slotCount <= 1 : siblingCount <= 1;
-                return h(
-                  'button',
-                  {
-                    class: 'cx-table-multi-filter__remove-slot',
-                    attrs: {
-                      type: 'button',
-                      'data-col-id': col.id,
-                      'data-multi-filter-slot': String(slotIdx),
-                      'data-testid': 'cx-table-multi-filter-remove-slot',
-                      'aria-label': `Remove filter slot ${slotIdx + 1}`,
-                      disabled: disabled ? 'disabled' : undefined,
-                      'aria-disabled': disabled ? 'true' : 'false',
-                    },
-                    on: {
-                      click: () => {
-                        if (disabled) return;
-                        ctx.emit('remove-multi-filter-slot', {
-                          colId: col.id,
-                          slotIdx,
-                          path: parentPath,
-                        });
-                      },
-                    },
-                  },
-                  '×',
-                );
-              };
-              const isSetValueCheckedAtPath = (
-                path: readonly number[],
-                value: string | number | boolean | null,
-              ): boolean => {
-                if (path.length === 1) {
-                  return isMultiFilterChildSetValueChecked(col, path[0]!, value);
-                }
-                const entry = getMultiFilterEntryAtPathInternal(col.id, path);
-                if (entry?.type !== 'set') return false;
-                const sel = entry.selectedValues;
-                if (sel == null) return true;
-                return sel.some((v) => Object.is(v, value));
-              };
-              const toggleSetValueAtPath = (
-                path: readonly number[],
-                value: string | number | boolean | null,
-              ): void => {
-                if (path.length === 1) {
-                  toggleMultiFilterChildSetValue(col, path[0]!, value);
-                  return;
-                }
-                const entry = getMultiFilterEntryAtPathInternal(col.id, path);
-                if (entry?.type !== 'set') return;
-                const sel = entry.selectedValues;
-                const nextSel: readonly (string | number | boolean | null)[] =
-                  sel == null
-                    ? []
-                    : sel.some((v) => Object.is(v, value))
-                      ? sel.filter((v) => !Object.is(v, value))
-                      : [...sel, value];
-                setMultiFilterEntryAtPathInternal(col, path, {
-                  type: 'set',
-                  selectedValues: nextSel,
-                });
-              };
-              const renderBuiltinSlotAtPath = (
-                entry: MultiFilterEntry,
-                slotIdx: number,
-                path: readonly number[],
-                siblingCount: number,
-              ): VNode => {
-                const slotKind = slotKindOfEntry(entry);
-                if (slotKind === 'set') {
-                  const unique = ensureSetSlotUnique();
-                  return h('div', { class: 'cx-table-multi-filter__slot' }, [
-                    h(
-                      'details',
-                      {
-                        class: 'cx-table-multi-filter__set-slot',
-                        attrs: {
-                          'data-col-id': col.id,
-                          'data-multi-filter-slot': String(slotIdx),
-                          'data-multi-filter-slot-kind': 'set',
-                        },
-                      },
-                      [
-                        h(
-                          'summary',
-                          {
-                            class: 'cx-table-multi-filter__set-slot-summary',
-                            attrs: {
-                              'aria-label': `Filter ${col.headerName ?? col.id} slot ${slotIdx + 1}`,
-                            },
-                          },
-                          (() => {
-                            if (entry.type !== 'set') return '集合筛选';
-                            const sel = entry.selectedValues;
-                            if (sel == null) return '全部';
-                            if (sel.length === 0) return '(无)';
-                            return `${sel.length} 项已选`;
-                          })(),
-                        ),
-                        h(
-                          'div',
-                          { class: 'cx-table-multi-filter__set-slot-list' },
-                          unique.values.map((uniqEntry) =>
-                            h(
-                              'label',
-                              {
-                                key: `multi-set-${col.id}-${path.join('-')}-${String(uniqEntry.value)}`,
-                                class: 'cx-table-set-filter__item',
-                              },
-                              [
-                                h('input', {
-                                  class: 'cx-table-set-filter__checkbox',
-                                  attrs: {
-                                    type: 'checkbox',
-                                    'data-set-filter-value': String(uniqEntry.value),
-                                  },
-                                  domProps: {
-                                    checked: isSetValueCheckedAtPath(path, uniqEntry.value),
-                                  },
-                                  on: {
-                                    change: () => toggleSetValueAtPath(path, uniqEntry.value),
-                                  },
-                                }),
-                                h(
-                                  'span',
-                                  { class: 'cx-table-set-filter__label' },
-                                  uniqEntry.value === null ? '(空)' : String(uniqEntry.value),
-                                ),
-                                h(
-                                  'span',
-                                  { class: 'cx-table-set-filter__count' },
-                                  ` (${uniqEntry.count})`,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    renderRemoveSlotButton(slotIdx, path.slice(0, -1), siblingCount),
-                  ]);
-                }
-                const inputValue: string =
-                  entry.type === 'number'
-                    ? Number.isFinite(entry.value)
-                      ? String(entry.value)
-                      : ''
-                    : entry.type === 'text'
-                      ? String(entry.value)
-                      : '';
-                return h('div', { class: 'cx-table-multi-filter__slot' }, [
-                  h('input', {
-                    class: 'cx-table-multi-filter__input',
-                    attrs: {
-                      type: slotKind === 'number' ? 'number' : 'text',
-                      inputmode: slotKind === 'number' ? 'decimal' : undefined,
-                      placeholder: slotKind === 'number' ? '数值…' : '关键词…',
-                      'aria-label': `Filter ${col.headerName ?? col.id} slot ${slotIdx + 1}`,
-                      'data-col-id': col.id,
-                      'data-multi-filter-slot': String(slotIdx),
-                      'data-multi-filter-slot-kind': slotKind,
-                    },
-                    domProps: {
-                      value: inputValue,
-                    },
-                    on: {
-                      input: (e: Event) => {
-                        const target = e.target as HTMLInputElement;
-                        if (path.length === 1) {
-                          setMultiFilterChildValue(col, slotIdx, target.value);
-                          return;
-                        }
-                        const raw = target.value;
-                        let nextEntry: MultiFilterEntry;
-                        if (slotKind === 'number') {
-                          const num = raw.trim() === '' ? Number.NaN : Number(raw);
-                          nextEntry = { type: 'number', operator: '=', value: num };
-                        } else {
-                          nextEntry = { type: 'text', operator: 'contains', value: raw };
-                        }
-                        setMultiFilterEntryAtPathInternal(col, path, nextEntry);
-                      },
-                    },
-                  }),
-                  renderRemoveSlotButton(slotIdx, path.slice(0, -1), siblingCount),
-                ]);
-              };
-              const renderLeafEntryAtPath = (
-                entry: MultiFilterEntry,
-                slotIdx: number,
-                path: readonly number[],
-                siblingCount: number,
-              ): VNode => {
-                const slotKind = slotKindOfEntry(entry);
-                const renderer = props.multiFilterChildRenderer;
-                if (renderer != null && entry.type !== 'group') {
-                  const node = renderer({
-                    column: col,
-                    slotIdx,
-                    slotKind,
-                    child: entry,
-                    setChildValue: (next) => {
-                      setMultiFilterEntryAtPathInternal(col, path, next);
-                    },
-                  });
-                  if (node != null) {
-                    return h('div', { class: 'cx-table-multi-filter__slot' }, [
-                      node,
-                      renderRemoveSlotButton(slotIdx, path.slice(0, -1), siblingCount),
-                    ]);
-                  }
-                }
-                return renderBuiltinSlotAtPath(entry, slotIdx, path, siblingCount);
-              };
-              const renderMultiFilterEntries = (
-                entries: readonly MultiFilterEntry[],
-                mode: 'AND' | 'OR',
-                parentPath: readonly number[],
-              ): VNode => {
-                const onModeChange = (nextMode: 'AND' | 'OR'): void => {
-                  if (parentPath.length === 0) {
-                    setMultiFilterMode(col, nextMode);
-                    return;
-                  }
-                  const entry = getMultiFilterEntryAtPathInternal(col.id, parentPath);
-                  if (entry?.type !== 'group') return;
-                  if (entry.mode === nextMode) return;
-                  setMultiFilterEntryAtPathInternal(col, parentPath, {
-                    ...entry,
-                    mode: nextMode,
-                  });
-                };
-                const modeToggle = h(
-                  'div',
-                  {
-                    class: 'cx-table-multi-filter__mode',
-                    attrs: {
-                      role: 'radiogroup',
-                      'aria-label': '筛选模式',
-                    },
-                  },
-                  [
-                    h(
-                      'button',
-                      {
-                        class:
-                          'cx-table-multi-filter__mode-button' +
-                          (mode === 'AND' ? ' cx-table-multi-filter__mode-button--active' : ''),
-                        attrs: {
-                          type: 'button',
-                          role: 'radio',
-                          'aria-checked': mode === 'AND' ? 'true' : 'false',
-                          'data-mode': 'AND',
-                        },
-                        on: { click: () => onModeChange('AND') },
-                      },
-                      '全部满足 (AND)',
-                    ),
-                    h(
-                      'button',
-                      {
-                        class:
-                          'cx-table-multi-filter__mode-button' +
-                          (mode === 'OR' ? ' cx-table-multi-filter__mode-button--active' : ''),
-                        attrs: {
-                          type: 'button',
-                          role: 'radio',
-                          'aria-checked': mode === 'OR' ? 'true' : 'false',
-                          'data-mode': 'OR',
-                        },
-                        on: { click: () => onModeChange('OR') },
-                      },
-                      '任一满足 (OR)',
-                    ),
-                  ],
-                );
-                const entryNodes = entries.map((entry, idx) => {
-                  const path = [...parentPath, idx];
-                  if (entry.type === 'group') {
-                    return h(
-                      'details',
-                      {
-                        key: `multi-group-${col.id}-${path.join('-')}`,
-                        class: 'cx-table-multi-filter__group',
-                        attrs: {
-                          'data-cx-multi-filter-group-path': path.join('.'),
-                          open: 'open',
-                        },
-                      },
-                      [
-                        h('summary', { class: 'cx-table-multi-filter__group-summary' }, [
-                          `分组 (${entry.mode}) · ${entry.filters.length} 条件`,
-                          h(
-                            'button',
-                            {
-                              class: 'cx-table-multi-filter__remove-group',
-                              attrs: {
-                                type: 'button',
-                                'data-testid': 'cx-table-multi-filter-remove-group',
-                                'aria-label': '移除分组',
-                              },
-                              on: {
-                                click: (e: Event) => {
-                                  e.preventDefault();
-                                  e.stopPropagation();
-                                  ctx.emit('remove-multi-filter-group', {
-                                    colId: col.id,
-                                    path,
-                                  });
-                                },
-                              },
-                            },
-                            '×',
-                          ),
-                        ]),
-                        renderMultiFilterEntries(entry.filters, entry.mode, path),
-                      ],
-                    );
-                  }
-                  return renderLeafEntryAtPath(entry, idx, path, entries.length);
-                });
-                const addSlotBtn = h(
-                  'button',
-                  {
-                    class: 'cx-table-multi-filter__add-slot',
-                    attrs: {
-                      type: 'button',
-                      'data-col-id': col.id,
-                      'data-testid': 'cx-table-multi-filter-add-slot',
-                    },
-                    on: {
-                      click: () => {
-                        ctx.emit('add-multi-filter-slot', {
-                          colId: col.id,
-                          slotKind: 'text',
-                          path: parentPath,
-                        });
-                      },
-                    },
-                  },
-                  '+ 添加条件',
-                );
-                const addGroupBtn = h(
-                  'button',
-                  {
-                    class: 'cx-table-multi-filter__add-group',
-                    attrs: {
-                      type: 'button',
-                      'data-col-id': col.id,
-                      'data-testid': 'cx-table-multi-filter-add-group',
-                    },
-                    on: {
-                      click: () => {
-                        ctx.emit('add-multi-filter-group', { colId: col.id, path: parentPath });
-                      },
-                    },
-                  },
-                  '+ 添加分组',
-                );
-                return h('div', { class: 'cx-table-multi-filter__group-body' }, [
-                  modeToggle,
-                  h('div', { class: 'cx-table-multi-filter__slots' }, entryNodes),
-                  addSlotBtn,
-                  addGroupBtn,
-                ]);
-              };
-              return h(
-                'div',
-                {
-                  key: `filter-cell-${col.id}`,
-                  class: `cx-table-filter-cell ${pinnedFilterClasses}`,
-                  attrs: {
-                    'data-col-id': col.id,
-                    'data-filter-ui': 'multi',
-                  },
-                  style: {
-                    // border-box: flex basis alignment (see leaf header cell).
-                    boxSizing: 'border-box',
-                    width: `${widths[col.id] ?? 0}px`,
-                    paddingLeft: `${t.cellPaddingX}px`,
-                    paddingRight: `${t.cellPaddingX}px`,
-                    ...pinnedFilterStyle,
-                  },
-                },
-                [
-                  h(
-                    'details',
-                    {
-                      class: 'cx-table-multi-filter',
-                      attrs: { 'data-col-id': col.id },
-                    },
-                    [
-                      h(
-                        'summary',
-                        {
-                          class: 'cx-table-multi-filter__summary',
-                          attrs: {
-                            'aria-label': `Multi filter ${col.headerName ?? col.id}`,
-                          },
-                        },
-                        summary,
-                      ),
-                      h('div', { class: 'cx-table-multi-filter__panel' }, [
-                        renderMultiFilterEntries(effectiveRootEntries, effectiveRootMode, []),
-                      ]),
-                    ],
-                  ),
-                ],
-              );
-            }
-
-            const value = filterInputValueFor(col.id);
-            const placeholder = !isFilterable
-              ? ''
-              : isNumberColumn
-                ? '过滤 (e.g. 5, >10, 5..50)'
-                : '过滤…';
-            let rangeSliderNode: VNode | null = null;
-            if (props.numberFilterShowRangeSlider && isNumberColumn && isFilterable) {
-              const extents = computeColumnNumericExtents({ rows: props.rows, column: col });
-              if (extents !== null) {
-                rangeSliderNode = renderNumberFilterRangeSlider(col, extents);
-              }
-            }
-            const cellChildren: VNode[] = [
-              h('input', {
-                class: 'cx-table-filter-input',
-                attrs: {
-                  type: 'text',
-                  value,
-                  disabled: !isFilterable,
-                  placeholder,
-                  'aria-label': `Filter ${col.headerName ?? col.id}`,
-                  'data-col-id': col.id,
-                  'data-filter-type': isNumberColumn ? 'number' : 'text',
-                },
-                on: {
-                  input: (e: Event) => {
-                    const target = e.target as HTMLInputElement;
-                    setFilterColumnValue(col.id, target.value);
-                  },
-                },
-              }),
-            ];
-            if (rangeSliderNode !== null) {
-              cellChildren.push(rangeSliderNode);
-            }
-            return h(
-              'div',
-              {
-                key: `filter-cell-${col.id}`,
-                class: pinnedFilterClasses
-                  ? `cx-table-filter-cell ${pinnedFilterClasses}`
-                  : 'cx-table-filter-cell',
-                attrs: { 'data-col-id': col.id },
-                style: {
-                  // border-box: flex basis alignment (see leaf header cell).
-                  boxSizing: 'border-box',
-                  width: `${widths[col.id] ?? 0}px`,
-                  paddingLeft: `${t.cellPaddingX}px`,
-                  paddingRight: `${t.cellPaddingX}px`,
-                  ...pinnedFilterStyle,
-                },
-              },
-              cellChildren,
-            );
-          })
-        : [];
-      // filter row also gets a (placeholder) selection cell
-      // so columns stay aligned vertically with the header + body.
-      const filterRowWithSelection: VNode[] = !props.showFilterRow
-        ? []
-        : selectionColShow
-          ? selectionColSide === 'left'
-            ? [buildFilterSelectionCell(), ...filterColumnNodes]
-            : [...filterColumnNodes, buildFilterSelectionCell()]
-          : filterColumnNodes;
-      // row-drag rail placeholder so the filter row's inputs stay
-      // aligned with the body's grip column.
-      const filterRowChildren: VNode[] =
-        !props.showFilterRow || !rowDragColumnShow
-          ? filterRowWithSelection
-          : rowDragColumnSide === 'left'
-            ? [buildFilterRowDragCell(), ...filterRowWithSelection]
-            : [...filterRowWithSelection, buildFilterRowDragCell()];
-      const filterRow: VNode | null = props.showFilterRow
-        ? h(
-            'div',
-            {
-              ref: ((el: HTMLElement | null) => {
-                filterRowRef.value = el;
-              }) as never,
-              class: 'cx-table-filter-row',
-              attrs: { role: 'rowgroup' },
-              // mirror the header's outer-clip
-              // / inner-content-row structure so the body's
-              // `scrollLeft` can be programmatically mirrored to
-              // `filterRowEl.scrollLeft` (default `overflow: visible`
-              // ignores `scrollLeft`).
-              // `overflowY: 'scroll'` reserves the body-matching
-              // scrollbar gutter so a pinned-right filter cell aligns
-              // with its body cell (see header container comment above).
-              style: { overflowX: 'hidden', overflowY: 'scroll' },
-            },
-            [
-              h(
-                'div',
-                {
-                  class: 'cx-table-filter-row-content',
-                  style: { width: `${totalWithRowDrag}px` },
-                },
-                filterRowChildren,
-              ),
-            ],
-          )
-        : null;
 
       // + + virtualRowsPass returns the
       // windowed subset; the pre-mount frame (bodyClientHeight === 0)
@@ -10842,10 +9488,6 @@ export const ChronixTable = defineComponent({
               if (headerEl != null && headerEl.scrollLeft !== x) {
                 headerEl.scrollLeft = x;
               }
-              const filterEl = filterRowRef.value;
-              if (filterEl != null && filterEl.scrollLeft !== x) {
-                filterEl.scrollLeft = x;
-              }
               // (2026-05-28 - vue2 port): clear active
               // tooltip on scroll (popover coords captured pre-scroll).
               onBodyTooltipScroll();
@@ -11140,11 +9782,10 @@ export const ChronixTable = defineComponent({
       // custom-property keys (`--cx-table-*`) Just Work™ via
       // `element.style.setProperty`.
       const themeVars = cssVarsForTheme(t);
-      // assemble wrapper children — header, optional filter
-      // row, body, optional pagination footer. Filter + footer are
-      // independently opt-in.
+      // assemble wrapper children — header,
+      // body, optional pagination footer.
+      // footer is independently opt-in.
       const children: VNode[] = [header];
-      if (filterRow != null) children.push(filterRow);
       children.push(body);
       if (footerBar != null) children.push(footerBar);
 

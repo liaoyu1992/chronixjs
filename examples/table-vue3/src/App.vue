@@ -148,8 +148,6 @@ const columns = ref<readonly ColumnSpec[]>([
     // stays default / pointer for sort, no move-start emit on drag).
     reorderable: false,
     // opt INTO the set-filter dropdown UI.
-    // The filter-row cell renders a <details> checkbox list of unique
-    // status values instead of the default text input.
     filterUi: 'set',
   },
   // editable: true opts the column into in-cell editing
@@ -1415,7 +1413,6 @@ function onColumnHeaderMenuAction(payload: {
           :show-status-bar="true"
           :columns="columns"
           :rows="rows"
-          :show-filter-row="true"
           :show-footer-row="true"
           :show-column-header-menu="true"
           :show-column-filter-button="true"
@@ -1593,7 +1590,6 @@ function onColumnHeaderMenuAction(payload: {
           :server-side-data-source="mockServerSideDataSource"
           :show-pagination="serverSideshowPagination"
           :initial-page-size="25"
-          :show-filter-row="true"
           :show-column-filter-button="true"
           :tool-panel="toolPanelConfig"
         />

@@ -54,7 +54,6 @@ export function MyTable() {
       ref={tableRef}
       columns={columns}
       rows={rows}
-      showFilterRow
       showFooterRow
       showColumnVisibilityMenu
       enableKeyboardNavigation
@@ -169,7 +168,7 @@ Wire the `onColumnsChange` callback to swap state atomically:
 - **Cell-style editor** (4 axes × per-side × HSV picker): background + text + font + border styling on every cell. Controllable via `cellStyleByRowIdColId?` prop + `onCellStyleChange` callback. Preset color palette + per-axis recent-color LRU ring. 3-tier font-weight precision (Bold toggle + 9-button grid + 1-1000 continuous slider).
 - **Advanced filter typeahead** (4-slot type-aware, 14 sub-phases): column / operator / conjunction / value detection with histogram count badges, date-value formatter prop, custom column-type operator override, i18n labels, auto-trigger, auto-scroll, per-slot recent LRU rings, SSR-async value getter.
 - **Validation** (Phase 101 sync + Phase 111 async + Phase 115 cross-cell): per-column `validator?` (sync) + `validatorAsync?` (async). Cross-cell row validators via `rowValidators?: readonly RowValidator[]` prop. Invalid cells paint `cx-table-cell--invalid` + `data-cell-invalid="true"` + `aria-invalid="true"`. `onCellEditStop` callback receives `validationError?: EditValidationError`. Snapshot via `tableRef.current!.getInvalidCells()`; subscribe via `onInvalidCellsChange`. Paste / drag-fill respects `pasteValidatorPolicy?: 'skip-rejected' | 'allow-all'`.
-- **Multi-filter container** (Phase 102 + 114 + 116 + 117 + 117.1): `filterUi: 'multi'` opt-in + `multiFilterChildTypes?: readonly ('text' | 'number' | 'set')[]`. Stacked widgets with AND/OR segmented mode toggle inside a native `<details>` disclosure. Runtime add/remove slot via `+ 添加条件` / `×` (emit-only persistence via `onAddMultiFilterSlot` / `onRemoveMultiFilterSlot`). Set-child slot variant + per-leaf consumer override via `multiFilterChildRenderer?: (args: MultiFilterChildRendererArgs) => ReactNode | null`. Recursive nested groups via `MultiFilterEntry = MultiFilterChild | MultiFilterGroup`; in-UI `+ 添加分组` / `× 移除分组` buttons fire `onAddMultiFilterGroup` / `onRemoveMultiFilterGroup` with `path: readonly number[]`; 3 path-based handle methods `getMultiFilterEntryAtPath` / `setMultiFilterEntryAtPath` / `removeMultiFilterEntryAtPath`.
+- **Multi-filter container** (Phase 102 + 114 + 116 + 117 + 117.1): `filterUi: 'multi'` opt-in + `multiFilterChildTypes?: readonly ('text' | 'number' | 'set')[]`. Stacked widgets with AND/OR segmented mode toggle inside a native `<details>` disclosure. Runtime add/remove slot via `+ 添加条件` / `×` (emit-only persistence via `onAddMultiFilterSlot` / `onRemoveMultiFilterSlot`). Set-child slot variant. Recursive nested groups via `MultiFilterEntry = MultiFilterChild | MultiFilterGroup`; in-UI `+ 添加分组` / `× 移除分组` buttons fire `onAddMultiFilterGroup` / `onRemoveMultiFilterGroup` with `path: readonly number[]`; 3 path-based handle methods `getMultiFilterEntryAtPath` / `setMultiFilterEntryAtPath` / `removeMultiFilterEntryAtPath`.
 - **Per-column typeahead recent + AbortSignal** (Phase 118): `typeaheadRecentScope?: 'global' | 'per-column-value'` opt-in widens the value-slot LRU ring to per-`${slot}:${colId}` keys. `advancedFilterValueGetter?` signature gains optional 3rd-arg `signal?: AbortSignal`.
 
 See [`audit/TABLE_API_SURFACE_v0.1.0.md`](https://github.com/liaoyu1992/chronixjs/blob/master/audit/TABLE_API_SURFACE_v0.1.0.md) for the full export inventory.
@@ -220,9 +219,7 @@ export function MyTable() {
     }
   }
 
-  return (
-    <ChronixTable columns={columns} rows={rows} showFilterRow onCellEditStop={onCellEditStop} />
-  );
+  return <ChronixTable columns={columns} rows={rows} onCellEditStop={onCellEditStop} />;
 }
 ```
 

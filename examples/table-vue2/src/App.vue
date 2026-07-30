@@ -1489,7 +1489,6 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           :show-status-bar="true"
           :columns="columns"
           :rows="rows"
-          :show-filter-row="true"
           :show-footer-row="true"
           :show-column-header-menu="true"
           :show-column-filter-button="true"
@@ -1656,7 +1655,6 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           :server-side-data-source="mockServerSideDataSource"
           :show-pagination="serverSideshowPagination"
           :initial-page-size="25"
-          :show-filter-row="true"
           :show-column-filter-button="true"
           :tool-panel="toolPanelConfig"
         />
