@@ -3508,15 +3508,15 @@ export const ChronixTable = defineComponent({
       if (wrapper == null) return;
       const escaped =
         typeof window !== 'undefined' ? (window.CSS?.escape?.(colId) ?? colId) : colId;
-      const cell = wrapper.querySelector<HTMLElement>(
-        `.cx-table-header-cell[data-col-id="${escaped}"]`,
+      const btn = wrapper.querySelector<HTMLElement>(
+        `.cx-table-column-header-menu-button[data-col-id="${escaped}"]`,
       );
-      if (cell == null) return;
+      if (btn == null) return;
       const wRect = wrapper.getBoundingClientRect();
-      const cRect = cell.getBoundingClientRect();
+      const bRect = btn.getBoundingClientRect();
       columnHeaderMenuPosRef.value = {
-        left: Math.round(cRect.right - wRect.left),
-        top: Math.round(cRect.bottom - wRect.top),
+        left: Math.round(bRect.left - wRect.left),
+        top: Math.round(bRect.bottom - wRect.top),
       };
     }
 
@@ -3543,15 +3543,15 @@ export const ChronixTable = defineComponent({
       if (wrapper == null) return;
       const escaped =
         typeof window !== 'undefined' ? (window.CSS?.escape?.(colId) ?? colId) : colId;
-      const cell = wrapper.querySelector<HTMLElement>(
-        `.cx-table-header-cell[data-col-id="${escaped}"]`,
+      const btn = wrapper.querySelector<HTMLElement>(
+        `.cx-table-column-filter-button[data-col-id="${escaped}"]`,
       );
-      if (cell == null) return;
+      if (btn == null) return;
       const wRect = wrapper.getBoundingClientRect();
-      const cRect = cell.getBoundingClientRect();
+      const bRect = btn.getBoundingClientRect();
       columnFilterPosRef.value = {
-        left: Math.round(cRect.right - wRect.left),
-        top: Math.round(cRect.bottom - wRect.top),
+        left: Math.round(bRect.left - wRect.left),
+        top: Math.round(bRect.bottom - wRect.top),
       };
     }
 
@@ -9329,26 +9329,12 @@ export const ChronixTable = defineComponent({
           column?.filterable !== false
         ) {
           const isFilterOpen = openColumnFilterColIdRef.value === cell.colId;
-          const hasActiveFilter = filterSpec.value.some(
-            (s) =>
-              (s.type === 'multi' ||
-                s.type === 'text' ||
-                s.type === 'number' ||
-                s.type === 'set') &&
-              s.colId === cell.colId,
-          );
           columnHeaderMenuNodes.push(
             h(
               'button',
               {
                 type: 'button',
-                class: [
-                  'cx-table-column-filter-button',
-                  isFilterOpen && 'cx-table-column-filter-button--active',
-                  hasActiveFilter && 'cx-table-column-filter-button--active',
-                ]
-                  .filter(Boolean)
-                  .join(' '),
+                class: 'cx-table-column-filter-button',
                 'data-col-id': cell.colId,
                 'aria-haspopup': 'dialog',
                 'aria-expanded': isFilterOpen ? 'true' : 'false',

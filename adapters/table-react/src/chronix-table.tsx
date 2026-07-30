@@ -3344,15 +3344,15 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       if (wrapper == null) return;
       const escaped =
         typeof window !== 'undefined' ? (window.CSS?.escape?.(colId) ?? colId) : colId;
-      const cell = wrapper.querySelector<HTMLElement>(
-        `.cx-table-header-cell[data-col-id="${escaped}"]`,
+      const btn = wrapper.querySelector<HTMLElement>(
+        `.cx-table-column-header-menu-button[data-col-id="${escaped}"]`,
       );
-      if (cell == null) return;
+      if (btn == null) return;
       const wRect = wrapper.getBoundingClientRect();
-      const cRect = cell.getBoundingClientRect();
+      const bRect = btn.getBoundingClientRect();
       setColumnHeaderMenuPos({
-        left: Math.round(cRect.right - wRect.left),
-        top: Math.round(cRect.bottom - wRect.top),
+        left: Math.round(bRect.left - wRect.left),
+        top: Math.round(bRect.bottom - wRect.top),
       });
     }, []);
 
@@ -3389,15 +3389,15 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       if (wrapper == null) return;
       const escaped =
         typeof window !== 'undefined' ? (window.CSS?.escape?.(colId) ?? colId) : colId;
-      const cell = wrapper.querySelector<HTMLElement>(
-        `.cx-table-header-cell[data-col-id="${escaped}"]`,
+      const btn = wrapper.querySelector<HTMLElement>(
+        `.cx-table-column-filter-button[data-col-id="${escaped}"]`,
       );
-      if (cell == null) return;
+      if (btn == null) return;
       const wRect = wrapper.getBoundingClientRect();
-      const cRect = cell.getBoundingClientRect();
+      const bRect = btn.getBoundingClientRect();
       setColumnFilterPos({
-        left: Math.round(cRect.right - wRect.left),
-        top: Math.round(cRect.bottom - wRect.top),
+        left: Math.round(bRect.left - wRect.left),
+        top: Math.round(bRect.bottom - wRect.top),
       });
       // Initialize filter panel rows from the current filter spec.
       const col = columns.find((c) => c.id === colId);
@@ -8436,23 +8436,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             column?.filterable !== false &&
             (() => {
               const isFilterOpen = openColumnFilterColId === cell.colId;
-              const hasActiveFilter = filterSpec.some(
-                (s) =>
-                  (s.type === 'multi' ||
-                    s.type === 'text' ||
-                    s.type === 'number' ||
-                    s.type === 'set') &&
-                  s.colId === cell.colId,
-              );
               return (
                 <button
                   type="button"
-                  className={[
-                    'cx-table-column-filter-button',
-                    (isFilterOpen || hasActiveFilter) && 'cx-table-column-filter-button--active',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
+                  className="cx-table-column-filter-button"
                   data-col-id={cell.colId}
                   aria-haspopup="dialog"
                   aria-expanded={isFilterOpen ? 'true' : 'false'}
