@@ -175,6 +175,14 @@ export interface MultiFilterChildText {
   readonly operator: TextFilterOperator;
   readonly value: string;
   readonly caseSensitive?: boolean;
+  /**
+   * Per-entry conjunction with the preceding sibling entry inside the
+   * same `MultiFilterSpec.filters` array. The first entry's conjunction
+   * is ignored (it establishes the base predicate). When omitted, the
+   * parent `MultiFilterSpec.mode` is used as the fallback (backwards-
+   * compat with pre-per-entry-conjunction specs).
+   */
+  readonly conjunction?: 'AND' | 'OR';
 }
 
 /**
@@ -187,6 +195,11 @@ export interface MultiFilterChildNumber {
   readonly operator: NumberFilterOperator;
   readonly value: number;
   readonly valueTo?: number;
+  /**
+   * Per-entry conjunction with the preceding sibling. See
+   * `MultiFilterChildText.conjunction`.
+   */
+  readonly conjunction?: 'AND' | 'OR';
 }
 
 /**
@@ -205,6 +218,11 @@ export interface MultiFilterChildNumber {
 export interface MultiFilterChildSet {
   readonly type: 'set';
   readonly selectedValues: readonly (string | number | boolean | null)[] | null;
+  /**
+   * Per-entry conjunction with the preceding sibling. See
+   * `MultiFilterChildText.conjunction`.
+   */
+  readonly conjunction?: 'AND' | 'OR';
 }
 
 /**
@@ -245,6 +263,14 @@ export interface MultiFilterGroup {
   readonly type: 'group';
   readonly mode: 'AND' | 'OR';
   readonly filters: readonly MultiFilterEntry[];
+  /**
+   * Per-entry conjunction with the preceding sibling entry inside the
+   * parent's `filters` array. This is distinct from `mode` — `mode`
+   * combines the group's own children; `conjunction` combines this
+   * group-as-a-whole with its siblings in the parent. See
+   * `MultiFilterChildText.conjunction`.
+   */
+  readonly conjunction?: 'AND' | 'OR';
 }
 
 /**

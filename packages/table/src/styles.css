@@ -1333,6 +1333,7 @@
   gap: 4px;
   margin-bottom: 6px;
 }
+.cx-table-column-filter-row-conj,
 .cx-table-column-filter-row-select,
 .cx-table-column-filter-row-input {
   padding: 4px 6px;
@@ -1341,6 +1342,10 @@
   font-size: 12px;
   color: #1f2937;
   background: #ffffff;
+}
+.cx-table-column-filter-row-conj {
+  flex-shrink: 0;
+  width: 90px;
 }
 .cx-table-column-filter-row-select {
   flex-shrink: 0;

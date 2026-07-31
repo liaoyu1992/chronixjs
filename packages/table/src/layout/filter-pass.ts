@@ -265,17 +265,44 @@ function buildPredicate(
  * O(haystack), number comparison is O(1), etc.).
  */
 function buildMultiPredicate(spec: MultiFilterSpec, column: ColumnSpec): FilterPredicate | null {
-  // + 117: build predicates over the (possibly recursive)
-  // `MultiFilterEntry[]`. Leaf children synthesize per;
-  // nested groups recurse via `buildMultiEntryPredicate` and combine
-  // their own children's predicates per the group's `mode`.
-  const childPredicates: FilterPredicate[] = [];
+  // Build (predicate, conjunction) pairs. Each entry may carry its own
+  // `conjunction` field that determines how it combines with the
+  // accumulated result of its preceding siblings. The first entry's
+  // conjunction is ignored — it establishes the base predicate. When
+  // `conjunction` is absent on an entry, the parent `spec.mode` is
+  // used as the fallback (backwards-compat with pre-per-entry-conjunction
+  // specs, where all entries share the global mode).
+  const entries: { predicate: FilterPredicate; conjunction: 'AND' | 'OR' }[] = [];
   for (const entry of spec.filters) {
     const predicate = buildMultiEntryPredicate(entry, column);
-    if (predicate != null) childPredicates.push(predicate);
+    if (predicate != null) {
+      const conjunction = entry.conjunction ?? spec.mode;
+      entries.push({ predicate, conjunction });
+    }
   }
-  if (childPredicates.length === 0) return null;
-  return combineByMode(childPredicates, spec.mode);
+  if (entries.length === 0) return null;
+  if (entries.length === 1) return entries[0]!.predicate;
+
+  // Left-to-right fold with per-entry conjunctions. The first entry
+  // establishes the base result; each subsequent entry combines via its
+  // own conjunction. AND short-circuits on false (predicate not called
+  // when accumulated result is already false); OR short-circuits on true
+  // (predicate not called when accumulated result is already true).
+  // Mixed conjunctions evaluate left-to-right: e.g. `A AND B OR C`
+  // folds as `(A AND B) OR C`.
+  const first = entries[0]!.predicate;
+  const rest = entries.slice(1);
+  return (row) => {
+    let result = first(row);
+    for (const { predicate, conjunction } of rest) {
+      if (conjunction === 'AND') {
+        result = result && predicate(row);
+      } else {
+        result = result || predicate(row);
+      }
+    }
+    return result;
+  };
 }
 
 /**
@@ -321,13 +348,32 @@ function buildMultiEntryPredicate(
   column: ColumnSpec,
 ): FilterPredicate | null {
   if (entry.type === 'group') {
-    const childPredicates: FilterPredicate[] = [];
+    // Same per-entry-conjunction fold as the top-level
+    // `buildMultiPredicate` — each child may carry its own
+    // `conjunction`; absent falls back to the group's `mode`.
+    const childEntries: { predicate: FilterPredicate; conjunction: 'AND' | 'OR' }[] = [];
     for (const child of entry.filters) {
       const predicate = buildMultiEntryPredicate(child, column);
-      if (predicate != null) childPredicates.push(predicate);
+      if (predicate != null) {
+        const conjunction = child.conjunction ?? entry.mode;
+        childEntries.push({ predicate, conjunction });
+      }
     }
-    if (childPredicates.length === 0) return null;
-    return combineByMode(childPredicates, entry.mode);
+    if (childEntries.length === 0) return null;
+    if (childEntries.length === 1) return childEntries[0]!.predicate;
+    const first = childEntries[0]!.predicate;
+    const rest = childEntries.slice(1);
+    return (row) => {
+      let result = first(row);
+      for (const { predicate, conjunction } of rest) {
+        if (conjunction === 'AND') {
+          result = result && predicate(row);
+        } else {
+          result = result || predicate(row);
+        }
+      }
+      return result;
+    };
   }
   return buildMultiChildPredicate(entry, column);
 }

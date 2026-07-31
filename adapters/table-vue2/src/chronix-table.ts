@@ -11413,16 +11413,18 @@ export const ChronixTable = defineComponent({
               if (filterCol == null || filterCol.filterable === false) return null;
               const isNumberCol = filterCol.type === 'number';
               const existing = getColumnMultiFilter(openFilterColId);
-              const mode: 'AND' | 'OR' = existing?.mode ?? 'AND';
+              const defaultMode: 'AND' | 'OR' = existing?.mode ?? 'AND';
               interface CondRow {
                 operator: string;
                 value: string;
+                conjunction: 'AND' | 'OR';
               }
               const rows: CondRow[] = [];
               if (existing != null) {
                 for (const child of existing.filters) {
+                  const conj: 'AND' | 'OR' = child.conjunction ?? defaultMode;
                   if (child.type === 'text') {
-                    rows.push({ operator: child.operator, value: child.value });
+                    rows.push({ operator: child.operator, value: child.value, conjunction: conj });
                   } else if (child.type === 'number') {
                     rows.push({
                       operator: child.operator,
@@ -11430,12 +11432,17 @@ export const ChronixTable = defineComponent({
                         child.operator === 'inRange'
                           ? `${child.value}..${child.valueTo ?? ''}`
                           : String(child.value),
+                      conjunction: conj,
                     });
                   }
                 }
               }
               if (rows.length === 0) {
-                rows.push({ operator: isNumberCol ? '=' : 'contains', value: '' });
+                rows.push({
+                  operator: isNumberCol ? '=' : 'contains',
+                  value: '',
+                  conjunction: defaultMode,
+                });
               }
               const textOperators: readonly { value: string; label: string }[] = [
                 { value: 'contains', label: '包含' },
@@ -11453,13 +11460,20 @@ export const ChronixTable = defineComponent({
                 { value: 'inRange', label: '范围' },
               ];
               const operators = isNumberCol ? numberOperators : textOperators;
-              const commitFilter = (nextRows: CondRow[], nextMode: 'AND' | 'OR'): void => {
-                const activeRows = nextRows.filter((r) => r.value.trim() !== '');
-                if (activeRows.length === 0) {
+              const commitFilter = (nextRows: CondRow[]): void => {
+                // Always build a spec with ALL rows (even empty ones).
+                // Empty values are no-op predicates (buildTextPredicate
+                // returns null for value === ''), so they don't affect
+                // filtering. This preserves the rows when the panel
+                // rebuilds from the spec on re-render — critical for
+                // the "add condition" button to work in Vue3/Vue2 where
+                // rows are rebuilt from the spec every render.
+                if (nextRows.length === 0) {
                   applyColumnMultiFilter(openFilterColId, null);
                   return;
                 }
-                const filters: MultiFilterEntry[] = activeRows.map((r) => {
+                const filters: MultiFilterEntry[] = nextRows.map((r) => {
+                  const conj: 'AND' | 'OR' = r.conjunction ?? defaultMode;
                   if (isNumberCol) {
                     if (r.operator === 'inRange') {
                       const [lo, hi] = r.value.split('..');
@@ -11468,24 +11482,27 @@ export const ChronixTable = defineComponent({
                         operator: 'inRange' as const,
                         value: Number(lo?.trim() ?? 0),
                         valueTo: Number(hi?.trim() ?? 0),
+                        ...(conj !== defaultMode ? { conjunction: conj } : {}),
                       };
                     }
                     return {
                       type: 'number' as const,
                       operator: r.operator as '!=' | '<' | '<=' | '=' | '>' | '>=',
                       value: Number(r.value),
+                      ...(conj !== defaultMode ? { conjunction: conj } : {}),
                     };
                   }
                   return {
                     type: 'text' as const,
                     operator: r.operator as 'contains' | 'endsWith' | 'equals' | 'startsWith',
                     value: r.value,
+                    ...(conj !== defaultMode ? { conjunction: conj } : {}),
                   };
                 });
                 applyColumnMultiFilter(openFilterColId, {
                   type: 'multi',
                   colId: openFilterColId,
-                  mode: nextMode,
+                  mode: defaultMode,
                   filters,
                 });
               };
@@ -11493,6 +11510,40 @@ export const ChronixTable = defineComponent({
               const pos = filterPos;
               const rowNodes: VNode[] = rows.map((row, idx) => {
                 return h('div', { class: 'cx-table-column-filter-row' }, [
+                  idx > 0
+                    ? h(
+                        'select',
+                        {
+                          class: 'cx-table-column-filter-row-conj',
+                          domProps: { value: row.conjunction },
+                          on: {
+                            change: (e: Event) => {
+                              const target = e.target as HTMLSelectElement;
+                              rows[idx]!.conjunction = target.value as 'AND' | 'OR';
+                              commitFilter(rows);
+                            },
+                          },
+                        },
+                        [
+                          h(
+                            'option',
+                            {
+                              attrs: { value: 'AND' },
+                              domProps: { selected: row.conjunction === 'AND' },
+                            },
+                            '且 (AND)',
+                          ),
+                          h(
+                            'option',
+                            {
+                              attrs: { value: 'OR' },
+                              domProps: { selected: row.conjunction === 'OR' },
+                            },
+                            '或 (OR)',
+                          ),
+                        ],
+                      )
+                    : null,
                   h(
                     'select',
                     {
@@ -11502,7 +11553,7 @@ export const ChronixTable = defineComponent({
                         change: (e: Event) => {
                           const target = e.target as HTMLSelectElement;
                           rows[idx]!.operator = target.value;
-                          commitFilter(rows, mode);
+                          commitFilter(rows);
                         },
                       },
                     },
@@ -11528,24 +11579,26 @@ export const ChronixTable = defineComponent({
                       input: (e: Event) => {
                         const target = e.target as HTMLInputElement;
                         rows[idx]!.value = target.value;
-                        commitFilter(rows, mode);
+                        commitFilter(rows);
                       },
                     },
                   }),
-                  h(
-                    'button',
-                    {
-                      class: 'cx-table-column-filter-row-remove',
-                      attrs: { type: 'button', 'aria-label': '移除条件' },
-                      on: {
-                        click: () => {
-                          rows.splice(idx, 1);
-                          commitFilter(rows, mode);
+                  idx > 0
+                    ? h(
+                        'button',
+                        {
+                          class: 'cx-table-column-filter-row-remove',
+                          attrs: { type: 'button', 'aria-label': '移除条件' },
+                          on: {
+                            click: () => {
+                              rows.splice(idx, 1);
+                              commitFilter(rows);
+                            },
+                          },
                         },
-                      },
-                    },
-                    '×',
-                  ),
+                        '×',
+                      )
+                    : null,
                 ]);
               });
               return h(
@@ -11567,36 +11620,6 @@ export const ChronixTable = defineComponent({
                   h('div', { class: 'cx-table-column-filter-panel-header' }, [
                     h('span', `筛选 — ${colLabel}`),
                   ]),
-                  h('div', { class: 'cx-table-column-filter-panel-mode' }, [
-                    h(
-                      'button',
-                      {
-                        class: [
-                          'cx-table-column-filter-panel-mode-btn',
-                          mode === 'AND' && 'cx-table-column-filter-panel-mode-btn--active',
-                        ]
-                          .filter(Boolean)
-                          .join(' '),
-                        attrs: { type: 'button' },
-                        on: { click: () => commitFilter(rows, 'AND') },
-                      },
-                      '且 (AND)',
-                    ),
-                    h(
-                      'button',
-                      {
-                        class: [
-                          'cx-table-column-filter-panel-mode-btn',
-                          mode === 'OR' && 'cx-table-column-filter-panel-mode-btn--active',
-                        ]
-                          .filter(Boolean)
-                          .join(' '),
-                        attrs: { type: 'button' },
-                        on: { click: () => commitFilter(rows, 'OR') },
-                      },
-                      '或 (OR)',
-                    ),
-                  ]),
                   ...rowNodes,
                   h('div', { class: 'cx-table-column-filter-panel-actions' }, [
                     h(
@@ -11606,8 +11629,12 @@ export const ChronixTable = defineComponent({
                         attrs: { type: 'button' },
                         on: {
                           click: () => {
-                            rows.push({ operator: isNumberCol ? '=' : 'contains', value: '' });
-                            commitFilter(rows, mode);
+                            rows.push({
+                              operator: isNumberCol ? '=' : 'contains',
+                              value: '',
+                              conjunction: defaultMode,
+                            });
+                            commitFilter(rows);
                           },
                         },
                       },

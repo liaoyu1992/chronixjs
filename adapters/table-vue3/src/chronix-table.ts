@@ -12659,20 +12659,21 @@ export const ChronixTable = defineComponent({
               if (filterCol == null || filterCol.filterable === false) return null;
               const isNumberCol = filterCol.type === 'number';
               const existing = getColumnMultiFilter(openFilterColId);
-              const mode: 'AND' | 'OR' = existing?.mode ?? 'AND';
-              // Build editable condition rows from existing spec or
-              // seed with one empty row.
+              const defaultMode: 'AND' | 'OR' = existing?.mode ?? 'AND';
               interface CondRow {
                 operator: string;
                 value: string;
+                conjunction: 'AND' | 'OR';
               }
               const rows: CondRow[] = [];
               if (existing != null) {
                 for (const child of existing.filters) {
+                  const conj: 'AND' | 'OR' = child.conjunction ?? defaultMode;
                   if (child.type === 'text') {
                     rows.push({
                       operator: child.operator,
                       value: child.value,
+                      conjunction: conj,
                     });
                   } else if (child.type === 'number') {
                     rows.push({
@@ -12681,6 +12682,7 @@ export const ChronixTable = defineComponent({
                         child.operator === 'inRange'
                           ? `${child.value}..${child.valueTo ?? ''}`
                           : String(child.value),
+                      conjunction: conj,
                     });
                   }
                 }
@@ -12689,6 +12691,7 @@ export const ChronixTable = defineComponent({
                 rows.push({
                   operator: isNumberCol ? '=' : 'contains',
                   value: '',
+                  conjunction: defaultMode,
                 });
               }
 
@@ -12709,13 +12712,20 @@ export const ChronixTable = defineComponent({
               ];
               const operators = isNumberCol ? numberOperators : textOperators;
 
-              const commitFilter = (nextRows: CondRow[], nextMode: 'AND' | 'OR'): void => {
-                const activeRows = nextRows.filter((r) => r.value.trim() !== '');
-                if (activeRows.length === 0) {
+              const commitFilter = (nextRows: CondRow[]): void => {
+                // Always build a spec with ALL rows (even empty ones).
+                // Empty values are no-op predicates (buildTextPredicate
+                // returns null for value === ''), so they don't affect
+                // filtering. This preserves the rows when the panel
+                // rebuilds from the spec on re-render — critical for
+                // the "add condition" button to work in Vue3/Vue2 where
+                // rows are rebuilt from the spec every render.
+                if (nextRows.length === 0) {
                   applyColumnMultiFilter(openFilterColId, null);
                   return;
                 }
-                const filters: MultiFilterEntry[] = activeRows.map((r) => {
+                const filters: MultiFilterEntry[] = nextRows.map((r) => {
+                  const conj: 'AND' | 'OR' = r.conjunction ?? defaultMode;
                   if (isNumberCol) {
                     if (r.operator === 'inRange') {
                       const [lo, hi] = r.value.split('..');
@@ -12724,24 +12734,27 @@ export const ChronixTable = defineComponent({
                         operator: 'inRange' as const,
                         value: Number(lo?.trim() ?? 0),
                         valueTo: Number(hi?.trim() ?? 0),
+                        ...(conj !== defaultMode ? { conjunction: conj } : {}),
                       };
                     }
                     return {
                       type: 'number' as const,
                       operator: r.operator as '!=' | '<' | '<=' | '=' | '>' | '>=',
                       value: Number(r.value),
+                      ...(conj !== defaultMode ? { conjunction: conj } : {}),
                     };
                   }
                   return {
                     type: 'text' as const,
                     operator: r.operator as 'contains' | 'endsWith' | 'equals' | 'startsWith',
                     value: r.value,
+                    ...(conj !== defaultMode ? { conjunction: conj } : {}),
                   };
                 });
                 applyColumnMultiFilter(openFilterColId, {
                   type: 'multi',
                   colId: openFilterColId,
-                  mode: nextMode,
+                  mode: defaultMode,
                   filters,
                 });
               };
@@ -12752,6 +12765,32 @@ export const ChronixTable = defineComponent({
               // Build condition row VNodes
               const rowNodes: VNode[] = rows.map((row, idx) => {
                 return h('div', { class: 'cx-table-column-filter-row' }, [
+                  idx > 0
+                    ? h(
+                        'select',
+                        {
+                          class: 'cx-table-column-filter-row-conj',
+                          value: row.conjunction,
+                          onChange: (e: Event) => {
+                            const target = e.target as HTMLSelectElement;
+                            rows[idx]!.conjunction = target.value as 'AND' | 'OR';
+                            commitFilter(rows);
+                          },
+                        },
+                        [
+                          h(
+                            'option',
+                            { value: 'AND', selected: row.conjunction === 'AND' },
+                            '且 (AND)',
+                          ),
+                          h(
+                            'option',
+                            { value: 'OR', selected: row.conjunction === 'OR' },
+                            '或 (OR)',
+                          ),
+                        ],
+                      )
+                    : null,
                   h(
                     'select',
                     {
@@ -12760,7 +12799,7 @@ export const ChronixTable = defineComponent({
                       onChange: (e: Event) => {
                         const target = e.target as HTMLSelectElement;
                         rows[idx]!.operator = target.value;
-                        commitFilter(rows, mode);
+                        commitFilter(rows);
                       },
                     },
                     operators.map((op) =>
@@ -12779,22 +12818,24 @@ export const ChronixTable = defineComponent({
                     onInput: (e: Event) => {
                       const target = e.target as HTMLInputElement;
                       rows[idx]!.value = target.value;
-                      commitFilter(rows, mode);
+                      commitFilter(rows);
                     },
                   }),
-                  h(
-                    'button',
-                    {
-                      type: 'button',
-                      class: 'cx-table-column-filter-row-remove',
-                      'aria-label': '移除条件',
-                      onClick: () => {
-                        rows.splice(idx, 1);
-                        commitFilter(rows, mode);
-                      },
-                    },
-                    '×',
-                  ),
+                  idx > 0
+                    ? h(
+                        'button',
+                        {
+                          type: 'button',
+                          class: 'cx-table-column-filter-row-remove',
+                          'aria-label': '移除条件',
+                          onClick: () => {
+                            rows.splice(idx, 1);
+                            commitFilter(rows);
+                          },
+                        },
+                        '×',
+                      )
+                    : null,
                 ]);
               });
 
@@ -12817,40 +12858,6 @@ export const ChronixTable = defineComponent({
                   h('div', { class: 'cx-table-column-filter-panel-header' }, [
                     h('span', `筛选 — ${colLabel}`),
                   ]),
-                  h('div', { class: 'cx-table-column-filter-panel-mode' }, [
-                    h(
-                      'button',
-                      {
-                        type: 'button',
-                        class: [
-                          'cx-table-column-filter-panel-mode-btn',
-                          mode === 'AND' && 'cx-table-column-filter-panel-mode-btn--active',
-                        ]
-                          .filter(Boolean)
-                          .join(' '),
-                        onClick: () => {
-                          commitFilter(rows, 'AND');
-                        },
-                      },
-                      '且 (AND)',
-                    ),
-                    h(
-                      'button',
-                      {
-                        type: 'button',
-                        class: [
-                          'cx-table-column-filter-panel-mode-btn',
-                          mode === 'OR' && 'cx-table-column-filter-panel-mode-btn--active',
-                        ]
-                          .filter(Boolean)
-                          .join(' '),
-                        onClick: () => {
-                          commitFilter(rows, 'OR');
-                        },
-                      },
-                      '或 (OR)',
-                    ),
-                  ]),
                   ...rowNodes,
                   h('div', { class: 'cx-table-column-filter-panel-actions' }, [
                     h(
@@ -12862,12 +12869,13 @@ export const ChronixTable = defineComponent({
                           rows.push({
                             operator: isNumberCol ? '=' : 'contains',
                             value: '',
+                            conjunction: defaultMode,
                           });
                           // Trigger re-render by committing current
                           // state (no-op if all empty, but the panel
                           // rebuilds because openColumnFilterColIdRef
                           // is still set).
-                          commitFilter(rows, mode);
+                          commitFilter(rows);
                         },
                       },
                       '+ 添加条件',

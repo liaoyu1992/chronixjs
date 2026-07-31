@@ -3371,12 +3371,16 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // Filter panel local editing state. Unlike Vue3 where the render
     // function rebuilds rows from filterSpec each render, React needs
     // explicit state to keep the panel's editable rows in sync.
+    // Each row carries its own `conjunction` ('AND' | 'OR') that
+    // determines how it combines with the preceding row's result.
+    // The first row's conjunction is ignored (it's the base).
     interface CondRow {
       operator: string;
       value: string;
+      conjunction: 'AND' | 'OR';
     }
     const [filterPanelRows, setFilterPanelRows] = useState<CondRow[] | null>(null);
-    const [filterPanelMode, setFilterPanelMode] = useState<'AND' | 'OR'>('AND');
+    const [filterPanelDefaultMode, setFilterPanelDefaultMode] = useState<'AND' | 'OR'>('AND');
 
     const applyOpenColumnFilter = useCallback((colId: string | null) => {
       setOpenColumnFilterColId((prev) => (prev === colId ? prev : colId));
@@ -3406,11 +3410,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const existing = filterSpecRef.current.find(
         (s): s is MultiFilterSpec => s.type === 'multi' && s.colId === colId,
       );
+      const defaultMode = existing?.mode ?? 'AND';
       const initRows: CondRow[] = [];
       if (existing != null) {
         for (const child of existing.filters) {
+          const conj = child.conjunction ?? defaultMode;
           if (child.type === 'text') {
-            initRows.push({ operator: child.operator, value: child.value });
+            initRows.push({ operator: child.operator, value: child.value, conjunction: conj });
           } else if (child.type === 'number') {
             initRows.push({
               operator: child.operator,
@@ -3418,15 +3424,20 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 child.operator === 'inRange'
                   ? `${child.value}..${child.valueTo ?? ''}`
                   : String(child.value),
+              conjunction: conj,
             });
           }
         }
       }
       if (initRows.length === 0) {
-        initRows.push({ operator: isNumberCol ? '=' : 'contains', value: '' });
+        initRows.push({
+          operator: isNumberCol ? '=' : 'contains',
+          value: '',
+          conjunction: defaultMode,
+        });
       }
       setFilterPanelRows(initRows);
-      setFilterPanelMode(existing?.mode ?? 'AND');
+      setFilterPanelDefaultMode(defaultMode);
     }, []);
 
     // Close the hoisted menu on any scroll (capture-phase) so it never
@@ -11750,7 +11761,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             const colLabel = filterCol.headerName ?? filterCol.field ?? filterCol.id;
             const pos = columnFilterPos;
             const rows = filterPanelRows;
-            const mode = filterPanelMode;
+            const defaultMode = filterPanelDefaultMode;
 
             const textOperators: readonly { value: string; label: string }[] = [
               { value: 'contains', label: '包含' },
@@ -11769,13 +11780,18 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
             ];
             const operators = isNumberCol ? numberOperators : textOperators;
 
-            const commitFilter = (nextRows: CondRow[], nextMode: 'AND' | 'OR'): void => {
-              const activeRows = nextRows.filter((r) => r.value.trim() !== '');
-              if (activeRows.length === 0) {
+            const commitFilter = (nextRows: CondRow[]): void => {
+              // Always build a spec with ALL rows (even empty ones).
+              // Empty values are no-op predicates (buildTextPredicate
+              // returns null for value === ''), so they don't affect
+              // filtering. This preserves the rows when the panel
+              // rebuilds from the spec on re-render.
+              if (nextRows.length === 0) {
                 applyColumnMultiFilter(openColumnFilterColId, null);
                 return;
               }
-              const filters: MultiFilterEntry[] = activeRows.map((r) => {
+              const filters: MultiFilterEntry[] = nextRows.map((r) => {
+                const conj = r.conjunction ?? defaultMode;
                 if (isNumberCol) {
                   if (r.operator === 'inRange') {
                     const [lo, hi] = r.value.split('..');
@@ -11784,24 +11800,27 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                       operator: 'inRange' as const,
                       value: Number(lo?.trim() ?? 0),
                       valueTo: Number(hi?.trim() ?? 0),
+                      ...(conj !== defaultMode ? { conjunction: conj } : {}),
                     };
                   }
                   return {
                     type: 'number' as const,
                     operator: r.operator as '!=' | '<' | '<=' | '=' | '>' | '>=',
                     value: Number(r.value),
+                    ...(conj !== defaultMode ? { conjunction: conj } : {}),
                   };
                 }
                 return {
                   type: 'text' as const,
                   operator: r.operator as 'contains' | 'endsWith' | 'equals' | 'startsWith',
                   value: r.value,
+                  ...(conj !== defaultMode ? { conjunction: conj } : {}),
                 };
               });
               applyColumnMultiFilter(openColumnFilterColId, {
                 type: 'multi',
                 colId: openColumnFilterColId,
-                mode: nextMode,
+                mode: defaultMode,
                 filters,
               });
             };
@@ -11823,40 +11842,29 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                 <div className="cx-table-column-filter-panel-header">
                   <span>筛选 — {colLabel}</span>
                 </div>
-                <div className="cx-table-column-filter-panel-mode">
-                  <button
-                    type="button"
-                    className={[
-                      'cx-table-column-filter-panel-mode-btn',
-                      mode === 'AND' && 'cx-table-column-filter-panel-mode-btn--active',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => {
-                      setFilterPanelMode('AND');
-                      commitFilter(rows, 'AND');
-                    }}
-                  >
-                    且 (AND)
-                  </button>
-                  <button
-                    type="button"
-                    className={[
-                      'cx-table-column-filter-panel-mode-btn',
-                      mode === 'OR' && 'cx-table-column-filter-panel-mode-btn--active',
-                    ]
-                      .filter(Boolean)
-                      .join(' ')}
-                    onClick={() => {
-                      setFilterPanelMode('OR');
-                      commitFilter(rows, 'OR');
-                    }}
-                  >
-                    或 (OR)
-                  </button>
-                </div>
                 {rows.map((row, idx) => (
                   <div key={idx} className="cx-table-column-filter-row">
+                    {idx > 0 ? (
+                      <select
+                        className="cx-table-column-filter-row-conj"
+                        value={row.conjunction}
+                        onChange={(e) => {
+                          const nextRows = rows.map((r, i) =>
+                            i === idx
+                              ? {
+                                  ...r,
+                                  conjunction: e.target.value as 'AND' | 'OR',
+                                }
+                              : r,
+                          );
+                          setFilterPanelRows(nextRows);
+                          commitFilter(nextRows);
+                        }}
+                      >
+                        <option value="AND">且 (AND)</option>
+                        <option value="OR">或 (OR)</option>
+                      </select>
+                    ) : null}
                     <select
                       className="cx-table-column-filter-row-select"
                       value={row.operator}
@@ -11865,7 +11873,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                           i === idx ? { ...r, operator: e.target.value } : r,
                         );
                         setFilterPanelRows(nextRows);
-                        commitFilter(nextRows, mode);
+                        commitFilter(nextRows);
                       }}
                     >
                       {operators.map((op) => (
@@ -11885,21 +11893,23 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                           i === idx ? { ...r, value: target.value } : r,
                         );
                         setFilterPanelRows(nextRows);
-                        commitFilter(nextRows, mode);
+                        commitFilter(nextRows);
                       }}
                     />
-                    <button
-                      type="button"
-                      className="cx-table-column-filter-row-remove"
-                      aria-label="移除条件"
-                      onClick={() => {
-                        const nextRows = rows.filter((_, i) => i !== idx);
-                        setFilterPanelRows(nextRows);
-                        commitFilter(nextRows, mode);
-                      }}
-                    >
-                      ×
-                    </button>
+                    {idx > 0 ? (
+                      <button
+                        type="button"
+                        className="cx-table-column-filter-row-remove"
+                        aria-label="移除条件"
+                        onClick={() => {
+                          const nextRows = rows.filter((_, i) => i !== idx);
+                          setFilterPanelRows(nextRows);
+                          commitFilter(nextRows);
+                        }}
+                      >
+                        ×
+                      </button>
+                    ) : null}
                   </div>
                 ))}
                 <div className="cx-table-column-filter-panel-actions">
@@ -11909,10 +11919,14 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     onClick={() => {
                       const nextRows = [
                         ...rows,
-                        { operator: isNumberCol ? '=' : 'contains', value: '' },
+                        {
+                          operator: isNumberCol ? '=' : 'contains',
+                          value: '',
+                          conjunction: defaultMode,
+                        },
                       ];
                       setFilterPanelRows(nextRows);
-                      commitFilter(nextRows, mode);
+                      commitFilter(nextRows);
                     }}
                   >
                     + 添加条件
@@ -11922,7 +11936,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     className="cx-table-column-filter-panel-clear"
                     onClick={() => {
                       applyColumnMultiFilter(openColumnFilterColId, null);
-                      setFilterPanelRows([{ operator: isNumberCol ? '=' : 'contains', value: '' }]);
+                      setFilterPanelRows([
+                        {
+                          operator: isNumberCol ? '=' : 'contains',
+                          value: '',
+                          conjunction: defaultMode,
+                        },
+                      ]);
                     }}
                   >
                     清空
