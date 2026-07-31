@@ -306,32 +306,6 @@ function buildMultiPredicate(spec: MultiFilterSpec, column: ColumnSpec): FilterP
 }
 
 /**
- * combine an array of predicates per a
- * group/spec `mode`. Factored 's inline AND/OR loop so
- * the root-level multi-filter combine and every nested-group combine
- * share one implementation.
- */
-function combineByMode(
-  predicates: readonly FilterPredicate[],
-  mode: 'AND' | 'OR',
-): FilterPredicate {
-  if (mode === 'OR') {
-    return (row) => {
-      for (const predicate of predicates) {
-        if (predicate(row)) return true;
-      }
-      return false;
-    };
-  }
-  return (row) => {
-    for (const predicate of predicates) {
-      if (!predicate(row)) return false;
-    }
-    return true;
-  };
-}
-
-/**
  * + 117: synthesize a predicate from a single
  * `MultiFilterEntry`. Leaf children re-use the
  * factories via "headless-child → full-spec" synthesis. Group entries
