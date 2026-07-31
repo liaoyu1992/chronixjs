@@ -1,17 +1,13 @@
-﻿import { mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { h } from 'vue';
 
 import { ChronixTable } from './chronix-table.js';
 
 import type {
-  CollectUniqueColumnValuesResult,
   ColumnSpec,
   FilterExpression,
   FilterSpec,
-  MultiFilterEntry,
-  MultiFilterSpec,
-  NumberFilterSpec,
   ParseFilterExpressionResult,
   RowSpec,
   SortSpec,
@@ -9536,13 +9532,13 @@ describe('multi-filter nested groups (vue3)', () => {
 });
 
 describe('nested-groups in-UI affordances (vue3)', () => {
-  const phaseRows: readonly RowSpec[] = [
+  const _phaseRows: readonly RowSpec[] = [
     { id: 'r1', data: { id: 1, name: 'Alpha', qty: 10 } },
     { id: 'r2', data: { id: 2, name: 'Beta', qty: 20 } },
     { id: 'r3', data: { id: 3, name: 'Gamma', qty: 30 } },
     { id: 'r4', data: { id: 4, name: 'Delta', qty: 40 } },
   ];
-  const phaseColumns: readonly ColumnSpec[] = [
+  const _phaseColumns: readonly ColumnSpec[] = [
     { id: 'id', field: 'id', headerName: 'ID', width: 80 },
     { id: 'name', field: 'name', headerName: 'Name', flex: 1 },
     {

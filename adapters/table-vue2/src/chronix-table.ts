@@ -1,4 +1,4 @@
-﻿import {
+import {
   computeHsvAtSquarePosition,
   computeHueAtStripPosition,
   computeSquarePositionForHsv,
@@ -89,7 +89,6 @@ import {
   type CollectUniqueColumnValuesResult,
   type EditValidationError,
   type MultiFilterChild,
-  type MultiFilterChildSet,
   type MultiFilterEntry,
   type MultiFilterGroup,
   type MultiFilterSpec,
