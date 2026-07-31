@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -1672,10 +1672,6 @@ describe('SSR async value getter (react)', () => {
     ta.getBoundingClientRect = (): DOMRect => full;
   }
 
-  function flushPromises(): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, 0));
-  }
-
   it('100.2.2.1 (react): getter called with (colId, query) on value-slot input', () => {
     const getter = vi.fn<
       (colId: string, q: string) => Promise<readonly { value: string; count: number }[]>
@@ -1743,9 +1739,12 @@ describe('SSR async value getter (react)', () => {
     ta.selectionStart = 10;
     ta.selectionEnd = 10;
     fireEvent.change(ta, { target: { value: 'status = i' } });
-    await flushPromises();
+    await waitFor(() => {
+      expect(
+        container.querySelectorAll('[data-testid="cx-filters-typeahead-item"]').length,
+      ).toBeGreaterThan(0);
+    });
     const items = container.querySelectorAll('[data-testid="cx-filters-typeahead-item"]');
-    expect(items.length).toBeGreaterThan(0);
     expect(items[0]!.getAttribute('data-typeahead-item-kind')).toBe('value');
     unmount();
   });
@@ -1769,8 +1768,9 @@ describe('SSR async value getter (react)', () => {
     ta.selectionStart = 10;
     ta.selectionEnd = 10;
     fireEvent.change(ta, { target: { value: 'status = i' } });
-    await flushPromises();
-    expect(container.querySelector('[data-testid="cx-filters-typeahead-error"]')).not.toBeNull();
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="cx-filters-typeahead-error"]')).not.toBeNull();
+    });
     unmount();
   });
 
@@ -1793,10 +1793,12 @@ describe('SSR async value getter (react)', () => {
     ta.selectionStart = 10;
     ta.selectionEnd = 10;
     fireEvent.change(ta, { target: { value: 'status = i' } });
-    await flushPromises();
     expect(getter).toHaveBeenCalledTimes(1);
+    // Wait for the async values to render — proves the cache is populated.
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="cx-filters-typeahead-item"]')).not.toBeNull();
+    });
     fireEvent.change(ta, { target: { value: 'status = i' } });
-    await flushPromises();
     expect(getter).toHaveBeenCalledTimes(1);
     unmount();
   });
