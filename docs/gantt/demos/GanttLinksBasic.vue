@@ -2,174 +2,74 @@
 import { ChronixGantt } from '@chronixjs/gantt-vue3';
 import type { BarSpec, RowSpec, LinkSpec, AxisRangePlanInput } from '@chronixjs/gantt';
 
-const rows: RowSpec[] = [
-  { id: 'row-1', columns: { name: '需求分析' } },
-  { id: 'row-2', columns: { name: 'UI 设计' } },
-  { id: 'row-3', columns: { name: '前端开发' } },
-  { id: 'row-4', columns: { name: '后端开发' } },
-  { id: 'row-5', columns: { name: 'API 联调' } },
-  { id: 'row-6', columns: { name: '数据库设计' } },
-  { id: 'row-7', columns: { name: '单元测试' } },
-  { id: 'row-8', columns: { name: '集成测试' } },
-  { id: 'row-9', columns: { name: '性能优化' } },
-  { id: 'row-10', columns: { name: '安全审计' } },
-  { id: 'row-11', columns: { name: '文档编写' } },
-  { id: 'row-12', columns: { name: '部署上线' } },
-  { id: 'row-13', columns: { name: '用户培训' } },
-  { id: 'row-14', columns: { name: '运维监控' } },
+const tasks = [
+  { name: '需求分析', start: '2026-01-05', end: '2026-01-12' },
+  { name: 'UI 设计', start: '2026-01-12', end: '2026-01-25' },
+  { name: '前端开发', start: '2026-01-20', end: '2026-02-10' },
+  { name: '后端开发', start: '2026-01-20', end: '2026-02-15' },
+  { name: 'API 联调', start: '2026-02-05', end: '2026-02-18' },
+  { name: '数据库设计', start: '2026-01-15', end: '2026-01-28' },
+  { name: '单元测试', start: '2026-02-10', end: '2026-02-22' },
+  { name: '集成测试', start: '2026-02-15', end: '2026-02-28' },
+  { name: '性能优化', start: '2026-02-20', end: '2026-03-02' },
+  { name: '安全审计', start: '2026-02-22', end: '2026-03-05' },
+  { name: '文档编写', start: '2026-02-25', end: '2026-03-05' },
+  { name: '部署上线', start: '2026-03-01', end: '2026-03-08' },
+  { name: '用户培训', start: '2026-03-05', end: '2026-03-12' },
+  { name: '运维监控', start: '2026-03-08', end: '2026-03-15' },
+  { name: '版本迭代', start: '2026-03-10', end: '2026-03-22' },
+  { name: 'Bug 修复', start: '2026-03-15', end: '2026-03-25' },
+  { name: '回归测试', start: '2026-03-20', end: '2026-03-30' },
+  { name: '发布评审', start: '2026-03-25', end: '2026-04-02' },
+  { name: '项目验收', start: '2026-04-01', end: '2026-04-08' },
+  { name: '复盘总结', start: '2026-04-05', end: '2026-04-12' },
 ];
 
-const bars: BarSpec[] = [
-  {
-    id: 'bar-1',
-    rowId: 'row-1',
-    range: { start: new Date('2026-01-05'), end: new Date('2026-01-12') },
-    title: '需求分析',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-2',
-    rowId: 'row-2',
-    range: { start: new Date('2026-01-12'), end: new Date('2026-01-25') },
-    title: 'UI 设计',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-3',
-    rowId: 'row-3',
-    range: { start: new Date('2026-01-20'), end: new Date('2026-02-10') },
-    title: '前端开发',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-4',
-    rowId: 'row-4',
-    range: { start: new Date('2026-01-20'), end: new Date('2026-02-15') },
-    title: '后端开发',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-5',
-    rowId: 'row-5',
-    range: { start: new Date('2026-02-05'), end: new Date('2026-02-18') },
-    title: 'API 联调',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-6',
-    rowId: 'row-6',
-    range: { start: new Date('2026-01-15'), end: new Date('2026-01-28') },
-    title: '数据库设计',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-7',
-    rowId: 'row-7',
-    range: { start: new Date('2026-02-10'), end: new Date('2026-02-22') },
-    title: '单元测试',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-8',
-    rowId: 'row-8',
-    range: { start: new Date('2026-02-15'), end: new Date('2026-02-28') },
-    title: '集成测试',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-9',
-    rowId: 'row-9',
-    range: { start: new Date('2026-02-20'), end: new Date('2026-03-02') },
-    title: '性能优化',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-10',
-    rowId: 'row-10',
-    range: { start: new Date('2026-02-22'), end: new Date('2026-03-05') },
-    title: '安全审计',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-11',
-    rowId: 'row-11',
-    range: { start: new Date('2026-02-25'), end: new Date('2026-03-05') },
-    title: '文档编写',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-12',
-    rowId: 'row-12',
-    range: { start: new Date('2026-03-01'), end: new Date('2026-03-08') },
-    title: '部署上线',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-13',
-    rowId: 'row-13',
-    range: { start: new Date('2026-03-05'), end: new Date('2026-03-12') },
-    title: '用户培训',
-    dprIntent: 'crisp-pixel',
-  },
-  {
-    id: 'bar-14',
-    rowId: 'row-14',
-    range: { start: new Date('2026-03-08'), end: new Date('2026-03-15') },
-    title: '运维监控',
-    dprIntent: 'crisp-pixel',
-  },
-];
+const rows: RowSpec[] = tasks.map((t, i) => ({
+  id: `row-${i + 1}`,
+  columns: { name: t.name },
+}));
 
-const links: LinkSpec[] = [
-  { id: 'link-1', fromBarId: 'bar-1', toBarId: 'bar-2', routing: 'square', marker: 'arrow' },
-  {
-    id: 'link-2',
-    fromBarId: 'bar-2',
-    toBarId: 'bar-3',
-    routing: 'smooth',
-    marker: 'arrow',
-    colorOverride: '#ef4444',
-  },
-  { id: 'link-3', fromBarId: 'bar-2', toBarId: 'bar-4', routing: 'square', marker: 'arrow' },
-  { id: 'link-4', fromBarId: 'bar-3', toBarId: 'bar-5', routing: 'smooth', marker: 'arrow' },
-  {
-    id: 'link-5',
-    fromBarId: 'bar-4',
-    toBarId: 'bar-5',
-    routing: 'square',
-    marker: 'arrow',
-    colorOverride: '#10b981',
-  },
-  { id: 'link-6', fromBarId: 'bar-5', toBarId: 'bar-7', routing: 'square', marker: 'arrow' },
-  {
-    id: 'link-7',
-    fromBarId: 'bar-5',
-    toBarId: 'bar-8',
-    routing: 'smooth',
-    marker: 'arrow',
-    colorOverride: '#ef4444',
-  },
-  { id: 'link-8', fromBarId: 'bar-7', toBarId: 'bar-9', routing: 'square', marker: 'arrow' },
-  { id: 'link-9', fromBarId: 'bar-8', toBarId: 'bar-10', routing: 'smooth', marker: 'arrow' },
-  {
-    id: 'link-10',
-    fromBarId: 'bar-9',
-    toBarId: 'bar-12',
-    routing: 'square',
-    marker: 'arrow',
-    colorOverride: '#f59e0b',
-  },
-  { id: 'link-11', fromBarId: 'bar-10', toBarId: 'bar-12', routing: 'smooth', marker: 'arrow' },
-  { id: 'link-12', fromBarId: 'bar-12', toBarId: 'bar-13', routing: 'square', marker: 'arrow' },
-  {
-    id: 'link-13',
-    fromBarId: 'bar-13',
-    toBarId: 'bar-14',
-    routing: 'smooth',
-    marker: 'arrow',
-    colorOverride: '#8b5cf6',
-  },
-];
+const bars: BarSpec[] = tasks.map((t, i) => ({
+  id: `bar-${i + 1}`,
+  rowId: `row-${i + 1}`,
+  range: { start: new Date(t.start), end: new Date(t.end) },
+  title: t.name,
+  dprIntent: 'crisp-pixel' as const,
+}));
+
+// Links: chain each task to the next, with some cross-dependencies
+const linkDefs: Array<{ from: number; to: number; routing?: 'square' | 'smooth'; color?: string }> =
+  [
+    { from: 0, to: 1, routing: 'square' },
+    { from: 1, to: 2, routing: 'smooth', color: '#ef4444' },
+    { from: 1, to: 3, routing: 'square' },
+    { from: 2, to: 4, routing: 'smooth' },
+    { from: 3, to: 4, routing: 'square', color: '#10b981' },
+    { from: 4, to: 6, routing: 'square' },
+    { from: 4, to: 7, routing: 'smooth', color: '#ef4444' },
+    { from: 6, to: 8, routing: 'square' },
+    { from: 7, to: 9, routing: 'smooth' },
+    { from: 8, to: 11, routing: 'square', color: '#f59e0b' },
+    { from: 9, to: 11, routing: 'smooth' },
+    { from: 11, to: 12, routing: 'square' },
+    { from: 12, to: 13, routing: 'smooth', color: '#8b5cf6' },
+    { from: 13, to: 14, routing: 'square' },
+    { from: 14, to: 16, routing: 'smooth' },
+    { from: 15, to: 16, routing: 'square', color: '#ef4444' },
+    { from: 16, to: 18, routing: 'smooth', color: '#10b981' },
+    { from: 17, to: 18, routing: 'square' },
+    { from: 18, to: 19, routing: 'smooth' },
+  ];
+
+const links: LinkSpec[] = linkDefs.map((l, i) => ({
+  id: `link-${i + 1}`,
+  fromBarId: `bar-${l.from + 1}`,
+  toBarId: `bar-${l.to + 1}`,
+  routing: l.routing ?? 'square',
+  marker: 'arrow',
+  ...(l.color ? { colorOverride: l.color } : {}),
+}));
 
 const axisInput: AxisRangePlanInput = {
   viewId: 'week',
@@ -181,7 +81,7 @@ const axisInput: AxisRangePlanInput = {
 </script>
 
 <template>
-  <div style="height: 600px">
+  <div style="height: calc(100vh - 200px); min-height: 500px">
     <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" :links="links" />
   </div>
 </template>
