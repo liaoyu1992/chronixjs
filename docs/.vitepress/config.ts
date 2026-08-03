@@ -3,7 +3,10 @@ import { resolve } from 'path';
 
 export default defineConfig({
   base: '/chronixjs/',
-  head: [['link', { rel: 'icon', href: '/chronixjs/favicon.ico' }]],
+  head: [
+    ['link', { rel: 'icon', href: '/chronixjs/favicon.ico' }],
+    ['link', { rel: 'stylesheet', href: '/chronixjs/feature-showcase.css' }],
+  ],
   cleanUrls: true,
   lastUpdated: true,
   ignoreDeadLinks: true,

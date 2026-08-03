@@ -1,0 +1,329 @@
+/* FeatureShowcase component styles
+   Extracted to a separate file because VitePress production build
+   doesn't extract non-scoped <style> from globally registered components. */
+
+/* ===== Widen VitePress content containers when FeatureShowcase is present ===== */
+.VPContent:has(.feature-showcase) .container {
+  max-width: 1280px !important;
+}
+
+.VPContent:has(.feature-showcase) .content {
+  max-width: 100% !important;
+}
+
+.VPContent:has(.feature-showcase) .content-container {
+  max-width: 100% !important;
+}
+
+.VPContent:has(.feature-showcase) .vp-doc {
+  max-width: 100% !important;
+}
+
+/* Hide the right-side table-of-contents aside — we have our own left nav */
+.VPContent:has(.feature-showcase) .aside {
+  display: none !important;
+}
+
+/* ===== FeatureShowcase Grid Layout ===== */
+.feature-showcase {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 32px;
+  margin: 24px 0;
+  align-items: start;
+}
+
+/* ===== Left Nav ===== */
+.feature-showcase__nav {
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+.feature-showcase__nav-inner {
+  padding: 16px 0;
+}
+
+.feature-showcase__nav-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--vp-c-text-3);
+  margin: 0 0 12px;
+  padding: 0 12px;
+}
+
+.feature-showcase__nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.feature-showcase__nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  border-radius: 6px;
+  border-left: 2px solid transparent;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.2s;
+  user-select: none;
+}
+
+.feature-showcase__nav-item:hover {
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
+}
+
+.feature-showcase__nav-item--active {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+  background: var(--vp-c-bg-soft);
+  border-left-color: var(--vp-c-brand-1);
+}
+
+.feature-showcase__nav-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 4px;
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-3);
+  flex-shrink: 0;
+}
+
+.feature-showcase__nav-item--active .feature-showcase__nav-index {
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+}
+
+.feature-showcase__nav-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feature-showcase__nav-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  flex-shrink: 0;
+}
+
+/* ===== Right Content ===== */
+.feature-showcase__content {
+  min-width: 0;
+}
+
+.feature-showcase__section {
+  margin-bottom: 40px;
+  scroll-margin-top: 80px;
+}
+
+.feature-showcase__section:last-child {
+  margin-bottom: 0;
+}
+
+.feature-showcase__section-header {
+  margin-bottom: 16px;
+}
+
+.feature-showcase__section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--vp-c-text-1);
+  margin: 0 0 8px;
+  padding: 0;
+  border: none;
+}
+
+.feature-showcase__section-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 6px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  flex-shrink: 0;
+}
+
+.feature-showcase__section-desc {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--vp-c-text-2);
+  margin: 0;
+}
+
+/* ===== Demo Preview ===== */
+.feature-showcase__preview {
+  border: 1px solid var(--vp-c-divider, #e2e2e3);
+  border-radius: 8px;
+  background: var(--vp-c-bg, #fff);
+  overflow: hidden;
+}
+
+.feature-showcase__preview > * {
+  width: 100%;
+}
+
+/* ===== Actions / Code Panel ===== */
+.feature-showcase__actions {
+  border: 1px solid var(--vp-c-divider, #e2e2e3);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  display: flex;
+  justify-content: center;
+  background: var(--vp-c-bg-soft, #f6f6f7);
+}
+
+.feature-showcase__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.feature-showcase__toggle:hover {
+  color: var(--vp-c-brand-1);
+}
+
+.feature-showcase__code-panel {
+  border: 1px solid var(--vp-c-divider, #e2e2e3);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+
+.feature-showcase__tabs {
+  display: flex;
+  border-bottom: 1px solid var(--vp-c-divider, #e2e2e3);
+  padding: 0 12px;
+  background: var(--vp-c-bg-soft, #f6f6f7);
+}
+
+.feature-showcase__tab {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--vp-c-text-3);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+  margin-bottom: -1px;
+}
+
+.feature-showcase__tab:hover {
+  color: var(--vp-c-text-2);
+}
+
+.feature-showcase__tab--active {
+  color: var(--vp-c-brand-1);
+  border-bottom-color: var(--vp-c-brand-1);
+}
+
+.feature-showcase__code {
+  background: var(--vp-code-bg, #1e1e1e);
+  overflow-x: auto;
+}
+
+.feature-showcase__code pre {
+  margin: 0;
+  padding: 16px 20px;
+}
+
+.feature-showcase__code code {
+  font-family: var(--vp-font-family-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--vp-c-text-1);
+  white-space: pre;
+}
+
+/* ===== Slide Transition ===== */
+.fs-slide-enter-active,
+.fs-slide-leave-active {
+  transition: all 0.25s ease;
+  max-height: 600px;
+  overflow: hidden;
+}
+
+.fs-slide-enter-from,
+.fs-slide-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 960px) {
+  .feature-showcase {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .feature-showcase__nav {
+    position: relative;
+    top: 0;
+    max-height: none;
+    order: 2;
+  }
+
+  .feature-showcase__nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .feature-showcase__nav-item {
+    border-left: none;
+    border: 1px solid var(--vp-c-divider);
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .feature-showcase__nav-item--active {
+    border-color: var(--vp-c-brand-1);
+  }
+
+  .feature-showcase__nav-label {
+    display: none;
+  }
+
+  .feature-showcase__content {
+    order: 1;
+  }
+}

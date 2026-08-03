@@ -8,6 +8,24 @@ import TableFeatureRich from './demos/TableFeatureRich.vue';
 import tableFeatureRichCode from './demos/TableFeatureRich.vue?raw';
 import tableFeatureRichVue2 from './demos/TableFeatureRich.vue2?raw';
 import tableFeatureRichReact from './demos/TableFeatureRich.react?raw';
+
+const features = [
+  {
+    title: '基本数据表格',
+    description: '包含可排序的姓名和角色列的简单表格。点击列头切换升序/降序，展示表格的基本渲染和交互能力。',
+    code: tableBasicCode,
+    codeVue2: tableBasicVue2,
+    codeReact: tableBasicReact,
+  },
+  {
+    title: '功能综合演示',
+    description: '50 行数据，展示固定列、多列排序、筛选行、行内编辑、多选、分页、键盘导航等综合能力。',
+    code: tableFeatureRichCode,
+    codeVue2: tableFeatureRichVue2,
+    codeReact: tableFeatureRichReact,
+    badge: '综合',
+  },
+];
 </script>
 
 # 数据表格
@@ -49,17 +67,12 @@ pnpm add @chronixjs/table-react@alpha react react-dom
 
 :::
 
-## 基本用法
+## 在线演示
 
-<DemoBox title="基本数据表格" description="包含可排序的姓名和角色列的简单表格。" :code="tableBasicCode" :code-vue2="tableBasicVue2" :code-react="tableBasicReact">
-  <TableBasic />
-</DemoBox>
-
-## 功能综合演示
-
-<DemoBox title="功能综合演示" description="50 行数据，展示固定列、多列排序、筛选行、行内编辑、多选、分页、键盘导航。" :code="tableFeatureRichCode" :code-vue2="tableFeatureRichVue2" :code-react="tableFeatureRichReact">
-  <TableFeatureRich />
-</DemoBox>
+<FeatureShowcase :features="features">
+  <template #demo-0><TableBasic /></template>
+  <template #demo-1><TableFeatureRich /></template>
+</FeatureShowcase>
 
 ## 接下来
 

@@ -23,6 +23,47 @@ import GanttThemeCustom from './demos/GanttThemeCustom.vue';
 import ganttThemeCustomCode from './demos/GanttThemeCustom.vue?raw';
 import ganttThemeCustomVue2 from './demos/GanttThemeCustom.vue2?raw';
 import ganttThemeCustomReact from './demos/GanttThemeCustom.react?raw';
+
+const features = [
+  {
+    title: '基本甘特图',
+    description: '包含 3 个任务的周视图甘特图，展示任务条、行标签和时间轴的基本渲染。支持横向滚动浏览完整时间线。',
+    code: ganttBasicCode,
+    codeVue2: ganttBasicVue2,
+    codeReact: ganttBasicReact,
+  },
+  {
+    title: '视图切换与工具栏',
+    description: '通过内置工具栏在日/周/月/季/年视图间导航，支持 prev/next/today 导航按钮，动态切换时间轴密度。',
+    code: ganttViewsToolbarCode,
+    codeVue2: ganttViewsToolbarVue2,
+    codeReact: ganttViewsToolbarReact,
+    badge: '交互',
+  },
+  {
+    title: '依赖连线',
+    description: '方角和曲线路由的依赖连线，带箭头标记和自定义颜色覆盖。支持完成-开始 (FS)、开始-开始 (SS)、完成-完成 (FF)、开始-完成 (SF) 四种依赖类型。',
+    code: ganttLinksBasicCode,
+    codeVue2: ganttLinksBasicVue2,
+    codeReact: ganttLinksBasicReact,
+    badge: '核心',
+  },
+  {
+    title: '进度与样式',
+    description: '自定义颜色和进度指示器的条形图。每个条形可独立设置填充色、边框色、进度百分比，进度以深色条嵌入条形内部。',
+    code: ganttBarProgressCode,
+    codeVue2: ganttBarProgressVue2,
+    codeReact: ganttBarProgressReact,
+  },
+  {
+    title: '自定义主题',
+    description: '通过 ChronixTheme 对象自定义条形颜色、图表背景、表头样式等。支持浅色/深色模式切换和 CSS 变量覆盖。',
+    code: ganttThemeCustomCode,
+    codeVue2: ganttThemeCustomVue2,
+    codeReact: ganttThemeCustomReact,
+    badge: '主题',
+  },
+];
 </script>
 
 # 甘特图
@@ -58,35 +99,15 @@ pnpm add @chronixjs/gantt-react@alpha react react-dom
 
 :::
 
-## 基本用法
+## 在线演示
 
-<DemoBox title="基本甘特图" description="包含 3 个任务的周视图甘特图。" :code="ganttBasicCode" :code-vue2="ganttBasicVue2" :code-react="ganttBasicReact">
-  <GanttBasic />
-</DemoBox>
-
-## 视图切换与工具栏
-
-<DemoBox title="工具栏视图切换" description="通过内置工具栏在日/周/月/季/年视图间导航，支持 prev/next/today 导航。" :code="ganttViewsToolbarCode" :code-vue2="ganttViewsToolbarVue2" :code-react="ganttViewsToolbarReact">
-  <GanttViewsToolbar />
-</DemoBox>
-
-## 依赖连线
-
-<DemoBox title="依赖连线" description="方角和曲线路由的依赖连线，带箭头标记和自定义颜色覆盖。" :code="ganttLinksBasicCode" :code-vue2="ganttLinksBasicVue2" :code-react="ganttLinksBasicReact">
-  <GanttLinksBasic />
-</DemoBox>
-
-## 进度与样式
-
-<DemoBox title="带进度和样式的条形" description="自定义颜色和进度指示器的条形图。" :code="ganttBarProgressCode" :code-vue2="ganttBarProgressVue2" :code-react="ganttBarProgressReact">
-  <GanttBarProgress />
-</DemoBox>
-
-## 自定义主题
-
-<DemoBox title="主题定制" description="通过 ChronixTheme 对象自定义条形颜色、图表背景、表头样式等。" :code="ganttThemeCustomCode" :code-vue2="ganttThemeCustomVue2" :code-react="ganttThemeCustomReact">
-  <GanttThemeCustom />
-</DemoBox>
+<FeatureShowcase :features="features">
+  <template #demo-0><GanttBasic /></template>
+  <template #demo-1><GanttViewsToolbar /></template>
+  <template #demo-2><GanttLinksBasic /></template>
+  <template #demo-3><GanttBarProgress /></template>
+  <template #demo-4><GanttThemeCustom /></template>
+</FeatureShowcase>
 
 ## 下一步
 
