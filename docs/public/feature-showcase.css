@@ -2,13 +2,20 @@
    Extracted to a separate file because VitePress production build
    doesn't extract non-scoped <style> from globally registered components. */
 
-/* ===== Widen VitePress content containers when FeatureShowcase is present ===== */
+/* ===== Override VitePress layout to use full width when FeatureShowcase is present ===== */
+
+/* Widen the main container to near-full-width */
 .VPContent:has(.feature-showcase) .container {
-  max-width: 1280px !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
+/* Remove padding constraints */
 .VPContent:has(.feature-showcase) .content {
   max-width: 100% !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
 }
 
 .VPContent:has(.feature-showcase) .content-container {
@@ -19,17 +26,23 @@
   max-width: 100% !important;
 }
 
-/* Hide the right-side table-of-contents aside — we have our own left nav */
+/* Hide the right-side table-of-contents aside */
 .VPContent:has(.feature-showcase) .aside {
+  display: none !important;
+}
+
+/* Hide VitePress left sidebar to give full width to the showcase */
+.VPContent:has(.feature-showcase) ~ .VPSidebar,
+.layout:has(.feature-showcase) .VPSidebar {
   display: none !important;
 }
 
 /* ===== FeatureShowcase Grid Layout ===== */
 .feature-showcase {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 32px;
-  margin: 24px 0;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  margin: 16px 0;
   align-items: start;
 }
 
@@ -42,7 +55,7 @@
 }
 
 .feature-showcase__nav-inner {
-  padding: 16px 0;
+  padding: 12px 0;
 }
 
 .feature-showcase__nav-label {
@@ -65,7 +78,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 10px 12px;
   font-size: 13px;
   line-height: 1.5;
   color: var(--vp-c-text-2);
@@ -133,15 +146,6 @@
   min-width: 0;
 }
 
-.feature-showcase__section {
-  margin-bottom: 40px;
-  scroll-margin-top: 80px;
-}
-
-.feature-showcase__section:last-child {
-  margin-bottom: 0;
-}
-
 .feature-showcase__section-header {
   margin-bottom: 16px;
 }
@@ -179,12 +183,13 @@
   margin: 0;
 }
 
-/* ===== Demo Preview ===== */
+/* ===== Demo Preview — tall, full width ===== */
 .feature-showcase__preview {
   border: 1px solid var(--vp-c-divider, #e2e2e3);
   border-radius: 8px;
   background: var(--vp-c-bg, #fff);
   overflow: hidden;
+  min-height: 600px;
 }
 
 .feature-showcase__preview > * {
@@ -325,5 +330,9 @@
 
   .feature-showcase__content {
     order: 1;
+  }
+
+  .feature-showcase__preview {
+    min-height: 400px;
   }
 }

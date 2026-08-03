@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ChronixGantt } from '@chronixjs/gantt-vue3';
 import type { BarSpec, RowSpec, AxisRangePlanInput } from '@chronixjs/gantt';
 
@@ -49,14 +49,14 @@ const bars: BarSpec[] = [
 const axisInput: AxisRangePlanInput = {
   viewId: 'week',
   anchorDate: new Date('2026-01-05'),
-  viewportWidth: 800,
+  viewportWidth: 1200,
   locale: 'en',
   weekendsVisible: true,
 };
 </script>
 
 <template>
-  <div style="height: 350px">
+  <div style="height: 600px">
     <ChronixGantt :bars="bars" :rows="rows" :axis-input="axisInput" />
   </div>
 </template>

@@ -68,7 +68,17 @@ const features = [
 
 # 甘特图
 
-高性能、框架无关的甘特图组件，支持拖拽/调整大小、依赖连线以及 6 种时间线视图。
+高性能、框架无关的甘特图组件，支持拖拽/调整大小、依赖连线以及 6 种时间线视图。支持 Vue 3、Vue 2.7、React 18/19 三个框架适配器。
+
+## 在线演示
+
+<FeatureShowcase :features="features">
+  <template #demo-0><GanttBasic /></template>
+  <template #demo-1><GanttViewsToolbar /></template>
+  <template #demo-2><GanttLinksBasic /></template>
+  <template #demo-3><GanttBarProgress /></template>
+  <template #demo-4><GanttThemeCustom /></template>
+</FeatureShowcase>
 
 ## 功能特性
 
@@ -98,16 +108,6 @@ pnpm add @chronixjs/gantt-react@alpha react react-dom
 ```
 
 :::
-
-## 在线演示
-
-<FeatureShowcase :features="features">
-  <template #demo-0><GanttBasic /></template>
-  <template #demo-1><GanttViewsToolbar /></template>
-  <template #demo-2><GanttLinksBasic /></template>
-  <template #demo-3><GanttBarProgress /></template>
-  <template #demo-4><GanttThemeCustom /></template>
-</FeatureShowcase>
 
 ## 下一步
 
