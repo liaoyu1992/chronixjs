@@ -1,6 +1,19 @@
+<script setup>
+import TableFiltering from './demos/TableFiltering.vue';
+import tableFilteringCode from './demos/TableFiltering.vue?raw';
+import tableFilteringVue2 from './demos/TableFiltering.vue2?raw';
+import tableFilteringReact from './demos/TableFiltering.react?raw';
+</script>
+
 # 筛选
 
 表格支持多种筛选类型，包括文本、数字、集合和高级表达式筛选。
+
+## 在线演示
+
+<DemoBox title="文本 + 集合筛选" description="在 Name 列输入文本筛选，Status 列点击下拉选择集合筛选，Score 列支持数字前缀语法（如 >80）。" :code="tableFilteringCode" :code-vue2="tableFilteringVue2" :code-react="tableFilteringReact">
+  <TableFiltering />
+</DemoBox>
 
 ## 快速开始
 

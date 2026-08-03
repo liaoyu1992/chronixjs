@@ -1,0 +1,56 @@
+import { ChronixTable } from '@chronixjs/table-react';
+import type { ColumnSpec, RowSpec } from '@chronixjs/table';
+
+const columns: ColumnSpec[] = [
+  { id: 'name', field: 'name', headerName: '名称', flex: 2, treeColumn: true },
+  { id: 'type', field: 'type', headerName: '类型', width: 100 },
+  { id: 'size', field: 'size', headerName: '大小 (B)', width: 120, type: 'number' },
+];
+
+const rows: RowSpec[] = [
+  {
+    id: 'project-a',
+    data: { name: 'chronix-table', type: 'project', size: 12480 },
+    children: [
+      {
+        id: 'project-a/core',
+        data: { name: 'core', type: 'module', size: 8200 },
+        children: [
+          { id: 'project-a/core/index', data: { name: 'index.ts', type: 'file', size: 1200 } },
+          { id: 'project-a/core/utils', data: { name: 'utils.ts', type: 'file', size: 3400 } },
+          { id: 'project-a/core/types', data: { name: 'types.ts', type: 'file', size: 3600 } },
+        ],
+      },
+      {
+        id: 'project-a/adapters',
+        data: { name: 'adapters', type: 'module', size: 4280 },
+        children: [
+          { id: 'project-a/adapters/vue3', data: { name: 'vue3.ts', type: 'file', size: 2100 } },
+          { id: 'project-a/adapters/react', data: { name: 'react.ts', type: 'file', size: 2180 } },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'project-b',
+    data: { name: 'chronix-gantt', type: 'project', size: 9600 },
+    children: [
+      {
+        id: 'project-b/core',
+        data: { name: 'core', type: 'module', size: 9600 },
+        children: [
+          { id: 'project-b/core/axis', data: { name: 'axis.ts', type: 'file', size: 4800 } },
+          { id: 'project-b/core/bars', data: { name: 'bars.ts', type: 'file', size: 4800 } },
+        ],
+      },
+    ],
+  },
+];
+
+export default function TableTreeData() {
+  return (
+    <div style={{ height: 360 }}>
+      <ChronixTable columns={columns} rows={rows} defaultExpandedDepth={1} />
+    </div>
+  );
+}

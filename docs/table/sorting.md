@@ -1,6 +1,19 @@
+<script setup>
+import TableSorting from './demos/TableSorting.vue';
+import tableSortingCode from './demos/TableSorting.vue?raw';
+import tableSortingVue2 from './demos/TableSorting.vue2?raw';
+import tableSortingReact from './demos/TableSorting.react?raw';
+</script>
+
 # 排序
 
 为数据表格启用单列和多列排序。排序通过 `ColumnSpec` 逐列配置。
+
+## 在线演示
+
+<DemoBox title="多列排序" description="点击列头切换升序/降序，Shift+点击追加排序列。" :code="tableSortingCode" :code-vue2="tableSortingVue2" :code-react="tableSortingReact">
+  <TableSorting />
+</DemoBox>
 
 ## 基本排序
 

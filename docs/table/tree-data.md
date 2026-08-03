@@ -1,6 +1,19 @@
+<script setup>
+import TableTreeData from './demos/TableTreeData.vue';
+import tableTreeDataCode from './demos/TableTreeData.vue?raw';
+import tableTreeDataVue2 from './demos/TableTreeData.vue2?raw';
+import tableTreeDataReact from './demos/TableTreeData.react?raw';
+</script>
+
 # 树形数据
 
 以可展开的树形行展示层级数据。树形数据支持本地和异步子节点加载。
+
+## 在线演示
+
+<DemoBox title="文件树" description="3 层嵌套的项目结构 (project → module → file)。点击 chevron 展开/折叠，defaultExpandedDepth=1 默认展开第一层。" :code="tableTreeDataCode" :code-vue2="tableTreeDataVue2" :code-react="tableTreeDataReact">
+  <TableTreeData />
+</DemoBox>
 
 ## 基本树形数据
 

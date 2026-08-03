@@ -1,6 +1,19 @@
+<script setup>
+import TableEditing from './demos/TableEditing.vue';
+import tableEditingCode from './demos/TableEditing.vue?raw';
+import tableEditingVue2 from './demos/TableEditing.vue2?raw';
+import tableEditingReact from './demos/TableEditing.react?raw';
+</script>
+
 # 编辑
 
 启用单元格级编辑，支持校验。双击单元格或使用键盘导航开始编辑。
+
+## 在线演示
+
+<DemoBox title="行内编辑" description="双击任意单元格进入编辑模式。数字列使用 inputmode=decimal + 自动 coercion，Enter 提交，Esc 取消。" :code="tableEditingCode" :code-vue2="tableEditingVue2" :code-react="tableEditingReact">
+  <TableEditing />
+</DemoBox>
 
 ## 基本编辑
 

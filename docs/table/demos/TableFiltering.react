@@ -1,0 +1,30 @@
+import { ChronixTable } from '@chronixjs/table-react';
+import type { ColumnSpec, RowSpec } from '@chronixjs/table';
+
+const columns: ColumnSpec[] = [
+  { id: 'name', field: 'name', headerName: 'Name', filterable: true, filterUi: 'text', width: 180 },
+  { id: 'status', field: 'status', headerName: 'Status', filterable: true, filterUi: 'set', width: 120 },
+  { id: 'score', field: 'score', headerName: 'Score', filterable: true, filterUi: 'text', width: 100, type: 'number' },
+  { id: 'city', field: 'city', headerName: 'City', width: 150 },
+];
+
+const rows: RowSpec[] = [
+  { id: '1', data: { name: 'Alice', status: 'Active', score: 92, city: 'Beijing' } },
+  { id: '2', data: { name: 'Bob', status: 'Inactive', score: 78, city: 'Shanghai' } },
+  { id: '3', data: { name: 'Carol', status: 'Active', score: 85, city: 'Shenzhen' } },
+  { id: '4', data: { name: 'Dave', status: 'Pending', score: 67, city: 'Beijing' } },
+  { id: '5', data: { name: 'Eve', status: 'Active', score: 95, city: 'Guangzhou' } },
+  { id: '6', data: { name: 'Frank', status: 'Inactive', score: 72, city: 'Shanghai' } },
+  { id: '7', data: { name: 'Grace', status: 'Active', score: 88, city: 'Shenzhen' } },
+  { id: '8', data: { name: 'Henry', status: 'Pending', score: 74, city: 'Beijing' } },
+  { id: '9', data: { name: 'Ivy', status: 'Active', score: 91, city: 'Guangzhou' } },
+  { id: '10', data: { name: 'Jack', status: 'Inactive', score: 63, city: 'Shanghai' } },
+];
+
+export default function TableFiltering() {
+  return (
+    <div style={{ height: 360 }}>
+      <ChronixTable columns={columns} rows={rows} showFilterRow />
+    </div>
+  );
+}

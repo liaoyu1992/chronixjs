@@ -1,0 +1,36 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+import { ChronixTable } from '@chronixjs/table-vue3';
+import type { ColumnSpec, RowSpec, CellValueChangePayload } from '@chronixjs/table';
+
+const columns: ColumnSpec[] = [
+  { id: 'name', field: 'name', headerName: '名称', width: 160, editable: true },
+  { id: 'qty', field: 'qty', headerName: '数量', width: 100, type: 'number', editable: true },
+  { id: 'price', field: 'price', headerName: '单价', width: 100, type: 'number', editable: true },
+  { id: 'note', field: 'note', headerName: '备注', flex: 1, editable: true },
+];
+
+const rows = ref<RowSpec[]>([
+  { id: '1', data: { name: '苹果', qty: 50, price: 5.5, note: '新鲜到货' } },
+  { id: '2', data: { name: '香蕉', qty: 80, price: 3.2, note: '促销中' } },
+  { id: '3', data: { name: '橙子', qty: 35, price: 6.8, note: '' } },
+  { id: '4', data: { name: '葡萄', qty: 60, price: 12.5, note: '进口' } },
+  { id: '5', data: { name: '西瓜', qty: 20, price: 2.0, note: '按个卖' } },
+]);
+
+function onCellValueChange(payload: CellValueChangePayload): void {
+  rows.value = rows.value.map((row) => {
+    if (row.id !== payload.row.id) return row;
+    return {
+      ...row,
+      data: { ...row.data, [payload.column.field ?? payload.column.id]: payload.newValue },
+    };
+  });
+}
+</script>
+
+<template>
+  <div style="height: 300px">
+    <ChronixTable :columns="columns" :rows="rows" @cell-value-change="onCellValueChange" />
+  </div>
+</template>
