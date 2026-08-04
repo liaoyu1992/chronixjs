@@ -6,6 +6,7 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', href: '/chronixjs/favicon.ico' }],
     ['link', { rel: 'stylesheet', href: '/chronixjs/feature-showcase.css' }],
+    ['link', { rel: 'stylesheet', href: '/chronixjs/chronix-table.css' }],
   ],
   cleanUrls: true,
   lastUpdated: true,
