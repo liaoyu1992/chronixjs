@@ -1,7 +1,7 @@
 import DefaultTheme from 'vitepress/theme';
 import type { Theme } from 'vitepress';
 import * as ChronixUI from '@chronixjs/ui-vue3';
-import '@chronixjs/table/src/styles.css';
+import '../../packages/table/src/styles.css';
 import DemoBox from './components/DemoBox.vue';
 import FeatureShowcase from './components/FeatureShowcase.vue';
 
