@@ -4,6 +4,26 @@ import tableBasicCode from './demos/TableBasic.vue?raw';
 import tableBasicVue2 from './demos/TableBasic.vue2?raw';
 import tableBasicReact from './demos/TableBasic.react?raw';
 
+import TableSorting from './demos/TableSorting.vue';
+import tableSortingCode from './demos/TableSorting.vue?raw';
+import tableSortingVue2 from './demos/TableSorting.vue2?raw';
+import tableSortingReact from './demos/TableSorting.react?raw';
+
+import TableFiltering from './demos/TableFiltering.vue';
+import tableFilteringCode from './demos/TableFiltering.vue?raw';
+import tableFilteringVue2 from './demos/TableFiltering.vue2?raw';
+import tableFilteringReact from './demos/TableFiltering.react?raw';
+
+import TableEditing from './demos/TableEditing.vue';
+import tableEditingCode from './demos/TableEditing.vue?raw';
+import tableEditingVue2 from './demos/TableEditing.vue2?raw';
+import tableEditingReact from './demos/TableEditing.react?raw';
+
+import TableTreeData from './demos/TableTreeData.vue';
+import tableTreeDataCode from './demos/TableTreeData.vue?raw';
+import tableTreeDataVue2 from './demos/TableTreeData.vue2?raw';
+import tableTreeDataReact from './demos/TableTreeData.react?raw';
+
 import TableFeatureRich from './demos/TableFeatureRich.vue';
 import tableFeatureRichCode from './demos/TableFeatureRich.vue?raw';
 import tableFeatureRichVue2 from './demos/TableFeatureRich.vue2?raw';
@@ -12,10 +32,41 @@ import tableFeatureRichReact from './demos/TableFeatureRich.react?raw';
 const features = [
   {
     title: '基本数据表格',
-    description: '包含可排序的姓名和角色列的简单表格。点击列头切换升序/降序，展示表格的基本渲染和交互能力。',
+    description: '支持列头排序的数据表格，点击列头切换升序/降序。20 行示例数据展示表格的基本渲染和交互能力。',
     code: tableBasicCode,
     codeVue2: tableBasicVue2,
     codeReact: tableBasicReact,
+  },
+  {
+    title: '多列排序',
+    description: '点击列头排序，Shift+点击追加排序列。支持文本和数字类型排序，键盘方向键导航。',
+    code: tableSortingCode,
+    codeVue2: tableSortingVue2,
+    codeReact: tableSortingReact,
+    badge: '交互',
+  },
+  {
+    title: '数据筛选',
+    description: '文本筛选和集合筛选两种模式。文本筛选支持模糊匹配，集合筛选支持多选过滤。',
+    code: tableFilteringCode,
+    codeVue2: tableFilteringVue2,
+    codeReact: tableFilteringReact,
+    badge: '核心',
+  },
+  {
+    title: '行内编辑',
+    description: '双击单元格进入编辑模式，支持文本和数字类型编辑。编辑后自动更新数据，支持校验。',
+    code: tableEditingCode,
+    codeVue2: tableEditingVue2,
+    codeReact: tableEditingReact,
+  },
+  {
+    title: '树形数据',
+    description: '层级行展开/折叠，支持懒加载子节点。树形列缩进显示层级关系，默认展开第一层。',
+    code: tableTreeDataCode,
+    codeVue2: tableTreeDataVue2,
+    codeReact: tableTreeDataReact,
+    badge: '高级',
   },
   {
     title: '功能综合演示',
@@ -31,6 +82,17 @@ const features = [
 # 数据表格
 
 高性能、框架无关的数据表格，支持虚拟滚动、树形数据、行内编辑、多列排序、高级筛选、单元格区域操作、撤销/重做、CSV/XLSX 导出和服务端数据源。
+
+## 在线演示
+
+<FeatureShowcase :features="features">
+  <template #demo-0><TableBasic /></template>
+  <template #demo-1><TableSorting /></template>
+  <template #demo-2><TableFiltering /></template>
+  <template #demo-3><TableEditing /></template>
+  <template #demo-4><TableTreeData /></template>
+  <template #demo-5><TableFeatureRich /></template>
+</FeatureShowcase>
 
 ## 功能特性
 
@@ -66,13 +128,6 @@ pnpm add @chronixjs/table-react@alpha react react-dom
 ```
 
 :::
-
-## 在线演示
-
-<FeatureShowcase :features="features">
-  <template #demo-0><TableBasic /></template>
-  <template #demo-1><TableFeatureRich /></template>
-</FeatureShowcase>
 
 ## 接下来
 

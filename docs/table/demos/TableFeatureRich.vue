@@ -66,7 +66,7 @@ const rows: RowSpec[] = Array.from({ length: 50 }, (_, i) => {
 </script>
 
 <template>
-  <div style="height: 400px">
+  <div style="height: calc(100vh - 200px); min-height: 500px">
     <ChronixTable
       :columns="columns"
       :rows="rows"
