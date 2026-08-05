@@ -127,6 +127,8 @@ import {
   type ContextMenuItem,
   type ContextMenuOpenPayload,
   type SortSpec,
+  createDefaultContextMenuItems,
+  type DefaultContextMenuDeps,
 } from '@chronixjs/table';
 import {
   createServerSideRowSource,
@@ -3457,7 +3459,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
 
     const applyOpenContextMenu = useCallback(
       (rowId: string | null, colId: string | null, x: number, y: number) => {
-        const cfg = contextMenuRef.current;
+        const cfg = effectiveContextMenuRef.current;
         if (cfg == null || cfg.items.length === 0) return;
         setContextMenuPosition({ rowId, colId, x, y });
         onContextMenuOpenRef.current?.({ rowId, colId, x, y });
@@ -3470,6 +3472,48 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       setContextMenuPosition(null);
       onContextMenuCloseRef.current?.();
     }, []);
+
+    // ─────────────────────── default context menu ───────────────────────
+    // When `contextMenu` prop is `undefined` (not configured), the table
+    // ships with built-in default items (复制 / 粘贴 / 清除选区). Passing
+    // an explicit config overrides the defaults; `null` disables entirely.
+    // The dep callbacks are resolved lazily via refs so the items array
+    // is stable across renders (the underlying methods are defined later
+    // in the component body and may change identity).
+    const defaultCopyRangeRef = useRef<() => void>(() => {});
+    const defaultCopyCellRef = useRef<(rowId: string, colId: string) => void>(() => {});
+    const defaultPasteRef = useRef<() => void>(() => {});
+    const defaultClearRangeRef = useRef<() => void>(() => {});
+    const defaultContextMenuItems = useMemo(
+      () =>
+        createDefaultContextMenuItems({
+          copyRange: () => defaultCopyRangeRef.current(),
+          copyCell: (rowId, colId) => defaultCopyCellRef.current(rowId, colId),
+          paste: () => defaultPasteRef.current(),
+          clearRange: () => defaultClearRangeRef.current(),
+        } satisfies DefaultContextMenuDeps),
+      [],
+    );
+    const effectiveContextMenu = useMemo<ContextMenuConfig | null>(() => {
+      if (contextMenu === undefined) {
+        return { items: defaultContextMenuItems };
+      }
+      return contextMenu;
+    }, [contextMenu, defaultContextMenuItems]);
+    const effectiveContextMenuRef = useRef(effectiveContextMenu);
+    effectiveContextMenuRef.current = effectiveContextMenu;
+
+    const resolveCellRangeForCtxRef = useRef<
+      (
+        rowId: string | null,
+        colId: string | null,
+      ) => NonNullable<ContextMenuContext['cellRange']> | null
+    >(() => null);
+    const resolveCellRangeForCtx = useCallback(
+      (rowId: string | null, colId: string | null) =>
+        resolveCellRangeForCtxRef.current(rowId, colId),
+      [],
+    );
 
     const serverSideRowsSynthesized = useMemo<readonly RowSpec[]>(() => {
       if (rowModelType !== 'serverSide') return EMPTY_ROW_LIST;
@@ -3988,7 +4032,11 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       const pos = contextMenuPosition;
       const cfg = contextMenu;
       if (pos == null || cfg == null || cfg.items.length === 0) return EMPTY_MENU_KBD_ITEMS;
-      const ctx: ContextMenuContext = { rowId: pos.rowId, colId: pos.colId };
+      const ctx: ContextMenuContext = {
+        rowId: pos.rowId,
+        colId: pos.colId,
+        cellRange: resolveCellRangeForCtx(pos.rowId, pos.colId),
+      };
       return cfg.items.map((it) => ({ id: it.id, disabled: it.disabled?.(ctx) === true }));
     }, [contextMenuPosition, contextMenu]);
     const cellContextMenuKbdIsOpen = contextMenuPosition != null;
@@ -4775,7 +4823,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     /** -B (2026-05-30 — react port). Verbatim mirror of vue3. */
     const onCellContextMenu = useCallback(
       (rowId: string, colId: string, e: ReactMouseEvent): void => {
-        const cfg = contextMenuRef.current;
+        const cfg = effectiveContextMenuRef.current;
         if (cfg == null || cfg.items.length === 0) return;
         e.preventDefault();
         e.stopPropagation();
@@ -5384,6 +5432,23 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       [pagedRows, visibleColumns, onCellRangeStop],
     );
 
+    // Wire default context-menu dep refs to the real implementations.
+    defaultCopyRangeRef.current = () => {
+      void performCellRangeCopy(null);
+    };
+    defaultCopyCellRef.current = (rowId: string, colId: string) => {
+      const column = columnTable.getById(colId);
+      const row = rowDataSource.getById(rowId);
+      if (column == null || row == null) return;
+      const text = formatCellValue({ row, column });
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        void navigator.clipboard.writeText(text);
+      }
+    };
+    defaultPasteRef.current = () => {
+      void performCellRangePaste(null);
+    };
+
     const applyCellRangeClear = useCallback((): void => {
       const current = cellRangeRef.current;
       if (current == null) return;
@@ -5394,6 +5459,19 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       setCellRangeState(null);
       onCellRangeStop?.({ range: current, envelope, jsEvent: null });
     }, [pagedRows, visibleColumns, onCellRangeStop]);
+    defaultClearRangeRef.current = () => applyCellRangeClear();
+    resolveCellRangeForCtxRef.current = (rowId, colId) => {
+      if (cellRangeSelection !== 'enabled' || cellRangeRef.current == null) return null;
+      const env = computeCellRangeEnvelope(
+        cellRangeRef.current,
+        pagedRows.map((r) => r.id),
+        visibleColumns.map((c) => c.id),
+      );
+      if (env.rowIds.includes(rowId ?? '') && env.colIds.includes(colId ?? '')) {
+        return env;
+      }
+      return null;
+    };
 
     const onCellPointerDown = useCallback(
       (rowId: string, colId: string, e: ReactPointerEvent<HTMLDivElement>): void => {
@@ -9541,7 +9619,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
                     },
                   }
                 : {})}
-            {...(contextMenu != null && contextMenu.items.length > 0
+            {...(effectiveContextMenu != null && effectiveContextMenu.items.length > 0
               ? {
                   onContextMenu: (e: ReactMouseEvent) => {
                     onCellContextMenu(row.id, col.id, e);
@@ -10663,52 +10741,58 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         {body}
         {footerBar}
         {rowDropLine}
-        {contextMenuPosition != null && contextMenu != null && contextMenu.items.length > 0 && (
-          <div
-            ref={cellContextMenuRef}
-            className="cx-table-cell-context-menu"
-            role="menu"
-            data-testid="cx-cell-context-menu"
-            style={{
-              position: 'fixed',
-              left: `${contextMenuPosition.x}px`,
-              top: `${contextMenuPosition.y}px`,
-              zIndex: 7,
-            }}
-            onKeyDown={(e) => cellContextMenuKbdNav.handleKeydown(e)}
-          >
-            {contextMenu.items.map((item: ContextMenuItem, idx: number) => {
-              const cmCtx: ContextMenuContext = {
-                rowId: contextMenuPosition.rowId,
-                colId: contextMenuPosition.colId,
-              };
-              const isDisabled = item.disabled?.(cmCtx) === true;
-              const isKbdActive = !isDisabled && cellContextMenuKbdNav.activeIndex === idx;
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={[
-                    'cx-table-cell-context-menu-item',
-                    isDisabled && 'cx-table-cell-context-menu-item--disabled',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                  role="menuitem"
-                  tabIndex={isKbdActive ? 0 : -1}
-                  data-item-id={item.id}
-                  data-menu-item-index={String(idx)}
-                  disabled={isDisabled}
-                  onClick={() => {
-                    onContextMenuItemClick(item);
-                  }}
-                >
-                  {item.icon != null ? `${item.icon} ${item.label}` : item.label}
-                </button>
-              );
-            })}
-          </div>
-        )}
+        {contextMenuPosition != null &&
+          effectiveContextMenu != null &&
+          effectiveContextMenu.items.length > 0 && (
+            <div
+              ref={cellContextMenuRef}
+              className="cx-table-cell-context-menu"
+              role="menu"
+              data-testid="cx-cell-context-menu"
+              style={{
+                position: 'fixed',
+                left: `${contextMenuPosition.x}px`,
+                top: `${contextMenuPosition.y}px`,
+                zIndex: 7,
+              }}
+              onKeyDown={(e) => cellContextMenuKbdNav.handleKeydown(e)}
+            >
+              {effectiveContextMenu!.items.map((item: ContextMenuItem, idx: number) => {
+                const cmCtx: ContextMenuContext = {
+                  rowId: contextMenuPosition.rowId,
+                  colId: contextMenuPosition.colId,
+                  cellRange: resolveCellRangeForCtx(
+                    contextMenuPosition.rowId,
+                    contextMenuPosition.colId,
+                  ),
+                };
+                const isDisabled = item.disabled?.(cmCtx) === true;
+                const isKbdActive = !isDisabled && cellContextMenuKbdNav.activeIndex === idx;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={[
+                      'cx-table-cell-context-menu-item',
+                      isDisabled && 'cx-table-cell-context-menu-item--disabled',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    role="menuitem"
+                    tabIndex={isKbdActive ? 0 : -1}
+                    data-item-id={item.id}
+                    data-menu-item-index={String(idx)}
+                    disabled={isDisabled}
+                    onClick={() => {
+                      onContextMenuItemClick(item);
+                    }}
+                  >
+                    {item.icon != null ? `${item.icon} ${item.label}` : item.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         {enableCellStyleEditor &&
           cellStyleEditorOpen != null &&
           (() => {

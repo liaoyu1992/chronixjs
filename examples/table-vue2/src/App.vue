@@ -1499,7 +1499,6 @@ export const SERVER_SIDE_COLUMNS_VUE2: readonly ColumnSpec[] = [
           :show-footer-row="true"
           :show-column-header-menu="true"
           :show-column-filter-button="true"
-          :context-menu="phase83ContextMenuConfig"
           @column-header-menu-action="onColumnHeaderMenuAction"
           :enable-keyboard-navigation="true"
           :enable-keyboard-auto-scroll="enableAutoScroll"

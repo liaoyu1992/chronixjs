@@ -8972,7 +8972,7 @@ describe('<ChronixTable> — -B cell context menu (react)', () => {
   });
 
   it('83B-2: contextMenu default (null) renders no overlay even on right-click (react)', () => {
-    const { container } = render(<ChronixTable columns={columns} rows={rows} />);
+    const { container } = render(<ChronixTable columns={columns} rows={rows} contextMenu={null} />);
     const firstCell = container.querySelector('[data-row-id="r1"][data-col-id="name"]')!;
     fireEvent.contextMenu(firstCell, { clientX: 50, clientY: 50 });
     expect(container.querySelector('[data-testid="cx-cell-context-menu"]')).toBeFalsy();

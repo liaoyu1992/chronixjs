@@ -8484,7 +8484,7 @@ describe('<ChronixTable> — -B cell context menu (vue3)', () => {
 
   it('83B-2: contextMenu:null renders no overlay even on right-click', async () => {
     const wrapper = mount(ChronixTable, {
-      props: { columns, rows },
+      props: { columns, rows, contextMenu: null },
       attachTo: document.body,
     });
     const firstCell = wrapper.find('[data-row-id="r1"][data-col-id="name"]');

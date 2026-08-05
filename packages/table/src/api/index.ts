@@ -196,3 +196,5 @@ export type {
   ExportStyleFill,
   ExportStyleFont,
 } from './export-style.js';
+
+export { createDefaultContextMenuItems, type DefaultContextMenuDeps } from './default-context-menu';

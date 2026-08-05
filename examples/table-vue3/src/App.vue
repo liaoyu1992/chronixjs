@@ -1424,7 +1424,6 @@ function onColumnHeaderMenuAction(payload: {
           :show-footer-row="true"
           :show-column-header-menu="true"
           :show-column-filter-button="true"
-          :context-menu="phase83ContextMenuConfig"
           @column-header-menu-action="onColumnHeaderMenuAction"
           :enable-keyboard-navigation="true"
           :enable-keyboard-auto-scroll="enableAutoScroll"

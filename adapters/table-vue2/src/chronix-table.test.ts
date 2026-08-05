@@ -8364,7 +8364,7 @@ describe('<ChronixTable> — -B cell context menu (vue2)', () => {
 
   it('83B-2: contextMenu:null renders no overlay even on right-click (vue2)', async () => {
     const wrapper = mount(TableForTest, {
-      propsData: { columns, rows },
+      propsData: { columns, rows, contextMenu: null },
       attachToDocument: true,
     });
     await wrapper

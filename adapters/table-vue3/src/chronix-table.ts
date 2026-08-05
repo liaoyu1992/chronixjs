@@ -126,6 +126,8 @@ import {
   type ContextMenuItem,
   type ContextMenuOpenPayload,
   type SortSpec,
+  createDefaultContextMenuItems,
+  type DefaultContextMenuDeps,
 } from '@chronixjs/table';
 import {
   createServerSideRowSource,
@@ -2597,7 +2599,7 @@ export const ChronixTable = defineComponent({
      */
     contextMenu: {
       type: Object as PropType<ContextMenuConfig | null | undefined>,
-      default: null,
+      default: undefined,
     },
   },
   emits: {
@@ -3591,7 +3593,7 @@ export const ChronixTable = defineComponent({
       x: number,
       y: number,
     ): void {
-      const cfg = props.contextMenu;
+      const cfg = effectiveContextMenu.value;
       if (cfg == null || cfg.items.length === 0) return;
       contextMenuPositionRef.value = { rowId, colId, x, y };
       emit('context-menu-open', { rowId, colId, x, y });
@@ -3601,6 +3603,54 @@ export const ChronixTable = defineComponent({
       if (contextMenuPositionRef.value == null) return;
       contextMenuPositionRef.value = null;
       emit('context-menu-close');
+    }
+
+    // ─────────────────────── default context menu ───────────────────────
+    // When `contextMenu` prop is `undefined` (not configured), the table
+    // ships with built-in default items (复制 / 粘贴 / 清除选区). Passing
+    // an explicit config overrides the defaults; `null` disables entirely.
+    const defaultContextMenuItems = createDefaultContextMenuItems({
+      copyRange: () => {
+        void performCellRangeCopy(null);
+      },
+      copyCell: (rowId: string, colId: string) => {
+        const column = columnTable.value.getById(colId);
+        const row = rowDataSource.value.getById(rowId);
+        if (column == null || row == null) return;
+        const text = formatCellValue({ row, column });
+        if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+          void navigator.clipboard.writeText(text);
+        }
+      },
+      paste: () => {
+        void performCellRangePaste(null);
+      },
+      clearRange: () => {
+        applyCellRangeClear();
+      },
+    } satisfies DefaultContextMenuDeps);
+    const effectiveContextMenu = computed<ContextMenuConfig | null>(() => {
+      if (props.contextMenu === undefined) {
+        return { items: defaultContextMenuItems };
+      }
+      return props.contextMenu;
+    });
+
+    /**
+     * Resolve the active cell-range envelope for a right-clicked cell.
+     * Returns the envelope when cellRangeSelection is enabled, a range
+     * is active, AND the cell is inside it; otherwise null.
+     */
+    function resolveCellRangeForCtx(
+      rowId: string | null,
+      colId: string | null,
+    ): NonNullable<ContextMenuContext['cellRange']> | null {
+      if (props.cellRangeSelection !== 'enabled' || cellRangeRef.value == null) return null;
+      const env = cellRangeEnvelope.value;
+      if (env.rowIds.includes(rowId ?? '') && env.colIds.includes(colId ?? '')) {
+        return env;
+      }
+      return null;
     }
 
     function onColumnHeaderMenuItemClick(
@@ -3623,7 +3673,7 @@ export const ChronixTable = defineComponent({
     }
 
     function onCellContextMenu(rowId: string, colId: string, e: MouseEvent): void {
-      const cfg = props.contextMenu;
+      const cfg = effectiveContextMenu.value;
       if (cfg == null || cfg.items.length === 0) return;
       e.preventDefault();
       e.stopPropagation();
@@ -3633,18 +3683,11 @@ export const ChronixTable = defineComponent({
     function onContextMenuItemClick(item: ContextMenuItem): void {
       const pos = contextMenuPositionRef.value;
       if (pos == null) return;
-      // Resolve the active cell-range envelope so menu items can
-      // operate on the whole selection (e.g. "copy range"). Only
-      // set when cellRangeSelection is enabled AND the right-clicked
-      // cell is inside the active envelope.
-      let cellRange: ContextMenuContext['cellRange'] = null;
-      if (props.cellRangeSelection === 'enabled' && cellRangeRef.value != null) {
-        const env = cellRangeEnvelope.value;
-        if (env.rowIds.includes(pos.rowId ?? '') && env.colIds.includes(pos.colId ?? '')) {
-          cellRange = env;
-        }
-      }
-      const ctx: ContextMenuContext = { rowId: pos.rowId, colId: pos.colId, cellRange };
+      const ctx: ContextMenuContext = {
+        rowId: pos.rowId,
+        colId: pos.colId,
+        cellRange: resolveCellRangeForCtx(pos.rowId, pos.colId),
+      };
       const disabled = item.disabled?.(ctx) === true;
       if (disabled) return;
       applyCloseContextMenu();
@@ -3796,9 +3839,13 @@ export const ChronixTable = defineComponent({
 
     const cellContextMenuItems = computed<readonly MenuKeyboardNavItem[]>(() => {
       const pos = contextMenuPositionRef.value;
-      const cfg = props.contextMenu;
+      const cfg = effectiveContextMenu.value;
       if (pos == null || cfg == null || cfg.items.length === 0) return [];
-      const ctx: ContextMenuContext = { rowId: pos.rowId, colId: pos.colId };
+      const ctx: ContextMenuContext = {
+        rowId: pos.rowId,
+        colId: pos.colId,
+        cellRange: resolveCellRangeForCtx(pos.rowId, pos.colId),
+      };
       return cfg.items.map((it) => ({ id: it.id, disabled: it.disabled?.(ctx) === true }));
     });
     const cellContextMenuIsOpen = computed<boolean>(() => contextMenuPositionRef.value != null);
@@ -10282,7 +10329,7 @@ export const ChronixTable = defineComponent({
               // chronix overlay at cursor coords + suppress browser
               // native menu. When unconfigured, the handler is omitted
               // entirely so the browser's native menu surfaces.
-              ...(props.contextMenu != null && props.contextMenu.items.length > 0
+              ...(effectiveContextMenu.value != null && effectiveContextMenu.value.items.length > 0
                 ? {
                     onContextmenu: (e: MouseEvent) => {
                       onCellContextMenu(row.id, col.id, e);
@@ -11239,9 +11286,13 @@ export const ChronixTable = defineComponent({
       // when `contextMenuPositionRef` is set + the prop has items.
       const contextMenuOverlay: VNode | null = (() => {
         const pos = contextMenuPositionRef.value;
-        const cfg = props.contextMenu;
+        const cfg = effectiveContextMenu.value;
         if (pos == null || cfg == null || cfg.items.length === 0) return null;
-        const ctx: ContextMenuContext = { rowId: pos.rowId, colId: pos.colId };
+        const ctx: ContextMenuContext = {
+          rowId: pos.rowId,
+          colId: pos.colId,
+          cellRange: resolveCellRangeForCtx(pos.rowId, pos.colId),
+        };
         const ctxMenuActiveIdx = cellContextMenuKbdNav.activeIndex.value;
         return h(
           'div',

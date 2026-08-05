@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @chronixjs/table — framework-agnostic table core.
  *
  * IR-based architecture: framework-agnostic types + pure-function layout
@@ -257,3 +257,8 @@ export {
 } from './api/index.js';
 
 export const TABLE_PACKAGE_VERSION = '0.1.0-alpha.0';
+
+export {
+  createDefaultContextMenuItems,
+  type DefaultContextMenuDeps,
+} from './api/default-context-menu';

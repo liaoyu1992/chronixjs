@@ -1481,7 +1481,6 @@ export function App(): ReactElement {
             showFooterRow
             showColumnHeaderMenu
             showColumnFilterButton
-            contextMenu={phase83ContextMenuConfig}
             onColumnHeaderMenuAction={onColumnHeaderMenuAction}
             enableKeyboardNavigation
             enableKeyboardAutoScroll={enableAutoScroll}
