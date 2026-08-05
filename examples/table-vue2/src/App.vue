@@ -604,7 +604,14 @@ export default defineComponent({
             label: '复制单元格',
             icon: '📋',
             onClick: (ctx) => {
-              self.phase83LastContextAction = `复制 ${ctx.rowId}/${ctx.colId}`;
+              if (ctx.cellRange != null) {
+                (
+                  self.$refs['table'] as unknown as TableHandle | undefined
+                )?.copyCellRangeToClipboard();
+                self.phase83LastContextAction = `复制范围 ${ctx.cellRange.rowIds.length}行 × ${ctx.cellRange.colIds.length}列`;
+              } else {
+                self.phase83LastContextAction = `复制 ${ctx.rowId}/${ctx.colId}`;
+              }
             },
           },
           {

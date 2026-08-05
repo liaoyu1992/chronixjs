@@ -119,6 +119,18 @@ export interface ContextMenuContext {
    * argument.
    */
   readonly colId: string | null;
+
+  /**
+   * Active cell-range envelope at the time the menu opened, or
+   * `null` when no range is active OR the right-clicked cell is
+   * outside the active range. When set, menu items like "copy"
+   * can operate on the entire selection rather than just the
+   * single cell.
+   */
+  readonly cellRange?: {
+    readonly rowIds: readonly string[];
+    readonly colIds: readonly string[];
+  } | null;
 }
 
 /**

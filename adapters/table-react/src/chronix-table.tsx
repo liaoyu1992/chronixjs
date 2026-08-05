@@ -4788,13 +4788,32 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
       (item: ContextMenuItem): void => {
         const pos = contextMenuPositionRef.current;
         if (pos == null) return;
-        const cmCtx: ContextMenuContext = { rowId: pos.rowId, colId: pos.colId };
+        // Resolve the active cell-range envelope so menu items can
+        // operate on the whole selection (e.g. "copy range"). Only
+        // set when cellRangeSelection is enabled AND the right-clicked
+        // cell is inside the active envelope.
+        let cellRange: ContextMenuContext['cellRange'] = null;
+        if (cellRangeSelection === 'enabled' && cellRangeRef.current != null) {
+          const env = computeCellRangeEnvelope(
+            cellRangeRef.current,
+            pagedRows.map((r) => r.id),
+            visibleColumns.map((c) => c.id),
+          );
+          if (env.rowIds.includes(pos.rowId ?? '') && env.colIds.includes(pos.colId ?? '')) {
+            cellRange = env;
+          }
+        }
+        const cmCtx: ContextMenuContext = {
+          rowId: pos.rowId,
+          colId: pos.colId,
+          cellRange,
+        };
         const disabled = item.disabled?.(cmCtx) === true;
         if (disabled) return;
         applyCloseContextMenu();
         item.onClick(cmCtx);
       },
-      [applyCloseContextMenu],
+      [applyCloseContextMenu, cellRangeSelection, pagedRows, visibleColumns],
     );
 
     // (2026-05-30 — react port): document-level close-on-

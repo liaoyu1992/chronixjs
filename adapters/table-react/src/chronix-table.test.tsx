@@ -8996,7 +8996,7 @@ describe('<ChronixTable> — -B cell context menu (react)', () => {
     expect(container.querySelector('[data-testid="cx-cell-context-menu"]')).toBeTruthy();
     fireEvent.click(container.querySelector('[data-item-id="inspect"]')!);
     expect(onClick).toHaveBeenCalledTimes(1);
-    expect(onClick).toHaveBeenCalledWith({ rowId: 'r2', colId: 'qty' });
+    expect(onClick).toHaveBeenCalledWith({ rowId: 'r2', colId: 'qty', cellRange: null });
     expect(container.querySelector('[data-testid="cx-cell-context-menu"]')).toBeFalsy();
     expect(onContextMenuClose).toHaveBeenCalled();
   });

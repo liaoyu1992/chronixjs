@@ -1015,7 +1015,14 @@ export function App(): ReactElement {
           label: '复制单元格',
           icon: '📋',
           onClick: (ctx: ContextMenuContext): void => {
-            setPhase83LastContextAction(`复制 ${ctx.rowId ?? '?'}/${ctx.colId ?? '?'}`);
+            if (ctx.cellRange != null) {
+              void tableRef.current?.copyCellRangeToClipboard();
+              setPhase83LastContextAction(
+                `复制范围 ${ctx.cellRange.rowIds.length}行 × ${ctx.cellRange.colIds.length}列`,
+              );
+            } else {
+              setPhase83LastContextAction(`复制 ${ctx.rowId ?? '?'}/${ctx.colId ?? '?'}`);
+            }
           },
         },
         {

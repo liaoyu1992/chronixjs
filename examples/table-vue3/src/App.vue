@@ -1275,7 +1275,15 @@ const phase83ContextMenuConfig = computed<ContextMenuConfig>(() => ({
       label: '复制单元格',
       icon: '📋',
       onClick: (ctx) => {
-        phase83LastContextAction.value = `复制 ${ctx.rowId}/${ctx.colId}`;
+        // When a cell range is active and the right-clicked cell is
+        // inside it, copy the entire selection (TSV). Otherwise copy
+        // just the single cell value.
+        if (ctx.cellRange != null) {
+          tableRef.value?.copyCellRangeToClipboard();
+          phase83LastContextAction.value = `复制范围 ${ctx.cellRange.rowIds.length}行 × ${ctx.cellRange.colIds.length}列`;
+        } else {
+          phase83LastContextAction.value = `复制 ${ctx.rowId}/${ctx.colId}`;
+        }
       },
     },
     {

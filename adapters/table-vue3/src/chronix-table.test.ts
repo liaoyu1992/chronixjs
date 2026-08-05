@@ -8511,7 +8511,7 @@ describe('<ChronixTable> — -B cell context menu (vue3)', () => {
     expect(wrapper.find('[data-testid="cx-cell-context-menu"]').exists()).toBe(true);
     await wrapper.find('[data-item-id="inspect"]').trigger('click');
     expect(onClick).toHaveBeenCalledTimes(1);
-    expect(onClick).toHaveBeenCalledWith({ rowId: 'r2', colId: 'qty' });
+    expect(onClick).toHaveBeenCalledWith({ rowId: 'r2', colId: 'qty', cellRange: null });
     expect(wrapper.find('[data-testid="cx-cell-context-menu"]').exists()).toBe(false);
     const closeEvents = wrapper.emitted('context-menu-close') ?? [];
     expect(closeEvents.length).toBeGreaterThanOrEqual(1);
