@@ -53,6 +53,11 @@ updates:
       # Keep jsdom on 29.x until Node 20 support is dropped.
       - dependency-name: 'jsdom'
         versions: ['>=30']
+      # @vue/test-utils 2.x is for Vue 3; the vue2 adapters (gantt/table/
+      # ui-vue2) must stay on 1.x for Vue 2.7. Block major bumps so dependabot
+      # does not migrate the vue2 adapters to 2.x again (see #109).
+      - dependency-name: '@vue/test-utils'
+        update-types: ['version-update:semver-major']
       # Vitest 4 is now supported. Vite 8 for Vue3/React, Vite 7 for Vue2.
       # - dependency-name: 'vitest'
       #   versions: ['>=5']
