@@ -5306,6 +5306,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const [cellRangeState, setCellRangeState] = useState<CellRange | null>(null);
     const cellRangeDraggingRef = useRef<boolean>(false);
     const cellRangePointerIdRef = useRef<number | null>(null);
+    // Set true on pointerup after a cell-range drag so the
+    // subsequent click event can be suppressed in onClickCapture.
+    const cellRangeDragJustEndedRef = useRef<boolean>(false);
 
     const cellRangeEnvelope = useMemo<CellRangeEnvelope>(() => {
       if (cellRangeState == null) return EMPTY_CELL_RANGE_ENVELOPE;
@@ -5417,6 +5420,9 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
         cellRangeDraggingRef.current = false;
         cellRangePointerIdRef.current = null;
         applyCellRangeStop(e);
+        // Suppress the click event that follows pointerup so it
+        // doesn't trigger row selection via onBodyContentClick.
+        cellRangeDragJustEndedRef.current = true;
       },
       [applyCellRangeStop],
     );
@@ -5435,6 +5441,13 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     const onCellShiftClick = useCallback(
       (rowId: string, colId: string, e: ReactMouseEvent<HTMLDivElement>): void => {
         if (cellRangeSelection !== 'enabled') return;
+        // A cell-range drag just ended - suppress the click that
+        // follows pointerup so it doesn't trigger row selection.
+        if (cellRangeDragJustEndedRef.current) {
+          cellRangeDragJustEndedRef.current = false;
+          e.stopPropagation();
+          return;
+        }
         if (!e.shiftKey) return;
         if (cellRangeRef.current == null) return;
         e.stopPropagation();

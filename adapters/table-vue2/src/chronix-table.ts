@@ -4876,6 +4876,9 @@ export const ChronixTable = defineComponent({
     const cellRangeRef = ref<CellRange | null>(null);
     const cellRangeDraggingRef = ref<boolean>(false);
     const cellRangePointerIdRef = ref<number | null>(null);
+    // Set true on pointerup after a cell-range drag so the
+    // subsequent click event can be suppressed in onClickCapture.
+    const cellRangeDragJustEndedRef = ref<boolean>(false);
 
     const cellRangeEnvelope = computed<CellRangeEnvelope>(() => {
       const range = cellRangeRef.value;
@@ -4968,6 +4971,9 @@ export const ChronixTable = defineComponent({
       cellRangeDraggingRef.value = false;
       cellRangePointerIdRef.value = null;
       applyCellRangeStop(e);
+      // Suppress the click event that follows pointerup so it
+      // doesn't trigger row selection via onBodyContentClick.
+      cellRangeDragJustEndedRef.value = true;
     }
 
     function onCellPointercancel(e: PointerEvent): void {
@@ -4980,6 +4986,13 @@ export const ChronixTable = defineComponent({
 
     function onCellShiftClick(rowId: string, colId: string, e: MouseEvent): void {
       if (props.cellRangeSelection !== 'enabled') return;
+      // A cell-range drag just ended - suppress the click that follows
+      // pointerup so it doesn't trigger row selection.
+      if (cellRangeDragJustEndedRef.value) {
+        cellRangeDragJustEndedRef.value = false;
+        e.stopPropagation();
+        return;
+      }
       if (!e.shiftKey) return;
       if (cellRangeRef.value == null) return;
       e.stopPropagation();
