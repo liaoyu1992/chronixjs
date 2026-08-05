@@ -13,7 +13,8 @@
  *   drag-resize.
  * - `maxWidth` — optional upper clamp bound. When set (typically from
  *   `column.maxWidth`), autosize never exceeds it.
- * - `headerWidth` — optional header label width. Decision B.1
+ * - `headerWidth` — optional total header content width (label text +
+ *   chrome such as sort indicator + menu button). Decision B.1
  *   includes the header in the max calculation so a narrow-data /
  *   long-header column doesn't truncate the header.
  */

@@ -112,6 +112,7 @@
  * has it as the containing block. */
 .cx-table-header-cell {
   position: relative;
+  user-select: none;
 }
 
 .cx-table-header-cell:last-child,
@@ -332,7 +333,6 @@
 }
 
 .cx-table-header-cell--sorted {
-  background: rgba(52, 93, 157, 0.12);
 }
 
 .cx-table-body .cx-table-row:nth-child(odd),
@@ -1197,6 +1197,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 24px;
   height: 24px;
   margin-left: 2px;
@@ -1206,9 +1207,16 @@
   background: transparent;
   cursor: pointer;
   color: #64748b;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
 }
 .cx-table-column-header-menu-button:hover {
   background: #e2e8f0;
+}
+.cx-table-header-cell:hover .cx-table-column-header-menu-button {
+  opacity: 1;
+  pointer-events: auto;
 }
 .cx-table-column-header-menu {
   position: absolute;

@@ -4810,7 +4810,27 @@ export const ChronixTable = defineComponent({
           : null;
       const font = headerEl != null ? window.getComputedStyle(headerEl).font : '';
       const headerLabel = column.headerName ?? column.field ?? column.id;
-      const headerWidth = measureCellTextWidth(headerLabel, font);
+      // Measure the header's full content width from the live DOM so
+      // autosize accounts for both the label text AND header chrome
+      // (sort indicator, filter button, menu button, etc.). Using the
+      // label element's scrollWidth (not Canvas.measureText) avoids
+      // sub-pixel inaccuracies that cause truncation after autosize.
+      const labelEl = headerEl?.querySelector<HTMLElement>('.cx-table-header-cell-label');
+      const headerLabelWidth = labelEl?.scrollWidth ?? measureCellTextWidth(headerLabel, font);
+      let headerChromeWidth = 0;
+      if (headerEl != null) {
+        for (const child of Array.from(headerEl.children)) {
+          if (child.classList.contains('cx-table-header-cell-label')) continue;
+          if (child.classList.contains('cx-table-header-resizer')) continue;
+          if (child.classList.contains('cx-table-header-cell__sr-description')) continue;
+          const cs = window.getComputedStyle(child);
+          headerChromeWidth +=
+            child.getBoundingClientRect().width +
+            (parseFloat(cs.marginLeft) || 0) +
+            (parseFloat(cs.marginRight) || 0);
+        }
+      }
+      const headerWidth = Math.ceil(headerLabelWidth + headerChromeWidth);
       const widths: number[] = [];
       for (const row of pagedRows.value) {
         const value = getCellValue({ row, column });
@@ -4821,7 +4841,15 @@ export const ChronixTable = defineComponent({
         widths.push(measureCellTextWidth(text, font));
       }
       const baseWidth = widthByColId.value[colId] ?? 0;
-      const paddingX = mergedTheme.value.cellPaddingX * 2;
+      // Include cell border in the width budget so autosize doesn't
+      // truncate by the border width (box-sizing: border-box includes
+      // border in the declared width but content must fit inside it).
+      const headerBorderX =
+        headerEl != null
+          ? (parseFloat(window.getComputedStyle(headerEl).borderLeftWidth) || 0) +
+            (parseFloat(window.getComputedStyle(headerEl).borderRightWidth) || 0)
+          : 0;
+      const paddingX = mergedTheme.value.cellPaddingX * 2 + headerBorderX;
       const newWidth = computeAutosizeWidth(widths, {
         paddingX,
         minWidth: column.minWidth ?? mergedTheme.value.defaultMinColumnWidth,
