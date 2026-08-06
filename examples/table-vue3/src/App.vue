@@ -5,7 +5,6 @@ import {
   ChronixColumnsToolPanel,
   ChronixFiltersToolPanel,
   ChronixTable,
-  type ContextMenuConfig,
   computeColumnReorder,
   type GetRowsParams,
   type GetRowsResult,
@@ -1268,40 +1267,7 @@ const toolPanelConfig = computed<ToolPanelConfig>(() => ({
 // context-menu config + last-action mirror so the
 // header strip can display what the user just picked from a cell right-click.
 const phase83LastContextAction = ref<string>('—');
-const phase83ContextMenuConfig = computed<ContextMenuConfig>(() => ({
-  items: [
-    {
-      id: 'copy-cell',
-      label: '复制单元格',
-      icon: '📋',
-      onClick: (ctx) => {
-        // When a cell range is active and the right-clicked cell is
-        // inside it, copy the entire selection (TSV). Otherwise copy
-        // just the single cell value.
-        if (ctx.cellRange != null) {
-          tableRef.value?.copyCellRangeToClipboard();
-          phase83LastContextAction.value = `复制范围 ${ctx.cellRange.rowIds.length}行 × ${ctx.cellRange.colIds.length}列`;
-        } else {
-          phase83LastContextAction.value = `复制 ${ctx.rowId}/${ctx.colId}`;
-        }
-      },
-    },
-    {
-      id: 'inspect',
-      label: '查看单元格信息',
-      icon: 'ℹ️',
-      onClick: (ctx) => {
-        phase83LastContextAction.value = `查看 ${ctx.rowId}/${ctx.colId}`;
-      },
-    },
-    {
-      id: 'guarded',
-      label: '锁定 (始终禁用)',
-      disabled: () => true,
-      onClick: () => undefined,
-    },
-  ],
-}));
+
 function onColumnHeaderMenuAction(payload: {
   colId: string;
   action: 'sort-asc' | 'sort-desc' | 'clear-sort' | 'hide' | 'autosize';

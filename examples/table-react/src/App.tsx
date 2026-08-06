@@ -2,8 +2,6 @@ import {
   ChronixColumnsToolPanel,
   ChronixFiltersToolPanel,
   ChronixTable,
-  type ContextMenuConfig,
-  type ContextMenuContext,
   computeColumnReorder,
   computeRowReorder,
   type GetRowsParams,
@@ -1007,42 +1005,7 @@ export function App(): ReactElement {
 
   // (2026-05-30 — react port): context menu + header menu wiring.
   const [phase83LastContextAction, setPhase83LastContextAction] = useState('—');
-  const phase83ContextMenuConfig: ContextMenuConfig = useMemo(
-    () => ({
-      items: [
-        {
-          id: 'copy-cell',
-          label: '复制单元格',
-          icon: '📋',
-          onClick: (ctx: ContextMenuContext): void => {
-            if (ctx.cellRange != null) {
-              void tableRef.current?.copyCellRangeToClipboard();
-              setPhase83LastContextAction(
-                `复制范围 ${ctx.cellRange.rowIds.length}行 × ${ctx.cellRange.colIds.length}列`,
-              );
-            } else {
-              setPhase83LastContextAction(`复制 ${ctx.rowId ?? '?'}/${ctx.colId ?? '?'}`);
-            }
-          },
-        },
-        {
-          id: 'inspect',
-          label: '查看单元格信息',
-          icon: 'ℹ️',
-          onClick: (ctx: ContextMenuContext): void => {
-            setPhase83LastContextAction(`查看 ${ctx.rowId ?? '?'}/${ctx.colId ?? '?'}`);
-          },
-        },
-        {
-          id: 'guarded',
-          label: '锁定 (始终禁用)',
-          disabled: (): boolean => true,
-          onClick: (): void => undefined,
-        },
-      ],
-    }),
-    [],
-  );
+
   const onColumnHeaderMenuAction = useCallback(
     (payload: {
       colId: string;

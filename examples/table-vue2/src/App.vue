@@ -3,7 +3,6 @@ import {
   ChronixColumnsToolPanel,
   ChronixFiltersToolPanel,
   ChronixTable,
-  type ContextMenuConfig,
   computeColumnReorder,
   computeRowReorder,
   type GetRowsParams,
@@ -595,42 +594,7 @@ export default defineComponent({
     emptyServerSideRows(): readonly RowSpec[] {
       return [];
     },
-    phase83ContextMenuConfig(): ContextMenuConfig {
-      const self = this as unknown as { phase83LastContextAction: string };
-      return {
-        items: [
-          {
-            id: 'copy-cell',
-            label: '复制单元格',
-            icon: '📋',
-            onClick: (ctx) => {
-              if (ctx.cellRange != null) {
-                (
-                  self.$refs['table'] as unknown as TableHandle | undefined
-                )?.copyCellRangeToClipboard();
-                self.phase83LastContextAction = `复制范围 ${ctx.cellRange.rowIds.length}行 × ${ctx.cellRange.colIds.length}列`;
-              } else {
-                self.phase83LastContextAction = `复制 ${ctx.rowId}/${ctx.colId}`;
-              }
-            },
-          },
-          {
-            id: 'inspect',
-            label: '查看单元格信息',
-            icon: 'ℹ️',
-            onClick: (ctx) => {
-              self.phase83LastContextAction = `查看 ${ctx.rowId}/${ctx.colId}`;
-            },
-          },
-          {
-            id: 'guarded',
-            label: '锁定 (始终禁用)',
-            disabled: () => true,
-            onClick: () => undefined,
-          },
-        ],
-      };
-    },
+
     toolPanelConfig(): ToolPanelConfig {
       const self = this as unknown as {
         rows: readonly RowSpec[];
