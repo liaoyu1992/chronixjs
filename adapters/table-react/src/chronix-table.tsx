@@ -3480,10 +3480,10 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
     // The dep callbacks are resolved lazily via refs so the items array
     // is stable across renders (the underlying methods are defined later
     // in the component body and may change identity).
-    const defaultCopyRangeRef = useRef<() => void>(() => {});
-    const defaultCopyCellRef = useRef<(rowId: string, colId: string) => void>(() => {});
-    const defaultPasteRef = useRef<() => void>(() => {});
-    const defaultClearRangeRef = useRef<() => void>(() => {});
+    const defaultCopyRangeRef = useRef<() => void>(() => undefined);
+    const defaultCopyCellRef = useRef<(rowId: string, colId: string) => void>(() => undefined);
+    const defaultPasteRef = useRef<() => void>(() => undefined);
+    const defaultClearRangeRef = useRef<() => void>(() => undefined);
     const defaultContextMenuItems = useMemo(
       () =>
         createDefaultContextMenuItems({
@@ -10757,7 +10757,7 @@ export const ChronixTable = forwardRef<TableHandle, ChronixTableProps>(
               }}
               onKeyDown={(e) => cellContextMenuKbdNav.handleKeydown(e)}
             >
-              {effectiveContextMenu!.items.map((item: ContextMenuItem, idx: number) => {
+              {effectiveContextMenu.items.map((item: ContextMenuItem, idx: number) => {
                 const cmCtx: ContextMenuContext = {
                   rowId: contextMenuPosition.rowId,
                   colId: contextMenuPosition.colId,
