@@ -421,7 +421,7 @@ export const ChronixTree = defineComponent({
         children.push(h('span', { class: indicatorClass }));
       }
 
-      const rowOn: Record<string, (...args: any[]) => void> = {
+      const rowOn: Record<string, (...args: never[]) => void> = {
         click: () => onRowClick(key),
       };
       const rowAttrs: Record<string, unknown> = {
