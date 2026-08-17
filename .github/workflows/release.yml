@@ -31,7 +31,7 @@ jobs:
       # CHANGELOG. Publishing to npm is intentionally NOT wired here — the user
       # runs `pnpm changeset publish` locally after merging the PR.
       - name: Create or update release PR
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
           version: pnpm version
           commit: 'chore: release packages'
