@@ -42,7 +42,7 @@
     "@changesets/cli": "^3.0.1",
     "@chronixjs/eslint-config": "workspace:*",
     "@chronixjs/stylelint-config": "workspace:*",
-    "@types/node": "^26.2.0",
+    "@types/node": "^26.4.1",
     "eslint": "^10.10.0",
     "husky": "^9.1.6",
     "prettier": "^3.8.5",
