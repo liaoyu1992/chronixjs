@@ -19,14 +19,14 @@
     "@chronixjs/gantt-react": "workspace:*",
     "@chronixjs/golden-runner": "workspace:*",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@chronixjs/eslint-config": "workspace:*",
     "@testing-library/react": "^16.0.1",
     "@types/node": "^26.5.1",
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.3",
