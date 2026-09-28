@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@changesets/cli':
-        specifier: ^3.0.2
-        version: 3.0.2
+        specifier: ^3.0.3
+        version: 3.0.3
       '@chronixjs/eslint-config':
         specifier: workspace:*
         version: link:tooling/eslint-config
@@ -53,7 +53,7 @@ importers:
         version: link:../../tooling/eslint-config
       '@testing-library/jest-dom':
         specifier: ^7.0.1
-        version: 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)))
+        version: 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)))
       '@testing-library/react':
         specifier: ^16.3.3
         version: 16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -80,13 +80,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   adapters/gantt-vue2:
     dependencies:
@@ -111,13 +111,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue:
         specifier: ^2.7.16
         version: 2.7.16
@@ -148,13 +148,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue:
         specifier: ^3.5.0
         version: 3.5.34(typescript@5.9.3)
@@ -176,7 +176,7 @@ importers:
         version: link:../../tooling/eslint-config
       '@testing-library/jest-dom':
         specifier: ^7.0.1
-        version: 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)))
+        version: 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)))
       '@testing-library/react':
         specifier: ^16.3.3
         version: 16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -203,13 +203,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   adapters/table-vue2:
     dependencies:
@@ -240,13 +240,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue:
         specifier: ^2.7.16
         version: 2.7.16
@@ -283,13 +283,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue:
         specifier: ^3.5.0
         version: 3.5.34(typescript@5.9.3)
@@ -305,7 +305,7 @@ importers:
         version: link:../../tooling/eslint-config
       '@testing-library/jest-dom':
         specifier: ^7.0.1
-        version: 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)))
+        version: 7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)))
       '@testing-library/react':
         specifier: ^16.3.3
         version: 16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -335,13 +335,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   adapters/ui-vue2:
     dependencies:
@@ -369,13 +369,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue:
         specifier: ^2.7.16
         version: 2.7.16
@@ -409,13 +409,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue:
         specifier: ^3.5.0
         version: 3.5.34(typescript@5.9.3)
@@ -507,7 +507,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: ^6.1.1
-        version: 6.1.1(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 6.1.1(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -516,10 +516,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   examples/gantt-vue2:
     dependencies:
@@ -544,7 +544,7 @@ importers:
         version: 26.6.2
       '@vitejs/plugin-vue2':
         specifier: ^2.3.4
-        version: 2.3.4(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))(vue@2.7.16)
+        version: 2.3.4(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))(vue@2.7.16)
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -553,10 +553,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue-tsc:
         specifier: ^3.3.11
         version: 3.3.11(typescript@5.9.3)
@@ -584,7 +584,7 @@ importers:
         version: 26.6.2
       '@vitejs/plugin-vue':
         specifier: ^6.0.8
-        version: 6.0.8(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))(vue@3.5.34(typescript@5.9.3))
+        version: 6.0.8(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))(vue@3.5.34(typescript@5.9.3))
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -593,10 +593,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue-tsc:
         specifier: ^3.3.11
         version: 3.3.11(typescript@5.9.3)
@@ -642,7 +642,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: ^6.1.1
-        version: 6.1.1(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 6.1.1(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -651,10 +651,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   examples/table-vue2:
     dependencies:
@@ -685,7 +685,7 @@ importers:
         version: 26.6.2
       '@vitejs/plugin-vue2':
         specifier: ^2.3.4
-        version: 2.3.4(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))(vue@2.7.16)
+        version: 2.3.4(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))(vue@2.7.16)
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -694,10 +694,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue-tsc:
         specifier: ^3.3.11
         version: 3.3.11(typescript@5.9.3)
@@ -731,7 +731,7 @@ importers:
         version: 26.6.2
       '@vitejs/plugin-vue':
         specifier: ^6.0.8
-        version: 6.0.8(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))(vue@3.5.34(typescript@5.9.3))
+        version: 6.0.8(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))(vue@3.5.34(typescript@5.9.3))
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -740,10 +740,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue-tsc:
         specifier: ^3.3.11
         version: 3.3.11(typescript@5.9.3)
@@ -780,7 +780,7 @@ importers:
         version: 19.3.0(@types/react@19.3.0)
       '@vitejs/plugin-react':
         specifier: ^6.1.1
-        version: 6.1.1(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 6.1.1(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -789,10 +789,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   examples/ui-vue2:
     dependencies:
@@ -817,7 +817,7 @@ importers:
         version: 26.6.2
       '@vitejs/plugin-vue2':
         specifier: ^2.3.4
-        version: 2.3.4(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))(vue@2.7.16)
+        version: 2.3.4(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))(vue@2.7.16)
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -826,10 +826,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue-tsc:
         specifier: ^3.3.11
         version: 3.3.11(typescript@5.9.3)
@@ -857,7 +857,7 @@ importers:
         version: 26.6.2
       '@vitejs/plugin-vue':
         specifier: ^6.0.8
-        version: 6.0.8(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))(vue@3.5.34(typescript@5.9.3))
+        version: 6.0.8(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))(vue@3.5.34(typescript@5.9.3))
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -866,10 +866,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: ^8.3.0
-        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+        version: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       vue-tsc:
         specifier: ^3.3.11
         version: 3.3.11(typescript@5.9.3)
@@ -890,13 +890,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   packages/gantt:
     devDependencies:
@@ -914,13 +914,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   packages/table:
     devDependencies:
@@ -941,13 +941,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   packages/table-server-side:
     dependencies:
@@ -969,13 +969,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   packages/ui:
     devDependencies:
@@ -1002,13 +1002,13 @@ importers:
         version: 6.1.3
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0)
+        version: 8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1)
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
       vitest:
         specifier: ^5.0.2
-        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+        version: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   tooling/eslint-config:
     dependencies:
@@ -1219,8 +1219,8 @@ packages:
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
 
-  '@changesets/apply-release-plan@8.1.0':
-    resolution: {integrity: sha512-M93HOGyX3ssg6He3b5NotaHtQVu6uajHS6UIQ28xKt2RzskCy73ayX4I914qBKjTJmrE4YFlELQjfcqxbmGLJw==}
+  '@changesets/apply-release-plan@8.1.1':
+    resolution: {integrity: sha512-nk2Hbq3M9NeHMdaIRBDvawKrQJzXB9sGyBUE5yWnIKtvdcNCPj75zBekJYr0gTT2ecJH3eFeTrc8eisPImcv0Q==}
     engines: {node: ^22.11 || ^24 || >=26}
 
   '@changesets/assemble-release-plan@7.0.0':
@@ -1231,13 +1231,13 @@ packages:
     resolution: {integrity: sha512-3Dst2Ime2Op5nd4XmWJLPIgp11ZFqJqSkVug9izK6TDcIV4YlhPS4ECbEVR+eGI0bk0r1ItogD4j2Oli87bJrA==}
     engines: {node: ^22.11 || ^24 || >=26}
 
-  '@changesets/cli@3.0.2':
-    resolution: {integrity: sha512-t/omGJj/I+Jv0kmJAkj5cstYEdUQiJnpip2F+2m3F4lQ3kAZ3o8Exep4/Fm1qq4rvw6ovlhJvZNrKdwLJ4lkuQ==}
+  '@changesets/cli@3.0.3':
+    resolution: {integrity: sha512-L1i67bMfkK6iC/kDejuNO4pFgTRcWIObsD6Qof2woP1I4M8tj17DGlcpRaTzTv1DYSP5EMwWdEtR8X0Pj5Jg3Q==}
     engines: {node: ^22.11 || ^24 || >=26, npm: '>=10.9.0', pnpm: '>=10.0.0', yarn: '>=4.5.2'}
     hasBin: true
 
-  '@changesets/config@4.0.0':
-    resolution: {integrity: sha512-mw95/YrkOuhZZxfnVAA4bSXOFUi+KlhzOBTM8C4x777NhUU6HWIl9Z+K+nME+E4PVsv5NQVQwTfiHihAS1A/ow==}
+  '@changesets/config@4.0.1':
+    resolution: {integrity: sha512-PxpxSQLQSLDjceAgRq+4FWlU+HflDIw03mmPVipxoQx9xrXFUjmqTy3SE+n/2t+DqPdpPiLWVr5NRiLZvjyLwg==}
     engines: {node: ^22.11 || ^24 || >=26}
 
   '@changesets/errors@1.0.0':
@@ -1280,12 +1280,12 @@ packages:
     resolution: {integrity: sha512-q/ThtP9gcnEP6xlv7LrY26C2mHqdGBti/MmOVngt/M/oIGYkssmQGxPK9WzBNt2juVcH/vml2WQ+ra8LXYOTaA==}
     engines: {node: ^22.11 || ^24 || >=26}
 
-  '@clack/core@1.5.0':
-    resolution: {integrity: sha512-zNikCcd8BbcEvzzG1sbXFrRHFk5kHPrpwZwksPvf9qyQO1Teb7JaXaOAxXZei9nZLDW0gaZawiuTCji88bTBhw==}
+  '@clack/core@1.5.1':
+    resolution: {integrity: sha512-iHTrHA8MtVuLl2TfZySmcKv1qO2PoyC9Z7pfSDozEuV5vtY3/wcOPKJXlqJ5Oq2Cx5DDGQGAMVx6HZfRRoVEbQ==}
     engines: {node: '>= 20.12.0'}
 
-  '@clack/prompts@1.8.0':
-    resolution: {integrity: sha512-PXzLZ8N34rxmuo4dJg3xtOXhcBse94qGjDqsteoEYrFrrZ5FSjIGwMAuOcv64ln8rHVBBD06XeVGr+/JX+plcA==}
+  '@clack/prompts@1.8.1':
+    resolution: {integrity: sha512-dlT1m5e/0yUL0kRNcQn7yGLVThkgbB0Ga/1AmfDDC/8ik6AIiSf2QLQO2zPYvefsHP0aFgxO93cVLCCfDp7kzQ==}
     engines: {node: '>= 20.12.0'}
 
   '@csstools/color-helpers@6.1.0':
@@ -4789,8 +4789,8 @@ packages:
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
 
-  yaml@2.9.0:
-    resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
+  yaml@2.9.1:
+    resolution: {integrity: sha512-3NxN8+78OdzbT7C/WjGsyfPAtJaN3FNDsWxv7Y7mcDsT/oOmgW8BpyQQFFBnvZE3j9Y2Sdz1ULFLezL7Eb2yFw==}
     engines: {node: '>= 14.6'}
     hasBin: true
 
@@ -5006,9 +5006,9 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@changesets/apply-release-plan@8.1.0':
+  '@changesets/apply-release-plan@8.1.1':
     dependencies:
-      '@changesets/config': 4.0.0
+      '@changesets/config': 4.0.1
       '@changesets/format': 0.1.2
       '@changesets/git': 4.0.1
       '@changesets/should-skip-package': 1.0.0
@@ -5029,12 +5029,12 @@ snapshots:
     dependencies:
       '@changesets/types': 7.0.0
 
-  '@changesets/cli@3.0.2':
+  '@changesets/cli@3.0.3':
     dependencies:
-      '@changesets/apply-release-plan': 8.1.0
+      '@changesets/apply-release-plan': 8.1.1
       '@changesets/assemble-release-plan': 7.0.0
       '@changesets/changelog-git': 1.0.0
-      '@changesets/config': 4.0.0
+      '@changesets/config': 4.0.1
       '@changesets/errors': 1.0.0
       '@changesets/get-dependents-graph': 3.0.0
       '@changesets/git': 4.0.1
@@ -5043,7 +5043,7 @@ snapshots:
       '@changesets/should-skip-package': 1.0.0
       '@changesets/types': 7.0.0
       '@changesets/write': 1.0.1
-      '@clack/prompts': 1.8.0
+      '@clack/prompts': 1.8.1
       '@manypkg/get-packages': 3.1.0
       '@pnpm/deps.graph-sequencer': 1100.0.1
       cac: 7.0.0
@@ -5053,7 +5053,7 @@ snapshots:
       semver: 7.8.5
       tinyexec: 1.3.1
 
-  '@changesets/config@4.0.0':
+  '@changesets/config@4.0.1':
     dependencies:
       '@changesets/get-dependents-graph': 3.0.0
       '@changesets/should-skip-package': 1.0.0
@@ -5084,7 +5084,7 @@ snapshots:
   '@changesets/parse@1.0.0':
     dependencies:
       '@changesets/types': 7.0.0
-      yaml: 2.9.0
+      yaml: 2.9.1
 
   '@changesets/pre@3.0.0':
     dependencies:
@@ -5110,14 +5110,14 @@ snapshots:
       '@changesets/types': 7.0.0
       human-id: 4.2.1
 
-  '@clack/core@1.5.0':
+  '@clack/core@1.5.1':
     dependencies:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
-  '@clack/prompts@1.8.0':
+  '@clack/prompts@1.8.1':
     dependencies:
-      '@clack/core': 1.5.0
+      '@clack/core': 1.5.1
       fast-string-width: 3.0.2
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
@@ -5571,7 +5571,7 @@ snapshots:
     dependencies:
       jju: 1.4.0
       tinyglobby: 0.2.17
-      yaml: 2.9.0
+      yaml: 2.9.1
 
   '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
@@ -5780,7 +5780,7 @@ snapshots:
       picocolors: 1.1.1
       pretty-format: 27.5.1
 
-  '@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)))':
+  '@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.1)(vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)))':
     dependencies:
       '@adobe/css-tools': 4.5.0
       '@testing-library/dom': 10.4.1
@@ -5790,7 +5790,7 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
     optionalDependencies:
-      vitest: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+      vitest: 5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
 
   '@testing-library/react@16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
@@ -6057,14 +6057,14 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  '@vitejs/plugin-react@6.1.1(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))':
+  '@vitejs/plugin-react@6.1.1(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
 
-  '@vitejs/plugin-vue2@2.3.4(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))(vue@2.7.16)':
+  '@vitejs/plugin-vue2@2.3.4(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))(vue@2.7.16)':
     dependencies:
-      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vue: 2.7.16
 
   '@vitejs/plugin-vue@5.2.4(vite@5.4.21(@types/node@26.6.2)(lightningcss@1.33.0))(vue@3.5.34(typescript@5.9.3))':
@@ -6072,20 +6072,20 @@ snapshots:
       vite: 5.4.21(@types/node@26.6.2)(lightningcss@1.33.0)
       vue: 3.5.34(typescript@5.9.3)
 
-  '@vitejs/plugin-vue@6.0.8(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))(vue@3.5.34(typescript@5.9.3))':
+  '@vitejs/plugin-vue@6.0.8(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))(vue@3.5.34(typescript@5.9.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
-      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       vue: 3.5.34(typescript@5.9.3)
 
-  '@vitest/mocker@5.0.2(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))':
+  '@vitest/mocker@5.0.2(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       '@vitest/spy': 5.0.2
       estree-walker: 3.0.3
       magic-string: 1.4.2
     optionalDependencies:
-      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
 
   '@vitest/spy@5.0.2': {}
 
@@ -7604,12 +7604,12 @@ snapshots:
     dependencies:
       playwright-core: 1.63.0
 
-  postcss-load-config@6.0.1(postcss@8.5.28)(yaml@2.9.0):
+  postcss-load-config@6.0.1(postcss@8.5.28)(yaml@2.9.1):
     dependencies:
       lilconfig: 3.1.3
     optionalDependencies:
       postcss: 8.5.28
-      yaml: 2.9.0
+      yaml: 2.9.1
 
   postcss-media-query-parser@0.2.3: {}
 
@@ -8165,7 +8165,7 @@ snapshots:
   tslib@2.8.1:
     optional: true
 
-  tsup@8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.0):
+  tsup@8.5.1(postcss@8.5.28)(typescript@5.9.3)(yaml@2.9.1):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.7)
       cac: 6.7.14
@@ -8176,7 +8176,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1(postcss@8.5.28)(yaml@2.9.0)
+      postcss-load-config: 6.0.1(postcss@8.5.28)(yaml@2.9.1)
       resolve-from: 5.0.0
       rollup: 4.60.3
       source-map: 0.7.6
@@ -8321,7 +8321,7 @@ snapshots:
       fsevents: 2.3.3
       lightningcss: 1.33.0
 
-  vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0):
+  vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -8332,7 +8332,7 @@ snapshots:
       '@types/node': 26.6.2
       esbuild: 0.27.7
       fsevents: 2.3.3
-      yaml: 2.9.0
+      yaml: 2.9.1
 
   vitepress@1.6.4(@algolia/client-search@5.53.0)(@types/node@26.6.2)(@types/react@18.3.28)(async-validator@4.2.5)(lightningcss@1.33.0)(postcss@8.5.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)(typescript@5.9.3):
     dependencies:
@@ -8383,10 +8383,10 @@ snapshots:
       - typescript
       - universal-cookie
 
-  vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)):
+  vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@29.1.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)):
     dependencies:
       '@types/chai': 5.2.3
-      '@vitest/mocker': 5.0.2(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+      '@vitest/mocker': 5.0.2(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       chai: 6.2.2
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
@@ -8397,7 +8397,7 @@ snapshots:
       tinybench: 6.2.0
       tinyexec: 1.3.1
       tinyglobby: 0.2.17
-      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       why-is-node-running: 3.2.2
     optionalDependencies:
       '@types/node': 26.6.2
@@ -8406,10 +8406,10 @@ snapshots:
     transitivePeerDependencies:
       - msw
 
-  vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)):
+  vitest@5.0.2(@types/node@26.6.2)(happy-dom@20.14.3)(jsdom@30.0.1)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)):
     dependencies:
       '@types/chai': 5.2.3
-      '@vitest/mocker': 5.0.2(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0))
+      '@vitest/mocker': 5.0.2(vite@8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1))
       chai: 6.2.2
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
@@ -8420,7 +8420,7 @@ snapshots:
       tinybench: 6.2.0
       tinyexec: 1.3.1
       tinyglobby: 0.2.17
-      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.0)
+      vite: 8.3.0(@types/node@26.6.2)(esbuild@0.27.7)(yaml@2.9.1)
       why-is-node-running: 3.2.2
     optionalDependencies:
       '@types/node': 26.6.2
@@ -8527,7 +8527,7 @@ snapshots:
 
   xmlchars@2.2.0: {}
 
-  yaml@2.9.0: {}
+  yaml@2.9.1: {}
 
   yocto-queue@0.1.0: {}
 
