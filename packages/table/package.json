@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@chronixjs/eslint-config": "workspace:*",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "exceljs": "^4.4.0",
     "happy-dom": "^20.14.6",
     "rimraf": "^6.0.1",
