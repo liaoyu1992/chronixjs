@@ -14,7 +14,7 @@
   "dependencies": {
     "stylelint-config-recommended": "^18.0.0",
     "stylelint-config-recommended-scss": "^17.0.1",
-    "stylelint-order": "^8.1.1"
+    "stylelint-order": "^8.1.2"
   },
   "peerDependencies": {
     "stylelint": "^16.0.0"
