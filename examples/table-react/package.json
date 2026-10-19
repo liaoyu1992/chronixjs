@@ -21,7 +21,7 @@
     "@chronixjs/table-react": "workspace:*",
     "exceljs": "^4.4.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@chronixjs/eslint-config": "workspace:*",
