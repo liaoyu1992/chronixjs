@@ -18,7 +18,7 @@
     "@chronixjs/gantt": "workspace:*",
     "@chronixjs/gantt-react": "workspace:*",
     "@chronixjs/golden-runner": "workspace:*",
-    "react": "^19.3.0",
+    "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
