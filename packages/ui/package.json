@@ -75,7 +75,7 @@
     "@types/node": "^26.6.5",
     "async-validator": "^4.2.5",
     "date-fns": "^4.4.0",
-    "happy-dom": "^21.0.3",
+    "happy-dom": "^21.0.4",
     "qrcode-generator": "^2.0.4",
     "rimraf": "^6.0.1",
     "tsup": "^9.0.0",
